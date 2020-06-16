@@ -1,0 +1,12 @@
+{% extends 'auth_layout.html' %}
+
+{% block auth_content %}
+  <h1>Login form</h1>
+  <div>
+    <form method="post">
+      {% csrf_token %}
+      {{ form }}
+      <button type="submit">Login</button>
+    </form>
+  </div>
+{% endblock %}
