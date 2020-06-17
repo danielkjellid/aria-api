@@ -1,12 +1,58 @@
-{% extends 'auth_layout.html' %}
+{% extends 'auth_base.html' %}
+
+{% block title %}
+<title>Logg inn - Flis.no</title>
+{% endblock %}
 
 {% block auth_content %}
-  <h1>Login form</h1>
-  <div>
-    <form method="post">
-      {% csrf_token %}
-      {{ form }}
-      <button type="submit">Login</button>
-    </form>
+  <div class="bg-white max-w-sm py-6 px-5 m-auto min-h-screen md:m-0 lg:max-w-md">
+    <nav class="absolute left-0 top-0 ml-4 mt-5">
+      <a href="#" class="flex items-center text-sm leading-5 font-medium text-gray-900">
+        <svg class="flex-shrink-0 mr-1 h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+        </svg>
+        Tilbake til Flishuset
+      </a>
+    </nav>
+    <div class="pt-20">
+      <div class="inline-block flex justify-center mb-8">
+        <div class="border-b border-gray-200">
+          <nav class="-mb-px flex">
+            <a href="#" class="whitespace-no-wrap py-4 px-3 border-b-2 border-gray-900 font-medium text-sm leading-5 text-gray-900 focus:outline-none focus:text-gray-700 focus:border-gray-700" aria-current="page">
+              Logg inn
+            </a>
+            <a href="#" class="whitespace-no-wrap ml-2 py-4 px-3 border-b-2 border-transparent font-medium text-sm leading-5 text-gray-600 hover:text-gray-900 hover:border-gray-900 focus:outline-none focus:text-gray-700 focus:border-gray-300">
+              Opprett konto
+            </a>
+          </nav>
+        </div>
+      </div>
+      <div class="text-center mb-8">
+        <h1 class="text-gray-900 font-medium text-xl">Velkommen tilbake!</h1>
+        <div class="flex items-center text-gray-700 justify-center mt-1 text-sm">
+          Har du ikke en konto? <a href="#" class="ml-1 text-gray-900 font-medium underline">Lag en her</a>
+        </div>
+      </div>
+      <form method="POST" class="max-w-sm m-auto">
+        <div>
+          <label for="email" class="block text-sm font-medium leading-5 text-gray-900">E-post</label>
+          <div class="mt-1 relative rounded-lg">
+            <input id="email" class="form-input block w-full text-sm leading-5" />
+          </div>
+        </div>
+        <div class="mt-5">
+          <label for="password" class="block text-sm font-medium leading-5 text-gray-900">Passord</label>
+          <div class="mt-1 relative rounded-lg">
+            <input id="password" class="form-input block w-full text-sm leading-5" type="password" />
+          </div>
+        </div>
+        <div class="text-center mt-4 mb-4">
+          <a href="#" class="text-sm text-gray-900 font-medium underline">Glemt passordet?</a>
+        </div>
+        <button type="submit" class="w-full items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray active:bg-gray-800 transition ease-in-out duration-150">
+          Logg inn
+        </button>
+      </form>
+    </div>
   </div>
 {% endblock %}
