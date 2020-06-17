@@ -25,7 +25,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=255,
         unique=False,
     )
-    birth_date = models.DateField(_('date of birth'), null=True)
     phone_number = models.CharField(max_length=30)
     has_confirmed_email = models.BooleanField(default=False)
     street_address = models.CharField(
@@ -52,7 +51,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         ),
     )
     subscribed_to_newsletter = models.BooleanField(
-        _('disabled email'),
+        _('subscribed to newsletter'),
         default=True,
         help_text=_('Decides if a user receives marketing emails from us.'),
     )
