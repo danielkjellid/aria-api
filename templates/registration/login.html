@@ -7,7 +7,7 @@
 {% block auth_content %}
   <div class="bg-white max-w-sm py-6 px-5 m-auto min-h-screen md:m-0 lg:max-w-md">
     <nav class="absolute left-0 top-0 ml-4 mt-5">
-      <a href="#" class="flex items-center text-sm leading-5 font-medium text-gray-900">
+      <a href="/" class="flex items-center text-sm leading-5 font-medium text-gray-900">
         <svg class="flex-shrink-0 mr-1 h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
         </svg>
@@ -18,10 +18,10 @@
       <div class="inline-block flex justify-center mb-8">
         <div class="border-b border-gray-200">
           <nav class="-mb-px flex">
-            <a href="#" class="whitespace-no-wrap py-4 px-3 border-b-2 border-gray-900 font-medium text-sm leading-5 text-gray-900 focus:outline-none focus:text-gray-700 focus:border-gray-700" aria-current="page">
+            <div class="whitespace-no-wrap py-4 px-3 border-b-2 border-gray-900 font-medium text-sm leading-5 text-gray-900 focus:outline-none focus:text-gray-700 focus:border-gray-700" aria-current="page">
               Logg inn
-            </a>
-            <a href="#" class="whitespace-no-wrap ml-2 py-4 px-3 border-b-2 border-transparent font-medium text-sm leading-5 text-gray-600 hover:text-gray-900 hover:border-gray-900 focus:outline-none focus:text-gray-700 focus:border-gray-300">
+            </div>
+            <a href="{% url 'django_registration-register' %}" class="whitespace-no-wrap ml-2 py-4 px-3 border-b-2 border-transparent font-medium text-sm leading-5 text-gray-600 hover:text-gray-900 hover:border-gray-900 focus:outline-none focus:text-gray-700 focus:border-gray-300">
               Opprett konto
             </a>
           </nav>
@@ -33,17 +33,50 @@
           Har du ikke en konto? <a href="#" class="ml-1 text-gray-900 font-medium underline">Lag en her</a>
         </div>
       </div>
+      {% if form.errors %}
+        <div class="bg-red-50 p-4 mb-8 rounded-md">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="w-5 h-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium leading-5 text-red-800">
+                Oida! Noe gikk galt
+              </h3>
+              <div class="mt-2 text-sm leading-5 text-red-700">
+                <ul class="pl-5 list-disc">
+                  {% for field in form %}
+                    {% for error in field.errors %}
+                      <li class="mt-1">
+                        {{ error | escape }}
+                      </li>
+                    {% endfor %}
+                  {% endfor %}
+                  {% for error in form.non_field_errors %}
+                    <li class="mt-1">
+                      {{ error | escape }}
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
       <form method="POST" class="max-w-sm m-auto">
+        {% csrf_token %}
         <div>
-          <label for="email" class="block text-sm font-medium leading-5 text-gray-900">E-post</label>
+          <label for="id_username" class="block text-sm font-medium leading-5 text-gray-900">E-post</label>
           <div class="mt-1 relative rounded-lg">
-            <input id="email" class="form-input block w-full text-sm leading-5" />
+            {{ form.username }}
           </div>
         </div>
         <div class="mt-5">
-          <label for="password" class="block text-sm font-medium leading-5 text-gray-900">Passord</label>
+          <label for="id_password" class="block text-sm font-medium leading-5 text-gray-900">Passord</label>
           <div class="mt-1 relative rounded-lg">
-            <input id="password" class="form-input block w-full text-sm leading-5" type="password" />
+            {{ form.password }}
           </div>
         </div>
         <div class="text-center mt-4 mb-4">

@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 from django_registration.forms import RegistrationForm
 
 from users.models import User
@@ -8,6 +8,16 @@ INPUT_STYLING = 'form-input block w-full text-sm leading-5'
 CHECKBOX_STYLING = 'form-checkbox text-gray-800 h-5 w-5'
 INPUT_ADD_ON_STYLING = 'form-input flex-1 block w-full px-3 py-2 rounded-none rounded-r-md text-sm leading-5'
 
+
+class UserAuthenticationForm(AuthenticationForm):
+     
+    class Meta:
+        model = User
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs.update({'class': INPUT_STYLING})
+        self.fields['password'].widget.attrs.update({'class': INPUT_STYLING})
 
 class UserCreationForm(UserCreationForm):
 
