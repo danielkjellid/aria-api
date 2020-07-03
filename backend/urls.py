@@ -11,6 +11,7 @@ urlpatterns = [
     path('bruker/registrer/', RegistrationView.as_view(form_class=UserRegistrationForm, success_url='/'), name='django_registration-register'),
     path('bruker/logg-inn/', auth_views.LoginView.as_view(authentication_form=UserAuthenticationForm)),
     path('bruker/', include('django.contrib.auth.urls')),
+    path('api/', include('users.api.urls')),
     path('api-auth/', include('rest_framework.urls')),
     re_path(r'^.*$', IndexTemplateView.as_view(), name='entry-point')
 ]

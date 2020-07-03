@@ -12,7 +12,7 @@ class UserAdmin(UserAdmin):
     list_display = ('first_name', 'last_name', 'email', 'is_staff', 'is_active')
     list_filter = ('first_name', 'last_name', 'email', 'is_staff', 'is_active')
     fieldsets = (
-        ('Personal', {'fields': ('first_name', 'last_name', 'birth_date', 'date_joined', 'last_login', 'password')}),
+        ('Personal', {'fields': ('first_name', 'last_name', 'date_joined', 'last_login', 'password')}),
         ('Contact', {'fields': ('phone_number', 'email', 'has_confirmed_email', 'street_address', 'zip_code', 'zip_place')}),
         ('Marketing', {'fields': ('disabled_emails', 'subscribed_to_newsletter', 'allow_personalization', 'allow_third_party_personalization', 'acquisition_source')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),

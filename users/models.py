@@ -102,6 +102,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name= _('user')
         verbose_name_plural = _('users')
+        permissions = (
+            ('has_users_list', 'Can list users'),
+            ('has_users_export', 'Can export users list to pdf'),
+            ('has_user_add', 'Can add new users'),
+        )
 
     def __str__(self):
         return '%s %s' % (self.first_name, self.last_name)
@@ -118,6 +123,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         Return the first_name of the user
         """
         return self.first_name
+
+    def get_address(self):
+        """
+        Return the full address containing streetname, zip code and place
+        """
+        address = '%s, %s %s' % (self.street_address, self.zip_code, self.zip_place)
+        return address.strip()
 
     
 
