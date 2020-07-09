@@ -20,3 +20,25 @@ class UsersSerializer(serializers.ModelSerializer):
 
     def get_address(self, instance):
         return instance.get_address()
+
+
+class RequestUserPermissionsSerializer(serializers.ModelSerializer):
+    """
+    A serializer to display the current request users' permissions
+    """
+
+    permissions = serializers.SerializerMethodField()
+    group_permissions = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('id', 'is_staff', 'is_superuser', 'permissions', 'group_permissions')
+
+    def get_permissions(self, instance):
+        permissions = Permission.objects.filter(user=instance.id).values_list('codename', flat=True)
+        return permissions
+
+    def get_group_permissions(self, instance):
+        group_permissions = Permission.objects.filter(group__user=instance.id).values_list('codename', flat=True)
+        return group_permissions
+    
