@@ -5,32 +5,32 @@
 {% endblock %}
 
 {% block auth_content %}
-  <div class="bg-white max-w-sm py-6 px-5 m-auto min-h-screen md:m-0 lg:max-w-md">
-    <nav class="absolute left-0 top-0 ml-4 mt-5">
-      <a href="/" class="flex items-center text-sm leading-5 font-medium text-gray-900">
-        <svg class="flex-shrink-0 mr-1 h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+  <div class="md:m-0 lg:max-w-md max-w-sm min-h-screen px-5 py-6 m-auto bg-white">
+    <nav class="absolute top-0 left-0 mt-5 ml-4">
+      <a href="/" class="flex items-center text-sm font-medium leading-5 text-gray-900">
+        <svg class="flex-shrink-0 w-5 h-5 mr-1 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
         </svg>
         Tilbake til Flishuset
       </a>
     </nav>
     <div class="pt-20">
-      <div class="inline-block flex justify-center mb-8">
+      <div class="flex justify-center inline-block mb-8">
         <div class="border-b border-gray-200">
-          <nav class="-mb-px flex">
-            <a href="{% url 'login' %}" class="whitespace-no-wrap py-4 px-3 border-b-2 border-transparent font-medium text-sm leading-5 text-gray-600 hover:text-gray-900 hover:border-gray-900 focus:outline-none focus:text-gray-700 focus:border-gray-300" aria-current="page">
+          <nav class="flex -mb-px">
+            <a href="{% url 'user-login' %}" class="hover:text-gray-900 hover:border-gray-900 focus:outline-none focus:text-gray-700 focus:border-gray-300 px-3 py-4 text-sm font-medium leading-5 text-gray-600 whitespace-no-wrap border-b-2 border-transparent" aria-current="page">
               Logg inn
             </a>
-            <div class="whitespace-no-wrap ml-2 py-4 px-3 border-b-2 border-gray-900 font-medium text-sm leading-5 text-gray-900 focus:outline-none focus:text-gray-700 focus:border-gray-700" aria-current="page">
+            <div class="focus:outline-none focus:text-gray-700 focus:border-gray-700 px-3 py-4 ml-2 text-sm font-medium leading-5 text-gray-900 whitespace-no-wrap border-b-2 border-gray-900" aria-current="page">
               Opprett konto
             </div>
           </nav>
         </div>
       </div>
-      <div class="text-center mb-8">
-        <h1 class="text-gray-900 font-medium text-xl">Kom i gang med å handle</h1>
-        <div class="flex items-center text-gray-700 justify-center mt-1 text-sm">
-          Har du allerede en konto? <a href="{% url 'login' %}" class="ml-1 text-gray-900 font-medium underline">Logg inn her</a>
+      <div class="mb-8 text-center">
+        <h1 class="text-xl font-medium text-gray-900">Kom i gang med å handle</h1>
+        <div class="flex items-center justify-center mt-1 text-sm text-gray-700">
+          Har du allerede en konto? <a href="{% url 'user-login' %}" class="ml-1 font-medium text-gray-900 underline">Logg inn her</a>
         </div>
       </div>
       {% if form.errors %}
@@ -70,21 +70,21 @@
         <div class="sm:flex sm:items-center sm:justify-between sm:w-full">
           <div class="sm:w-1/2">
             <label for="id_first_name" class="block text-sm font-medium leading-5 text-gray-900">Fornavn</label>
-            <div class="mt-1 relative rounded-lg">
+            <div class="relative mt-1 rounded-lg">
               {{ form.first_name }}
             </div>
           </div>
-          <div class="sm:w-1/2 sm:ml-5 mt-5 sm:mt-0">
+          <div class="sm:w-1/2 sm:ml-5 sm:mt-0 mt-5">
             <label for="id_last_name" class="block text-sm font-medium leading-5 text-gray-900">Etternavn</label>
-            <div class="mt-1 relative rounded-lg">
+            <div class="relative mt-1 rounded-lg">
               {{ form.last_name }}
             </div>
           </div>
         </div>
         <div class="mt-5">
           <label for="id_phone_number" class="block text-sm font-medium leading-5 text-gray-900">Telefonnummer</label>
-          <div class="mt-1 flex rounded-lg">
-            <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-600 text-sm">
+          <div class="flex mt-1 rounded-lg">
+            <span class="rounded-l-md bg-gray-50 inline-flex items-center px-3 text-sm text-gray-600 border border-r-0 border-gray-300">
               +47
             </span>
             {{ form.phone_number }}
@@ -92,38 +92,38 @@
         </div>
         <div class="mt-5">
           <label for="id_email" class="block text-sm font-medium leading-5 text-gray-900">E-post</label>
-          <div class="mt-1 relative rounded-lg">
+          <div class="relative mt-1 rounded-lg">
             {{ form.email }}
           </div>
         </div>
         <div class="mt-5">
           <label for="id_password1" class="block text-sm font-medium leading-5 text-gray-900">Passord</label>
-          <div class="mt-1 relative rounded-lg">
+          <div class="relative mt-1 rounded-lg">
             {{ form.password1 }}
           </div>
         </div>
         <div class="mt-5">
           <label for="id_password2" class="block text-sm font-medium leading-5 text-gray-900">Gjenta passord</label>
-          <div class="mt-1 relative rounded-lg">
+          <div class="relative mt-1 rounded-lg">
             {{ form.password2 }}
           </div>
         </div>
         <div class="mt-5">
           <label for="id_street_address" class="block text-sm font-medium leading-5 text-gray-900">Gateadresse</label>
-          <div class="mt-1 relative rounded-lg">
+          <div class="relative mt-1 rounded-lg">
             {{ form.street_address }}
           </div>
         </div>
         <div class="sm:flex sm:items-center sm:justify-between sm:w-full sm:mt-5">
-          <div class="sm:w-1/2 mt-5 sm:mt-0">
+          <div class="sm:w-1/2 sm:mt-0 mt-5">
             <label for="id_zip_code" class="block text-sm font-medium leading-5 text-gray-900">Postkode</label>
-            <div class="mt-1 relative rounded-lg">
+            <div class="relative mt-1 rounded-lg">
               {{ form.zip_code }}
             </div>
           </div>
-          <div class="sm:w-1/2 sm:ml-5 mt-5 sm:mt-0">
+          <div class="sm:w-1/2 sm:ml-5 sm:mt-0 mt-5">
             <label for="id_zip_place" class="block text-sm font-medium leading-5 text-gray-900">By</label>
-            <div class="mt-1 relative rounded-lg">
+            <div class="relative mt-1 rounded-lg">
               {{ form.zip_place }}
             </div>
           </div>
@@ -133,7 +133,7 @@
             <div>
               <label class="inline-flex">
                 {{ form.subscribed_to_newsletter }}
-                <span class="ml-3 text-sm font-medium text-gray-800 -mt-px">Jeg ønsker markedsføring på e-post</span>
+                <span class="ml-3 -mt-px text-sm font-medium text-gray-800">Jeg ønsker markedsføring på e-post</span>
               </label>
             </div>
           </div>
@@ -141,7 +141,7 @@
             <div>
               <label class="inline-flex">
                 {{ form.allow_personalization }}
-                <span class="ml-3 text-sm font-medium text-gray-800 -mt-px">Jeg ønsker en personalisert handleoppelvelse og kommunikasjon</span>
+                <span class="ml-3 -mt-px text-sm font-medium text-gray-800">Jeg ønsker en personalisert handleoppelvelse og kommunikasjon</span>
               </label>
             </div>
           </div>
@@ -149,12 +149,12 @@
             <div>
               <label class="inline-flex">
                 {{ form.allow_third_party_personalization }}
-                <span class="ml-3 text-sm font-medium text-gray-800 -mt-px">Jeg ønsker personlig markedsføring i andre kanaler</span>
+                <span class="ml-3 -mt-px text-sm font-medium text-gray-800">Jeg ønsker personlig markedsføring i andre kanaler</span>
               </label>
             </div>
           </div>
         </div>
-        <button type="submit" class="mt-4 w-full items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray active:bg-gray-800 transition ease-in-out duration-150">
+        <button type="submit" class="hover:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray active:bg-gray-800 items-center w-full px-4 py-2 mt-4 text-sm font-medium leading-5 text-white transition duration-150 ease-in-out bg-gray-800 border border-transparent rounded-md">
           Lag konto
         </button>
       </form>
