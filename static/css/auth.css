@@ -4,7 +4,7 @@ html {
 }
 
 body {
-  background-image: url(http://127.0.0.1:8000/static/images/auth.jpg);
+  background-image: url(http://127.0.0.1:8000/static/media/auth.jpg);
   background-size: cover
 }
 

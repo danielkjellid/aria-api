@@ -22,6 +22,33 @@ class UsersSerializer(serializers.ModelSerializer):
         return instance.get_address()
 
 
+class UserSerializer(serializers.ModelSerializer):
+    """
+    A serializer to retrive a specific user instance
+    """
+
+    full_name = serializers.SerializerMethodField()
+    address = serializers.SerializerMethodField()
+    acquisition_source = serializers.SerializerMethodField()
+
+
+    def get_full_name(self, instance):
+        return instance.get_full_name()
+
+    def get_address(self, instance):
+        return instance.get_address()
+
+    def get_acquisition_source(self, instance):
+        if not instance.acquisition_source:
+            return 'Ingen'
+        
+        return instance.acquisition_source
+
+    class Meta:
+        model = User
+        exclude = ('password', 'groups',)
+
+
 class RequestUserPermissionsSerializer(serializers.ModelSerializer):
     """
     A serializer to display the current request users' permissions

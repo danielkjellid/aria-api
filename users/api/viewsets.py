@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.permissions import HasUserOrGroupPermission
-from users.api.serializers import UsersSerializer, RequestUserPermissionsSerializer
+from users.api.serializers import UsersSerializer, UserSerializer, RequestUserPermissionsSerializer
 from users.models import User
 
 
@@ -16,6 +16,13 @@ class UsersListAPIView(generics.ListCreateAPIView):
     required_permissions = {
         'GET': ['has_users_list']
     }
+
+
+class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAdminUser, HasUserOrGroupPermission]
+
 
 class RequestUserPermissionsRetrieveAPIView(generics.RetrieveAPIView):
 
