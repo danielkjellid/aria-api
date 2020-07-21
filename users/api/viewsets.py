@@ -22,6 +22,9 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAdminUser, HasUserOrGroupPermission]
+    required_permissions = {
+        'GET': ['has_users_list']
+    }
 
 
 class RequestUserPermissionsRetrieveAPIView(generics.RetrieveAPIView):

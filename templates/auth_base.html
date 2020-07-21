@@ -9,8 +9,8 @@
   <title>Auth</title>
   {% endblock %}
 </head>
-<body>
-  <div class="bg-white md:bg-transparent">
+<body style="background-image: url({% static 'media/auth.jpg' %});">
+  <div class="md:bg-transparent bg-white">
     <div>
       {% block auth_content %}
       {% endblock %}
