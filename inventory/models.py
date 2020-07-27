@@ -16,12 +16,12 @@ class Category(models.Model):
         null=True,
     )
     order = models.PositiveIntegerField(
-        _('Order'),
+        _('order'),
         unique=True,
         help_text=_('Order  in which the category should be displayed')
     )
     name = models.CharField(
-        _('Category name'),
+        _('category name'),
         max_length=255, 
         unique=True
     )
