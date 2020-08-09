@@ -49,37 +49,32 @@ class UserSerializer(serializers.ModelSerializer):
         exclude = ('password', 'groups', 'user_permissions', 'is_superuser', 'is_staff')
 
 
-class RequestUserPermissionsSerializer(serializers.ModelSerializer):
+class RequestUserSerializer(serializers.ModelSerializer):
     """
-    A serializer to display the current request users' permissions
+    A serializer to retrieve the current user
     """
 
     permissions = serializers.SerializerMethodField()
     group_permissions = serializers.SerializerMethodField()
-
-    class Meta:
-        model = User
-        fields = ('id', 'is_staff', 'is_superuser', 'permissions', 'group_permissions')
-
-    def get_permissions(self, instance):
-        permissions = Permission.objects.filter(user=instance.id).values_list('codename', flat=True)
-        return permissions
-
-    def get_group_permissions(self, instance):
-        group_permissions = Permission.objects.filter(group__user=instance.id).values_list('codename', flat=True)
-        return group_permissions
-
-
-class RequestUserAuthSerializer(serializers.ModelSerializer):
-    """
-    A serializer to check if the user is authenticated or not
-    """
-
     is_authenticated = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['is_authenticated']
+        fields = ('is_authenticated', 'permissions', 'group_permissions', 'is_staff', 'is_superuser')
 
+    def get_permissions(self, user):
+        if not user.is_authenticated:
+            return None
+
+        permissions = Permission.objects.filter(user=user.id).values_list('codename', flat=True)
+        return permissions
+
+    def get_group_permissions(self, user):
+        if not user.is_authenticated:
+            return None
+
+        group_permissions = Permission.objects.filter(group__user=user.id).values_list('codename', flat=True)
+        return group_permissions
+    
     def get_is_authenticated(self, user):
         return user.is_authenticated

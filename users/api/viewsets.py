@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.permissions import HasUserOrGroupPermission
-from users.api.serializers import UsersSerializer, UserSerializer, RequestUserPermissionsSerializer, RequestUserAuthSerializer
+from users.api.serializers import UsersSerializer, UserSerializer, RequestUserSerializer
 from users.models import User
 
 
@@ -27,17 +27,8 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     }
 
 
-class RequestUserPermissionsRetrieveAPIView(generics.RetrieveAPIView):
-
-    permission_classes = [IsAuthenticated]
+class RequestUserRetrieveAPIView(generics.RetrieveAPIView):
 
     def get(self, request):
-        serializer = RequestUserPermissionsSerializer(request.user)
-        return Response(serializer.data)
-
-
-class RequestUserAuthRetrieveAPIView(generics.RetrieveAPIView):
-    
-    def get(self, request):
-        serializer = RequestUserAuthSerializer(request.user)
+        serializer = RequestUserSerializer(request.user)
         return Response(serializer.data)
