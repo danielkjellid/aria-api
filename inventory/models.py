@@ -14,18 +14,13 @@ class Category(models.Model):
         """
         Return the location of which to upload the file
         """
-        if instance.parent:    
-            raise ValidationError(
-                _('This field should only be used on top level parents!'),
-                code='invalid'
-            )
-
+       
         return os.path.join('categories/%s/' % instance.name.lower(), filename)
     
     name = models.CharField(
         _('category name'), 
         max_length=255, 
-        unique=True
+        unique=False
     )
     slug = models.SlugField(
         _('slug'),
@@ -33,14 +28,6 @@ class Category(models.Model):
         help_text=_(
             'A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.'
         ),
-        default='self',
-    )
-    parent = models.ForeignKey(
-        'self', 
-        on_delete=models.CASCADE, 
-        related_name='category', 
-        blank=True, 
-        null=True
     )
     ordering = models.PositiveSmallIntegerField(
         _('order'),
@@ -76,13 +63,44 @@ class Category(models.Model):
         ),
     )
 
-
     class Meta:
         verbose_name = _('category')
         verbose_name_plural = _('categories')
 
     def __str__(self):
-        if self.parent:
-            return '%s > %s' % (self.parent, self.name)
-
         return self.name
+
+
+
+class SubCategory(models.Model):
+    parent = models.ForeignKey(
+        Category, 
+        on_delete=models.CASCADE, 
+        related_name='children', 
+    )
+    name = models.CharField(
+        _('category name'), 
+        max_length=255, 
+        unique=True
+    )
+    slug = models.SlugField(
+        _('slug'),
+        max_length=50,
+        help_text=_(
+            'A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.'
+        ),
+    )
+    is_active = models.BooleanField(
+        _('active'),
+        default=True,
+        help_text=_(
+            'Designates whether the category should be treated as active.'
+        ),
+    )
+
+    class Meta:
+        verbose_name = _('sub category')
+        verbose_name_plural = _('sub categories')
+
+    def __str__(self):
+        return '%s > %s' % (self.parent, self.name)

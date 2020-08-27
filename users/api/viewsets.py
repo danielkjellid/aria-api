@@ -9,7 +9,7 @@ from users.api.serializers import UsersSerializer, UserSerializer, RequestUserSe
 from users.models import User
 
 
-class UsersListAPIView(generics.ListCreateAPIView):
+class UsersListAPIView(generics.ListAPIView):
     queryset = User.objects.all().order_by('id')
     serializer_class = UsersSerializer
     permission_classes = [IsAdminUser, HasUserOrGroupPermission]
