@@ -55,6 +55,13 @@ class Category(models.Model):
         null=True,
 
     )
+    display_in_navbar = models.BooleanField(
+        _('display in navigation bar'),
+        default=True,
+        help_text=_(
+            'Designates whether the category should be displayed in the nav dropdown.'
+        ),
+    )
     is_active = models.BooleanField(
         _('active'),
         default=True,
@@ -71,7 +78,6 @@ class Category(models.Model):
         return self.name
 
 
-
 class SubCategory(models.Model):
     parent = models.ForeignKey(
         Category, 
@@ -81,7 +87,7 @@ class SubCategory(models.Model):
     name = models.CharField(
         _('category name'), 
         max_length=255, 
-        unique=True
+        unique=False
     )
     slug = models.SlugField(
         _('slug'),
@@ -89,6 +95,14 @@ class SubCategory(models.Model):
         help_text=_(
             'A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.'
         ),
+    )
+    ordering = models.PositiveSmallIntegerField(
+        _('order'),
+        help_text=_(
+            'Order  in which the category should be displayed.'
+        ),
+        blank=True,
+        default=0
     )
     is_active = models.BooleanField(
         _('active'),

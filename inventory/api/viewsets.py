@@ -7,5 +7,5 @@ from inventory.models import Category
 
 
 class CategoriesNavigationListAPIView(generics.ListAPIView):
-    queryset = Category.objects.all().order_by('id')
+    queryset = Category.objects.filter(display_in_navbar=True, is_active=True).order_by('ordering')
     serializer_class = CategorySerializer

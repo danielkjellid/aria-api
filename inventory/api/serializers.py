@@ -16,11 +16,15 @@ class CategorySerializer(serializers.ModelSerializer):
     """
     A serializer used in the navigational bar of the application
     """
-    
-    children = SubCategorySerializer(many=True, read_only=True)
+
+    children = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
-        fields = ('id', 'name', 'children')
+        fields = ('id', 'name', 'slug', 'children')
+
+    def get_children(self, instance):
+        children = instance.children.all().order_by('ordering')
+        return SubCategorySerializer(children, many=True, read_only=True).data
 
     
