@@ -2,13 +2,15 @@ import os
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
 
 class Category(models.Model):
 
     class CategoryWidth(models.TextChoices):
-        FULL = 'Full', _('Fullwidth')
-        HALF = 'Half', _('Half')
+        FULL = 'full', _('Fullwidth')
+        HALF = 'half', _('Half')
 
     def upload_content_file_name(instance, filename):
         """
@@ -47,7 +49,7 @@ class Category(models.Model):
     )
     image = models.ImageField(
         _('image'),
-        upload_to=upload_content_file_name,
+        upload_to='categories',
         help_text=_(
             'Category image, should only be used on top level parents!'
         ),
@@ -55,6 +57,11 @@ class Category(models.Model):
         null=True,
 
     )
+    image_default = ImageSpecField(source='image', processors=[ResizeToFill(375, 375)], format='JPEG', options={'quality': 90})
+    image_sm = ImageSpecField(source='image', processors=[ResizeToFill(640, 300)], format='JPEG', options={'quality': 90})
+    image_md = ImageSpecField(source='image', processors=[ResizeToFill(768, 366)], format='JPEG', options={'quality': 90})
+    image_lg = ImageSpecField(source='image', processors=[ResizeToFill(1024, 480)], format='JPEG', options={'quality': 90})
+    image_xl = ImageSpecField(source='image', processors=[ResizeToFill(1280, 600)], format='JPEG', options={'quality': 90})
     display_in_navbar = models.BooleanField(
         _('display in navigation bar'),
         default=True,

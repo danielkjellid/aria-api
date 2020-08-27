@@ -55,6 +55,7 @@ class RequestUserSerializer(serializers.ModelSerializer):
     """
 
     full_name = serializers.SerializerMethodField()
+    email = serializers.SerializerMethodField()
     permissions = serializers.SerializerMethodField()
     group_permissions = serializers.SerializerMethodField()
     is_authenticated = serializers.SerializerMethodField()
@@ -64,7 +65,16 @@ class RequestUserSerializer(serializers.ModelSerializer):
         fields = ('full_name', 'email', 'is_authenticated', 'permissions', 'group_permissions', 'is_staff', 'is_superuser')
 
     def get_full_name(self, user):
-        return user.get_full_name()
+        if user.is_authenticated:
+            return user.get_full_name()
+        
+        return None
+
+    def get_email(self, user):
+        if user.is_authenticated:
+            return user.email
+
+        return None
     
     def get_permissions(self, user):
         if not user.is_authenticated:
