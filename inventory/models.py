@@ -49,11 +49,59 @@ class Category(models.Model):
         blank=True, 
         null=True,
     )
-    image_default = ImageSpecField(source='image', processors=[ResizeToFill(375, 375)], format='JPEG', options={'quality': 90})
-    image_sm = ImageSpecField(source='image', processors=[ResizeToFill(640, 300)], format='JPEG', options={'quality': 90})
-    image_md = ImageSpecField(source='image', processors=[ResizeToFill(768, 366)], format='JPEG', options={'quality': 90})
-    image_lg = ImageSpecField(source='image', processors=[ResizeToFill(1024, 480)], format='JPEG', options={'quality': 90})
-    image_xl = ImageSpecField(source='image', processors=[ResizeToFill(1280, 600)], format='JPEG', options={'quality': 90})
+    image_512x512 = ImageSpecField(
+        source='image', 
+        processors=[ResizeToFill(512, 512)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    image_1024x1024 = ImageSpecField(
+        source='image', 
+        processors=[ResizeToFill(1024, 1024)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    image_1536x1536 = ImageSpecField(
+        source='image', 
+        processors=[ResizeToFill(1536, 1536)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    image_1024x576 = ImageSpecField(
+        source='image', 
+        processors=[ResizeToFill(1024, 576)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    image_1536x864 = ImageSpecField(
+        source='image', 
+        processors=[ResizeToFill(1536, 864)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    image_2048x1152 = ImageSpecField(
+        source='image', 
+        processors=[ResizeToFill(2048, 1152)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    image_2560x1440 = ImageSpecField(
+        source='image', 
+        processors=[ResizeToFill(2560, 1440)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    image_3072x1728 = ImageSpecField(
+        source='image', 
+        processors=[ResizeToFill(3072, 1728)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    # image_default = ImageSpecField(source='image', processors=[ResizeToFill(375, 375)], format='JPEG', options={'quality': 90})
+    # image_sm = ImageSpecField(source='image', processors=[ResizeToFill(640, 300)], format='JPEG', options={'quality': 90})
+    # image_md = ImageSpecField(source='image', processors=[ResizeToFill(768, 366)], format='JPEG', options={'quality': 90})
+    # image_lg = ImageSpecField(source='image', processors=[ResizeToFill(1024, 480)], format='JPEG', options={'quality': 90})
+    # image_xl = ImageSpecField(source='image', processors=[ResizeToFill(1280, 600)], format='JPEG', options={'quality': 90})
     display_in_navbar = models.BooleanField(
         _('display in navigation bar'),
         default=True,
