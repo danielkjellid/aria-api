@@ -12,13 +12,6 @@ class Category(models.Model):
         FULL = 'full', _('Fullwidth')
         HALF = 'half', _('Half')
 
-    def upload_content_file_name(instance, filename):
-        """
-        Return the location of which to upload the file
-        """
-       
-        return os.path.join('categories/%s/' % instance.name.lower(), filename)
-    
     name = models.CharField(
         _('category name'), 
         max_length=255, 
@@ -49,13 +42,12 @@ class Category(models.Model):
     )
     image = models.ImageField(
         _('image'),
-        upload_to='categories',
+        upload_to='media/categories',
         help_text=_(
             'Category image, should only be used on top level parents!'
         ),
         blank=True, 
         null=True,
-
     )
     image_default = ImageSpecField(source='image', processors=[ResizeToFill(375, 375)], format='JPEG', options={'quality': 90})
     image_sm = ImageSpecField(source='image', processors=[ResizeToFill(640, 300)], format='JPEG', options={'quality': 90})
