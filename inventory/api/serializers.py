@@ -36,11 +36,11 @@ class CategorySerializer(serializers.ModelSerializer):
     image_512x512 = serializers.ImageField(read_only=True)
     image_1024x1024 = serializers.ImageField(read_only=True)
     image_1536x1536 = serializers.ImageField(read_only=True)
-    image_1024x576 = serializers.ImageField(read_only=True)
-    image_1536x864 = serializers.ImageField(read_only=True)
-    image_2048x1152 = serializers.ImageField(read_only=True)
-    image_2560x1440 = serializers.ImageField(read_only=True)
-    image_3072x1728 = serializers.ImageField(read_only=True)
+    image_1024x480 = serializers.ImageField(read_only=True)
+    image_1536x660 = serializers.ImageField(read_only=True)
+    image_2048x800 = serializers.ImageField(read_only=True)
+    image_2560x940 = serializers.ImageField(read_only=True)
+    image_3072x940 = serializers.ImageField(read_only=True)
 
     class Meta:
         model = Category
@@ -50,13 +50,12 @@ class CategorySerializer(serializers.ModelSerializer):
             'slug',
             'ordering',
             'width',
-            'image',
             'image_512x512',
             'image_1024x1024',
             'image_1536x1536',
-            'image_1024x576',
-            'image_1536x864',
-            'image_2048x1152',
-            'image_2560x1440',
-            'image_3072x1728',
+            'image_1024x480',
+            'image_1536x660',
+            'image_2048x800',
+            'image_2560x940',
+            'image_3072x940',
         )
