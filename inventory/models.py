@@ -187,6 +187,13 @@ class Supplier(models.Model):
         max_length=255,
         unique=False
     )
+    is_active = models.BooleanField(
+        _('active'),
+        default=True,
+        help_text=_(
+            'Designates whether the category should be treated as active.'
+        ),
+    )
 
     class Meta:
         verbose_name = _('supplier')
@@ -243,8 +250,8 @@ class ProductColor(models.Model):
     )
 
     class Meta:
-        verbose_name = _('color')
-        verbose_name_plural = _('colors')
+        verbose_name = _('product color')
+        verbose_name_plural = _('product colors')
 
     def __str__(self):
         return self.name.strip()
@@ -258,8 +265,8 @@ class ProductRoom(models.Model):
     )
 
     class Meta:
-        verbose_name = _('room')
-        verbose_name_plural = _('rooms')
+        verbose_name = _('product room')
+        verbose_name_plural = _('product rooms')
 
     def __str__(self):
         return self.name.strip()
@@ -288,8 +295,8 @@ class ProductApplication(models.Model):
     )
 
     class Meta:
-        verbose_name = _('application')
-        verbose_name_plural = _('applications')
+        verbose_name = _('product application')
+        verbose_name_plural = _('product applications')
 
     def __str__(self):
         return self.name.strip()
@@ -303,8 +310,8 @@ class ProductMaterial(models.Model):
     )
 
     class Meta:
-        verbose_name = _('material')
-        verbose_name_plural = _('materials')
+        verbose_name = _('product material')
+        verbose_name_plural = _('product materials')
 
     def __str__(self):
         return self.name.strip()

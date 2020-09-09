@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from inventory.models import Category, SubCategory, Product, ProductImage
+from inventory.models import Category, SubCategory, Product, ProductImage, Supplier, ProductSize, ProductColor, ProductApplication, ProductMaterial, ProductRoom, ProductStyle
                                 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -17,40 +17,60 @@ class SubCategoryAdmin(admin.ModelAdmin):
     ordering = ('parent', 'ordering')
 
 
-class ProductSizeInline(admin.TabularInline):
-    model = Product.sizes.through
+class SupplierAdmin(admin.ModelAdmin):
+    model = Supplier
+    list_display = ('name', 'contact_email', 'origin_country')
+    list_filter = ['is_active']
+    ordering = ['name']
 
 
-class ProductColorInline(admin.TabularInline):
-    model = Product.colors.through
+class ProductSizeAdmin(admin.ModelAdmin):
+    model = ProductSize
+    list_display = ('height', 'width', 'depth')
+    ordering = ('height', 'width', 'depth')
 
 
-class ProductRoomInline(admin.TabularInline):
-    model = Product.rooms.through
+class ProductColorAdmin(admin.ModelAdmin):
+    model = ProductColor
+    list_display = ('name', 'color_hex')
+    ordering = ['name']
 
 
-class ProductStyleInline(admin.TabularInline):
-    model = Product.styles.through
+class ProductRoomAdmin(admin.ModelAdmin):
+    model = ProductRoom
+    list_display = ['name']
+    ordering = ['name']
 
 
-class ProductApplicationInline(admin.TabularInline):
-    model = Product.application.through
+class ProductApplicationAdmin(admin.ModelAdmin):
+    model = ProductApplication
+    list_display = ['name']
+    ordering = ['name']
 
 
-class ProductMaterialInline(admin.TabularInline):
-    model = Product.material.through
+class ProductMaterialAdmin(admin.ModelAdmin):
+    model = ProductMaterial
+    list_display = ['name']
+    ordering = ['name']
 
 
 class ProductImageInline(admin.StackedInline):
     model = ProductImage
+
 
 class ProductAdmin(admin.ModelAdmin):
     model = Product
     list_display = ('name', 'status', 'net_price')
     list_filer = ('status', 'category', 'can_be_purchased_online')
     ordering = ('name', 'category')
-    inlines = (ProductSizeInline, ProductColorInline, ProductRoomInline, ProductStyleInline, ProductApplicationInline, ProductMaterialInline, ProductImageInline)
+    inlines = [ProductImageInline]
 
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(SubCategory, SubCategoryAdmin)
+admin.site.register(Supplier, SupplierAdmin)
+admin.site.register(ProductSize, ProductSizeAdmin)
+admin.site.register(ProductColor, ProductColorAdmin)
+admin.site.register(ProductRoom, ProductRoomAdmin)
+admin.site.register(ProductApplication, ProductApplicationAdmin)
+admin.site.register(ProductMaterial, ProductMaterialAdmin)
 admin.site.register(Product, ProductAdmin)
