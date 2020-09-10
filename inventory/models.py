@@ -218,6 +218,7 @@ class ProductSize(models.Model):
     )
     depth = models.FloatField(
         _('depth'),
+        blank=True,
         null=True,
         help_text=_(
             'depth in centimeters'
@@ -280,8 +281,8 @@ class ProductStyle(models.Model):
     )
 
     class Meta:
-        verbose_name = _('style')
-        verbose_name_plural = _('styles')
+        verbose_name = _('product style')
+        verbose_name_plural = _('product styles')
 
     def __str__(self):
         return self.name.strip()

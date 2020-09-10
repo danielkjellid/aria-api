@@ -1,7 +1,10 @@
 from django.contrib import admin
 
-from inventory.models import Category, SubCategory, Product, ProductImage, Supplier, ProductSize, ProductColor, ProductApplication, ProductMaterial, ProductRoom, ProductStyle
-                                
+from inventory.models import (Category, Product, ProductApplication,
+                              ProductColor, ProductImage, ProductMaterial,
+                              ProductRoom, ProductSize, ProductStyle,
+                              SubCategory, Supplier)
+
 
 class CategoryAdmin(admin.ModelAdmin):
     model = Category
@@ -42,6 +45,12 @@ class ProductRoomAdmin(admin.ModelAdmin):
     ordering = ['name']
 
 
+class ProductStyleAdmin(admin.ModelAdmin):
+    model = ProductStyle
+    list_display = ['name']
+    ordering = ['name']
+
+
 class ProductApplicationAdmin(admin.ModelAdmin):
     model = ProductApplication
     list_display = ['name']
@@ -62,7 +71,7 @@ class ProductAdmin(admin.ModelAdmin):
     model = Product
     list_display = ('name', 'status', 'net_price')
     list_filer = ('status', 'category', 'can_be_purchased_online')
-    ordering = ('name', 'category')
+    ordering = ['name']
     inlines = [ProductImageInline]
 
 admin.site.register(Category, CategoryAdmin)
@@ -71,6 +80,7 @@ admin.site.register(Supplier, SupplierAdmin)
 admin.site.register(ProductSize, ProductSizeAdmin)
 admin.site.register(ProductColor, ProductColorAdmin)
 admin.site.register(ProductRoom, ProductRoomAdmin)
+admin.site.register(ProductStyle, ProductStyleAdmin)
 admin.site.register(ProductApplication, ProductApplicationAdmin)
 admin.site.register(ProductMaterial, ProductMaterialAdmin)
 admin.site.register(Product, ProductAdmin)
