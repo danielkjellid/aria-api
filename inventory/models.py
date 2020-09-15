@@ -159,7 +159,10 @@ class SubCategory(models.Model):
         verbose_name_plural = _('sub categories')
 
     def __str__(self):
-        return '%s > %s' % (self.parent, self.name)
+        return '%s: %s' % (self.parent, self.name)
+
+    def get_name(self):
+        return self.name.strip()
 
 
 class Supplier(models.Model):
@@ -253,21 +256,6 @@ class ProductColor(models.Model):
     class Meta:
         verbose_name = _('product color')
         verbose_name_plural = _('product colors')
-
-    def __str__(self):
-        return self.name.strip()
-
-
-class ProductRoom(models.Model):
-    name = models.CharField(
-        _('name'),
-        max_length=100,
-        unique=True
-    )
-
-    class Meta:
-        verbose_name = _('product room')
-        verbose_name_plural = _('product rooms')
 
     def __str__(self):
         return self.name.strip()
@@ -392,19 +380,15 @@ class Product(models.Model):
         ProductColor,
         related_name='product_color'
     )
-    rooms = models.ManyToManyField(
-        ProductRoom,
-        related_name='product_room'
-    )
     styles = models.ManyToManyField(
         ProductStyle,
         related_name='product_style'
     )
-    application = models.ManyToManyField(
+    applications = models.ManyToManyField(
         ProductApplication,
         related_name='product_application'
     )
-    material = models.ManyToManyField(
+    materials = models.ManyToManyField(
         ProductMaterial,
         related_name='product_material'
     )

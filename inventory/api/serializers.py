@@ -2,13 +2,13 @@ from rest_framework import serializers
 from inventory.models import Category, SubCategory, Product
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class SubCategorySerializer(serializers.ModelSerializer):
     """
     A serializer to display name of (sub)categories
     """
 
     class Meta:
-        model = Category
+        model = SubCategory
         fields = ['name']
 
 
@@ -21,7 +21,17 @@ class SubCategoryNavigationListSerializer(serializers.ModelSerializer):
 
     class Meta: 
         model = SubCategory
-        fields = ('id', 'name', 'slug')
+        fields = ('id', 'name', 'slug', 'ordering')
+
+
+class SubCategoryFilterListSerializer(serializers.ModelSerializer):
+    """
+    A serializer to display category children for a given category
+    """
+
+    class Meta: 
+        model = SubCategory
+        fields = ('id', 'name', 'ordering')
         
 
 class CategoryNavigationListSerializer(serializers.ModelSerializer):
@@ -38,7 +48,7 @@ class CategoryNavigationListSerializer(serializers.ModelSerializer):
 
     def get_children(self, instance):
         children = instance.children.all().order_by('ordering')
-        return SubCategoryNavigationSerializer(children, many=True, read_only=True).data
+        return SubCategoryNavigationListSerializer(children, many=True, read_only=True).data
 
 
 class CategoryListSerializer(serializers.ModelSerializer):
@@ -73,6 +83,7 @@ class CategoryListSerializer(serializers.ModelSerializer):
             'image_2560x940',
             'image_3072x940',
         )
+        read_only_fields = fields
 
 
 class ProductListByCategorySerializer(serializers.ModelSerializer):
@@ -81,12 +92,11 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
     """
 
     price = serializers.SerializerMethodField()
-    subcategory = CategorySerializer(many=True, source='category')
+    categories = SubCategorySerializer(source='category', read_only=True, many=True)
     colors = serializers.StringRelatedField(read_only=True, many=True)
-    rooms = serializers.StringRelatedField(read_only=True, many=True)
     styles = serializers.StringRelatedField(read_only=True, many=True)
-    application = serializers.StringRelatedField(read_only=True, many=True)
-    material = serializers.StringRelatedField(read_only=True, many=True)
+    applications = serializers.StringRelatedField(read_only=True, many=True)
+    materials = serializers.StringRelatedField(read_only=True, many=True)
 
     class Meta:
         model = Product
@@ -97,12 +107,11 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
             'unit',
             'price',
             'can_be_purchased_online',
-            'subcategory',
+            'categories',
             'colors',
-            'rooms',
             'styles',
-            'application',
-            'material',
+            'applications',
+            'materials',
         )
 
     def get_price(self, product):
@@ -114,3 +123,13 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
         gross_price = product.net_price + vat
 
         return gross_price
+
+
+class ProductFiltersByCategorySerializer(serializers.ModelSerializer):
+    """
+    A serializer to display available filters for a product lust 
+    """
+
+    class Meta:
+        model = Product
+        fields = '__all__'
