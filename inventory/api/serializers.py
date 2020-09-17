@@ -1,15 +1,5 @@
 from rest_framework import serializers
-from inventory.models import Category, SubCategory, Product
-
-
-class SubCategorySerializer(serializers.ModelSerializer):
-    """
-    A serializer to display name of (sub)categories
-    """
-
-    class Meta:
-        model = SubCategory
-        fields = ['name']
+from inventory.models import Category, SubCategory, Product, ProductColor
 
 
 class SubCategoryNavigationListSerializer(serializers.ModelSerializer):
@@ -86,17 +76,37 @@ class CategoryListSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class ProductInstanceNameSerializer(serializers.ModelSerializer):
+    """
+    A serializer to display name of (sub)categories
+    """
+
+    class Meta:
+        model = Product
+        fields = ['name']
+
+
+class ProductColorSerializer(serializers.ModelSerializer):
+    """
+    A serializer to display name of (sub)categories
+    """
+
+    class Meta:
+        model = ProductColor
+        fields = ('name', 'color_hex')
+
+
 class ProductListByCategorySerializer(serializers.ModelSerializer):
     """
     A serializer to display products by (sub)category
     """
 
-    price = serializers.SerializerMethodField()
-    categories = SubCategorySerializer(source='category', read_only=True, many=True)
-    colors = serializers.StringRelatedField(read_only=True, many=True)
-    styles = serializers.StringRelatedField(read_only=True, many=True)
-    applications = serializers.StringRelatedField(read_only=True, many=True)
-    materials = serializers.StringRelatedField(read_only=True, many=True)
+    price = ProductInstanceNameSerializer(read_only=True, many=True)
+    categories = ProductInstanceNameSerializer(source='category', read_only=True, many=True)
+    colors = ProductColorSerializer(read_only=True, many=True)
+    styles = ProductInstanceNameSerializer(read_only=True, many=True)
+    applications = ProductInstanceNameSerializer(read_only=True, many=True)
+    materials = ProductInstanceNameSerializer(read_only=True, many=True)
 
     class Meta:
         model = Product
