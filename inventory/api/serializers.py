@@ -12,16 +12,6 @@ class SubCategoryNavigationListSerializer(serializers.ModelSerializer):
     class Meta: 
         model = SubCategory
         fields = ('id', 'name', 'slug', 'ordering')
-
-
-class SubCategoryFilterListSerializer(serializers.ModelSerializer):
-    """
-    A serializer to display category children for a given category
-    """
-
-    class Meta: 
-        model = SubCategory
-        fields = ('id', 'name', 'ordering')
         
 
 class CategoryNavigationListSerializer(serializers.ModelSerializer):
@@ -133,13 +123,3 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
         gross_price = product.net_price + vat
 
         return gross_price
-
-
-class ProductFiltersByCategorySerializer(serializers.ModelSerializer):
-    """
-    A serializer to display available filters for a product lust 
-    """
-
-    class Meta:
-        model = Product
-        fields = '__all__'
