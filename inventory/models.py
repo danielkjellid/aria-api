@@ -414,7 +414,9 @@ class Product(models.Model):
         upload_to='media/products',
         processors=[ResizeToFill(380, 575)],
         format='JPEG',
-        options={'quality': 90}
+        options={'quality': 90},
+        blank=True,
+        null=True
     )
 
     class Meta:
@@ -453,7 +455,9 @@ class ProductVariant(models.Model):
         upload_to='media/products/variants',
         processors=[ResizeToFill(380, 575)],
         format='JPEG',
-        options={'quality': 90}
+        options={'quality': 90},
+        blank=True,
+        null=True
     )
     image = ImageSpecField(
         source='thumbnail', 

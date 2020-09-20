@@ -1,17 +1,16 @@
 import json
 
 from django.db.models import Count
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions
-from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.permissions import HasUserOrGroupPermission
 from inventory.api.serializers import (CategoryListSerializer,
                                        CategoryNavigationListSerializer,
+                                       CategorySerializer,
                                        ProductListByCategorySerializer)
-from inventory.models import (Category, Product)
+from inventory.models import Category, Product
 
 
 class CategoriesNavigationListAPIView(generics.ListAPIView):
@@ -30,6 +29,19 @@ class CategoryListAPIView(generics.ListAPIView):
 
     queryset = Category.objects.filter(is_active=True).order_by('ordering')
     serializer_class = CategoryListSerializer
+
+
+class CategoryAPIView(generics.ListAPIView):
+    """
+    Viewset for listing a specific category instance
+    """
+
+    serializer_class = CategorySerializer
+
+    def get_queryset(self):
+        category = self.kwargs['category']
+        return Category.objects.filter(name__iexact=category, is_active=True)
+
 
 
 class ProductListByCategoryAPIView(generics.ListAPIView):

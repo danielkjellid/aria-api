@@ -52,6 +52,22 @@ class CategoryListSerializer(serializers.Serializer):
     image_3072x940 = serializers.ImageField(read_only=True)
 
 
+class CategorySerializer(serializers.Serializer):
+    """
+    A serializer to display a specific category instance
+    """
+
+    name = serializers.CharField(read_only=True)
+    image_512x512 = serializers.ImageField(read_only=True)
+    image_1024x1024 = serializers.ImageField(read_only=True)
+    image_1536x1536 = serializers.ImageField(read_only=True)
+    image_1024x480 = serializers.ImageField(read_only=True)
+    image_1536x660 = serializers.ImageField(read_only=True)
+    image_2048x800 = serializers.ImageField(read_only=True)
+    image_2560x940 = serializers.ImageField(read_only=True)
+    image_3072x940 = serializers.ImageField(read_only=True)
+
+
 
 class ProductInstanceNameSerializer(serializers.ModelSerializer):
     """
