@@ -12,6 +12,7 @@ class SubCategoryNavigationListSerializer(serializers.ModelSerializer):
     class Meta: 
         model = SubCategory
         fields = ('id', 'name', 'slug', 'ordering')
+        read_only_fields = fields
         
 
 class CategoryNavigationListSerializer(serializers.ModelSerializer):
@@ -25,18 +26,22 @@ class CategoryNavigationListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ('id', 'name', 'slug', 'children')
+        read_only_fields = fields
 
     def get_children(self, instance):
         children = instance.children.all().order_by('ordering')
         return SubCategoryNavigationListSerializer(children, many=True, read_only=True).data
 
 
-class CategoryListSerializer(serializers.ModelSerializer):
+class CategoryListSerializer(serializers.Serializer):
     """
     A serializer to display the top level categories and associated images in app
     """
-
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(read_only=True)
     slug = serializers.SlugField(read_only=True)
+    ordering = serializers.IntegerField(read_only=True)
+    width = serializers.CharField(read_only=True)
     image_512x512 = serializers.ImageField(read_only=True)
     image_1024x1024 = serializers.ImageField(read_only=True)
     image_1536x1536 = serializers.ImageField(read_only=True)
@@ -46,24 +51,6 @@ class CategoryListSerializer(serializers.ModelSerializer):
     image_2560x940 = serializers.ImageField(read_only=True)
     image_3072x940 = serializers.ImageField(read_only=True)
 
-    class Meta:
-        model = Category
-        fields = (
-            'id',
-            'name',
-            'slug',
-            'ordering',
-            'width',
-            'image_512x512',
-            'image_1024x1024',
-            'image_1536x1536',
-            'image_1024x480',
-            'image_1536x660',
-            'image_2048x800',
-            'image_2560x940',
-            'image_3072x940',
-        )
-        read_only_fields = fields
 
 
 class ProductInstanceNameSerializer(serializers.ModelSerializer):
@@ -74,6 +61,7 @@ class ProductInstanceNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['name']
+        read_only_fields = fields
 
 
 class ProductColorSerializer(serializers.ModelSerializer):
@@ -84,6 +72,7 @@ class ProductColorSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductColor
         fields = ('name', 'color_hex')
+        read_only_fields = fields
 
 
 class ProductVariantSerializer(serializers.ModelSerializer):
@@ -96,6 +85,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVariant
         fields = ('name', 'thumbnail', 'image')
+        read_only_fields = fields
 
 
 class ProductListByCategorySerializer(serializers.ModelSerializer):
@@ -128,6 +118,7 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
             'thumbnail',
             'variants'
         )
+        read_only_fields = fields
 
     
     def get_unit(self, product):
