@@ -2,7 +2,7 @@ import os
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from imagekit.models import ImageSpecField
+from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill
 
 
@@ -13,19 +13,19 @@ class Category(models.Model):
         HALF = 'half', _('Half')
 
     name = models.CharField(
-        _('category name'), 
+        _('Category name'), 
         max_length=255, 
         unique=False
     )
     slug = models.SlugField(
-        _('slug'),
+        _('Slug'),
         max_length=50,
         help_text=_(
             'A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.'
         ),
     )
     ordering = models.PositiveSmallIntegerField(
-        _('order'),
+        _('Order'),
         help_text=_(
             'Order  in which the category should be displayed.'
         ),
@@ -33,7 +33,7 @@ class Category(models.Model):
         default=0
     )
     width = models.CharField(
-        _('width'), 
+        _('Width'), 
         max_length=4, 
         choices=CategoryWidth.choices,
         default=CategoryWidth.FULL,
@@ -41,7 +41,7 @@ class Category(models.Model):
         null=True,
     )
     image = models.ImageField(
-        _('image'),
+        _('Image'),
         upload_to='media/categories',
         help_text=_(
             'Category image, should only be used on top level parents!'
@@ -98,14 +98,14 @@ class Category(models.Model):
         options={'quality': 90}
     )
     display_in_navbar = models.BooleanField(
-        _('display in navigation bar'),
+        _('Display in navigation bar'),
         default=True,
         help_text=_(
             'Designates whether the category should be displayed in the nav dropdown.'
         ),
     )
     is_active = models.BooleanField(
-        _('active'),
+        _('Active'),
         default=True,
         help_text=_(
             'Designates whether the category should be treated as active.'
@@ -113,8 +113,8 @@ class Category(models.Model):
     )
 
     class Meta:
-        verbose_name = _('category')
-        verbose_name_plural = _('categories')
+        verbose_name = _('Category')
+        verbose_name_plural = _('Categories')
 
     def __str__(self):
         return self.name
@@ -127,19 +127,19 @@ class SubCategory(models.Model):
         related_name='children', 
     )
     name = models.CharField(
-        _('category name'), 
+        _('Category name'), 
         max_length=255, 
         unique=False
     )
     slug = models.SlugField(
-        _('slug'),
+        _('Slug'),
         max_length=50,
         help_text=_(
             'A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.'
         ),
     )
     ordering = models.PositiveSmallIntegerField(
-        _('order'),
+        _('Order'),
         help_text=_(
             'Order  in which the category should be displayed.'
         ),
@@ -147,7 +147,7 @@ class SubCategory(models.Model):
         default=0
     )
     is_active = models.BooleanField(
-        _('active'),
+        _('Active'),
         default=True,
         help_text=_(
             'Designates whether the category should be treated as active.'
@@ -155,8 +155,8 @@ class SubCategory(models.Model):
     )
 
     class Meta:
-        verbose_name = _('sub category')
-        verbose_name_plural = _('sub categories')
+        verbose_name = _('Subcategory')
+        verbose_name_plural = _('Subcategories')
 
     def __str__(self):
         return '%s: %s' % (self.parent, self.name)
@@ -167,31 +167,31 @@ class SubCategory(models.Model):
 
 class Supplier(models.Model):
     name = models.CharField(
-        _('supplier name'),
+        _('Supplier name'),
         max_length=255,
         unique=True
     )
     contact_first_name = models.CharField(
-        _('contact first name'),
+        _('Contact first name'),
         max_length=255,
         unique=False
     )
     contact_last_name = models.CharField(
-        _('contact last name'),
+        _('Contact last name'),
         max_length=255,
         unique=False
     )
     contact_email = models.EmailField(
-        _('contact email address'),
+        _('Contact email address'),
         unique=True,
     )
     origin_country = models.CharField(
-        _('origin country'),
+        _('Origin country'),
         max_length=255,
         unique=False
     )
     is_active = models.BooleanField(
-        _('active'),
+        _('Active'),
         default=True,
         help_text=_(
             'Designates whether the category should be treated as active.'
@@ -207,20 +207,20 @@ class Supplier(models.Model):
 
 
 class ProductSize(models.Model):
-    height = models.FloatField(
-        _('height'),
-        help_text=_(
-            'height in centimeters'
-        )
-    )
-    width = models.FloatField(
-        _('width'),
+    width = models.IntegerField(
+        _('Width'),
         help_text=_(
             'width in centimeters'
         )
     )
-    depth = models.FloatField(
-        _('depth'),
+    height = models.IntegerField(
+        _('Height'),
+        help_text=_(
+            'height in centimeters'
+        )
+    )
+    depth = models.IntegerField(
+        _('Depth'),
         blank=True,
         null=True,
         help_text=_(
@@ -229,8 +229,8 @@ class ProductSize(models.Model):
     )
 
     class Meta:
-        verbose_name = _('product size')
-        verbose_name_plural = _('product sizes')
+        verbose_name = _('Product size')
+        verbose_name_plural = _('Product sizes')
 
     def __str__(self):
         if self.depth is not None:
@@ -243,19 +243,19 @@ class ProductSize(models.Model):
 
 class ProductColor(models.Model):
     name = models.CharField(
-        _('name'),
+        _('Name'),
         max_length=100,
         unique=True
     )
     color_hex = models.CharField(
-        _('color code'),
+        _('Color code'),
         max_length=7,
         unique=True
     )
 
     class Meta:
-        verbose_name = _('product color')
-        verbose_name_plural = _('product colors')
+        verbose_name = _('Product color')
+        verbose_name_plural = _('Product colors')
 
     def __str__(self):
         return self.name.strip()
@@ -263,14 +263,14 @@ class ProductColor(models.Model):
 
 class ProductStyle(models.Model):
     name = models.CharField(
-        _('name'),
+        _('Name'),
         max_length=100,
         unique=True
     )
 
     class Meta:
-        verbose_name = _('product style')
-        verbose_name_plural = _('product styles')
+        verbose_name = _('Product style')
+        verbose_name_plural = _('Product styles')
 
     def __str__(self):
         return self.name.strip()
@@ -278,14 +278,14 @@ class ProductStyle(models.Model):
 
 class ProductApplication(models.Model):
     name = models.CharField(
-        _('name'),
+        _('Name'),
         max_length=100,
         unique=True
     )
 
     class Meta:
-        verbose_name = _('product application')
-        verbose_name_plural = _('product applications')
+        verbose_name = _('Product application')
+        verbose_name_plural = _('Product applications')
 
     def __str__(self):
         return self.name.strip()
@@ -293,33 +293,35 @@ class ProductApplication(models.Model):
 
 class ProductMaterial(models.Model):
     name = models.CharField(
-        _('name'),
+        _('Name'),
         max_length=100,
         unique=True
     )
 
     class Meta:
-        verbose_name = _('product material')
-        verbose_name_plural = _('product materials')
+        verbose_name = _('Product material')
+        verbose_name_plural = _('Product materials')
 
     def __str__(self):
         return self.name.strip()
 
 
+class Status(models.IntegerChoices):
+    DRAFT = 1, _('Draft')
+    HIDDEN = 2, _('Hidden')
+    AVAILABLE = 3, _('Available')
+    DISCONTINUED = 4, _('Discontinued')
+
+
+class Units(models.IntegerChoices):
+    SQUARE_METER = 1, _('m2')
+    PCS = 2, _('stk')
+
+
 class Product(models.Model):
 
-    class ProductStatuses(models.TextChoices):
-        DRAFT = 'draft', _('draft')
-        AVAILABLE = 'available', _('available')
-        DISCONTINUED = 'discontinued', _('discontinued')
-        HIDDEN = 'hiddem', _('hidden')
-
-    class ProductUnits(models.TextChoices):
-        SQUARE_METER = 'm2', _('m2')
-        PCS = 'stk', _('pcs')
-
     name = models.CharField(
-        _('product name'),
+        _('Product name'),
         max_length=255,
         unique=True
     )
@@ -332,45 +334,42 @@ class Product(models.Model):
         SubCategory,
         related_name='products'
     )
-    status = models.CharField(
-       _('status'),
-       max_length=15,
-       unique=False,
-       choices=ProductStatuses.choices,
-       default=ProductStatuses.DRAFT,
+    status = models.IntegerField(
+       _('Status'),
+       choices=Status.choices,
+       default=Status.DRAFT,
     )
     slug = models.SlugField(
-        _('slug'),
+        _('Slug'),
         max_length=255,
         help_text=_(
             'A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.'
         ),
     )
     short_description = models.TextField(
-        _('short description'),
+        _('Short Description'),
         help_text=_(
             'The short description will be displayed on the top part of the product, above the variant selection'
         )
     )
-    description = models.TextField(_('description'))
-    unit = models.CharField(
-       _('unit'),
-       max_length=5,
-       unique=False,
-       choices=ProductUnits.choices,
-       default=ProductUnits.SQUARE_METER,
+    description = models.TextField(_('Description'))
+    unit = models.IntegerField(
+       _('Unit'),
+
+       choices=Units.choices,
+       default=Units.SQUARE_METER,
     )
     vat_rate = models.FloatField(
-        _('vat rate'),
+        _('VAT Rate'),
         default=0.25
     )
-    net_price = models.FloatField(_('net price'))
+    gross_price = models.FloatField(_('Gross price'))
     sizes = models.ManyToManyField(
         ProductSize,
         related_name='product_size'
     )
     available_in_special_sizes = models.BooleanField(
-        _('available in special sizes'),
+        _('Available in special sizes'),
         default=False,
         help_text=_(
             'Designates whether the product comes in sizes out of the ordinary'
@@ -397,24 +396,30 @@ class Product(models.Model):
         blank=True
     )
     can_be_purchased_online = models.BooleanField(
-        _('can be purchased online'),
+        _('Can be purchased online'),
         default=False,
         help_text=_(
             'Designates whether the product can be purchased and shipped'
         ),
     )
     created_at = models.DateTimeField(
-        _('date created'), 
+        _('Date created'), 
         auto_now_add=True
     )
     updated_at = models.DateTimeField(
-        _('date updated'),
+        _('Date updated'),
         auto_now=True
+    )
+    thumbnail = ProcessedImageField(
+        upload_to='media/products',
+        processors=[ResizeToFill(380, 575)],
+        format='JPEG',
+        options={'quality': 90}
     )
 
     class Meta:
-        verbose_name = _('product')
-        verbose_name_plural = _('products')
+        verbose_name = _('Product')
+        verbose_name_plural = _('Products')
 
     def __str__(self):
         return self.name.strip()
@@ -426,13 +431,42 @@ class ProductImage(models.Model):
         on_delete=models.CASCADE,
         related_name='images',
     )
-    image = models.ImageField(
-        _('image'),
-        upload_to='media/products/',
-        help_text=_(
-            'Product image'
-        ),
-        blank=True, 
-        null=True,
+
+
+class ProductVariant(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='variants',
     )
+    name = models.CharField(
+        _('Product variant name'),
+        max_length=255,
+        unique=True
+    )
+    status = models.IntegerField(
+       _('Status'),
+       choices=Status.choices,
+       default=Status.DRAFT,
+    )
+    thumbnail = ProcessedImageField(
+        upload_to='media/products/variants',
+        processors=[ResizeToFill(380, 575)],
+        format='JPEG',
+        options={'quality': 90}
+    )
+    image = ImageSpecField(
+        source='thumbnail', 
+        processors=[ResizeToFill(80, 80)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    additional_cost = models.FloatField(_('Additional cost'))
+
+    class Meta:
+        verbose_name = _('Product variant')
+        verbose_name_plural = _('Product variants')
+
+    def __str__(self):
+        return self.name.strip()
 

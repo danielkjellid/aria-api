@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from inventory.models import Category, SubCategory, Product, ProductColor
+from inventory.models import Category, SubCategory, Product, ProductColor, ProductVariant
 
 
 class SubCategoryNavigationListSerializer(serializers.ModelSerializer):
@@ -86,17 +86,30 @@ class ProductColorSerializer(serializers.ModelSerializer):
         fields = ('name', 'color_hex')
 
 
+class ProductVariantSerializer(serializers.ModelSerializer):
+    """
+    A serializer to append available variants to product
+    """
+
+    image = serializers.ImageField(read_only=True)
+
+    class Meta:
+        model = ProductVariant
+        fields = ('name', 'thumbnail', 'image')
+
+
 class ProductListByCategorySerializer(serializers.ModelSerializer):
     """
     A serializer to display products by (sub)category
     """
 
-    price = serializers.SerializerMethodField(read_only=True)
+    unit = serializers.SerializerMethodField()
     categories = ProductInstanceNameSerializer(source='category', read_only=True, many=True)
     colors = ProductColorSerializer(read_only=True, many=True)
     styles = ProductInstanceNameSerializer(read_only=True, many=True)
     applications = ProductInstanceNameSerializer(read_only=True, many=True)
     materials = ProductInstanceNameSerializer(read_only=True, many=True)
+    variants = ProductVariantSerializer(read_only=True, many=True)
 
     class Meta:
         model = Product
@@ -105,21 +118,17 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
             'name',
             'slug',
             'unit',
-            'price',
+            'gross_price',
             'can_be_purchased_online',
             'categories',
             'colors',
             'styles',
             'applications',
             'materials',
+            'thumbnail',
+            'variants'
         )
 
-    def get_price(self, product):
-        """
-        Method to calculate gross price
-        """
-        
-        vat = product.net_price * product.vat_rate
-        gross_price = product.net_price + vat
-
-        return gross_price
+    
+    def get_unit(self, product):
+        return product.get_unit_display()

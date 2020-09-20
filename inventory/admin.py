@@ -2,7 +2,8 @@ from django.contrib import admin
 
 from inventory.models import (Category, Product, ProductApplication,
                               ProductColor, ProductImage, ProductMaterial,
-                              ProductSize, ProductStyle, SubCategory, Supplier)
+                              ProductSize, ProductStyle, ProductVariant,
+                              SubCategory, Supplier)
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -56,13 +57,20 @@ class ProductMaterialAdmin(admin.ModelAdmin):
     ordering = ['name']
 
 
+class ProductVariantAdmin(admin.ModelAdmin):
+    model = ProductVariant
+    list_display = ('product', 'name', 'status', 'additional_cost')
+    ordering = ('product', 'name')
+    list_filter = ['status']
+
+
 class ProductImageInline(admin.StackedInline):
     model = ProductImage
 
 
 class ProductAdmin(admin.ModelAdmin):
     model = Product
-    list_display = ('name', 'status', 'net_price')
+    list_display = ('name', 'status', 'gross_price')
     list_filer = ('status', 'category', 'can_be_purchased_online')
     ordering = ['name']
     inlines = [ProductImageInline]
@@ -75,4 +83,5 @@ admin.site.register(ProductColor, ProductColorAdmin)
 admin.site.register(ProductStyle, ProductStyleAdmin)
 admin.site.register(ProductApplication, ProductApplicationAdmin)
 admin.site.register(ProductMaterial, ProductMaterialAdmin)
+admin.site.register(ProductVariant, ProductVariantAdmin)
 admin.site.register(Product, ProductAdmin)

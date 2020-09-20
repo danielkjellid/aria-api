@@ -47,5 +47,5 @@ class ProductListByCategoryAPIView(generics.ListAPIView):
         category = self.kwargs['category']
         return Product.objects.filter(
             category__parent__name__iexact=category, 
-            status='available'
+            status=3
         ).distinct() #iexact to ignore upper/lowercase sensitivity and distinct to only return one object
