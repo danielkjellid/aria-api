@@ -91,7 +91,7 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
     A serializer to display products by (sub)category
     """
 
-    price = ProductInstanceNameSerializer(read_only=True, many=True)
+    price = serializers.SerializerMethodField(read_only=True)
     categories = ProductInstanceNameSerializer(source='category', read_only=True, many=True)
     colors = ProductColorSerializer(read_only=True, many=True)
     styles = ProductInstanceNameSerializer(read_only=True, many=True)
