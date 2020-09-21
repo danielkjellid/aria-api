@@ -116,6 +116,7 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
     applications = ProductInstanceNameSerializer(read_only=True, many=True)
     materials = ProductInstanceNameSerializer(read_only=True, many=True)
     variants = ProductVariantSerializer(read_only=True, many=True)
+    gross_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -139,3 +140,9 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
     
     def get_unit(self, product):
         return product.get_unit_display()
+
+    
+    def get_gross_price(self, product):
+        formatted_price = '%0.2f' % (product.gross_price)
+
+        return formatted_price.strip()

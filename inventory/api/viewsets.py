@@ -1,7 +1,7 @@
 import json
 
 from django.db.models import Count
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -50,6 +50,8 @@ class ProductListByCategoryAPIView(generics.ListAPIView):
     """
 
     serializer_class = ProductListByCategorySerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ('name', 'short_description', 'styles__name', 'materials__name')
 
     def get_queryset(self):
         """

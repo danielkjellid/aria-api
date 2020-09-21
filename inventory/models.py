@@ -416,7 +416,8 @@ class Product(models.Model):
         format='JPEG',
         options={'quality': 90},
         blank=True,
-        null=True
+        null=True,
+        default='media/products/default.jpg'
     )
 
     class Meta:
