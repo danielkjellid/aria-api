@@ -13,5 +13,4 @@ urlpatterns = [
     path('api/', include('users.api.urls')),
     path('api/', include('inventory.api.urls')),
     path('api-auth/', include('rest_framework.urls')),
-    re_path(r'^.*$', IndexTemplateView.as_view(), name='entry-point')
 ]
