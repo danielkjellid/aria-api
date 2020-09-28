@@ -4,7 +4,7 @@ Production settings for Heroku
 
 import environ
 
-from backend.settings.dev import *
+from backend.settings.base import *
 
 env = environ.Env(
   DEBUG =(bool, False)
