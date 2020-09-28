@@ -1,5 +1,4 @@
 import os
-import dj_database_url
 import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -59,7 +58,10 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.locale.LocaleMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = ['{{ allowed_origins }}']
+CORS_ALLOWED_ORIGINS = [
+  'http://localhost:8080',
+  'http://127.0.0.1:8080',
+]
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -79,7 +81,16 @@ TEMPLATES = [
     },
 ]
 
-DATABASES['default'].update(dj_database_url.config(conn_max_age=500, ssl_require=True))
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'alpha_dev',
+        'USER': 'alpha_dev',
+        'PASSWORD': 'supersecretpassword',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    }
+}
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
