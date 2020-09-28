@@ -8,8 +8,8 @@ from users.forms import UserAuthenticationForm, UserRegistrationForm
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('bruker/registrer/', RegistrationView.as_view(form_class=UserRegistrationForm, success_url='/'), name='user-registration'),
-    # path('bruker/logg-inn/', auth_views.LoginView.as_view(authentication_form=UserAuthenticationForm), name='user-login'),
+    #path('bruker/registrer/', RegistrationView.as_view(form_class=UserRegistrationForm, success_url='/'), name='user-registration'),
+    path('bruker/logg-inn/', auth_views.LoginView.as_view(authentication_form=UserAuthenticationForm), name='user-login'),
     path('api/', include('users.api.urls')),
     path('api/', include('inventory.api.urls')),
     path('api-auth/', include('rest_framework.urls')),
