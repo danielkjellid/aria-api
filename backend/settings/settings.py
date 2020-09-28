@@ -58,10 +58,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.locale.LocaleMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-  'http://localhost:8080',
-  'http://127.0.0.1:8080',
-]
+CORS_ALLOWED_ORIGINS = []
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -80,17 +77,6 @@ TEMPLATES = [
         },
     },
 ]
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'alpha_dev',
-        'USER': 'alpha_dev',
-        'PASSWORD': 'supersecretpassword',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-    }
-}
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
@@ -133,8 +119,8 @@ STATICFILES_DIRS = [
 ]
 
 AWS_REGION = 'eu-north-1'
-AWS_ACCESS_KEY_ID = '{{ aws_access_key_id }}'
-AWS_SECRET_ACCESS_KEY = '{{ aws_secret_access_key }}'
+AWS_ACCESS_KEY_ID = ''
+AWS_SECRET_ACCESS_KEY = ''
 
 AWS_S3_BUCKET_NAME = 'flishuset'
 AWS_S3_ADDRESSING_STYLE = 'auto'
@@ -162,5 +148,10 @@ REST_FRAMEWORK = {
     'DATETIME_INPUT_FORMATS': ['%d. %B %Y %H:%M'],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
+
+try:
+    from backend.settings.local_settings import *
+except ImportError:
+    pass
 
 django_heroku.settings(locals())
