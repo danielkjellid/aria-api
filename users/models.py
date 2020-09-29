@@ -131,6 +131,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         address = '%s, %s %s' % (self.street_address, self.zip_code, self.zip_place)
         return address.strip()
 
+    #change
+
     
 
 
