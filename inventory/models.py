@@ -475,3 +475,4 @@ class ProductVariant(models.Model):
     def __str__(self):
         return self.name.strip()
 
+# change
