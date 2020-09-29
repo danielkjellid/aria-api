@@ -38,6 +38,12 @@ STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_S3_BUCKET_NAME_STATIC
 STATICFILES_STORAGE = 'django_s3_storage.storage.StaticS3Storage'
 DEFAULT_FILE_STORAGE = 'django_s3_storage.storage.S3Storage'
 
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+}
+
 # parse database connection url strings like psql://user:pass@127.0.0.1:8458/db
 DATABASES = {
     # read os.environ['DATABASE_URL'] and raises ImproperlyConfigured exception if not found
