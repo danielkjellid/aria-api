@@ -114,9 +114,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'staticfiles'),
-]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 AWS_REGION = 'eu-north-1'
 AWS_ACCESS_KEY_ID = ''
