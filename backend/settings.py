@@ -116,24 +116,6 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-AWS_REGION = 'eu-north-1'
-AWS_ACCESS_KEY_ID = ''
-AWS_SECRET_ACCESS_KEY = ''
-
-AWS_S3_BUCKET_NAME = 'flishuset'
-AWS_S3_ADDRESSING_STYLE = 'auto'
-AWS_S3_BUCKET_AUTH = False
-AWS_S3_MAX_AGE_SECONDS = 60 * 60 * 24 * 365  # 1 year.
-AWS_S3_SIGNATURE_VERSION = None
-AWS_S3_FILE_OVERWRITE = False
-AWS_S3_BUCKET_AUTH_STATIC = False
-AWS_S3_BUCKET_NAME_STATIC = 'flishuset'
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_S3_BUCKET_NAME
-
-STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_S3_BUCKET_NAME_STATIC)
-STATICFILES_STORAGE = 'django_s3_storage.storage.StaticS3Storage'
-DEFAULT_FILE_STORAGE = 'django_s3_storage.storage.S3Storage'
-
 MEDIA_ROOT = 'media'
 
 
