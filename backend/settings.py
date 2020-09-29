@@ -114,7 +114,9 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATICFILES_DIRS = ['static']
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 AWS_REGION = 'eu-north-1'
 AWS_ACCESS_KEY_ID = ''
@@ -147,7 +149,7 @@ REST_FRAMEWORK = {
 }
 
 try:
-    from backend.settings.local_settings import *
+    from backend.local_settings import *
 except ImportError:
     pass
 
