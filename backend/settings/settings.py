@@ -114,7 +114,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATICFILES_DIRS = 'static'
+STATICFILES_DIRS = ['static']
 
 AWS_REGION = 'eu-north-1'
 AWS_ACCESS_KEY_ID = ''
