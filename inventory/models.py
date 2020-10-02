@@ -320,6 +320,13 @@ class Units(models.IntegerChoices):
 
 class Product(models.Model):
 
+    def product_directory_path(self, filename):
+        """
+        Method to upload the files to the appropriate path
+        """
+
+        return 'media/products/{0}/{1}'.format(self.name, filename)
+
     name = models.CharField(
         _('Product name'),
         max_length=255,
@@ -411,7 +418,7 @@ class Product(models.Model):
         auto_now=True
     )
     thumbnail = ProcessedImageField(
-        upload_to='media/products',
+        upload_to=product_directory_path,
         processors=[ResizeToFill(380, 575)],
         format='JPEG',
         options={'quality': 90},
@@ -429,14 +436,88 @@ class Product(models.Model):
 
 
 class ProductImage(models.Model):
+
+    def product_image_directory_path(self, filename):
+        """
+        Method to upload the files to the appropriate path
+        """
+
+        return 'media/products/{0}/images/{1}'.format(self.product.name, filename)
+
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
         related_name='images',
     )
+    image = models.ImageField(
+        _('Image'),
+        upload_to=product_image_directory_path,
+        blank=True, 
+        null=True,
+    )
+    image_512x512 = ImageSpecField(
+        source='image', 
+        processors=[ResizeToFill(512, 512)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    image_1024x1024 = ImageSpecField(
+        source='image', 
+        processors=[ResizeToFill(1024, 1024)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    image_1536x1536 = ImageSpecField(
+        source='image', 
+        processors=[ResizeToFill(1536, 1536)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    image_1024x480 = ImageSpecField(
+        source='image', 
+        processors=[ResizeToFill(1024, 576)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    image_1536x660 = ImageSpecField(
+        source='image', 
+        processors=[ResizeToFill(1536, 864)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    image_2048x800 = ImageSpecField(
+        source='image', 
+        processors=[ResizeToFill(2048, 1152)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    image_2560x940 = ImageSpecField(
+        source='image', 
+        processors=[ResizeToFill(2560, 1440)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    image_3072x940 = ImageSpecField(
+        source='image', 
+        processors=[ResizeToFill(3072, 1728)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+
+    class Meta:
+        verbose_name = _('Product image')
+        verbose_name_plural = _('Product images')
 
 
 class ProductVariant(models.Model):
+
+    def product_variant_directory_path(self, filename):
+        """
+        Method to upload the files to the appropriate path
+        """
+
+        return 'media/products/{0}/variants/{1}'.format(self.product.name, filename)
+
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
@@ -453,7 +534,7 @@ class ProductVariant(models.Model):
        default=Status.DRAFT,
     )
     thumbnail = ProcessedImageField(
-        upload_to='media/products/variants',
+        upload_to=product_variant_directory_path,
         processors=[ResizeToFill(380, 575)],
         format='JPEG',
         options={'quality': 90},
@@ -471,6 +552,38 @@ class ProductVariant(models.Model):
     class Meta:
         verbose_name = _('Product variant')
         verbose_name_plural = _('Product variants')
+
+    def __str__(self):
+        return self.name.strip()
+
+
+class ProductFile(models.Model):
+
+    def product_file_directory_path(self, filename):
+        """
+        Method to upload the files to the appropriate path
+        """
+
+        return 'media/products/{0}/files/{1}'.format(self.product.name, filename)
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='files',
+    )
+    name = models.CharField(
+        _('Product file name'),
+        max_length=255,
+        unique=False
+    )
+    file = models.FileField(
+        _('File'),
+        upload_to=product_file_directory_path
+    )
+
+    class Meta:
+        verbose_name = _('Product file')
+        verbose_name_plural = _('Product files')
 
     def __str__(self):
         return self.name.strip()

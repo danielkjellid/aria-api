@@ -3,7 +3,7 @@ from django.contrib import admin
 from inventory.models import (Category, Product, ProductApplication,
                               ProductColor, ProductImage, ProductMaterial,
                               ProductSize, ProductStyle, ProductVariant,
-                              SubCategory, Supplier)
+                              SubCategory, Supplier, ProductFile)
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -68,12 +68,16 @@ class ProductImageInline(admin.StackedInline):
     model = ProductImage
 
 
+class ProductFileInline(admin.StackedInline):
+    model = ProductFile
+
+
 class ProductAdmin(admin.ModelAdmin):
     model = Product
     list_display = ('name', 'status', 'gross_price')
     list_filer = ('status', 'category', 'can_be_purchased_online')
     ordering = ['name']
-    inlines = [ProductImageInline]
+    inlines = [ProductImageInline, ProductFileInline]
 
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(SubCategory, SubCategoryAdmin)

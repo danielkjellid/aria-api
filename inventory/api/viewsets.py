@@ -9,7 +9,7 @@ from core.permissions import HasUserOrGroupPermission
 from inventory.api.serializers import (CategoryListSerializer,
                                        CategoryNavigationListSerializer,
                                        CategorySerializer,
-                                       ProductListByCategorySerializer)
+                                       ProductListByCategorySerializer, ProductSerializer)
 from inventory.models import Category, Product
 
 
@@ -63,3 +63,18 @@ class ProductListByCategoryAPIView(generics.ListAPIView):
             category__parent__name__iexact=category, 
             status=3
         ).distinct() #iexact to ignore upper/lowercase sensitivity and distinct to only return one object
+
+
+class ProductRetrieveAPIView(generics.RetrieveAPIView):
+
+    serializer_class = ProductSerializer
+    queryset = Product.objects.all()
+    lookup_field = 'slug'
+
+    def get_queryset(self):
+        category = self.kwargs['category']
+        return Product.objects.filter(
+            category__parent__name__iexact=category, 
+            status=3
+        ).distinct()
+
