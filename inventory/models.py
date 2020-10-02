@@ -12,6 +12,13 @@ class Category(models.Model):
         FULL = 'full', _('Fullwidth')
         HALF = 'half', _('Half')
 
+    def category_directory_path(self, filename):
+        """
+        Method to upload the files to the appropriate path
+        """
+
+        return 'media/categories/{0}/{1}'.format(self.name, filename)
+
     name = models.CharField(
         _('Category name'), 
         max_length=255, 
@@ -42,7 +49,7 @@ class Category(models.Model):
     )
     image = models.ImageField(
         _('Image'),
-        upload_to='media/categories',
+        upload_to=category_directory_path,
         help_text=_(
             'Category image, should only be used on top level parents!'
         ),
@@ -121,6 +128,7 @@ class Category(models.Model):
 
 
 class SubCategory(models.Model):
+
     parent = models.ForeignKey(
         Category, 
         on_delete=models.CASCADE, 
