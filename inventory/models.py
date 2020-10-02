@@ -183,7 +183,7 @@ class Supplier(models.Model):
     )
     contact_email = models.EmailField(
         _('Contact email address'),
-        unique=True,
+        unique=False,
     )
     origin_country = models.CharField(
         _('Origin country'),
