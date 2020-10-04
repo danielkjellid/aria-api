@@ -40,7 +40,7 @@ class CategoryAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         category = self.kwargs['category']
-        return Category.objects.filter(name__iexact=category, is_active=True)
+        return Category.objects.filter(slug=category, is_active=True)
 
 
 
@@ -60,9 +60,9 @@ class ProductListByCategoryAPIView(generics.ListAPIView):
 
         category = self.kwargs['category']
         return Product.objects.filter(
-            category__parent__name__iexact=category, 
+            category__parent__slug=category, 
             status=3
-        ).distinct() #iexact to ignore upper/lowercase sensitivity and distinct to only return one object
+        ).distinct()
 
 
 class ProductRetrieveAPIView(generics.RetrieveAPIView):
@@ -74,7 +74,7 @@ class ProductRetrieveAPIView(generics.RetrieveAPIView):
     def get_queryset(self):
         category = self.kwargs['category']
         return Product.objects.filter(
-            category__parent__name__iexact=category, 
+            category__parent__slug=category, 
             status=3
         ).distinct()
 
