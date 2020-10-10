@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -35,10 +36,12 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'corsheaders',
+    'rest_framework_simplejwt.token_blacklist',
 
     'django_s3_storage',
     'imagekit',
     
+    'core',
     'users',
     'inventory'
 ]
@@ -122,10 +125,28 @@ MEDIA_ROOT = 'media'
 # Django-rest framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
     ),
     'DATETIME_FORMAT': '%d. %B %Y %H:%M',
     'DATETIME_INPUT_FORMATS': ['%d. %B %Y %H:%M'],
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUTH_HEADER_TYPES': ('JWT',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
 }
 
 try:

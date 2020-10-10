@@ -534,7 +534,7 @@ class ProductVariant(models.Model):
     name = models.CharField(
         _('Product variant name'),
         max_length=255,
-        unique=True
+        unique=False
     )
     status = models.IntegerField(
        _('Status'),
