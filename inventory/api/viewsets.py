@@ -18,6 +18,7 @@ class CategoriesNavigationListAPIView(generics.ListAPIView):
     """
     Vierset for listing categories and subcategories to be listed in the navbar
     """
+
     permission_classes = (AllowAny, )
     authentication_classes = ()
     queryset = Category.objects.filter(display_in_navbar=True, is_active=True).order_by('ordering')
@@ -28,6 +29,7 @@ class CategoryListAPIView(generics.ListAPIView):
     """
     Viewset for listing all categories and its associated images, does not include children
     """
+
     permission_classes = (AllowAny, )
     authentication_classes = ()
     queryset = Category.objects.filter(is_active=True).order_by('ordering')
@@ -38,6 +40,7 @@ class CategoryAPIView(generics.ListAPIView):
     """
     Viewset for listing a specific category instance
     """
+
     permission_classes = (AllowAny, )
     authentication_classes = ()
     serializer_class = CategorySerializer
@@ -52,11 +55,12 @@ class ProductListByCategoryAPIView(generics.ListAPIView):
     """
     This viewset takes the category parameter given by the url and find related products
     """
+
     permission_classes = (AllowAny, )
     authentication_classes = ()
     serializer_class = ProductListByCategorySerializer
     filter_backends = [filters.SearchFilter]
-    search_fields = ('name', 'short_description', 'styles__name', 'materials__name')
+    search_fields = ('name', 'supplier__name', 'category__name', 'materials__name', 'styles__name', 'search_keywords')
 
     def get_queryset(self):
         """
@@ -71,6 +75,10 @@ class ProductListByCategoryAPIView(generics.ListAPIView):
 
 
 class ProductRetrieveAPIView(generics.RetrieveAPIView):
+    """
+    Viewset for getting a specific product instance based on category and slug
+    """
+
     permission_classes = (AllowAny, )
     authentication_classes = ()
     serializer_class = ProductSerializer

@@ -361,6 +361,13 @@ class Product(models.Model):
             'A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.'
         ),
     )
+    search_keywords = models.CharField(
+        _('Search keywords'),
+        max_length=255, 
+        unique=False, 
+        blank=True,
+        null=True,
+    )
     short_description = models.TextField(
         _('Short Description'),
         help_text=_(
