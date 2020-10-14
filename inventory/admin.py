@@ -74,8 +74,8 @@ class ProductFileInline(admin.StackedInline):
 
 class ProductAdmin(admin.ModelAdmin):
     model = Product
-    list_display = ('name', 'status', 'gross_price')
-    list_filer = ('status', 'category', 'can_be_purchased_online')
+    list_display = ('name', 'status', 'gross_price', 'slug')
+    list_filter = ('status', 'supplier__name', 'category', 'can_be_purchased_online',)
     ordering = ['name']
     inlines = [ProductImageInline, ProductFileInline]
 
