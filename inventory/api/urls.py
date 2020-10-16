@@ -14,5 +14,5 @@ urlpatterns = [
     # endpoint for getting all products appended to a parent category
     path('categories/<slug:category>/products/', ProductListByCategoryAPIView.as_view(), name='category-product-list'),
     # endpoint for getting a single product instance
-    path('categories/<slug:category>/products/<slug:slug>/', ProductRetrieveAPIView.as_view(), name='category-product')
+    path('products/<slug:slug>/', ProductRetrieveAPIView.as_view(), name='product-detail'),
 ]

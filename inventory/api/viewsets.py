@@ -82,13 +82,13 @@ class ProductRetrieveAPIView(generics.RetrieveAPIView):
     permission_classes = (AllowAny, )
     authentication_classes = ()
     serializer_class = ProductSerializer
-    queryset = Product.objects.all()
     lookup_field = 'slug'
+    queryset = Product.objects.all()
 
-    def get_queryset(self):
-        category = self.kwargs['category']
-        return Product.objects.filter(
-            category__parent__slug=category, 
-            status=3
-        ).distinct()
+    # def get_queryset(self):
+    #     category = self.kwargs['category']
+    #     return Product.objects.filter(
+    #         category__parent__slug=category, 
+    #         status=3
+    #     ).distinct()
 
