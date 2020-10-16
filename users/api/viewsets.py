@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from core.permissions import HasUserOrGroupPermission
+from core.authentication import JWTAuthenticationSafe
 from users.api.serializers import (RequestUserSerializer, UserCreateSerializer,
                                    UserSerializer, UsersSerializer)
 from users.models import User
@@ -43,6 +44,7 @@ class RequestUserRetrieveAPIView(generics.RetrieveAPIView):
     View for getting info about request user
     """
     permission_classes = (IsAuthenticated, )
+    authentication_classes = (JWTAuthenticationSafe, )
 
     def get(self, request):
         serializer = RequestUserSerializer(request.user)
