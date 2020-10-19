@@ -18,6 +18,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['{{ allowed_hosts }}']
 
+SITE_ID = 1
+
 # Authentication settings
 AUTH_USER_MODEL = 'users.User'
 
@@ -33,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     'rest_framework',
     'corsheaders',

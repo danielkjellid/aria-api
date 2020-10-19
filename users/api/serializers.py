@@ -177,7 +177,9 @@ class PasswordResetSerializer(serializers.Serializer):
         """
         Override this method to change default email options
         """
-        return {}
+        return {
+            'html_email_template_name': 'email/password_reset_email.html'
+        }
 
     def validate_email(self, value):
         """

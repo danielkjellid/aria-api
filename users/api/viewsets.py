@@ -1,3 +1,6 @@
+from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext_lazy as _
+from django.views.decorators.debug import sensitive_post_parameters
 from rest_framework import generics, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
@@ -5,19 +8,14 @@ from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.utils.decorators import method_decorator
-from django.views.decorators.debug import sensitive_post_parameters
-from django.utils.translation import ugettext_lazy as _
 
-
-
-
-from core.permissions import HasUserOrGroupPermission
 from core.authentication import JWTAuthenticationSafe
-from users.api.serializers import (RequestUserSerializer, UserCreateSerializer,
-                                   UserSerializer, UsersSerializer, PasswordResetSerializer, PasswordResetConfirmSerializer)
+from core.permissions import HasUserOrGroupPermission
+from users.api.serializers import (PasswordResetConfirmSerializer,
+                                   PasswordResetSerializer,
+                                   RequestUserSerializer, UserCreateSerializer,
+                                   UserSerializer, UsersSerializer)
 from users.models import User
-
 
 sensitive_post_parameters_m = method_decorator(
     sensitive_post_parameters(
@@ -100,6 +98,7 @@ class PasswordResetView(generics.GenericAPIView):
     """
     serializer_class = PasswordResetSerializer
     permission_classes = (AllowAny, )
+    authentication_classes = ()
 
     def post(self, request, *args, **kwargs):
         """
@@ -128,6 +127,7 @@ class PasswordResetConfirmView(generics.GenericAPIView):
     """
     serializer_class = PasswordResetConfirmSerializer
     permission_classes = (AllowAny, )
+    authentication_classes = ()
 
     @sensitive_post_parameters_m
     def dispatch(self, *args, **kwargs):
@@ -138,7 +138,4 @@ class PasswordResetConfirmView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response(
-            {'detail': _('Password has been reset with the new password')}
-        )
-
+        return Response({'detail': _('Password has been reset with the new password')})
