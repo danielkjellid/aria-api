@@ -104,6 +104,6 @@ class KitchenRetrieveAPIView(generics.RetrieveAPIView):
     authentication_classes = ()
     serializer_class = KitchenSerializer
     lookup_field = 'slug'
-    queryset = Kitchen.objects.all()
+    queryset = Kitchen.objects.all().order_by('id')
 
 
