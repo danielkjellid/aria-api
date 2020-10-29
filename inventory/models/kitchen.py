@@ -196,6 +196,11 @@ class Kitchen(models.Model):
         blank=True,
         null=True,
     )
+    example_from_price = models.FloatField(
+        _('From price'),
+        blank=True,
+        null=True
+    )
     can_be_painted = models.BooleanField(
         _('Can be painted'),
         default=False,
@@ -323,42 +328,3 @@ class Kitchen(models.Model):
 
     def __str__(self):
         return self.name.strip()
-
-
-class KitchenExample(models.Model):
-
-    def kitchen_example_directory_path(self, filename):
-        """
-        Method to upload the files to the appropriate path
-        """
-
-        return 'media/kitchens/{0}/example/{1}'.format(self.kitchen.name, filename)
-
-
-    kitchen = models.OneToOneField(
-        Kitchen,
-        on_delete=models.CASCADE,
-        related_name='kitchen_example'
-    )
-    from_price = models.FloatField(_('From price'))
-    image = models.ImageField(
-        _('Image'),
-        help_text=(
-            _('Image must be above 550x300px')
-        ),
-        upload_to=kitchen_example_directory_path,
-        blank=True,
-        null=True
-    )
-    image_460x250 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(460, 250)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_550x300 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(550, 300)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )

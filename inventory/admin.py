@@ -3,7 +3,7 @@ from django.contrib import admin
 from inventory.models.category import Category, SubCategory
 from inventory.models.supplier import Supplier
 from inventory.models.product import Product, ProductVariant, ProductFile, ProductImage
-from inventory.models.kitchen import Kitchen, KitchenExample, KitchenSilkColor, KitchenDecor, KitchenPlywood, KitchenLaminateColor, KitchenExclusiveColor, KitchenTrendColor
+from inventory.models.kitchen import Kitchen, KitchenSilkColor, KitchenDecor, KitchenPlywood, KitchenLaminateColor, KitchenExclusiveColor, KitchenTrendColor
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -50,15 +50,10 @@ class ProductVariantAdmin(admin.ModelAdmin):
     list_filter = ['status']
 
 
-class KitchenExampleInline(admin.StackedInline):
-    model = KitchenExample
-
-
 class KitchenAdmin(admin.ModelAdmin):
     model = Kitchen
     list_display = ('name', 'status', 'slug')
     list_filter = ('status'),
-    inlines = (KitchenExampleInline, )
 
 
 admin.site.register(Category, CategoryAdmin)

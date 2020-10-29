@@ -1,7 +1,7 @@
 from inventory.models.category import Category, SubCategory
 from inventory.models.supplier import Supplier
 from inventory.models.product import Product, ProductColor, ProductFile, ProductImage, ProductSize, ProductVariant
-from inventory.models.kitchen import Kitchen, KitchenExample
+from inventory.models.kitchen import Kitchen
 from rest_framework import serializers
 
 # generic serializers
@@ -290,30 +290,6 @@ class KitchenListSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class KitchenExampleSerializer(serializers.ModelSerializer):
-    """
-    Serializer for example setup attached to each kitchen
-    """
-
-    from_price = serializers.SerializerMethodField()
-    image_460x250 = serializers.ImageField(read_only=True)
-    image_550x300 = serializers.ImageField(read_only=True)
-
-    class Meta:
-        model = KitchenExample
-        fields = (
-            'from_price',
-            'image_460x250',
-            'image_550x300'
-        )
-        read_only_fields = fields
-
-    def get_from_price(self, instance):
-        formatted_from_price = '%0.2f' % (instance.from_price)
-
-        return formatted_from_price
-
-
 class KitchenVariantImageSerializer(serializers.Serializer):
     """
     Serializer for kitchen variants which uses an image instead of a color
@@ -329,7 +305,7 @@ class KitchenSerializer(serializers.ModelSerializer):
     Serializer for getting a specific kitchen instance
     """
 
-    kitchen_example = KitchenExampleSerializer()
+    example_from_price = serializers.SerializerMethodField()
     silk_variants = InstanceColorSerializer(read_only=True, many=True)
     decor_variants = KitchenVariantImageSerializer(read_only=True, many=True)
     plywood_variants = KitchenVariantImageSerializer(read_only=True, many=True)
@@ -353,7 +329,7 @@ class KitchenSerializer(serializers.ModelSerializer):
             'slug',
             'description',
             'extra_description',
-            'kitchen_example',
+            'example_from_price',
             'can_be_painted',
             'silk_variants',
             'decor_variants',
@@ -371,3 +347,12 @@ class KitchenSerializer(serializers.ModelSerializer):
             'image_3072x940',
         )
         read_only_fields = fields
+
+    def get_example_from_price(self, instance):
+
+        if instance.example_from_price:
+            formatted_from_price = '%0.2f' % (instance.example_from_price)
+
+            return formatted_from_price
+        
+        return None

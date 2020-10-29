@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='kitchenexample',
             name='image',
-            field=models.ImageField(blank=True, help_text='Image must be above 550x300px', null=True, upload_to=inventory.models.kitchen.KitchenExample.kitchen_example_directory_path, verbose_name='Image'),
+            field=models.ImageField(blank=True, help_text='Image must be above 550x300px', null=True, upload_to='media/kitchens/examples/filename', verbose_name='Image'),
         ),
     ]

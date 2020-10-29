@@ -92,7 +92,7 @@ class KitchenListAPIView(generics.ListAPIView):
     permission_classes = (AllowAny, )
     authentication_classes = ()
     serializer_class = KitchenListSerializer
-    queryset = Kitchen.objects.filter(status=3)
+    queryset = Kitchen.objects.filter(status=3).order_by('id')
 
 
 class KitchenRetrieveAPIView(generics.RetrieveAPIView):
@@ -104,6 +104,6 @@ class KitchenRetrieveAPIView(generics.RetrieveAPIView):
     authentication_classes = ()
     serializer_class = KitchenSerializer
     lookup_field = 'slug'
-    queryset = Kitchen.objects.all().order_by('id')
+    queryset = Kitchen.objects.all()
 
 

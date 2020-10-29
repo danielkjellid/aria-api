@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('from_price', models.FloatField(verbose_name='From price')),
-                ('image', models.ImageField(blank=True, help_text='Image must be above 3072x940px', null=True, upload_to=inventory.models.kitchen.KitchenExample.kitchen_example_directory_path, verbose_name='Image')),
+                ('image', models.ImageField(blank=True, help_text='Image must be above 3072x940px', null=True, upload_to='media/kitchens/examples/filename', verbose_name='Image')),
                 ('kitchen', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='kithcen_example', to='inventory.Kitchen')),
             ],
         ),
