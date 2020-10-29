@@ -186,8 +186,6 @@ class Kitchen(models.Model):
         _('Thumbnail description'),
         max_length=255,
         unique=False,
-        blank=True,
-        null=True,
     )
     description = models.TextField(_('Description'))
     extra_description = models.TextField(
