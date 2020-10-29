@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='kitchen',
             name='thumbnail',
-            field=models.ImageField(blank=True, help_text='Image must be above 850x520px', null=True, upload_to=inventory.models.kitchen.Kitchen.kitchen_directory_thumbnail_path, verbose_name='Thumbnail'),
+            field=models.ImageField(blank=True, help_text='Image must be above 850x520px', null=True, upload_to='media/kitchens/thumbnails/filename', verbose_name='Thumbnail'),
         ),
         migrations.DeleteModel(
             name='KitchenImage',

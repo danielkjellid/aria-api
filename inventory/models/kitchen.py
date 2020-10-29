@@ -159,13 +159,6 @@ class Kitchen(models.Model):
 
         return 'media/kitchens/{0}/{1}'.format(self.name, filename)
 
-    def kitchen_directory_thumbnail_path(self, filename):
-        """
-        Method to upload thumbnails to the appropriate path
-        """
-
-        return 'media/kitchens/{0}/thumbnails/{1}'.format(self.name, filename)
-
 
     name = models.CharField(
         _('Kitchen name'),
@@ -250,33 +243,6 @@ class Kitchen(models.Model):
         _('Date updated'),
         auto_now=True
     )
-    thumbnail = models.ImageField(
-        _('Thumbnail'),
-        help_text=(
-            _('Image must be above 850x520px')
-        ),
-        upload_to=kitchen_directory_thumbnail_path,
-        blank=True,
-        null=True
-    )
-    thumbnail_500x305 = ImageSpecField(
-        source='thumbnail',
-        processors=[ResizeToFill(500, 305)],
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    thumbnail_660x400 = ImageSpecField(
-        source='thumbnail',
-        processors=[ResizeToFill(660, 400)],
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    thumbnail_850x520 = ImageSpecField(
-        source='thumbnail',
-        processors=[ResizeToFill(850, 520)],
-        format='JPEG', 
-        options={'quality': 90}
-    )
     image = models.ImageField(
         _('Image'),
         help_text=(
@@ -331,6 +297,24 @@ class Kitchen(models.Model):
     image_3072x940 = ImageSpecField(
         source='image', 
         processors=[ResizeToFill(3072, 1728)], 
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    thumbnail_500x305 = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(500, 305)],
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    thumbnail_660x400 = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(660, 400)],
+        format='JPEG', 
+        options={'quality': 90}
+    )
+    thumbnail_850x520 = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(850, 520)],
         format='JPEG', 
         options={'quality': 90}
     )
