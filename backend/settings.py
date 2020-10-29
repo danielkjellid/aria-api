@@ -23,7 +23,6 @@ SITE_ID = 1
 # Authentication settings
 AUTH_USER_MODEL = 'users.User'
 
-LOGIN_URL = 'accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
@@ -121,8 +120,7 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-MEDIA_ROOT = 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Django-rest framework

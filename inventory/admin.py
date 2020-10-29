@@ -1,9 +1,10 @@
 from django.contrib import admin
 
-from inventory.models import (Category, Product, ProductApplication,
-                              ProductColor, ProductImage, ProductMaterial,
-                              ProductSize, ProductStyle, ProductVariant,
-                              SubCategory, Supplier, ProductFile)
+from inventory.models.category import Category, SubCategory
+from inventory.models.kitchen import Kitchen, KitchenExample
+from inventory.models.product import (Product, ProductFile, ProductImage,
+                                      ProductVariant)
+from inventory.models.supplier import Supplier
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -27,43 +28,6 @@ class SupplierAdmin(admin.ModelAdmin):
     ordering = ['name']
 
 
-class ProductSizeAdmin(admin.ModelAdmin):
-    model = ProductSize
-    list_display = ('height', 'width', 'depth')
-    ordering = ('height', 'width', 'depth')
-
-
-class ProductColorAdmin(admin.ModelAdmin):
-    model = ProductColor
-    list_display = ('name', 'color_hex')
-    ordering = ['name']
-
-
-class ProductStyleAdmin(admin.ModelAdmin):
-    model = ProductStyle
-    list_display = ['name']
-    ordering = ['name']
-
-
-class ProductApplicationAdmin(admin.ModelAdmin):
-    model = ProductApplication
-    list_display = ['name']
-    ordering = ['name']
-
-
-class ProductMaterialAdmin(admin.ModelAdmin):
-    model = ProductMaterial
-    list_display = ['name']
-    ordering = ['name']
-
-
-class ProductVariantAdmin(admin.ModelAdmin):
-    model = ProductVariant
-    list_display = ('product', 'name', 'status', 'additional_cost')
-    ordering = ('product', 'name')
-    list_filter = ['status']
-
-
 class ProductImageInline(admin.StackedInline):
     model = ProductImage
 
@@ -79,13 +43,28 @@ class ProductAdmin(admin.ModelAdmin):
     ordering = ['name']
     inlines = [ProductImageInline, ProductFileInline]
 
+
+class ProductVariantAdmin(admin.ModelAdmin):
+    model = ProductVariant
+    list_display = ('product', 'name', 'status', 'additional_cost')
+    ordering = ('product', 'name')
+    list_filter = ['status']
+
+
+class KitchenExampleInline(admin.StackedInline):
+    model = KitchenExample
+
+
+class KitchenAdmin(admin.ModelAdmin):
+    model = Kitchen
+    list_display = ('name', 'status', 'slug')
+    list_filter = ('status'),
+    inlines = (KitchenExampleInline, )
+
+
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(SubCategory, SubCategoryAdmin)
 admin.site.register(Supplier, SupplierAdmin)
-admin.site.register(ProductSize, ProductSizeAdmin)
-admin.site.register(ProductColor, ProductColorAdmin)
-admin.site.register(ProductStyle, ProductStyleAdmin)
-admin.site.register(ProductApplication, ProductApplicationAdmin)
-admin.site.register(ProductMaterial, ProductMaterialAdmin)
-admin.site.register(ProductVariant, ProductVariantAdmin)
 admin.site.register(Product, ProductAdmin)
+admin.site.register(ProductVariant, ProductVariantAdmin)
+admin.site.register(Kitchen, KitchenAdmin)

@@ -10,8 +10,10 @@ from inventory.api.serializers import (CategoryListSerializer,
                                        CategoryNavigationListSerializer,
                                        CategorySerializer,
                                        ProductListByCategorySerializer,
-                                       ProductSerializer)
-from inventory.models import Category, Product
+                                       ProductSerializer, KitchenListSerializer, KitchenSerializer)
+from inventory.models.product import Product
+from inventory.models.category import Category
+from inventory.models.kitchen import Kitchen
 
 
 class CategoriesNavigationListAPIView(generics.ListAPIView):
@@ -36,7 +38,7 @@ class CategoryListAPIView(generics.ListAPIView):
     serializer_class = CategoryListSerializer
 
 
-class CategoryAPIView(generics.ListAPIView):
+class CategoryRetrieveAPIView(generics.RetrieveAPIView):
     """
     Viewset for listing a specific category instance
     """
@@ -44,11 +46,8 @@ class CategoryAPIView(generics.ListAPIView):
     permission_classes = (AllowAny, )
     authentication_classes = ()
     serializer_class = CategorySerializer
-
-    def get_queryset(self):
-        category = self.kwargs['category']
-        return Category.objects.filter(slug=category, is_active=True)
-
+    lookup_field = 'slug'
+    queryset = Category.objects.filter(is_active=True)
 
 
 class ProductListByCategoryAPIView(generics.ListAPIView):
@@ -76,7 +75,7 @@ class ProductListByCategoryAPIView(generics.ListAPIView):
 
 class ProductRetrieveAPIView(generics.RetrieveAPIView):
     """
-    Viewset for getting a specific product instance based on category and slug
+    Viewset for getting a specific product instance based on slug
     """
 
     permission_classes = (AllowAny, )
@@ -85,10 +84,26 @@ class ProductRetrieveAPIView(generics.RetrieveAPIView):
     lookup_field = 'slug'
     queryset = Product.objects.all()
 
-    # def get_queryset(self):
-    #     category = self.kwargs['category']
-    #     return Product.objects.filter(
-    #         category__parent__slug=category, 
-    #         status=3
-    #     ).distinct()
+
+class KitchenListAPIView(generics.ListAPIView):
+    """
+    Viewset for listing available kitchens
+    """
+    permission_classes = (AllowAny, )
+    authentication_classes = ()
+    serializer_class = KitchenListSerializer
+    queryset = Kitchen.objects.filter(status=3)
+
+
+class KitchenRetrieveAPIView(generics.RetrieveAPIView):
+    """
+    Viewset for getting a specific kitchen instance based on slug
+    """
+
+    permission_classes = (AllowAny, )
+    authentication_classes = ()
+    serializer_class = KitchenSerializer
+    lookup_field = 'slug'
+    queryset = Kitchen.objects.all()
+
 
