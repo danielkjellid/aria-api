@@ -30,12 +30,12 @@ class KitchenSilkColor(models.Model):
 
 class KitchenDecor(models.Model):
 
-    def kitchen_decor_directory_path(filename):
+    def kitchen_decor_directory_path(self, filename):
         """
         Method to upload the files to the appropriate path
         """
 
-        return 'media/kitchens/decors/{0}'.format(filename)
+        return 'media/kitchens/decors/{0}/{1}'.format(self.name, filename)
 
     name = models.CharField(
         _('Kitchen decor name'),
@@ -59,12 +59,12 @@ class KitchenDecor(models.Model):
 
 class KitchenPlywood(models.Model):
 
-    def kitchen_plywood_directory_path(filename):
+    def kitchen_plywood_directory_path(self, filename):
         """
         Method to upload the files to the appropriate path
         """
 
-        return 'media/kitchens/plywoods/{0}'.format(filename)
+        return 'media/kitchens/plywoods/{0}/{1}'.format(self.name, filename)
 
     name = models.CharField(
         _('Kitchen decor name'),
@@ -79,8 +79,8 @@ class KitchenPlywood(models.Model):
     )
 
     class Meta:
-        verbose_name = _('Kithcen decor')
-        verbose_name_plural = _('Kitchen decors')
+        verbose_name = _('Kithcen plywood')
+        verbose_name_plural = _('Kitchen plywoods')
 
     def __str__(self):
         return self.name.strip()
