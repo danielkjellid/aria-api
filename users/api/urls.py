@@ -11,7 +11,6 @@ urlpatterns = [
     # endpoint for creating a single user instance
     path('users/create/', UserCreateAPIView.as_view(), name ='user-create'),
     path('users/password/reset/', PasswordResetView.as_view(), name='reset-password'),
-    #path('users/password/reset/confirm/', PasswordResetConfirmView.as_view(), name='password_reset_confirm')
     re_path(
         r'^users/password/reset/confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', 
         PasswordResetConfirmView.as_view(),

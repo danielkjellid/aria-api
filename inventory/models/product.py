@@ -114,7 +114,7 @@ class Product(models.Model):
         """
         Method to upload the files to the appropriate path
         """
-
+        
         return 'media/products/{0}/{1}'.format(self.name, filename)
 
     name = models.CharField(

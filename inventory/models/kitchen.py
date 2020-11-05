@@ -275,31 +275,31 @@ class Kitchen(models.Model):
     )
     image_1024x480 = ImageSpecField(
         source='image', 
-        processors=[ResizeToFill(1024, 576)], 
+        processors=[ResizeToFill(1024, 480)], 
         format='JPEG', 
         options={'quality': 90}
     )
     image_1536x660 = ImageSpecField(
         source='image', 
-        processors=[ResizeToFill(1536, 864)], 
+        processors=[ResizeToFill(1536, 660)], 
         format='JPEG', 
         options={'quality': 90}
     )
     image_2048x800 = ImageSpecField(
         source='image', 
-        processors=[ResizeToFill(2048, 1152)], 
+        processors=[ResizeToFill(2048, 800)], 
         format='JPEG', 
         options={'quality': 90}
     )
     image_2560x940 = ImageSpecField(
         source='image', 
-        processors=[ResizeToFill(2560, 1440)], 
+        processors=[ResizeToFill(2560, 940)], 
         format='JPEG', 
         options={'quality': 90}
     )
     image_3072x940 = ImageSpecField(
         source='image', 
-        processors=[ResizeToFill(3072, 1728)], 
+        processors=[ResizeToFill(3072, 940)], 
         format='JPEG', 
         options={'quality': 90}
     )
