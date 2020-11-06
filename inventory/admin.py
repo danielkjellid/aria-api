@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from inventory.models.category import Category, SubCategory
 from inventory.models.supplier import Supplier
-from inventory.models.product import Product, ProductVariant, ProductFile, ProductImage
+from inventory.models.product import Product, ProductVariant, ProductFile, ProductImage, ProductApplication, ProductColor, ProductSize, ProductStyle, ProductMaterial
 from inventory.models.kitchen import Kitchen, KitchenSilkColor, KitchenDecor, KitchenPlywood, KitchenLaminateColor, KitchenExclusiveColor, KitchenTrendColor
 
 
@@ -24,6 +24,35 @@ class SupplierAdmin(admin.ModelAdmin):
     model = Supplier
     list_display = ('name', 'contact_email', 'origin_country')
     list_filter = ['is_active']
+    ordering = ['name']
+
+class ProductSizeAdmin(admin.ModelAdmin):
+    model = ProductSize
+    list_display = ('height', 'width', 'depth')
+    ordering = ('height', 'width', 'depth')
+
+
+class ProductColorAdmin(admin.ModelAdmin):
+    model = ProductColor
+    list_display = ('name', 'color_hex')
+    ordering = ['name']
+
+
+class ProductStyleAdmin(admin.ModelAdmin):
+    model = ProductStyle
+    list_display = ['name']
+    ordering = ['name']
+
+
+class ProductApplicationAdmin(admin.ModelAdmin):
+    model = ProductApplication
+    list_display = ['name']
+    ordering = ['name']
+
+
+class ProductMaterialAdmin(admin.ModelAdmin):
+    model = ProductMaterial
+    list_display = ['name']
     ordering = ['name']
 
 
@@ -59,6 +88,11 @@ class KitchenAdmin(admin.ModelAdmin):
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(SubCategory, SubCategoryAdmin)
 admin.site.register(Supplier, SupplierAdmin)
+admin.site.register(ProductSize, ProductSizeAdmin)
+admin.site.register(ProductColor, ProductColorAdmin)
+admin.site.register(ProductStyle, ProductStyleAdmin)
+admin.site.register(ProductApplication, ProductApplicationAdmin)
+admin.site.register(ProductMaterial, ProductMaterialAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductVariant, ProductVariantAdmin)
 admin.site.register(Kitchen, KitchenAdmin)
