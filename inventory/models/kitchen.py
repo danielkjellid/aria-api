@@ -267,12 +267,6 @@ class Kitchen(models.Model):
         format='JPEG', 
         options={'quality': 90}
     )
-    image_1536x1536 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(1536, 1536)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
     image_1024x480 = ImageSpecField(
         source='image', 
         processors=[ResizeToFill(1024, 480)], 

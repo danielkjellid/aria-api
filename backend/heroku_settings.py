@@ -44,6 +44,8 @@ DEFAULT_FILE_STORAGE = 'django_s3_storage.storage.S3Storage'
 #     ],
 # }
 
+MEDIA_URL = '%s.s3.amazonaws.com' % AWS_S3_BUCKET_NAME
+
 # parse database connection url strings like psql://user:pass@127.0.0.1:8458/db
 DATABASES = {
     # read os.environ['DATABASE_URL'] and raises ImproperlyConfigured exception if not found
