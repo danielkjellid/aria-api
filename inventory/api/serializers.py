@@ -210,13 +210,21 @@ class ProductFileSerializer(serializers.ModelSerializer):
 
 class ProductImageSerializer(serializers.ModelSerializer):
 
-    image_512x512 = serializers.SerializerMethodField()
-    image_1024x1024 = serializers.SerializerMethodField()
-    image_1024x480 = serializers.SerializerMethodField()
-    image_1536x660 = serializers.SerializerMethodField()
-    image_2048x800 = serializers.SerializerMethodField()
-    image_2560x940 = serializers.SerializerMethodField()
-    image_3072x940 = serializers.SerializerMethodField()
+    # image_512x512 = serializers.SerializerMethodField()
+    # image_1024x1024 = serializers.SerializerMethodField()
+    # image_1024x480 = serializers.SerializerMethodField()
+    # image_1536x660 = serializers.SerializerMethodField()
+    # image_2048x800 = serializers.SerializerMethodField()
+    # image_2560x940 = serializers.SerializerMethodField()
+    # image_3072x940 = serializers.SerializerMethodField()
+
+    image_512x512 = serializers.ImageField(read_only=True)
+    image_1024x1024 = serializers.ImageField(read_only=True)
+    image_1024x480 = serializers.ImageField(read_only=True)
+    image_1536x660 = serializers.ImageField(read_only=True)
+    image_2048x800 = serializers.ImageField(read_only=True)
+    image_2560x940 = serializers.ImageField(read_only=True)
+    image_3072x940 = serializers.ImageField(read_only=True)
 
     class Meta:
         model = ProductImage
@@ -231,26 +239,26 @@ class ProductImageSerializer(serializers.ModelSerializer):
         )
         read_only_fields = fields
 
-    def get_image_512x512(self, image):
-        return os.path.join(settings.MEDIA_URL, str(image.image_512x512))
+    # def get_image_512x512(self, image):
+    #     return os.path.join(settings.MEDIA_URL, str(image.image_512x512))
 
-    def get_image_1024x1024(self, image):
-        return os.path.join(settings.MEDIA_URL, str(image.image_1024x1024))
+    # def get_image_1024x1024(self, image):
+    #     return os.path.join(settings.MEDIA_URL, str(image.image_1024x1024))
 
-    def get_image_1024x480(self, image):
-        return os.path.join(settings.MEDIA_URL, str(image.image_1024x480))
+    # def get_image_1024x480(self, image):
+    #     return os.path.join(settings.MEDIA_URL, str(image.image_1024x480))
 
-    def get_image_1536x660(self, image):
-        return os.path.join(settings.MEDIA_URL, str(image.image_1536x660))
+    # def get_image_1536x660(self, image):
+    #     return os.path.join(settings.MEDIA_URL, str(image.image_1536x660))
 
-    def get_image_2048x800(self, image):
-        return os.path.join(settings.MEDIA_URL, str(image.image_2048x800))
+    # def get_image_2048x800(self, image):
+    #     return os.path.join(settings.MEDIA_URL, str(image.image_2048x800))
 
-    def get_image_2560x940(self, image):
-        return os.path.join(settings.MEDIA_URL, str(image.image_2560x940))
+    # def get_image_2560x940(self, image):
+    #     return os.path.join(settings.MEDIA_URL, str(image.image_2560x940))
 
-    def get_image_3072x940(self, image):
-        return os.path.join(settings.MEDIA_URL, str(image.image_3072x940))
+    # def get_image_3072x940(self, image):
+    #     return os.path.join(settings.MEDIA_URL, str(image.image_3072x940))
 
 
 class ProductListByCategorySerializer(serializers.ModelSerializer):
