@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill
@@ -115,7 +116,7 @@ class Product(models.Model):
         Method to upload the files to the appropriate path
         """
         
-        return 'media/products/{0}/{1}'.format(self.name, filename)
+        return 'media/products/{0}/{1}/images/{2}'.format(slugify(self.supplier.name), slugify(self.name), filename)
 
     name = models.CharField(
         _('Product name'),
@@ -243,7 +244,7 @@ class ProductImage(models.Model):
         Method to upload the files to the appropriate path
         """
 
-        return 'media/products/{0}/images/{1}'.format(self.product.name, filename)
+        return 'media/products/{0}/{1}/images/{2}'.format(slugify(self.product.supplier.name), slugify(self.product.name), filename)
 
     product = models.ForeignKey(
         Product,
@@ -314,7 +315,7 @@ class ProductVariant(models.Model):
         Method to upload the files to the appropriate path
         """
 
-        return 'media/products/{0}/variants/{1}'.format(self.product.name, filename)
+        return 'media/products/{0}/{1}/variants/{2}'.format(slugify(self.product.supplier.name), slugify(self.product.name), filename)
 
     product = models.ForeignKey(
         Product,
@@ -365,7 +366,7 @@ class ProductFile(models.Model):
         Method to upload the files to the appropriate path
         """
 
-        return 'media/products/{0}/files/{1}'.format(self.product.name, filename)
+        return 'media/products/{0}/{1}/files/{2}'.format(slugify(self.product.supplier.name), slugify(self.product.name), filename)
 
     product = models.ForeignKey(
         Product,

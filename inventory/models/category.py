@@ -15,7 +15,7 @@ class Category(models.Model):
         Method to upload the files to the appropriate path
         """
         
-        return 'media/categories/{0}/{1}'.format(self.name, filename)
+        return 'media/categories/{0}/{1}'.format(slugify(self.name), filename)
 
     name = models.CharField(
         _('Category name'), 

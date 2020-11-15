@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.utils.text import slugify
 from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill
 
@@ -35,7 +36,7 @@ class KitchenDecor(models.Model):
         Method to upload the files to the appropriate path
         """
 
-        return 'media/kitchens/decors/{0}/{1}'.format(self.name, filename)
+        return 'media/kitchens/decors/{0}/{1}'.format(slugify(self.name), filename)
 
     name = models.CharField(
         _('Kitchen decor name'),
@@ -64,7 +65,7 @@ class KitchenPlywood(models.Model):
         Method to upload the files to the appropriate path
         """
 
-        return 'media/kitchens/plywoods/{0}/{1}'.format(self.name, filename)
+        return 'media/kitchens/plywoods/{0}/{1}'.format(slugify(self.name), filename)
 
     name = models.CharField(
         _('Kitchen decor name'),
@@ -157,7 +158,7 @@ class Kitchen(models.Model):
         Method to upload the files to the appropriate path
         """
 
-        return 'media/kitchens/{0}/{1}'.format(self.name, filename)
+        return 'media/kitchens/{0}/{1}'.format(slugify(self.name), filename)
 
 
     name = models.CharField(
