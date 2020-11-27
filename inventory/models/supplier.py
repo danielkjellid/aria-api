@@ -22,6 +22,13 @@ class Supplier(models.Model):
         _('Contact email address'),
         unique=False,
     )
+    supplier_discount = models.FloatField(
+        null=True,
+        blank=True,
+        help_text=_(
+            'Supplier discount in percent. E.g. 0.2 = 20%'
+        )
+    )
     origin_country = models.CharField(
         _('Origin country'),
         max_length=255,

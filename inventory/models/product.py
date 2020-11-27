@@ -160,7 +160,6 @@ class Product(models.Model):
     description = models.TextField(_('Description'))
     unit = models.IntegerField(
        _('Unit'),
-
        choices=Unit.choices,
        default=Unit.SQUARE_METER,
     )
@@ -169,6 +168,14 @@ class Product(models.Model):
         default=0.25
     )
     gross_price = models.FloatField(_('Gross price'))
+    supplier_purchase_price = models.FloatField(
+        _('Supplier purchase price'),
+        default=0.0
+    )
+    supplier_shipping_cost = models.FloatField(
+        _('Shipping cost'),
+        default=0.0
+    )
     sizes = models.ManyToManyField(
         ProductSize,
         related_name='product_size',
