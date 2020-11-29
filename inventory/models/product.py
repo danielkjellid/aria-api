@@ -9,15 +9,19 @@ from inventory.models.common import Status, Unit
 from inventory.models.supplier import Supplier
 
 
-class ProductSize(models.Model):
+class Size(models.Model):
     width = models.IntegerField(
         _('Width'),
+        blank=True,
+        null=True,
         help_text=_(
             'width in centimeters'
         )
     )
     height = models.IntegerField(
         _('Height'),
+        blank=True,
+        null=True,
         help_text=_(
             'height in centimeters'
         )
@@ -30,15 +34,26 @@ class ProductSize(models.Model):
             'depth in centimeters'
         )
     )
+    circumference = models.IntegerField(
+        _('Circumference'),
+        blank=True,
+        null=True,
+        help_text=_(
+            'circumference in centimeters'
+        )
+    )
 
     class Meta:
-        verbose_name = _('Product size')
-        verbose_name_plural = _('Product sizes')
+        verbose_name = _('Size')
+        verbose_name_plural = _('Sizes')
 
     def __str__(self):
-        if self.depth is not None:
+        if self.depth is not None and self.circumference is None and self.width is None and self.height is None:
             full_name = 'B%s x H%s x D%s' % (self.width, self.height, self.depth)
             return full_name.strip()
+
+        if self.circumference is not None and self.depth is None and self.width is None and self.height is None:
+            full_name = 'Ø%s' % (self.circumference)
 
         full_name = 'B%s x H%s' % (self.width, self.height)
         return full_name.strip()
@@ -175,11 +190,6 @@ class Product(models.Model):
     supplier_shipping_cost = models.FloatField(
         _('Shipping cost'),
         default=0.0
-    )
-    sizes = models.ManyToManyField(
-        ProductSize,
-        related_name='product_size',
-        blank=True,
     )
     available_in_special_sizes = models.BooleanField(
         _('Available in special sizes'),
@@ -364,6 +374,27 @@ class ProductVariant(models.Model):
 
     def __str__(self):
         return self.name.strip()
+
+
+class ProductVariantSize(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='sizes'
+    )
+    size = models.ForeignKey(
+        Size,
+        on_delete=models.CASCADE,
+        related_name='variant_sizes'
+    )
+    additional_cost = models.FloatField(_('Additional cost'))
+
+    class Meta:
+        verbose_name = _('Product size')
+        verbose_name_plural = _('Product sizes')
+
+    def __str__(self):
+        return self.size
 
 
 class ProductFile(models.Model):

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from inventory.models.category import Category, SubCategory
 from inventory.models.supplier import Supplier
-from inventory.models.product import Product, ProductVariant, ProductFile, ProductImage, ProductApplication, ProductColor, ProductSize, ProductStyle, ProductMaterial
+from inventory.models.product import Product, ProductVariant, ProductFile, ProductImage, ProductApplication, ProductColor, Size, ProductStyle, ProductMaterial, ProductVariantSize
 from inventory.models.kitchen import Kitchen, KitchenSilkColor, KitchenDecor, KitchenPlywood, KitchenLaminateColor, KitchenExclusiveColor, KitchenTrendColor
 
 
@@ -26,11 +26,15 @@ class SupplierAdmin(admin.ModelAdmin):
     list_filter = ['is_active']
     ordering = ['name']
 
-class ProductSizeAdmin(admin.ModelAdmin):
-    model = ProductSize
-    list_display = ('height', 'width', 'depth')
-    ordering = ('height', 'width', 'depth')
+class SizeAdmin(admin.ModelAdmin):
+    model = Size
+    list_display = ('height', 'width', 'depth', 'circumference')
+    ordering = ('height', 'width', 'depth', 'circumference')
 
+class ProductVariantSizeAdmin(admin.ModelAdmin):
+    model = ProductVariantSize
+    list_display = ('product', 'size', 'additional_cost')
+    ordering = ['product']
 
 class ProductColorAdmin(admin.ModelAdmin):
     model = ProductColor
@@ -88,7 +92,8 @@ class KitchenAdmin(admin.ModelAdmin):
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(SubCategory, SubCategoryAdmin)
 admin.site.register(Supplier, SupplierAdmin)
-admin.site.register(ProductSize, ProductSizeAdmin)
+admin.site.register(Size, SizeAdmin)
+admin.site.register(ProductVariantSize, ProductVariantSizeAdmin)
 admin.site.register(ProductColor, ProductColorAdmin)
 admin.site.register(ProductStyle, ProductStyleAdmin)
 admin.site.register(ProductApplication, ProductApplicationAdmin)

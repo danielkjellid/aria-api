@@ -3,7 +3,7 @@ from django.conf import settings
 
 from inventory.models.category import Category, SubCategory
 from inventory.models.supplier import Supplier
-from inventory.models.product import Product, ProductColor, ProductFile, ProductImage, ProductSize, ProductVariant
+from inventory.models.product import Product, ProductColor, ProductFile, ProductImage, ProductVariant, ProductVariantSize
 from inventory.models.kitchen import Kitchen
 from rest_framework import serializers
 
@@ -175,26 +175,18 @@ class ProductVariantSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'thumbnail', 'image', 'additional_cost')
         read_only_fields = fields
 
-    
-class ProductSizeSerializer(serializers.ModelSerializer):
+
+class ProductVariantSizeSerializer(serializers.ModelSerializer):
     """
     A serializer to append available sizes to product
     """
 
-    name = serializers.SerializerMethodField()
+    name = serializers.StringRelatedField(source='size', read_only=True)
 
     class Meta:
-        model = ProductSize
-        fields = ('id', 'name')
+        model = ProductVariantSize
+        fields = ('name', 'additional_cost')
         read_only_fields = fields
-
-    def get_name(self, instance):
-        if instance.depth is not None:
-            name = 'B%s x H%s x D%s' % (instance.width, instance.height, instance.depth)
-            return name.strip()
-
-        name = 'B%s x H%s' % (instance.width, instance.height)
-        return name.strip()
 
 
 class ProductFileSerializer(serializers.ModelSerializer):
@@ -307,7 +299,8 @@ class ProductSerializer(serializers.ModelSerializer):
     styles = ProductInstanceNameSerializer(read_only=True, many=True)
     applications = ProductInstanceNameSerializer(read_only=True, many=True)
     materials = ProductInstanceNameSerializer(read_only=True, many=True)
-    sizes = ProductSizeSerializer(read_only=True, many=True)
+    # sizes = ProductSizeSerializer(read_only=True, many=True)
+    sizes = ProductVariantSizeSerializer(read_only=True, many=True)
     gross_price = serializers.SerializerMethodField()
     images = ProductImageSerializer(read_only=True, many=True)
     variants = ProductVariantSerializer(read_only=True, many=True)
