@@ -28,13 +28,9 @@ class SupplierAdmin(admin.ModelAdmin):
 
 class SizeAdmin(admin.ModelAdmin):
     model = Size
-    list_display = ('height', 'width', 'depth', 'circumference')
-    ordering = ('height', 'width', 'depth', 'circumference')
+    # list_display = ('height', 'width', 'depth', 'circumference')
+    # ordering = ('height', 'width', 'depth', 'circumference')
 
-class ProductVariantSizeAdmin(admin.ModelAdmin):
-    model = ProductVariantSize
-    list_display = ('product', 'size', 'additional_cost')
-    ordering = ['product']
 
 class ProductColorAdmin(admin.ModelAdmin):
     model = ProductColor
@@ -68,19 +64,20 @@ class ProductFileInline(admin.StackedInline):
     model = ProductFile
 
 
+class ProductVariantSizeInline(admin.StackedInline):
+    model = ProductVariantSize
+
+
+class ProductVariantInline(admin.StackedInline):
+    model = ProductVariant
+
+
 class ProductAdmin(admin.ModelAdmin):
     model = Product
     list_display = ('name', 'status', 'gross_price', 'slug')
     list_filter = ('status', 'supplier__name', 'category', 'can_be_purchased_online',)
     ordering = ['name']
-    inlines = [ProductImageInline, ProductFileInline]
-
-
-class ProductVariantAdmin(admin.ModelAdmin):
-    model = ProductVariant
-    list_display = ('product', 'name', 'status', 'additional_cost')
-    ordering = ('product', 'name')
-    list_filter = ['status']
+    inlines = [ProductImageInline, ProductFileInline, ProductVariantInline, ProductVariantSizeInline]
 
 
 class KitchenAdmin(admin.ModelAdmin):
@@ -93,13 +90,11 @@ admin.site.register(Category, CategoryAdmin)
 admin.site.register(SubCategory, SubCategoryAdmin)
 admin.site.register(Supplier, SupplierAdmin)
 admin.site.register(Size, SizeAdmin)
-admin.site.register(ProductVariantSize, ProductVariantSizeAdmin)
 admin.site.register(ProductColor, ProductColorAdmin)
 admin.site.register(ProductStyle, ProductStyleAdmin)
 admin.site.register(ProductApplication, ProductApplicationAdmin)
 admin.site.register(ProductMaterial, ProductMaterialAdmin)
 admin.site.register(Product, ProductAdmin)
-admin.site.register(ProductVariant, ProductVariantAdmin)
 admin.site.register(Kitchen, KitchenAdmin)
 
 # to be removed

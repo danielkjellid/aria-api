@@ -52,9 +52,10 @@ class Size(models.Model):
             full_name = 'B%s x H%s x D%s' % (self.width, self.height, self.depth)
             return full_name.strip()
 
-        if self.circumference is not None and self.depth is None and self.width is None and self.height is None:
+        if self.circumference is not None:
             full_name = 'Ø%s' % (self.circumference)
-
+            return full_name.strip()
+        
         full_name = 'B%s x H%s' % (self.width, self.height)
         return full_name.strip()
 
@@ -394,7 +395,7 @@ class ProductVariantSize(models.Model):
         verbose_name_plural = _('Product sizes')
 
     def __str__(self):
-        return self.size
+        return '%s - %s' % (self.product, self.size)
 
 
 class ProductFile(models.Model):
