@@ -172,9 +172,9 @@ class Kitchen(models.Model):
         related_name='supplier_kitchen'
     )
     status = models.IntegerField(
-    _('Status'),
-    choices=Status.choices,
-    default=Status.DRAFT,
+        _('Status'),
+        choices=Status.choices,
+        default=Status.DRAFT,
     )
     slug = models.SlugField(
         _('Slug'),
