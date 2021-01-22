@@ -185,7 +185,7 @@ class ProductVariantSizeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVariantSize
-        fields = ('name', 'additional_cost')
+        fields = ('id', 'name', 'additional_cost')
         read_only_fields = fields
 
 
@@ -299,8 +299,7 @@ class ProductSerializer(serializers.ModelSerializer):
     styles = ProductInstanceNameSerializer(read_only=True, many=True)
     applications = ProductInstanceNameSerializer(read_only=True, many=True)
     materials = ProductInstanceNameSerializer(read_only=True, many=True)
-    # sizes = ProductSizeSerializer(read_only=True, many=True)
-    sizes = ProductVariantSizeSerializer(read_only=True, many=True)
+    sizes = serializers.SerializerMethodField()
     gross_price = serializers.SerializerMethodField()
     images = ProductImageSerializer(read_only=True, many=True)
     variants = ProductVariantSerializer(read_only=True, many=True)
@@ -347,6 +346,14 @@ class ProductSerializer(serializers.ModelSerializer):
         formatted_price = '%0.2f' % (product.gross_price)
 
         return formatted_price.strip()
+
+    def get_sizes(self, product):
+        """
+        Order sizes based on width
+        """
+
+        sizes = product.sizes.all().order_by('size')
+        return ProductVariantSizeSerializer(sizes, read_only=True, many=True).data
 
 
 # kitchen serializers

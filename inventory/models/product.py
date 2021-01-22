@@ -46,6 +46,7 @@ class Size(models.Model):
     class Meta:
         verbose_name = _('Size')
         verbose_name_plural = _('Sizes')
+        ordering = ['width', 'height', 'depth', 'circumference']
 
     def __str__(self):
         if self.depth is not None and self.circumference is None and self.width is None and self.height is None:
