@@ -17,6 +17,7 @@ from users.api.serializers import (PasswordResetConfirmSerializer,
                                    RequestUserSerializer, UserCreateSerializer,
                                    UserSerializer, UsersSerializer)
 from users.models import User
+from utils.models import AuditLog
 
 sensitive_post_parameters_m = method_decorator(
     sensitive_post_parameters(
@@ -70,6 +71,20 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     required_permissions = {
         'GET': ['has_users_list']
     }
+
+    def put(self, request, pk):
+        user = get_object_or_404(User, pk = pk)
+        serializer = UserSerializer(user, data=request.data)
+        
+        if serializer.is_valid():
+            old_user_instance = get_object_or_404(User, pk = pk)
+            serializer.save()
+            AuditLog.create_log_entry(request.user, User, old_user_instance)
+
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class RequestUserRetrieveAPIView(generics.RetrieveAPIView):
