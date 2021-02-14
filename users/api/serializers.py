@@ -12,23 +12,28 @@ from django.utils.encoding import force_text
 from users.models import User
 
 
+class UserProfileSerializer(serializers.Serializer):
+    full_name = serializers.SerializerMethodField()
+    initial = serializers.SerializerMethodField()
+    avatar_color = serializers.CharField()
+
+    def get_full_name(self, instance):
+        return instance.get_full_name()
+
+    def get_initial(self, instance):
+        return instance.get_initial()
+
+
 class UsersSerializer(serializers.ModelSerializer):
     """
     A serializer to display all users registered in the app
     """
 
-    full_name = serializers.SerializerMethodField()
-    address = serializers.SerializerMethodField()
+    profile = UserProfileSerializer(source='*')
 
     class Meta:
         model = User
-        fields = ('id', 'full_name', 'email', 'address', 'date_joined', 'is_active')
-
-    def get_full_name(self, instance):
-        return instance.get_full_name()
-
-    def get_address(self, instance):
-        return instance.get_address()
+        fields = ('id', 'profile', 'email', 'is_active', 'date_joined')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -64,6 +69,7 @@ class RequestUserSerializer(serializers.ModelSerializer):
     """
 
     full_name = serializers.SerializerMethodField()
+    initial = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
     permissions = serializers.SerializerMethodField()
     group_permissions = serializers.SerializerMethodField()
@@ -71,13 +77,17 @@ class RequestUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('full_name', 'email', 'is_authenticated', 'permissions', 'group_permissions', 'is_staff', 'is_superuser')
+        fields = ('full_name', 'avatar_color', 'initial', 'email', 'is_authenticated', 'permissions', 'group_permissions', 'is_staff', 'is_superuser')
 
     def get_full_name(self, user):
         if user.is_authenticated:
             return user.get_full_name()
         
         return None
+
+    def get_initial(self, user):
+        if user.is_authenticated:
+            return user.get_initial()
 
     def get_email(self, user):
         if user.is_authenticated:

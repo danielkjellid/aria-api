@@ -1,3 +1,4 @@
+import random
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
@@ -11,6 +12,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     User model which inherits AbstractBaseuser. AbstractBaseUser provides the 
     core implementation of a user model.
     """
+
+    AVATAR_COLOR_CHOICES = [
+        ('#F87171', 'Red'),
+        ('#FBBF24', 'Yellow'),
+        ('#34D399', 'Green'),
+        ('#60A5FA', 'Blue'),
+        ('#A78BFA', 'Purple'),
+        ('#F472B6', 'Pink'),
+    ]
+
     email = models.EmailField(
         _('email address'),
         unique=True,
@@ -24,6 +35,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         _('last name'),
         max_length=255,
         unique=False,
+    )
+    avatar_color = models.CharField(
+        _('avatar color'),
+        max_length=8,
+        unique=False,
+        choices=AVATAR_COLOR_CHOICES,
     )
     phone_number = models.CharField(max_length=30)
     has_confirmed_email = models.BooleanField(default=False)
@@ -124,9 +141,27 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         return self.first_name
 
+    def get_initial(self):
+        """
+        Return initial for first name of user
+        """
+
+        initial = ''
+
+        if self.first_name:
+            initial = self.first_name[0].upper()
+
+        return initial
+
     def get_address(self):
         """
         Return the full address containing streetname, zip code and place
         """
         address = '%s, %s %s' % (self.street_address, self.zip_code, self.zip_place)
         return address.strip()
+
+    def save(self, *args, **kwargs):
+        if not self.avatar_color:
+            self.avatar_color = random.choice(self.AVATAR_COLOR_CHOICES)[0]
+
+        super(User, self).save(*args, **kwargs)

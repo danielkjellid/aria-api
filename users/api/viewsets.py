@@ -1,13 +1,14 @@
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, filters
 from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.pagination import PageNumberPagination
 
 from core.authentication import JWTAuthenticationSafe
 from core.permissions import HasUserOrGroupPermission
@@ -23,6 +24,25 @@ sensitive_post_parameters_m = method_decorator(
     )
 )
 
+class PageNumberSetPagination(PageNumberPagination):
+    page_size = 18
+    page_size_query_param = 'page_size'
+    ordering = 'id'
+
+    def get_paginated_response(self, data):
+        return Response({
+            'links': {
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link(),
+            },
+            'meta': {
+                'current_page': int(self.request.query_params.get('page', 1)),
+                'total': self.page.paginator.count,
+                'current_range': '%s - %s' % (self.page.start_index(), self.page.end_index()),
+                'total_pages': self.page.paginator.num_pages,
+            },
+            'results': data,
+        })
 
 class UsersListAPIView(generics.ListAPIView):
     """
@@ -31,7 +51,9 @@ class UsersListAPIView(generics.ListAPIView):
 
     queryset = User.objects.all().order_by('id')
     serializer_class = UsersSerializer
-    permission_classes = (IsAdminUser, HasUserOrGroupPermission)
+    pagination_class = PageNumberSetPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ('first_name', 'last_name', 'email', 'phone_number')
     required_permissions = {
         'GET': ['has_users_list']
     }
