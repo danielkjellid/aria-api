@@ -10,6 +10,7 @@ from django.utils.encoding import force_text
 
 
 from users.models import User
+from utils.models import AuditLog
 
 
 class UserProfileSerializer(serializers.Serializer):
@@ -36,14 +37,25 @@ class UsersSerializer(serializers.ModelSerializer):
         fields = ('id', 'profile', 'email', 'is_active', 'date_joined')
 
 
+class UserAuditLogSerializer(serializers.Serializer):
+    """
+    A serializer to display audit logs associated with a specific user
+    """
+
+    user = serializers.CharField()
+    change = serializers.JSONField()
+    date_of_change = serializers.DateTimeField()
+
+
 class UserSerializer(serializers.ModelSerializer):
     """
     A serializer to retrive a specific user instance
     """
 
-    full_name = serializers.SerializerMethodField()
+    profile = UserProfileSerializer(source='*')
     address = serializers.SerializerMethodField()
     acquisition_source = serializers.SerializerMethodField()
+    audit_logs = serializers.SerializerMethodField()
 
 
     def get_full_name(self, instance):
@@ -57,6 +69,10 @@ class UserSerializer(serializers.ModelSerializer):
             return 'Ingen'
         
         return instance.acquisition_source
+
+    def get_audit_logs(self, instance):
+        audit_logs = AuditLog.objects.filter(object_id = instance.pk)
+        return UserAuditLogSerializer(audit_logs, many=True, read_only=True).data
 
     class Meta:
         model = User

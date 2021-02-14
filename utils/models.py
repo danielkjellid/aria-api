@@ -1,6 +1,7 @@
 import json
 
 from django.db import models
+from django.contrib.postgres.fields import JSONField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils import timezone
@@ -45,10 +46,7 @@ class AuditLog(models.Model):
         'content_type', 
         'object_id'
     )
-    change = models.TextField(
-        _('change'),
-        blank = True
-    )
+    change = JSONField()
     date_of_change = models.DateTimeField(
         _('changed at'),
         default = timezone.now,
