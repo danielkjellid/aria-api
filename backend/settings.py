@@ -44,8 +44,8 @@ INSTALLED_APPS = [
     'imagekit',
     
     'core',
-    'utils',
     'users',
+    'utils',
     'inventory',
 ]
 

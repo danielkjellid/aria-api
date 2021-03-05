@@ -9,6 +9,7 @@ urlpatterns = [
     path('api/auth/', include('core.urls')),
     path('api/', include('users.api.urls')),
     path('api/', include('inventory.api.urls')),
+    path('api/', include('utils.api.urls')),
     path('api-auth/', include('rest_framework.urls')),
 ] 
 

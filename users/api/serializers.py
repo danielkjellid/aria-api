@@ -8,9 +8,9 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode as uid_decoder
 from django.utils.encoding import force_text
 
-
 from users.models import User
-from utils.models import AuditLog
+from utils.models import AuditLog, Note
+from utils.api.serializers import AuditLogSerializer
 
 
 class UserProfileSerializer(serializers.Serializer):
@@ -25,6 +25,18 @@ class UserProfileSerializer(serializers.Serializer):
         return instance.get_initial()
 
 
+class UserNoteSerializer(serializers.ModelSerializer):
+    """
+    A serializer to display notes associated with a specific user
+    """
+
+    profile = UserProfileSerializer(source='user')
+
+    class Meta:
+        model = Note
+        fields = ('id', 'profile', 'note', 'updated_at')
+
+
 class UsersSerializer(serializers.ModelSerializer):
     """
     A serializer to display all users registered in the app
@@ -37,25 +49,16 @@ class UsersSerializer(serializers.ModelSerializer):
         fields = ('id', 'profile', 'email', 'is_active', 'date_joined')
 
 
-class UserAuditLogSerializer(serializers.Serializer):
-    """
-    A serializer to display audit logs associated with a specific user
-    """
-
-    user = serializers.CharField()
-    change = serializers.JSONField()
-    date_of_change = serializers.DateTimeField()
-
-
 class UserSerializer(serializers.ModelSerializer):
     """
     A serializer to retrive a specific user instance
     """
 
-    profile = UserProfileSerializer(source='*')
+    profile = UserProfileSerializer(source='*', read_only=True)
     address = serializers.SerializerMethodField()
     acquisition_source = serializers.SerializerMethodField()
     audit_logs = serializers.SerializerMethodField()
+    notes = serializers.SerializerMethodField()
 
 
     def get_full_name(self, instance):
@@ -66,17 +69,21 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_acquisition_source(self, instance):
         if not instance.acquisition_source:
-            return 'Ingen'
+            return 'N/A'
         
         return instance.acquisition_source
 
     def get_audit_logs(self, instance):
-        audit_logs = AuditLog.objects.filter(object_id = instance.pk)
-        return UserAuditLogSerializer(audit_logs, many=True, read_only=True).data
+        audit_logs = AuditLog.get_logs(instance)
+        return AuditLogSerializer(audit_logs, many=True, read_only=True).data
+
+    def get_notes(self, instance):
+        notes = Note.get_notes(instance)
+        return UserNoteSerializer(notes, many=True, read_only=True).data
 
     class Meta:
         model = User
-        exclude = ('password', 'groups', 'user_permissions', 'is_superuser', 'is_staff')
+        exclude = ('password', 'groups', 'user_permissions', 'is_superuser', 'is_staff', 'avatar_color')
         
 
 class RequestUserSerializer(serializers.ModelSerializer):

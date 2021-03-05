@@ -1,23 +1,24 @@
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
-from rest_framework import generics, permissions, status, filters
+from rest_framework import filters, generics, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.pagination import PageNumberPagination
 
 from core.authentication import JWTAuthenticationSafe
 from core.permissions import HasUserOrGroupPermission
 from users.api.serializers import (PasswordResetConfirmSerializer,
                                    PasswordResetSerializer,
                                    RequestUserSerializer, UserCreateSerializer,
-                                   UserSerializer, UsersSerializer)
+                                   UserNoteSerializer, UserSerializer,
+                                   UsersSerializer)
 from users.models import User
-from utils.models import AuditLog
+from utils.models import AuditLog, Note
+from utils.api.serializers import CreateNoteSerializer, UpdateNoteSerializer
 
 sensitive_post_parameters_m = method_decorator(
     sensitive_post_parameters(
@@ -47,7 +48,9 @@ class PageNumberSetPagination(PageNumberPagination):
 
 class UsersListAPIView(generics.ListAPIView):
     """
-    View for listing all users in the application
+    View for listing all users in the application.
+
+    Returns list of users.
     """
 
     queryset = User.objects.all().order_by('id')
@@ -62,7 +65,26 @@ class UsersListAPIView(generics.ListAPIView):
 
 class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     """
-    View for viewing a single user instance
+    View for viewing, updating or deleting a single user instance
+
+    Accepts the followinf POST/PUT parameters:
+    - last_login
+    - email
+    - first_name
+    - last_name
+    - phone_number
+    - has_confirmed_email
+    - street_address
+    - zip_code
+    - zip_place
+    - disabled_emails
+    - subscribed_to_newsletter
+    - allow_personalization
+    - allow_third_party_personalization
+    - date_joined
+    - is_active
+
+    Returns a single user instance
     """
 
     queryset = User.objects.all()
@@ -77,13 +99,63 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
         serializer = UserSerializer(user, data=request.data)
         
         if serializer.is_valid():
+            # store old user in variable
             old_user_instance = get_object_or_404(User, pk = pk)
+            # update user instance
             serializer.save()
+            # create logging instance by comparing old vs. new user fields
             AuditLog.create_log_entry(request.user, User, old_user_instance)
-
+            
+            # return updated user
             return Response(serializer.data)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserNoteAPIView(APIView):
+
+    queryset = Note.objects.all()
+
+    def get_object(self, pk):
+        user = get_object_or_404(User, pk=pk)
+        return user
+
+    def get(self, request, pk):
+        user = self.get_object(pk)
+        user_notes = Note.get_notes(user)
+        serializer = UserNoteSerializer(user_notes, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        user = self.get_object(pk)
+        serializer = CreateNoteSerializer(data=request.data)
+
+        if serializer.is_valid():
+            Note.create_note(request.user, user, serializer.data['note'])
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk):
+
+        serializer = UpdateNoteSerializer(data=request.data)
+
+        if serializer.is_valid():
+            Note.update_note(request.user, serializer.data['id'], serializer.data['note'])
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
+    def delete(self, request, pk):
+        print(request.data)
+        # serializer = UpdateNoteSerializer(data=request.data)
+
+        # if serializer.is_valid():
+        #     Note.delete_note(serializer.data['id'])
+        #     return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
