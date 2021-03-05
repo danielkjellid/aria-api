@@ -38,6 +38,7 @@ class UsersListAPIView(generics.ListAPIView):
     pagination_class = PageNumberSetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ('first_name', 'last_name', 'email', 'phone_number')
+    permission_classes = (IsAdminUser, HasUserOrGroupPermission)
     required_permissions = {
         'GET': ['has_users_list']
     }
@@ -71,7 +72,9 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
     permission_classes = (IsAdminUser, HasUserOrGroupPermission)
     required_permissions = {
-        'GET': ['has_users_list']
+        'GET': ['has_users_list'],
+        'PUT': ['has_user_edit'],
+        'DELETE': ['has_user_delete']
     }
 
     def put(self, request, pk):
@@ -95,6 +98,12 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 class UserNoteAPIView(APIView):
 
     queryset = Note.objects.all()
+    permission_classes = (IsAdminUser, HasUserOrGroupPermission)
+    required_permissions = {
+        'GET': ['has_users_list'],
+        'POST': ['has_notes_add'],
+        'PUT': ['has_note_edit'],
+    }
 
     def get_object(self, pk):
         user = get_object_or_404(User, pk=pk)
@@ -125,17 +134,6 @@ class UserNoteAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    
-    def delete(self, request, pk):
-        print(request.data)
-        # serializer = UpdateNoteSerializer(data=request.data)
-
-        # if serializer.is_valid():
-        #     Note.delete_note(serializer.data['id'])
-        #     return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
-
-        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 

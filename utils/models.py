@@ -168,6 +168,11 @@ class Note(models.Model):
     class Meta:
         verbose_name = _('Note')
         verbose_name_plural = _('Notes')
+        permissions = (
+            ('has_notes_add', 'Can add new notes'),
+            ('has_note_edit', 'Can edit a single note instance'),
+            ('has_note_delete', 'Can delete a single note instance')
+        )
 
     def create_note(request, instance, note):
 
