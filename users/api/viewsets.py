@@ -4,7 +4,6 @@ from django.views.decorators.debug import sensitive_post_parameters
 from rest_framework import filters, generics, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -17,6 +16,7 @@ from users.api.serializers import (PasswordResetConfirmSerializer,
                                    UserNoteSerializer, UserSerializer,
                                    UsersSerializer)
 from users.models import User
+from utils.pagination import PageNumberSetPagination
 from utils.models import AuditLog, Note
 from utils.api.serializers import CreateNoteSerializer, UpdateNoteSerializer
 
@@ -25,26 +25,6 @@ sensitive_post_parameters_m = method_decorator(
         'password', 'old_password', 'new_password1', 'new_password2'
     )
 )
-
-class PageNumberSetPagination(PageNumberPagination):
-    page_size = 18
-    page_size_query_param = 'page_size'
-    ordering = 'id'
-
-    def get_paginated_response(self, data):
-        return Response({
-            'links': {
-                'next': self.get_next_link(),
-                'previous': self.get_previous_link(),
-            },
-            'meta': {
-                'current_page': int(self.request.query_params.get('page', 1)),
-                'total': self.page.paginator.count,
-                'current_range': '%s - %s' % (self.page.start_index(), self.page.end_index()),
-                'total_pages': self.page.paginator.num_pages,
-            },
-            'results': data,
-        })
 
 class UsersListAPIView(generics.ListAPIView):
     """
