@@ -85,11 +85,12 @@ class AuditLog(models.Model):
                 # print('After check')
 
                 # format changemessage as JSON 
-                change_message = json.dumps({
+                change_message = {
                     'field': field.name,
                     'old_value': old_value,
                     'new_value': new_value
-                })
+                }
+
 
                 # use constructor created in manager to create a new model instance
                 AuditLog.objects.log_update(
@@ -108,7 +109,7 @@ class AuditLog(models.Model):
         return AuditLog.objects.filter(
             content_type = ct,
             object_id = instance.pk
-        )
+        ).order_by('-date_of_change')
 
     
     #property to parse and return the changed JSON

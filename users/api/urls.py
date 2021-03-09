@@ -1,11 +1,11 @@
 from django.urls import path, re_path
-from users.api.viewsets import UsersListAPIView, UserDetailAPIView, UserCreateAPIView, RequestUserRetrieveAPIView, PasswordResetView, PasswordResetConfirmView, UserNoteAPIView
+from users.api.viewsets import UsersListCreateAPIView, UserDetailAPIView, UserCreateAPIView, RequestUserRetrieveAPIView, PasswordResetView, PasswordResetConfirmView, UserNoteAPIView
 
 urlpatterns = [
     # endpoint for getting info about request user
     path('user/', RequestUserRetrieveAPIView.as_view(), name='request-user'),
     # endpoint for getting all users
-    path('users/', UsersListAPIView.as_view(), name='users-list'),
+    path('users/', UsersListCreateAPIView.as_view(), name='users-list'),
     # endpoint for getting a single user instance
     path('users/<int:pk>/', UserDetailAPIView.as_view(), name='user-detail'),
     path('users/<int:pk>/notes/', UserNoteAPIView.as_view(), name='user-notes'),

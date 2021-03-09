@@ -26,7 +26,7 @@ sensitive_post_parameters_m = method_decorator(
     )
 )
 
-class UsersListAPIView(generics.ListAPIView):
+class UsersListCreateAPIView(generics.ListCreateAPIView):
     """
     View for listing all users in the application.
 
@@ -34,7 +34,6 @@ class UsersListAPIView(generics.ListAPIView):
     """
 
     queryset = User.objects.all().order_by('id')
-    serializer_class = UsersSerializer
     pagination_class = PageNumberSetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ('first_name', 'last_name', 'email', 'phone_number')
@@ -42,6 +41,12 @@ class UsersListAPIView(generics.ListAPIView):
     required_permissions = {
         'GET': ['has_users_list']
     }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return UsersSerializer
+        
+        return UserCreateSerializer
 
 
 class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
