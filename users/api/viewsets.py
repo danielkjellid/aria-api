@@ -39,7 +39,8 @@ class UsersListCreateAPIView(generics.ListCreateAPIView):
     search_fields = ('first_name', 'last_name', 'email', 'phone_number')
     permission_classes = (IsAdminUser, HasUserOrGroupPermission)
     required_permissions = {
-        'GET': ['has_users_list']
+        'GET': ['has_users_list'],
+        'POST': ['has_user_add'],
     }
 
     def get_serializer_class(self):

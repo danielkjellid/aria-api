@@ -122,6 +122,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         permissions = (
             ('has_users_list', 'Can list users'),
             ('has_user_edit', 'Can edit a single user instance'),
+            ('has_user_add', 'Can add a single user instance'),
             ('has_user_delete', 'Can delete a single user instance')
         )
 

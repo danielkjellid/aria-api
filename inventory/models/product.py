@@ -251,6 +251,12 @@ class Product(models.Model):
     class Meta:
         verbose_name = _('Product')
         verbose_name_plural = _('Products')
+        permissions = (
+            ('has_products_list', 'Can list products'),
+            ('has_product_edit', 'Can edit a single product instance'),
+            ('has_product_add', 'Can add a single product instance'),
+            ('has_product_delete', 'Can delete a single product instance')
+        )
 
     def __str__(self):
         return self.name.strip()

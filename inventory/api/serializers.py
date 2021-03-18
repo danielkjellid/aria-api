@@ -356,6 +356,45 @@ class ProductSerializer(serializers.ModelSerializer):
         return ProductVariantSizeSerializer(sizes, read_only=True, many=True).data
 
 
+class ProductNameImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product
+        fields = (
+            'name',
+            'thumbnail'
+        )
+
+
+class ProductListSerializer(serializers.ModelSerializer):
+    
+    product = ProductNameImageSerializer(source='*')
+    gross_price = serializers.SerializerMethodField()
+    unit = serializers.CharField(source='get_unit_display')
+    status = serializers.CharField(source='get_status_display') # get display name of integer choice 
+    variants = ProductVariantSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Product
+        fields = (
+            'id',
+            'product',
+            'gross_price',
+            'unit',
+            'status',
+            'variants'
+        )
+
+    def get_gross_price(self, product):
+        """
+        Format price to always have two decimals
+        """
+
+        formatted_price = '%0.2f' % (product.gross_price)
+
+        return formatted_price.strip()
+
+
 # kitchen serializers
 class KitchenListSerializer(serializers.ModelSerializer):
     """

@@ -1,7 +1,7 @@
 import json
 
 from rest_framework import filters, generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -9,11 +9,13 @@ from core.permissions import HasUserOrGroupPermission
 from inventory.api.serializers import (CategoryListSerializer,
                                        CategoryNavigationListSerializer,
                                        CategorySerializer,
-                                       ProductListByCategorySerializer,
+                                       ProductListByCategorySerializer, ProductListSerializer,
                                        ProductSerializer, KitchenListSerializer, KitchenSerializer)
 from inventory.models.product import Product
 from inventory.models.category import Category
 from inventory.models.kitchen import Kitchen
+from utils.pagination import PageNumberSetPagination
+
 
 
 class CategoriesNavigationListAPIView(generics.ListAPIView):
@@ -48,6 +50,29 @@ class CategoryRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = CategorySerializer
     lookup_field = 'slug'
     queryset = Category.objects.filter(is_active=True)
+
+
+class ProductListCreateAPIView(generics.ListCreateAPIView):
+    """
+    View for listing all products in application
+
+    Returns list of products.
+    """
+
+    queryset = Product.objects.all().order_by('id')
+    pagination_class = PageNumberSetPagination
+    search_fields = ('name', 'supplier__name', 'search_keywords', 'status')
+    permission_classes = (IsAdminUser, HasUserOrGroupPermission)
+    required_permissions = {
+        'GET': ['has_products_list'],
+        'POST': ['has_product_add'],
+    }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return ProductListSerializer
+
+        return ProductListSerializer
 
 
 class ProductListByCategoryAPIView(generics.ListAPIView):
