@@ -92,7 +92,8 @@ class ProductListByCategoryAPIView(generics.ListAPIView):
         """
 
         category = self.kwargs['category']
-        return Product.objects.filter(
+
+        return Product.on_site.filter(
             category__parent__slug=category, 
             status=3
         ).distinct()

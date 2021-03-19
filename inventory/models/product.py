@@ -1,3 +1,5 @@
+from django.contrib.sites.models import Site
+from django.contrib.sites.managers import CurrentSiteManager
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
@@ -227,6 +229,13 @@ class Product(models.Model):
             'Designates whether the product can be purchased and shipped'
         ),
     )
+    can_be_picked_up = models.BooleanField(
+        _('Can be picked up'),
+        default=False,
+        help_text=_(
+           'Designates whether the product can be purchased and picked up in store' 
+        )
+    )
     created_at = models.DateTimeField(
         _('Date created'), 
         auto_now_add=True
@@ -247,6 +256,12 @@ class Product(models.Model):
             _('Image must be above 380x575px')
         )
     )
+    sites = models.ManyToManyField(
+        Site,
+        related_name='product_site'
+    )
+    objects = models.Manager()
+    on_site = CurrentSiteManager()
 
     class Meta:
         verbose_name = _('Product')
