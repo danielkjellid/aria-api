@@ -8,7 +8,6 @@ from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from core.authentication import JWTAuthenticationSafe
 from core.permissions import HasUserOrGroupPermission
 from users.api.serializers import (PasswordResetConfirmSerializer,
                                    PasswordResetSerializer,
@@ -148,7 +147,6 @@ class RequestUserRetrieveAPIView(generics.RetrieveAPIView):
     View for getting info about request user
     """
     permission_classes = (IsAuthenticated, )
-    authentication_classes = (JWTAuthenticationSafe, )
 
     def get(self, request):
         serializer = RequestUserSerializer(request.user)
