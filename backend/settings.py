@@ -19,7 +19,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['{{ allowed_hosts }}']
 
 DEFAULT_SITE_ID = 1
-# SITE_ID = 0
+SITE_ID = 1
 
 # Authentication settings
 AUTH_USER_MODEL = 'users.User'

@@ -25,7 +25,7 @@ class CategoriesNavigationListAPIView(generics.ListAPIView):
 
     permission_classes = (AllowAny, )
     authentication_classes = ()
-    queryset = Category.objects.filter(display_in_navbar=True, is_active=True).order_by('ordering')
+    queryset = Category.on_site.filter(display_in_navbar=True, is_active=True).order_by('ordering')
     serializer_class = CategoryNavigationListSerializer
 
 
@@ -36,7 +36,7 @@ class CategoryListAPIView(generics.ListAPIView):
 
     permission_classes = (AllowAny, )
     authentication_classes = ()
-    queryset = Category.objects.filter(is_active=True).order_by('ordering')
+    queryset = Category.on_site.filter(is_active=True).order_by('ordering')
     serializer_class = CategoryListSerializer
 
 
@@ -49,12 +49,12 @@ class CategoryRetrieveAPIView(generics.RetrieveAPIView):
     authentication_classes = ()
     serializer_class = CategorySerializer
     lookup_field = 'slug'
-    queryset = Category.objects.filter(is_active=True)
+    queryset = Category.on_site.filter(is_active=True)
 
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     """
-    View for listing all products in application
+    View for listing all products in application backend
 
     Returns list of products.
     """

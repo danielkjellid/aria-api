@@ -1,3 +1,5 @@
+from django.contrib.sites.managers import CurrentSiteManager
+from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
@@ -111,6 +113,14 @@ class Category(models.Model):
             'Designates whether the category should be treated as active.'
         ),
     )
+    sites = models.ManyToManyField(
+        Site,
+        related_name='category_site',
+        blank=True
+    )
+
+    objects = models.Manager()
+    on_site = CurrentSiteManager()
 
     class Meta:
         verbose_name = _('Category')
@@ -154,6 +164,14 @@ class SubCategory(models.Model):
             'Designates whether the category should be treated as active.'
         ),
     )
+    sites = models.ManyToManyField(
+        Site,
+        related_name='subcategory_site',
+        blank=True
+    )
+
+    objects = models.Manager()
+    on_site = CurrentSiteManager()
 
     class Meta:
         verbose_name = _('Subcategory')

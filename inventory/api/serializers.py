@@ -46,7 +46,7 @@ class CategoryNavigationListSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
     def get_children(self, instance):
-        children = instance.children.all().order_by('ordering')
+        children = instance.children.filter(sites=settings.SITE_ID).order_by('ordering')
         return SubCategoryNavigationListSerializer(children, many=True, read_only=True).data
 
 
