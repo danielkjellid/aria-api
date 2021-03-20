@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import Permission, update_last_login
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.contrib.sites.models import Site
 from rest_framework import serializers
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.tokens import default_token_generator
@@ -163,9 +164,13 @@ class UserCreateSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate(self, data):
+        # add site property to data
+        data['site'] = Site.objects.get(pk=settings.SITE_ID)
+
         email = data.get('email')
         password = data.get('password')
         password2 = data.get('password2')
+        site = data.get('site')
         
         # check if passwords are equal
         if password != password2:
@@ -177,6 +182,12 @@ class UserCreateSerializer(serializers.ModelSerializer):
         if (email and User.objects.filter(email=email).exists()):
             raise serializers.ValidationError (
                 {'email': 'Email address must be unique.'}
+            )
+
+        # check if site exists
+        if not site:
+            raise serializers.ValidationError (
+                {'site': 'Error getting site, please contact an admin'}
             )
 
         return data

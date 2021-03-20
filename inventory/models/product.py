@@ -261,6 +261,7 @@ class Product(models.Model):
         related_name='product_site',
         blank=True
     )
+    
     objects = models.Manager()
     on_site = CurrentSiteManager()
 

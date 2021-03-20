@@ -33,7 +33,6 @@ class UsersListCreateAPIView(generics.ListCreateAPIView):
     Returns list of users.
     """
 
-    queryset = User.objects.all().order_by('id')
     pagination_class = PageNumberSetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ('first_name', 'last_name', 'email', 'phone_number')
@@ -48,6 +47,9 @@ class UsersListCreateAPIView(generics.ListCreateAPIView):
             return UsersSerializer
         
         return UserCreateSerializer
+
+    def get_queryset(self):
+        return User.on_site.all().order_by('id')
 
 
 class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -74,7 +76,6 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     Returns a single user instance
     """
 
-    queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAdminUser, HasUserOrGroupPermission)
     required_permissions = {
@@ -82,6 +83,9 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
         'PUT': ['has_user_edit'],
         'DELETE': ['has_user_delete']
     }
+
+    def get_queryset(self):
+        return User.on_site.all()
 
     def put(self, request, pk):
         user = get_object_or_404(User, pk = pk)

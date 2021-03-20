@@ -1,4 +1,6 @@
 import random
+from django.contrib.sites.models import Site
+from django.contrib.sites.managers import CurrentSiteManager
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
@@ -110,11 +112,17 @@ class User(AbstractBaseUser, PermissionsMixin):
         default=False,
         help_text=_('Designates whether the user is automatically granted all permissions.'),
     )
+    site = models.ForeignKey(
+        Site, 
+        on_delete=models.CASCADE,
+        null=True
+    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+    on_site = CurrentSiteManager()
 
     class Meta:
         verbose_name= _('user')
