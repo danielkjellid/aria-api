@@ -19,9 +19,13 @@ DEBUG = True
 ALLOWED_HOSTS = ['{{ allowed_hosts }}']
 
 DEFAULT_SITE_ID = 1
-SITE_ID = 1
+SITE_ID = DEFAULT_SITE_ID
 
 # Authentication settings
+AUTHENTICATION_BACKENDS = [
+    'core.auth_backend.AuthBackend',
+]
+
 AUTH_USER_MODEL = 'users.User'
 
 LOGIN_REDIRECT_URL = '/'
@@ -59,7 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'core.middleware.DynamicSiteDomainMiddleware',
+    # 'core.middleware.DynamicSiteDomainMiddleware',
 ]
 
 MIDDLEWARE_CLASSES = [
