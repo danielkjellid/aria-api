@@ -258,7 +258,8 @@ class Product(models.Model):
     )
     sites = models.ManyToManyField(
         Site,
-        related_name='product_site'
+        related_name='product_site',
+        blank=True
     )
     objects = models.Manager()
     on_site = CurrentSiteManager()

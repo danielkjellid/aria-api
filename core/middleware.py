@@ -8,21 +8,31 @@ class DynamicSiteDomainMiddleware:
     Used to set SITE_ID dynamically, and accordingly based 
     on the site making the request.
     """
-
+    
     def __init__(self, get_response):
-        self.get_response = get_response
         # one time configuration and initialization
+        self.get_response = get_response
 
     def __call__(self, request):
 
+        # get hostname from origin making the request
+        # if we use djangos built in get_host() it will always return
+        # the server ip/hostname
+        # which is not what we want when using rest framework
         host = urlparse(request.META['HTTP_REFERER']).hostname
 
-        try:
-            current_site = Site.objects.get(domain=host)
-        except Site.DoesNotExist:
-            current_site = Site.objects.get(id=settings.DEFAULT_SITE_ID)
+        # check if host exists, so we don't hinder request made
+        # through the django admin
+        if host:
+            try:
+                # get the site based on hostname
+                current_site = Site.objects.get(domain=host)
+            except Site.DoesNotExist:
+                current_site = Site.objects.get(id=settings.DEFAULT_SITE_ID)
 
-        request.current_site = current_site
-        settings.SITE_ID = current_site.id
+            # set current site and site id to site based on hostname
+            request.current_site = current_site
+            settings.SITE_ID = current_site.id
 
-        return self.get_response(request)
+            # process request
+            return self.get_response(request)
