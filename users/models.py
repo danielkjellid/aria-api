@@ -39,7 +39,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=255,
         unique=False,
     )
-    birth_date = models.DateField(_('birth date'))
+    birth_date = models.DateField(
+        _('birth date'),
+        null=True
+    )
     avatar_color = models.CharField(
         _('avatar color'),
         max_length=8,
