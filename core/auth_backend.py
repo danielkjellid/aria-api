@@ -12,11 +12,7 @@ class AuthBackend(ModelBackend):
 
     def authenticate(self, request, username=None, password=None):
         try:
-<<<<<<< HEAD
             user = User.on_site.get(email=username)
-=======
-            user = User.objects.get(email=username)
->>>>>>> e199afdcacb2acfb9a9329edd311f71dbf8e49ce
             # check if user is not associated with site that
             # the login request originates from
             if user.site != Site.objects.get(pk=settings.SITE_ID):
@@ -31,8 +27,4 @@ class AuthBackend(ModelBackend):
         try:
             return User.objects.get(id=user_id, site=Site.objects.get(pk=settings.SITE_ID))
         except User.DoesNotExist:
-<<<<<<< HEAD
             return None
-=======
-            return None
->>>>>>> e199afdcacb2acfb9a9329edd311f71dbf8e49ce

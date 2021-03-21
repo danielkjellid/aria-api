@@ -3,7 +3,7 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import imagekit.models.fields
-import inventory.models.kitchen
+# import inventory.models.kitchen
 
 
 class Migration(migrations.Migration):
@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('can_be_painted', models.BooleanField(default=False, help_text='Designates whether the product can be painted in suppliers 2000 colors', verbose_name='Can be painted')),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Date created')),
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Date updated')),
-                ('thumbnail', imagekit.models.fields.ProcessedImageField(blank=True, default='media/products/default.jpg', null=True, upload_to=inventory.models.kitchen.Kitchen.kitchen_directory_path)),
+                ('thumbnail', imagekit.models.fields.ProcessedImageField(blank=True, default='media/products/default.jpg', null=True, upload_to='some/path/')),
                 ('category', models.ManyToManyField(related_name='kitchens', to='inventory.SubCategory')),
                 ('supplier', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='supplier_kitchen', to='inventory.Supplier')),
             ],

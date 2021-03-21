@@ -3,8 +3,6 @@ from django.contrib import admin
 from inventory.models.category import Category, SubCategory
 from inventory.models.supplier import Supplier
 from inventory.models.product import Product, ProductVariant, ProductFile, ProductImage, ProductApplication, ProductColor, Size, ProductStyle, ProductMaterial, ProductVariantSize
-from inventory.models.kitchen import Kitchen, KitchenSilkColor, KitchenDecor, KitchenPlywood, KitchenLaminateColor, KitchenExclusiveColor, KitchenTrendColor
-
 
 class CategoryAdmin(admin.ModelAdmin):
     model = Category
@@ -83,12 +81,6 @@ class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductImageInline, ProductFileInline, ProductVariantInline, ProductVariantSizeInline]
 
 
-class KitchenAdmin(admin.ModelAdmin):
-    model = Kitchen
-    list_display = ('name', 'status', 'slug')
-    list_filter = ('status'),
-
-
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(SubCategory, SubCategoryAdmin)
 admin.site.register(Supplier, SupplierAdmin)
@@ -98,30 +90,3 @@ admin.site.register(ProductStyle, ProductStyleAdmin)
 admin.site.register(ProductApplication, ProductApplicationAdmin)
 admin.site.register(ProductMaterial, ProductMaterialAdmin)
 admin.site.register(Product, ProductAdmin)
-admin.site.register(Kitchen, KitchenAdmin)
-
-# to be removed
-class KitchenSilkAdmin(admin.ModelAdmin):
-    model = KitchenSilkColor
-
-class KitchenDecorAdmin(admin.ModelAdmin):
-    model = KitchenDecor
-
-class KitchenPlywoodAdmin(admin.ModelAdmin):
-    model = KitchenPlywood
-
-class KitchenLaminateAdmin(admin.ModelAdmin):
-    model = KitchenLaminateColor
-
-class KitchenExclusiveAdmin(admin.ModelAdmin):
-    model = KitchenExclusiveColor
-
-class KitchenTrendAdmin(admin.ModelAdmin):
-    model = KitchenTrendColor
-
-admin.site.register(KitchenSilkColor, KitchenSilkAdmin)
-admin.site.register(KitchenDecor, KitchenDecorAdmin)
-admin.site.register(KitchenPlywood, KitchenPlywoodAdmin)
-admin.site.register(KitchenLaminateColor, KitchenLaminateAdmin)
-admin.site.register(KitchenExclusiveColor, KitchenExclusiveAdmin)
-admin.site.register(KitchenTrendColor, KitchenTrendAdmin)

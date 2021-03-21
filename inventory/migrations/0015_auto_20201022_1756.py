@@ -3,7 +3,7 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import imagekit.models.fields
-import inventory.models.kitchen
+# import inventory.models.kitchen
 
 
 class Migration(migrations.Migration):
@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255, verbose_name='Kitchen decor name')),
-                ('image', imagekit.models.fields.ProcessedImageField(upload_to=inventory.models.kitchen.KitchenDecor.kitchen_decor_directory_path)),
+                ('image', imagekit.models.fields.ProcessedImageField(upload_to='some/path/')),
             ],
             options={
                 'verbose_name': 'Kithcen decor',
@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255, verbose_name='Kitchen decor name')),
-                ('image', imagekit.models.fields.ProcessedImageField(upload_to=inventory.models.kitchen.KitchenPlywood.kitchen_plywood_directory_path)),
+                ('image', imagekit.models.fields.ProcessedImageField(upload_to='some/path/')),
             ],
             options={
                 'verbose_name': 'Kithcen decor',

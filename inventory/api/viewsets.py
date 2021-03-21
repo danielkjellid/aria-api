@@ -10,10 +10,9 @@ from inventory.api.serializers import (CategoryListSerializer,
                                        CategoryNavigationListSerializer,
                                        CategorySerializer,
                                        ProductListByCategorySerializer, ProductListSerializer,
-                                       ProductSerializer, KitchenListSerializer, KitchenSerializer)
+                                       ProductSerializer)
 from inventory.models.product import Product
 from inventory.models.category import Category
-from inventory.models.kitchen import Kitchen
 from utils.pagination import PageNumberSetPagination
 
 
@@ -109,27 +108,3 @@ class ProductRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = ProductSerializer
     lookup_field = 'slug'
     queryset = Product.objects.all()
-
-
-class KitchenListAPIView(generics.ListAPIView):
-    """
-    Viewset for listing available kitchens
-    """
-    permission_classes = (AllowAny, )
-    authentication_classes = ()
-    serializer_class = KitchenListSerializer
-    queryset = Kitchen.objects.filter(status=3).order_by('id')
-
-
-class KitchenRetrieveAPIView(generics.RetrieveAPIView):
-    """
-    Viewset for getting a specific kitchen instance based on slug
-    """
-
-    permission_classes = (AllowAny, )
-    authentication_classes = ()
-    serializer_class = KitchenSerializer
-    lookup_field = 'slug'
-    queryset = Kitchen.objects.all()
-
-
