@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import inventory.models.kitchen
+# import inventory.models.kitchen
 
 
 class Migration(migrations.Migration):

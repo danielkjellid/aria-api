@@ -1,22 +1,23 @@
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
-from rest_framework import generics, permissions, status, filters
+from rest_framework import filters, generics, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.pagination import PageNumberPagination
 
-from core.authentication import JWTAuthenticationSafe
 from core.permissions import HasUserOrGroupPermission
 from users.api.serializers import (PasswordResetConfirmSerializer,
                                    PasswordResetSerializer,
                                    RequestUserSerializer, UserCreateSerializer,
-                                   UserSerializer, UsersSerializer)
+                                   UserNoteSerializer, UserSerializer,
+                                   UsersSerializer)
 from users.models import User
+from utils.pagination import PageNumberSetPagination
+from utils.models import AuditLog, Note
+from utils.api.serializers import CreateNoteSerializer, UpdateNoteSerializer
 
 sensitive_post_parameters_m = method_decorator(
     sensitive_post_parameters(
@@ -24,52 +25,121 @@ sensitive_post_parameters_m = method_decorator(
     )
 )
 
-class PageNumberSetPagination(PageNumberPagination):
-    page_size = 18
-    page_size_query_param = 'page_size'
-    ordering = 'id'
-
-    def get_paginated_response(self, data):
-        return Response({
-            'links': {
-                'next': self.get_next_link(),
-                'previous': self.get_previous_link(),
-            },
-            'meta': {
-                'current_page': int(self.request.query_params.get('page', 1)),
-                'total': self.page.paginator.count,
-                'current_range': '%s - %s' % (self.page.start_index(), self.page.end_index()),
-                'total_pages': self.page.paginator.num_pages,
-            },
-            'results': data,
-        })
-
-class UsersListAPIView(generics.ListAPIView):
+class UsersListCreateAPIView(generics.ListCreateAPIView):
     """
-    View for listing all users in the application
+    View for listing all users in the application.
+
+    Returns list of users.
     """
 
-    queryset = User.objects.all().order_by('id')
-    serializer_class = UsersSerializer
+    queryset = User.on_site.all().order_by('id')
     pagination_class = PageNumberSetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ('first_name', 'last_name', 'email', 'phone_number')
+    permission_classes = (IsAdminUser, HasUserOrGroupPermission)
     required_permissions = {
-        'GET': ['has_users_list']
+        'GET': ['has_users_list'],
+        'POST': ['has_user_add'],
     }
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return UsersSerializer
+        
+        return UserCreateSerializer
 
 
 class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     """
-    View for viewing a single user instance
+    View for viewing, updating or deleting a single user instance
+
+    Accepts the followinf POST/PUT parameters:
+    - last_login
+    - email
+    - first_name
+    - last_name
+    - phone_number
+    - has_confirmed_email
+    - street_address
+    - zip_code
+    - zip_place
+    - disabled_emails
+    - subscribed_to_newsletter
+    - allow_personalization
+    - allow_third_party_personalization
+    - date_joined
+    - is_active
+
+    Returns a single user instance
     """
 
-    queryset = User.objects.all()
+    queryset = User.on_site.all()
     serializer_class = UserSerializer
     permission_classes = (IsAdminUser, HasUserOrGroupPermission)
     required_permissions = {
-        'GET': ['has_users_list']
+        'GET': ['has_users_list'],
+        'PUT': ['has_user_edit'],
+        'DELETE': ['has_user_delete']
     }
+
+    def put(self, request, pk):
+        user = get_object_or_404(User, pk = pk)
+        serializer = UserSerializer(user, data=request.data)
+        
+        if serializer.is_valid():
+            # store old user in variable
+            old_user_instance = get_object_or_404(User, pk = pk)
+            # update user instance
+            serializer.save()
+            # create logging instance by comparing old vs. new user fields
+            AuditLog.create_log_entry(request.user, User, old_user_instance)
+            
+            # return updated user
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserNoteAPIView(APIView):
+
+    queryset = Note.objects.all()
+    permission_classes = (IsAdminUser, HasUserOrGroupPermission)
+    required_permissions = {
+        'GET': ['has_users_list'],
+        'POST': ['has_notes_add'],
+        'PUT': ['has_note_edit'],
+    }
+
+    def get_object(self, pk):
+        user = get_object_or_404(User, pk=pk)
+        return user
+
+    def get(self, request, pk):
+        user = self.get_object(pk)
+        user_notes = Note.get_notes(user)
+        serializer = UserNoteSerializer(user_notes, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        user = self.get_object(pk)
+        serializer = CreateNoteSerializer(data=request.data)
+
+        if serializer.is_valid():
+            Note.create_note(request.user, user, serializer.data['note'])
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk):
+
+        serializer = UpdateNoteSerializer(data=request.data)
+
+        if serializer.is_valid():
+            Note.update_note(request.user, serializer.data['id'], serializer.data['note'])
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class RequestUserRetrieveAPIView(generics.RetrieveAPIView):
@@ -77,7 +147,6 @@ class RequestUserRetrieveAPIView(generics.RetrieveAPIView):
     View for getting info about request user
     """
     permission_classes = (IsAuthenticated, )
-    authentication_classes = (JWTAuthenticationSafe, )
 
     def get(self, request):
         serializer = RequestUserSerializer(request.user)

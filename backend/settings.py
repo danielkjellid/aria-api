@@ -6,6 +6,8 @@ import django_heroku
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
+# Silenced system checks to prevent warnings about username not unique constraint
+SILENCED_SYSTEM_CHECKS = ['auth.E003', 'auth.W004']
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -18,10 +20,20 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['{{ allowed_hosts }}']
 
-SITE_ID = 1
+DEFAULT_SITE_ID = 1
+SITE_ID = DEFAULT_SITE_ID
+
+AUTH_USER_MODEL = 'users.User'
 
 # Authentication settings
-AUTH_USER_MODEL = 'users.User'
+AUTHENTICATION_BACKENDS = [
+    'core.auth_backend.AuthBackend',
+]
+
+# Authentication settings
+AUTHENTICATION_BACKENDS = [
+    'core.auth_backend.AuthBackend',
+]
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
@@ -45,7 +57,9 @@ INSTALLED_APPS = [
     
     'core',
     'users',
+    'utils',
     'inventory',
+    'kitchens',
 ]
 
 MIDDLEWARE = [
@@ -57,6 +71,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'core.middleware.DynamicSiteDomainMiddleware',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -127,9 +142,9 @@ IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = 'imagekit.cachefiles.strategies.Optimistic
 
 # Django-rest framework
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
+    # ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
