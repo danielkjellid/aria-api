@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('first_name', models.CharField(max_length=255, verbose_name='first name')),
                 ('last_name', models.CharField(max_length=255, verbose_name='last name')),
                 ('avatar_color', models.CharField(choices=[('#F87171', 'Red'), ('#FBBF24', 'Yellow'), ('#34D399', 'Green'), ('#60A5FA', 'Blue'), ('#A78BFA', 'Purple'), ('#F472B6', 'Pink')], max_length=8, verbose_name='avatar color')),
-                ('birth_date', models.DateField(default='2020-03-11', verbose_name='birth date')),
+                ('birth_date', models.DateField(default='2020-03-11', null=True, verbose_name='birth date')),
                 ('phone_number', models.CharField(max_length=30)),
                 ('has_confirmed_email', models.BooleanField(default=False)),
                 ('street_address', models.CharField(max_length=255, verbose_name='street name')),
