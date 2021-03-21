@@ -26,7 +26,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(
         _('email address'),
-        unique=True,
+        unique=False,
     )
     first_name = models.CharField(
         _('first name'),

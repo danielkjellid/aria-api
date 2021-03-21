@@ -179,7 +179,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             )
 
         # check if email is unique
-        if (email and User.objects.filter(email=email).exists()):
+        if (email and User.on_site.filter(email=email).exists()):
             raise serializers.ValidationError (
                 {'email': 'Email address must be unique.'}
             )

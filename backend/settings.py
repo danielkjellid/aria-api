@@ -6,6 +6,8 @@ import django_heroku
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
+# Silenced system checks to prevent warnings about username not unique constraint
+SILENCED_SYSTEM_CHECKS = ['auth.E003', 'auth.W004']
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -23,6 +25,11 @@ SITE_ID = 1
 
 # Authentication settings
 AUTH_USER_MODEL = 'users.User'
+
+# Authentication settings
+AUTHENTICATION_BACKENDS = [
+    'core.auth_backend.AuthBackend',
+]
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
