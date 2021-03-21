@@ -2,14 +2,16 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import Permission, update_last_login
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.contrib.sites.models import Site
 from rest_framework import serializers
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode as uid_decoder
 from django.utils.encoding import force_text
 
-
 from users.models import User
+from utils.models import AuditLog, Note
+from utils.api.serializers import AuditLogSerializer
 
 
 class UserProfileSerializer(serializers.Serializer):
@@ -22,6 +24,18 @@ class UserProfileSerializer(serializers.Serializer):
 
     def get_initial(self, instance):
         return instance.get_initial()
+
+
+class UserNoteSerializer(serializers.ModelSerializer):
+    """
+    A serializer to display notes associated with a specific user
+    """
+
+    profile = UserProfileSerializer(source='user')
+
+    class Meta:
+        model = Note
+        fields = ('id', 'profile', 'note', 'updated_at')
 
 
 class UsersSerializer(serializers.ModelSerializer):
@@ -41,9 +55,12 @@ class UserSerializer(serializers.ModelSerializer):
     A serializer to retrive a specific user instance
     """
 
-    full_name = serializers.SerializerMethodField()
+    profile = UserProfileSerializer(source='*', read_only=True)
     address = serializers.SerializerMethodField()
     acquisition_source = serializers.SerializerMethodField()
+    audit_logs = serializers.SerializerMethodField()
+    notes = serializers.SerializerMethodField()
+    phone_number = serializers.SerializerMethodField()
 
 
     def get_full_name(self, instance):
@@ -54,14 +71,28 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_acquisition_source(self, instance):
         if not instance.acquisition_source:
-            return 'Ingen'
+            return 'N/A'
         
         return instance.acquisition_source
 
+    def get_audit_logs(self, instance):
+        audit_logs = AuditLog.get_logs(instance)
+        return AuditLogSerializer(audit_logs, many=True, read_only=True).data
+
+    def get_notes(self, instance):
+        notes = Note.get_notes(instance)
+        return UserNoteSerializer(notes, many=True, read_only=True).data
+
+    def get_phone_number(self, instance):
+        if not instance.phone_number:
+            return 'N/A'
+
+        return instance.get_formatted_phone()
+
     class Meta:
         model = User
-        exclude = ('password', 'groups', 'user_permissions', 'is_superuser', 'is_staff')
-
+        exclude = ('password', 'groups', 'user_permissions', 'is_superuser', 'is_staff', 'avatar_color')
+        
 
 class RequestUserSerializer(serializers.ModelSerializer):
     """
@@ -127,6 +158,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'phone_number',
+            'birth_date',
             'email',
             'password',
             'password2',
@@ -140,20 +172,30 @@ class UserCreateSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate(self, data):
+        # add site property to data
+        data['site'] = Site.objects.get(pk=settings.SITE_ID)
+
         email = data.get('email')
         password = data.get('password')
         password2 = data.get('password2')
+        site = data.get('site')
         
         # check if passwords are equal
         if password != password2:
             raise serializers.ValidationError (
-                {'password': 'The two passwords must be equal.'}
+                {'password': 'Begge passordene må være like.'}
             )
 
         # check if email is unique
-        if (email and User.objects.filter(email=email).exists()):
+        if (email and User.on_site.filter(email=email).exists()):
             raise serializers.ValidationError (
-                {'email': 'Email address must be unique.'}
+                {'email': 'E-post adressen eksiterer allerede.'}
+            )
+
+        # check if site exists
+        if not site:
+            raise serializers.ValidationError (
+                {'site': 'Error getting site, please contact an admin'}
             )
 
         return data

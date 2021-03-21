@@ -169,7 +169,7 @@ class Kitchen(models.Model):
     supplier = models.ForeignKey(
         Supplier,
         on_delete=models.CASCADE,
-        related_name='supplier_kitchen'
+        related_name='supplier'
     )
     status = models.IntegerField(
         _('Status'),

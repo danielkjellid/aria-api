@@ -4,7 +4,6 @@ from django.conf import settings
 from inventory.models.category import Category, SubCategory
 from inventory.models.supplier import Supplier
 from inventory.models.product import Product, ProductColor, ProductFile, ProductImage, ProductVariant, ProductVariantSize
-from inventory.models.kitchen import Kitchen
 from rest_framework import serializers
 
 # generic serializers
@@ -46,7 +45,7 @@ class CategoryNavigationListSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
     def get_children(self, instance):
-        children = instance.children.all().order_by('ordering')
+        children = instance.children.filter(sites=settings.SITE_ID).order_by('ordering')
         return SubCategoryNavigationListSerializer(children, many=True, read_only=True).data
 
 
@@ -356,93 +355,40 @@ class ProductSerializer(serializers.ModelSerializer):
         return ProductVariantSizeSerializer(sizes, read_only=True, many=True).data
 
 
-# kitchen serializers
-class KitchenListSerializer(serializers.ModelSerializer):
-    """
-    Serializer for getting a list over kitchens
-    """
-
-    thumbnail_500x305 = serializers.ImageField(read_only=True)
-    thumbnail_660x400 = serializers.ImageField(read_only=True)
-    thumbnail_850x520 = serializers.ImageField(read_only=True)
+class ProductNameImageSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Kitchen
+        model = Product
         fields = (
-            'id',
             'name',
-            'slug',
-            'thumbnail_description',
-            'thumbnail_500x305',
-            'thumbnail_660x400',
-            'thumbnail_850x520'
+            'thumbnail'
         )
-        read_only_fields = fields
 
 
-class KitchenVariantImageSerializer(serializers.Serializer):
-    """
-    Serializer for kitchen variants which uses an image instead of a color
-    """
-
-    name = serializers.CharField(read_only=True)
-    image = serializers.ImageField()
-
-
-
-class KitchenSerializer(serializers.ModelSerializer):
-    """
-    Serializer for getting a specific kitchen instance
-    """
-
-    example_from_price = serializers.SerializerMethodField()
-    silk_variants = InstanceColorSerializer(read_only=True, many=True)
-    decor_variants = KitchenVariantImageSerializer(read_only=True, many=True)
-    plywood_variants = KitchenVariantImageSerializer(read_only=True, many=True)
-    laminate_variants = InstanceColorSerializer(read_only=True, many=True)
-    exclusive_variants = InstanceColorSerializer(read_only=True, many=True)
-    trend_variants = InstanceColorSerializer(read_only=True, many=True)
-    image_512x512 = serializers.ImageField(read_only=True)
-    image_1024x1024 = serializers.ImageField(read_only=True)
-    image_1536x1536 = serializers.ImageField(read_only=True)
-    image_1024x480 = serializers.ImageField(read_only=True)
-    image_1536x660 = serializers.ImageField(read_only=True)
-    image_2048x800 = serializers.ImageField(read_only=True)
-    image_2560x940 = serializers.ImageField(read_only=True)
-    image_3072x940 = serializers.ImageField(read_only=True)
+class ProductListSerializer(serializers.ModelSerializer):
+    
+    product = ProductNameImageSerializer(source='*')
+    gross_price = serializers.SerializerMethodField()
+    unit = serializers.CharField(source='get_unit_display')
+    status = serializers.CharField(source='get_status_display') # get display name of integer choice 
+    variants = ProductVariantSerializer(read_only=True, many=True)
 
     class Meta:
-        model = Kitchen
+        model = Product
         fields = (
             'id',
-            'name',
-            'slug',
-            'description',
-            'extra_description',
-            'example_from_price',
-            'can_be_painted',
-            'silk_variants',
-            'decor_variants',
-            'plywood_variants',
-            'laminate_variants',
-            'exclusive_variants',
-            'trend_variants',
-            'image_512x512',
-            'image_1024x1024',
-            'image_1536x1536',
-            'image_1024x480',
-            'image_1536x660',
-            'image_2048x800',
-            'image_2560x940',
-            'image_3072x940',
+            'product',
+            'gross_price',
+            'unit',
+            'status',
+            'variants'
         )
-        read_only_fields = fields
 
-    def get_example_from_price(self, instance):
+    def get_gross_price(self, product):
+        """
+        Format price to always have two decimals
+        """
 
-        if instance.example_from_price:
-            formatted_from_price = '%0.2f' % (instance.example_from_price)
+        formatted_price = '%0.2f' % (product.gross_price)
 
-            return formatted_from_price
-        
-        return None
+        return formatted_price.strip()

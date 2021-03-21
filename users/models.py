@@ -1,4 +1,7 @@
 import random
+import phonenumbers
+from django.contrib.sites.models import Site
+from django.contrib.sites.managers import CurrentSiteManager
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
@@ -24,7 +27,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(
         _('email address'),
-        unique=True,
+        unique=False,
     )
     first_name = models.CharField(
         _('first name'),
@@ -36,6 +39,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=255,
         unique=False,
     )
+    birth_date = models.DateField(_('birth date'))
     avatar_color = models.CharField(
         _('avatar color'),
         max_length=8,
@@ -110,19 +114,26 @@ class User(AbstractBaseUser, PermissionsMixin):
         default=False,
         help_text=_('Designates whether the user is automatically granted all permissions.'),
     )
+    site = models.ForeignKey(
+        Site, 
+        on_delete=models.CASCADE,
+        null=True
+    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+    on_site = CurrentSiteManager()
 
     class Meta:
         verbose_name= _('user')
         verbose_name_plural = _('users')
         permissions = (
             ('has_users_list', 'Can list users'),
-            ('has_users_export', 'Can export users list to pdf'),
-            ('has_user_add', 'Can add new users'),
+            ('has_user_edit', 'Can edit a single user instance'),
+            ('has_user_add', 'Can add a single user instance'),
+            ('has_user_delete', 'Can delete a single user instance')
         )
 
     def __str__(self):
@@ -159,6 +170,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         address = '%s, %s %s' % (self.street_address, self.zip_code, self.zip_place)
         return address.strip()
+
+    def get_formatted_phone(self):
+
+        parsed_phone = phonenumbers.parse(self.phone_number, 'NO') #TODO: Handle different country codes
+        formatted_phone = phonenumbers.format_number(parsed_phone, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
+
+        return formatted_phone
+
 
     def save(self, *args, **kwargs):
         if not self.avatar_color:
