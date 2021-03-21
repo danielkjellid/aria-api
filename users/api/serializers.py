@@ -158,6 +158,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'phone_number',
+            'birth_date',
             'email',
             'password',
             'password2',
@@ -182,13 +183,13 @@ class UserCreateSerializer(serializers.ModelSerializer):
         # check if passwords are equal
         if password != password2:
             raise serializers.ValidationError (
-                {'password': 'The two passwords must be equal.'}
+                {'password': 'Begge passordene må være like.'}
             )
 
         # check if email is unique
         if (email and User.on_site.filter(email=email).exists()):
             raise serializers.ValidationError (
-                {'email': 'Email address must be unique.'}
+                {'email': 'E-post adressen eksiterer allerede.'}
             )
 
         # check if site exists
