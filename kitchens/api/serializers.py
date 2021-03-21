@@ -1,6 +1,17 @@
 from rest_framework import serializers
 from kitchens.models import Kitchen
 
+
+class InstanceColorSerializer(serializers.Serializer):
+    """
+    A serializer to display name and color hex
+    """
+
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(read_only=True)
+    color_hex = serializers.CharField(read_only=True)
+
+
 # kitchen serializers
 class KitchenListSerializer(serializers.ModelSerializer):
     """
