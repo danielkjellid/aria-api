@@ -60,6 +60,7 @@ class UserSerializer(serializers.ModelSerializer):
     acquisition_source = serializers.SerializerMethodField()
     audit_logs = serializers.SerializerMethodField()
     notes = serializers.SerializerMethodField()
+    phone_number = serializers.SerializerMethodField()
 
 
     def get_full_name(self, instance):
@@ -81,6 +82,12 @@ class UserSerializer(serializers.ModelSerializer):
     def get_notes(self, instance):
         notes = Note.get_notes(instance)
         return UserNoteSerializer(notes, many=True, read_only=True).data
+
+    def get_phone_number(self, instance):
+        if not instance.phone_number:
+            return 'N/A'
+
+        return instance.get_formatted_phone()
 
     class Meta:
         model = User

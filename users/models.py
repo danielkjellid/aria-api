@@ -1,4 +1,5 @@
 import random
+import phonenumbers
 from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager
 from django.db import models
@@ -168,6 +169,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         address = '%s, %s %s' % (self.street_address, self.zip_code, self.zip_place)
         return address.strip()
+
+    def get_formatted_phone(self):
+
+        parsed_phone = phonenumbers.parse(self.phone_number, 'NO') #TODO: Handle different country codes
+        formatted_phone = phonenumbers.format_number(parsed_phone, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
+
+        return formatted_phone
+
 
     def save(self, *args, **kwargs):
         if not self.avatar_color:
