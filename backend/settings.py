@@ -21,10 +21,14 @@ DEBUG = True
 ALLOWED_HOSTS = ['{{ allowed_hosts }}']
 
 DEFAULT_SITE_ID = 1
-SITE_ID = 1
+SITE_ID = DEFAULT_SITE_ID
+
+AUTH_USER_MODEL = 'users.User'
 
 # Authentication settings
-AUTH_USER_MODEL = 'users.User'
+AUTHENTICATION_BACKENDS = [
+    'core.auth_backend.AuthBackend',
+]
 
 # Authentication settings
 AUTHENTICATION_BACKENDS = [
