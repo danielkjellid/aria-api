@@ -1,17 +1,19 @@
 from django.conf import settings
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import Permission, update_last_login
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
-from django.contrib.sites.models import Site
-from rest_framework import serializers
-from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import Permission, update_last_login
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.models import Site
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_decode as uid_decoder
-from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_encode as uid_encoder
+from django.utils.translation import gettext, gettext_lazy as _
+from rest_framework import serializers
 
 from users.models import User
-from utils.models import AuditLog, Note
 from utils.api.serializers import AuditLogSerializer
+from utils.models import AuditLog, Note
 
 
 class UserProfileSerializer(serializers.Serializer):
@@ -108,7 +110,7 @@ class RequestUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('full_name', 'avatar_color', 'initial', 'email', 'is_authenticated', 'permissions', 'group_permissions', 'is_staff', 'is_superuser')
+        fields = ('full_name', 'avatar_color', 'initial', 'email', 'is_authenticated', 'permissions', 'group_permissions', 'is_staff', 'is_superuser', 'has_confirmed_email')
 
     def get_full_name(self, user):
         if user.is_authenticated:
@@ -273,7 +275,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
         try:
             uid = force_text(uid_decoder(attrs['uid']))
-            self.user = User.objects.get(pk=uid)
+            self.user = User.on_site.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             raise serializers.ValidationError({'uid': ['Invalid value']})
 
@@ -293,3 +295,78 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
     def save(self):
         return self.set_password_form.save()
+
+
+class AccountVerificationSerializer(serializers.Serializer):
+
+    email = serializers.EmailField()
+    
+    def validate_email(self, value):
+        """
+        Check if email exits on site, and that the user,
+        and that the user in question is active
+        """
+        try:
+            self.user = User.on_site.get(email__iexact=value)
+            if self.user.is_active:
+                return value
+        except User.DoesNotExist:
+            raise serializers.ValidationError({'detail': _('User does not exist')})
+
+    
+    def validate(self, data):
+        """
+        Check if email isn't already confirmed
+        """
+        if self.user.has_confirmed_email:
+            raise serializers.ValidationError({'detail': _('Email is already confirmed, unable to resend verification email')})
+
+        return data
+
+
+    def save(self):
+        current_site = Site.objects.get_current()
+
+        # constructor for verification email
+        # sends uid and token in email
+        user_verification_email = render_to_string('email/verify_account.html', {
+            'protocol': 'https',
+            'domain': current_site.domain,
+            'user': self.user,
+            'uid': uid_encoder(force_bytes(self.user.pk)),
+            'token': default_token_generator.make_token(self.user)
+        })
+
+        # use email_user method and send verification email
+        self.user.email_user(
+            '%s %s' % ('Bekreft kontoen din på', current_site.name), 
+            '%s %s' % ('Bekreft kontoen din på', current_site.name), 
+            html_message=user_verification_email
+        )
+
+
+
+class AccountVerificationConfirmSerializer(serializers.Serializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+
+    def validate(self, attrs):
+        
+        try:
+            uid = force_text(uid_decoder(attrs['uid']))
+            self.user = User.on_site.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            raise serializers.ValidationError({'uid': ['Invalid value']})
+
+        if not default_token_generator.check_token(self.user, attrs['token']):
+            raise serializers.ValidationError({'token': ['Invalid value']})
+
+        if self.user.has_confirmed_email:
+            raise serializers.ValidationError({'detail': _('Konto er allerede verifisert')})
+
+        return attrs
+
+    def save(self):
+        self.user.has_confirmed_email=True
+        self.user.save()
+    

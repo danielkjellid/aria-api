@@ -13,11 +13,18 @@ from users.api.serializers import (PasswordResetConfirmSerializer,
                                    PasswordResetSerializer,
                                    RequestUserSerializer, UserCreateSerializer,
                                    UserNoteSerializer, UserSerializer,
-                                   UsersSerializer)
+                                   UsersSerializer, AccountVerificationSerializer, AccountVerificationConfirmSerializer)
 from users.models import User
 from utils.pagination import PageNumberSetPagination
 from utils.models import AuditLog, Note
 from utils.api.serializers import CreateNoteSerializer, UpdateNoteSerializer
+
+
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes
+
 
 sensitive_post_parameters_m = method_decorator(
     sensitive_post_parameters(
@@ -25,7 +32,7 @@ sensitive_post_parameters_m = method_decorator(
     )
 )
 
-class UsersListCreateAPIView(generics.ListCreateAPIView):
+class UsersListAPIView(generics.ListAPIView):
     """
     View for listing all users in the application.
 
@@ -34,19 +41,13 @@ class UsersListCreateAPIView(generics.ListCreateAPIView):
 
     queryset = User.on_site.all().order_by('id')
     pagination_class = PageNumberSetPagination
+    serializer_class = UserCreateSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ('first_name', 'last_name', 'email', 'phone_number')
     permission_classes = (IsAdminUser, HasUserOrGroupPermission)
     required_permissions = {
         'GET': ['has_users_list'],
-        'POST': ['has_user_add'],
     }
-
-    def get_serializer_class(self):
-        if self.request.method == 'GET':
-            return UsersSerializer
-        
-        return UserCreateSerializer
 
 
 class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -169,11 +170,8 @@ class UserCreateAPIView(generics.CreateAPIView):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            user = serializer.save()
-
-            if user:
-                json = serializer.data
-                return Response(json, status=status.HTTP_201_CREATED)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
                 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -229,4 +227,56 @@ class PasswordResetConfirmView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response({'detail': _('Password has been reset with the new password')})
+        return Response(
+            {'detail': _('Password has been reset with the new password')}, 
+            status=status.HTTP_200_OK
+        )
+
+
+class AccountVerificationView(generics.GenericAPIView):
+    """
+    View for sending verification email.
+
+    Accepts the following POST parameters: email
+    Returns the success/fail message.
+    """
+
+    serializer_class = AccountVerificationSerializer
+    permission_classes = (AllowAny, )
+    authentication_classes = ()
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        serializer.save()
+
+        return Response(
+            {'detail': _('Email verification has been sent.')},
+            status=status.HTTP_200_OK
+        )
+
+
+class AccountVerificationConfirmView(generics.GenericAPIView):
+    """
+    Verification e-mail link is confirmed, therefore
+    this sets the user.has_confirmed_email to true.
+
+    Accept the following POST parameters: token, uid
+
+    Returns the success/fail message.
+    """
+
+    serializer_class = AccountVerificationConfirmSerializer
+    permission_classes = (AllowAny, )
+    authentication_classes = ()
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            {'detail': _('Account email verified')}, 
+            status=status.HTTP_200_OK
+        )
