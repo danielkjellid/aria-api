@@ -8,7 +8,7 @@ from inventory.models.category import SubCategory
 from inventory.models.common import Status
 from inventory.models.supplier import Supplier
 
-class KitchenSilkColor(models.Model):
+class SilkColor(models.Model):
 
     name = models.CharField(
         _('Kitchen silk name'),
@@ -22,14 +22,14 @@ class KitchenSilkColor(models.Model):
     )
 
     class Meta:
-        verbose_name = _('Kithcen silk color')
-        verbose_name_plural = _('Kitchen silks colors')
+        verbose_name = _('Silk color')
+        verbose_name_plural = _('Silk colors')
 
     def __str__(self):
         return self.name.strip()
 
 
-class KitchenDecor(models.Model):
+class Decor(models.Model):
 
     def kitchen_decor_directory_path(self, filename):
         """
@@ -51,14 +51,14 @@ class KitchenDecor(models.Model):
     )
 
     class Meta:
-        verbose_name = _('Kithcen decor')
-        verbose_name_plural = _('Kitchen decors')
+        verbose_name = _('Decor')
+        verbose_name_plural = _('Decors')
 
     def __str__(self):
         return self.name.strip()
 
 
-class KitchenPlywood(models.Model):
+class Plywood(models.Model):
 
     def kitchen_plywood_directory_path(self, filename):
         """
@@ -80,14 +80,14 @@ class KitchenPlywood(models.Model):
     )
 
     class Meta:
-        verbose_name = _('Kithcen plywood')
-        verbose_name_plural = _('Kitchen plywoods')
+        verbose_name = _('Plywood')
+        verbose_name_plural = _('Plywoods')
 
     def __str__(self):
         return self.name.strip()
 
 
-class KitchenLaminateColor(models.Model):
+class LaminateColor(models.Model):
 
     name = models.CharField(
         _('Kitchen laminate name'),
@@ -101,14 +101,14 @@ class KitchenLaminateColor(models.Model):
     )
 
     class Meta:
-        verbose_name = _('Kithcen laminate color')
-        verbose_name_plural = _('Kitchen laminates colors')
+        verbose_name = _('Laminate color')
+        verbose_name_plural = _('Laminates colors')
 
     def __str__(self):
         return self.name.strip()
 
 
-class KitchenExclusiveColor(models.Model):
+class ExclusiveColor(models.Model):
 
     name = models.CharField(
         _('Kitchen exclusive name'),
@@ -122,14 +122,14 @@ class KitchenExclusiveColor(models.Model):
     )
 
     class Meta:
-        verbose_name = _('Kithcen exclusive color')
-        verbose_name_plural = _('Kitchen exclusives colors')
+        verbose_name = _('Exclusive color')
+        verbose_name_plural = _('Exclusive colors')
 
     def __str__(self):
         return self.name.strip()
 
 
-class KitchenTrendColor(models.Model):
+class TrendColor(models.Model):
 
     name = models.CharField(
         _('Kitchen trend name'),
@@ -143,8 +143,8 @@ class KitchenTrendColor(models.Model):
     )
 
     class Meta:
-        verbose_name = _('Kithcen trend color')
-        verbose_name_plural = _('Kitchen trend colors')
+        verbose_name = _('Trend color')
+        verbose_name_plural = _('Trend colors')
 
     def __str__(self):
         return self.name.strip()
@@ -210,32 +210,32 @@ class Kitchen(models.Model):
         ),
     )
     silk_variants = models.ManyToManyField(
-        KitchenSilkColor,
+        SilkColor,
         related_name='kitchen_silk',
         blank=True
     )
     decor_variants = models.ManyToManyField(
-        KitchenDecor,
+        Decor,
         related_name='kitchen_decor',
         blank=True
     )
     plywood_variants = models.ManyToManyField(
-        KitchenPlywood,
+        Plywood,
         related_name='kitchen_plywood',
         blank=True
     )
     laminate_variants = models.ManyToManyField(
-        KitchenLaminateColor,
+        LaminateColor,
         related_name='kitchen_decor',
         blank=True
     )
     exclusive_variants = models.ManyToManyField(
-        KitchenExclusiveColor,
+        ExclusiveColor,
         related_name='kitchen_exclusive',
         blank=True
     )
     trend_variants = models.ManyToManyField(
-        KitchenTrendColor,
+        TrendColor,
         related_name='kitchen_decor',
         blank=True
     )

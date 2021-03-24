@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255, verbose_name='Kitchen decor name')),
-                ('image', imagekit.models.fields.ProcessedImageField(upload_to=kitchens.models.KitchenDecor.kitchen_decor_directory_path)),
+                ('image', imagekit.models.fields.ProcessedImageField(upload_to=kitchens.models.Decor.kitchen_decor_directory_path)),
             ],
             options={
                 'db_table': 'kitchens_kitchendecor',
@@ -62,7 +62,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255, verbose_name='Kitchen decor name')),
-                ('image', imagekit.models.fields.ProcessedImageField(upload_to=kitchens.models.KitchenPlywood.kitchen_plywood_directory_path)),
+                ('image', imagekit.models.fields.ProcessedImageField(upload_to=kitchens.models.Plywood.kitchen_plywood_directory_path)),
             ],
             options={
                 'db_table': 'kitchens_kitchenplywood',

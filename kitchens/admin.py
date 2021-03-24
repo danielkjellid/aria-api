@@ -1,5 +1,5 @@
 from django.contrib import admin
-from kitchens.models import Kitchen, KitchenSilkColor, KitchenDecor, KitchenPlywood, KitchenLaminateColor, KitchenExclusiveColor, KitchenTrendColor
+from kitchens.models import Kitchen, SilkColor, Decor, Plywood, LaminateColor, ExclusiveColor, TrendColor
 
 class KitchenAdmin(admin.ModelAdmin):
     model = Kitchen
@@ -10,26 +10,26 @@ admin.site.register(Kitchen, KitchenAdmin)
 
 # to be removed
 class KitchenSilkAdmin(admin.ModelAdmin):
-    model = KitchenSilkColor
+    model = SilkColor
 
 class KitchenDecorAdmin(admin.ModelAdmin):
-    model = KitchenDecor
+    model = Decor
 
 class KitchenPlywoodAdmin(admin.ModelAdmin):
-    model = KitchenPlywood
+    model = Plywood
 
 class KitchenLaminateAdmin(admin.ModelAdmin):
-    model = KitchenLaminateColor
+    model = LaminateColor
 
 class KitchenExclusiveAdmin(admin.ModelAdmin):
-    model = KitchenExclusiveColor
+    model = ExclusiveColor
 
 class KitchenTrendAdmin(admin.ModelAdmin):
-    model = KitchenTrendColor
+    model = TrendColor
 
-admin.site.register(KitchenSilkColor, KitchenSilkAdmin)
-admin.site.register(KitchenDecor, KitchenDecorAdmin)
-admin.site.register(KitchenPlywood, KitchenPlywoodAdmin)
-admin.site.register(KitchenLaminateColor, KitchenLaminateAdmin)
-admin.site.register(KitchenExclusiveColor, KitchenExclusiveAdmin)
-admin.site.register(KitchenTrendColor, KitchenTrendAdmin)
+admin.site.register(SilkColor, KitchenSilkAdmin)
+admin.site.register(Decor, KitchenDecorAdmin)
+admin.site.register(Plywood, KitchenPlywoodAdmin)
+admin.site.register(LaminateColor, KitchenLaminateAdmin)
+admin.site.register(ExclusiveColor, KitchenExclusiveAdmin)
+admin.site.register(TrendColor, KitchenTrendAdmin)
