@@ -41,7 +41,7 @@ class UsersListAPIView(generics.ListAPIView):
 
     queryset = User.on_site.all().order_by('id')
     pagination_class = PageNumberSetPagination
-    serializer_class = UserCreateSerializer
+    serializer_class = UsersSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ('first_name', 'last_name', 'email', 'phone_number')
     permission_classes = (IsAdminUser, HasUserOrGroupPermission)
