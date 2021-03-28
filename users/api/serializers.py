@@ -110,7 +110,7 @@ class RequestUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('full_name', 'avatar_color', 'initial', 'email', 'is_authenticated', 'permissions', 'group_permissions', 'is_staff', 'is_superuser')
+        fields = ('full_name', 'avatar_color', 'initial', 'email', 'is_authenticated', 'permissions', 'group_permissions', 'is_staff', 'is_superuser', 'has_confirmed_email')
 
     def get_full_name(self, user):
         if user.is_authenticated:

@@ -77,7 +77,7 @@ class ProductAdmin(admin.ModelAdmin):
     model = Product
     list_display = ('name', 'status', 'gross_price', 'slug')
     list_filter = ('status', 'supplier__name', 'category', 'can_be_purchased_online',)
-    filter_horizontal = ('sites', 'materials', 'applications', 'styles', 'colors')
+    filter_horizontal = ('sites', 'materials', 'applications', 'styles', 'colors', 'category')
     ordering = ['name']
     inlines = [ProductImageInline, ProductFileInline, ProductVariantInline, ProductVariantSizeInline]
 
