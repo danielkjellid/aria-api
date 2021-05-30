@@ -285,14 +285,15 @@ class Product(models.Model):
 
 
 class ProductSiteState(models.Model):
-    site = models.OneToOneField(
+    site = models.ForeignKey(
         Site,
         on_delete=models.CASCADE,
+        related_name='site_state'
     )
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
-        related_name='site_state'
+        related_name='product_site_state'
     )
     gross_price = models.FloatField(_('Gross price'))
     display_price = models.BooleanField(
