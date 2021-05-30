@@ -1,9 +1,10 @@
 import os
 from django.conf import settings
+from django.contrib.sites.models import Site
 
 from inventory.models.category import Category, SubCategory
 from inventory.models.supplier import Supplier
-from inventory.models.product import Product, ProductColor, ProductFile, ProductImage, ProductVariant, ProductVariantSize
+from inventory.models.product import Product, ProductColor, ProductSiteState, ProductFile, ProductImage, ProductVariant, ProductVariantSize
 from rest_framework import serializers
 
 # generic serializers
@@ -69,6 +70,7 @@ class CategoryListSerializer(serializers.ModelSerializer):
             'slug',
             'ordering',
             'width',
+            'apply_filter',
             'image_512x512',
             'image_1024x1024',
             'image_1024x480',
@@ -118,6 +120,7 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = (
             'name',
+            'apply_filter',
             'image_512x512',
             'image_1024x1024',
             'image_1024x480',
@@ -212,6 +215,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
         fields = (
+            'apply_filter',
             'image_512x512',
             'image_1024x1024',
             'image_1024x480',
@@ -288,6 +292,19 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
         return formatted_price.strip()
 
 
+    
+class ProductSiteStateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProductSiteState
+        fields = (
+            'gross_price',
+            'display_price',
+            'can_be_purchased_online',
+            'can_be_picked_up',
+        )
+        read_only_fields = fields
+
 class ProductSerializer(serializers.ModelSerializer):
     """
     A serializer to get a single product instance
@@ -304,6 +321,7 @@ class ProductSerializer(serializers.ModelSerializer):
     variants = ProductVariantSerializer(read_only=True, many=True)
     files = ProductFileSerializer(read_only=True, many=True)
     origin_country = serializers.StringRelatedField(source='supplier.origin_country', read_only=True )
+    site_state = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -326,7 +344,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'images',
             'variants',
             'files',
-            'origin_country'
+            'origin_country',
+            'site_state'
         )
         read_only_fields = fields
 
@@ -353,6 +372,11 @@ class ProductSerializer(serializers.ModelSerializer):
 
         sizes = product.sizes.all().order_by('size')
         return ProductVariantSizeSerializer(sizes, read_only=True, many=True).data
+
+    def get_site_state(self, product):
+        site_state = ProductSiteState.on_site.get(product=product)
+
+        return ProductSiteStateSerializer(site_state, read_only=True).data
 
 
 class ProductNameImageSerializer(serializers.ModelSerializer):

@@ -247,6 +247,13 @@ class Kitchen(models.Model):
         _('Date updated'),
         auto_now=True
     )
+    apply_filter = models.BooleanField(
+        _('Apply filter'),
+        default=False,
+        help_text=_(
+            'Apply filter to image if the image is light to maintain an acceptable contrast'
+        ),
+    )
     image = models.ImageField(
         _('Image'),
         help_text=(

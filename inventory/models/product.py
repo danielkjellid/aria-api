@@ -187,6 +187,11 @@ class Product(models.Model):
         default=0.25
     )
     gross_price = models.FloatField(_('Gross price'))
+    display_price = models.ManyToManyField(
+        Site,
+        related_name='display_price_product_site',
+        blank=True
+    )
     supplier_purchase_price = models.FloatField(
         _('Supplier purchase price'),
         default=0.0
@@ -279,6 +284,50 @@ class Product(models.Model):
         return self.name.strip()
 
 
+class ProductSiteState(models.Model):
+    site = models.OneToOneField(
+        Site,
+        on_delete=models.CASCADE,
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='site_state'
+    )
+    gross_price = models.FloatField(_('Gross price'))
+    display_price = models.BooleanField(
+        _('Display price to customer'),
+        default=True,
+        help_text=_(
+            'Designates whether the product price is displayed'
+        ),
+    )
+    can_be_purchased_online = models.BooleanField(
+        _('Can be purchased online'),
+        default=False,
+        help_text=_(
+            'Designates whether the product can be purchased and shipped'
+        ),
+    )
+    can_be_picked_up = models.BooleanField(
+        _('Can be picked up'),
+        default=False,
+        help_text=_(
+           'Designates whether the product can be purchased and picked up in store' 
+        )
+    )
+    supplier_purchase_price = models.FloatField(
+        _('Supplier purchase price'),
+        default=0.0
+    )
+    supplier_shipping_cost = models.FloatField(
+        _('Shipping cost'),
+        default=0.0
+    )
+
+    objects = models.Manager()
+    on_site = CurrentSiteManager()
+
 class ProductImage(models.Model):
 
     def product_image_directory_path(self, filename):
@@ -301,6 +350,13 @@ class ProductImage(models.Model):
         help_text=(
             _('Image must be above 3072x940px')
         )
+    )
+    apply_filter = models.BooleanField(
+        _('Apply filter'),
+        default=False,
+        help_text=_(
+            'Apply filter to image if the image is light to maintain an acceptable contrast'
+        ),
     )
     image_512x512 = ImageSpecField(
         source='image', 

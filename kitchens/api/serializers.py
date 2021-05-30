@@ -74,6 +74,7 @@ class KitchenSerializer(serializers.ModelSerializer):
             'name',
             'slug',
             'description',
+            'apply_filter',
             'extra_description',
             'example_from_price',
             'can_be_painted',

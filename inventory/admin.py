@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from inventory.models.category import Category, SubCategory
 from inventory.models.supplier import Supplier
-from inventory.models.product import Product, ProductVariant, ProductFile, ProductImage, ProductApplication, ProductColor, Size, ProductStyle, ProductMaterial, ProductVariantSize
+from inventory.models.product import Product, ProductSiteState, ProductVariant, ProductFile, ProductImage, ProductApplication, ProductColor, Size, ProductStyle, ProductMaterial, ProductVariantSize
 
 class CategoryAdmin(admin.ModelAdmin):
     model = Category
@@ -72,14 +72,17 @@ class ProductVariantSizeInline(admin.StackedInline):
 class ProductVariantInline(admin.StackedInline):
     model = ProductVariant
 
+class ProductSiteStateInline(admin.StackedInline):
+    model = ProductSiteState  
+
 
 class ProductAdmin(admin.ModelAdmin):
     model = Product
     list_display = ('name', 'status', 'gross_price', 'slug')
     list_filter = ('status', 'supplier__name', 'category', 'can_be_purchased_online',)
-    filter_horizontal = ('sites', 'materials', 'applications', 'styles', 'colors', 'category')
+    filter_horizontal = ('sites', 'materials', 'applications', 'styles', 'colors', 'category', 'display_price')
     ordering = ['name']
-    inlines = [ProductImageInline, ProductFileInline, ProductVariantInline, ProductVariantSizeInline]
+    inlines = [ProductSiteStateInline, ProductImageInline, ProductFileInline, ProductVariantInline, ProductVariantSizeInline]
 
 
 admin.site.register(Category, CategoryAdmin)

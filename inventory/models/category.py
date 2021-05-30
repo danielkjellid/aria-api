@@ -57,6 +57,13 @@ class Category(models.Model):
         blank=True, 
         null=True,
     )
+    apply_filter = models.BooleanField(
+        _('Apply filter'),
+        default=False,
+        help_text=_(
+            'Apply filter to image if the image is light to maintain an acceptable contrast'
+        ),
+    )
     image_512x512 = ImageSpecField(
         source='image', 
         processors=[ResizeToFill(512, 512)], 
