@@ -186,20 +186,6 @@ class Product(models.Model):
         _('VAT Rate'),
         default=0.25
     )
-    gross_price = models.FloatField(_('Gross price'))
-    display_price = models.ManyToManyField(
-        Site,
-        related_name='display_price_product_site',
-        blank=True
-    )
-    supplier_purchase_price = models.FloatField(
-        _('Supplier purchase price'),
-        default=0.0
-    )
-    supplier_shipping_cost = models.FloatField(
-        _('Shipping cost'),
-        default=0.0
-    )
     available_in_special_sizes = models.BooleanField(
         _('Available in special sizes'),
         default=False,
@@ -226,20 +212,6 @@ class Product(models.Model):
     absorption = models.FloatField(
         null=True,
         blank=True
-    )
-    can_be_purchased_online = models.BooleanField(
-        _('Can be purchased online'),
-        default=False,
-        help_text=_(
-            'Designates whether the product can be purchased and shipped'
-        ),
-    )
-    can_be_picked_up = models.BooleanField(
-        _('Can be picked up'),
-        default=False,
-        help_text=_(
-           'Designates whether the product can be purchased and picked up in store' 
-        )
     )
     created_at = models.DateTimeField(
         _('Date created'), 

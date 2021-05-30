@@ -78,9 +78,9 @@ class ProductSiteStateInline(admin.StackedInline):
 
 class ProductAdmin(admin.ModelAdmin):
     model = Product
-    list_display = ('name', 'status', 'gross_price', 'slug')
-    list_filter = ('status', 'supplier__name', 'category', 'can_be_purchased_online',)
-    filter_horizontal = ('sites', 'materials', 'applications', 'styles', 'colors', 'category', 'display_price')
+    list_display = ('name', 'status', 'slug')
+    list_filter = ('status', 'supplier__name', 'category',)
+    filter_horizontal = ('sites', 'materials', 'applications', 'styles', 'colors', 'category',)
     ordering = ['name']
     inlines = [ProductSiteStateInline, ProductImageInline, ProductFileInline, ProductVariantInline, ProductVariantSizeInline]
 

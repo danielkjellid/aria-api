@@ -260,7 +260,7 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
     applications = ProductInstanceNameSerializer(read_only=True, many=True)
     materials = ProductInstanceNameSerializer(read_only=True, many=True)
     variants = ProductVariantSerializer(read_only=True, many=True)
-    gross_price = serializers.SerializerMethodField()
+    site_state = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -269,15 +269,14 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
             'name',
             'slug',
             'unit',
-            'gross_price',
-            'can_be_purchased_online',
             'categories',
             'colors',
             'styles',
             'applications',
             'materials',
             'thumbnail',
-            'variants'
+            'variants',
+            'site_state'
         )
         read_only_fields = fields
 
@@ -285,16 +284,15 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
     def get_unit(self, product):
         return product.get_unit_display()
 
-    
-    def get_gross_price(self, product):
-        formatted_price = '%0.2f' % (product.gross_price)
+    def get_site_state(self, product):
+        site_state = ProductSiteState.on_site.get(product=product)
 
-        return formatted_price.strip()
-
+        return ProductSiteStateSerializer(site_state, read_only=True).data
 
     
 class ProductSiteStateSerializer(serializers.ModelSerializer):
 
+    gross_price = serializers.SerializerMethodField()
     class Meta:
         model = ProductSiteState
         fields = (
@@ -304,6 +302,14 @@ class ProductSiteStateSerializer(serializers.ModelSerializer):
             'can_be_picked_up',
         )
         read_only_fields = fields
+
+    def get_gross_price(self, instance):
+        """
+        Format price to always have two decimals
+        """
+        formatted_price = '%0.2f' % (instance.gross_price)
+
+        return formatted_price.strip()
 
 class ProductSerializer(serializers.ModelSerializer):
     """
@@ -316,7 +322,6 @@ class ProductSerializer(serializers.ModelSerializer):
     applications = ProductInstanceNameSerializer(read_only=True, many=True)
     materials = ProductInstanceNameSerializer(read_only=True, many=True)
     sizes = serializers.SerializerMethodField()
-    gross_price = serializers.SerializerMethodField()
     images = ProductImageSerializer(read_only=True, many=True)
     variants = ProductVariantSerializer(read_only=True, many=True)
     files = ProductFileSerializer(read_only=True, many=True)
@@ -332,10 +337,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'slug',
             'short_description',
             'description',
-            'gross_price',
             'available_in_special_sizes',
             'absorption',
-            'can_be_purchased_online',
             'sizes',
             'colors',
             'styles',
@@ -355,15 +358,6 @@ class ProductSerializer(serializers.ModelSerializer):
         """
 
         return product.get_unit_display()
-
-    def get_gross_price(self, product):
-        """
-        Format price to always have two decimals
-        """
-        
-        formatted_price = '%0.2f' % (product.gross_price)
-
-        return formatted_price.strip()
 
     def get_sizes(self, product):
         """
@@ -392,27 +386,23 @@ class ProductNameImageSerializer(serializers.ModelSerializer):
 class ProductListSerializer(serializers.ModelSerializer):
     
     product = ProductNameImageSerializer(source='*')
-    gross_price = serializers.SerializerMethodField()
     unit = serializers.CharField(source='get_unit_display')
     status = serializers.CharField(source='get_status_display') # get display name of integer choice 
     variants = ProductVariantSerializer(read_only=True, many=True)
+    site_state = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = (
             'id',
             'product',
-            'gross_price',
             'unit',
             'status',
-            'variants'
+            'variants',
+            'site_state'
         )
 
-    def get_gross_price(self, product):
-        """
-        Format price to always have two decimals
-        """
+    def get_site_state(self, product):
+        site_state = ProductSiteState.on_site.get(product=product)
 
-        formatted_price = '%0.2f' % (product.gross_price)
-
-        return formatted_price.strip()
+        return ProductSiteStateSerializer(site_state, read_only=True).data
