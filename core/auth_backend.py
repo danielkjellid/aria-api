@@ -18,8 +18,9 @@ class AuthBackend(ModelBackend):
             if user.site != Site.objects.get(pk=settings.SITE_ID):
                 return None
             else:
-                user.check_password(password)
-                return user
+                if user.check_password(password):
+                    return user
+                return None
         except User.DoesNotExist:
             return None
 
