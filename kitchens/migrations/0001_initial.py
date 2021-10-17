@@ -10,10 +10,6 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ('inventory', '0039_auto_20210321_1410'),
-    ]
-
     state_operations = [
         migrations.CreateModel(
             name='KitchenDecor',

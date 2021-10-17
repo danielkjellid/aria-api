@@ -4,7 +4,7 @@ from django.utils.text import slugify
 from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill
 
-from inventory.models.common import Status
+from products.types import ProductStatus
 from suppliers.models import Supplier
 
 class SilkColor(models.Model):
@@ -172,8 +172,8 @@ class Kitchen(models.Model):
     )
     status = models.IntegerField(
         _('Status'),
-        choices=Status.choices,
-        default=Status.DRAFT,
+        choices=ProductStatus.choices,
+        default=ProductStatus.DRAFT,
     )
     slug = models.SlugField(
         _('Slug'),
