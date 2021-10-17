@@ -122,7 +122,7 @@ class Category(models.Model):
     )
     sites = models.ManyToManyField(
         Site,
-        related_name='category_site',
+        related_name='categories',
         blank=True
     )
 
@@ -173,7 +173,7 @@ class SubCategory(models.Model):
     )
     sites = models.ManyToManyField(
         Site,
-        related_name='subcategory_site',
+        related_name='subcategories',
         blank=True
     )
 

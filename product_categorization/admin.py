@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from inventory.models.category import Category, SubCategory
+from product_categorization.models import Category, SubCategory
 
 class CategoryAdmin(admin.ModelAdmin):
     model = Category
@@ -20,4 +20,3 @@ class SubCategoryAdmin(admin.ModelAdmin):
 
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(SubCategory, SubCategoryAdmin)
-

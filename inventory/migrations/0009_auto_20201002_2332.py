@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='category',
             name='image',
-            field=models.ImageField(blank=True, help_text='Category image, should only be used on top level parents!', null=True, upload_to=inventory.models.Category.category_directory_path, verbose_name='Image'),
+            field=models.ImageField(blank=True, help_text='Category image, should only be used on top level parents!', null=True, upload_to='some/category/image/path', verbose_name='Image'),
         ),
     ]

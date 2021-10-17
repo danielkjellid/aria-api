@@ -4,7 +4,6 @@ from django.utils.text import slugify
 from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill
 
-from inventory.models.category import SubCategory
 from inventory.models.common import Status
 from suppliers.models import Supplier
 

@@ -1,21 +1,10 @@
 import os
 from django.conf import settings
 
-from inventory.models.category import Category, SubCategory
+from product_categorization.models import Category, SubCategory
 from rest_framework import serializers
 
-# generic serializers
-class InstanceColorSerializer(serializers.Serializer):
-    """
-    A serializer to display name and color hex
-    """
 
-    id = serializers.IntegerField(read_only=True)
-    name = serializers.CharField(read_only=True)
-    color_hex = serializers.CharField(read_only=True)
-
-
-# category serializers
 class SubCategoryNavigationListSerializer(serializers.ModelSerializer):
     """
     A serializer to display category children for a given category

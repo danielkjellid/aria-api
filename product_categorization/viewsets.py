@@ -1,10 +1,8 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 
-from inventory.api.serializers import (CategoryListSerializer,
-                                       CategoryNavigationListSerializer,
-                                       CategorySerializer)
-from inventory.models.category import Category
+from product_categorization.serializers import CategoryNavigationListSerializer, CategoryListSerializer, CategorySerializer
+from product_categorization.models import Category
 
 class CategoriesNavigationListAPIView(generics.ListAPIView):
     """

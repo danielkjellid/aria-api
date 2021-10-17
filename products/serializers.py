@@ -3,7 +3,15 @@ from django.conf import settings
 
 from products.models import Product, ProductSiteState, ProductFile, ProductImage, ProductVariant, ProductVariantSize
 from rest_framework import serializers
-from inventory.api.serializers import InstanceColorSerializer
+
+class InstanceColorSerializer(serializers.Serializer):
+    """
+    A serializer to display name and color hex
+    """
+
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(read_only=True)
+    color_hex = serializers.CharField(read_only=True)
 
 
 class ProductInstanceNameSerializer(serializers.ModelSerializer):

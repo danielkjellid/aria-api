@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill
 
-from inventory.models.category import SubCategory
+from product_categorization.models import SubCategory
 from inventory.models.common import Status, Unit
 from suppliers.models import Supplier
 

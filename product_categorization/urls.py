@@ -1,5 +1,5 @@
 from django.urls import path
-from inventory.api.viewsets import (CategoriesNavigationListAPIView,
+from product_categorization.viewsets import (CategoriesNavigationListAPIView,
                                     CategoryRetrieveAPIView, CategoryListAPIView,)
 from products.viewsets import ProductListByCategoryAPIView
 
