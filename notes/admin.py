@@ -1,8 +1,7 @@
 from django.contrib import admin
+from notes.models import NoteEntry
 
-from utils.models import Note
-
-class NoteAdmin(admin.ModelAdmin):
+class NoteEntryAdmin(admin.ModelAdmin):
     list_display = [
         'user',
         'content_type',
@@ -12,7 +11,4 @@ class NoteAdmin(admin.ModelAdmin):
         'created_at'
     ]
 
-admin.site.register(Note, NoteAdmin)
-
-
-  
+admin.site.register(NoteEntry, NoteEntryAdmin)

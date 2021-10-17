@@ -3,12 +3,11 @@ from rest_framework.permissions import IsAdminUser
 
 from core.permissions import HasUserOrGroupPermission
 
-from utils.models import Note
+from notes.models import NoteEntry
 
 class NoteDeleteAPIView(generics.DestroyAPIView):
-    queryset = Note.objects.all()
+    queryset = NoteEntry.objects.all()
     permission_classes = (IsAdminUser, HasUserOrGroupPermission)
     required_permissions = {
         'DELETE': ['has_note_delete']
     }
-    
