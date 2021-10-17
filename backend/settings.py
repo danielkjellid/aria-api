@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'imagekit',
     
     'core',
+    'audit_logs',
     'users',
     'utils',
     'kitchens',

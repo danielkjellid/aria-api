@@ -12,8 +12,9 @@ from django.utils.translation import gettext, gettext_lazy as _
 from rest_framework import serializers
 
 from users.models import User
-from utils.api.serializers import AuditLogSerializer
-from utils.models import AuditLog, Note
+from audit_logs.models import LogEntry
+from audit_logs.serializers import LogEntrySerializer
+from utils.models import Note
 
 
 class UserProfileSerializer(serializers.Serializer):
@@ -78,8 +79,8 @@ class UserSerializer(serializers.ModelSerializer):
         return instance.acquisition_source
 
     def get_audit_logs(self, instance):
-        audit_logs = AuditLog.get_logs(instance)
-        return AuditLogSerializer(audit_logs, many=True, read_only=True).data
+        audit_logs = LogEntry.get_logs(instance) # TODO: change to manager
+        return LogEntrySerializer(audit_logs, many=True, read_only=True).data
 
     def get_notes(self, instance):
         notes = Note.get_notes(instance)

@@ -16,7 +16,8 @@ from users.api.serializers import (PasswordResetConfirmSerializer,
                                    UsersSerializer, AccountVerificationSerializer, AccountVerificationConfirmSerializer)
 from users.models import User
 from utils.pagination import PageNumberSetPagination
-from utils.models import AuditLog, Note
+from audit_logs.models import LogEntry
+from utils.models import Note
 from utils.api.serializers import CreateNoteSerializer, UpdateNoteSerializer
 
 
@@ -93,7 +94,7 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
             # update user instance
             serializer.save()
             # create logging instance by comparing old vs. new user fields
-            AuditLog.create_log_entry(request.user, User, old_user_instance)
+            LogEntry.create_log_entry(request.user, User, old_user_instance)
             
             # return updated user
             return Response(serializer.data)
