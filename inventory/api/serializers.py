@@ -4,7 +4,7 @@ from django.contrib.sites.models import Site
 
 from inventory.models.category import Category, SubCategory
 from inventory.models.supplier import Supplier
-from inventory.models.product import Product, ProductColor, ProductSiteState, ProductFile, ProductImage, ProductVariant, ProductVariantSize
+from products.models import Product, ProductColor, ProductSiteState, ProductFile, ProductImage, ProductVariant, ProductVariantSize
 from rest_framework import serializers
 
 # generic serializers

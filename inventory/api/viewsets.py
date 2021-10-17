@@ -11,7 +11,7 @@ from inventory.api.serializers import (CategoryListSerializer,
                                        CategorySerializer,
                                        ProductListByCategorySerializer, ProductListSerializer,
                                        ProductSerializer)
-from inventory.models.product import Product
+from products.models import Product
 from inventory.models.category import Category
 from utils.pagination import PageNumberSetPagination
 

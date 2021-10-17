@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='product',
             name='thumbnail',
-            field=imagekit.models.fields.ProcessedImageField(blank=True, default='media/products/default.jpg', null=True, upload_to=inventory.models.Product.product_directory_path),
+            field=imagekit.models.fields.ProcessedImageField(blank=True, default='media/products/default.jpg', null=True, upload_to='some/product/path'),
         ),
         migrations.CreateModel(
             name='ProductFiles',

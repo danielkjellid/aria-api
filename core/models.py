@@ -32,6 +32,22 @@ class BaseModel(models.Model):
     object = BaseManager.from_queryset(BaseQuerySet)()
 
 
+def get_public_image_upload_path(instance: "BaseHeaderImage", filename: str) -> str:
+    """
+    Get the path of which to upload the image.
+    """
+
+    # Each image model is required to specify where images should be uploaded
+    try:
+        path = instance.UPLOAD_PATH.lower()
+    except AttributeError:
+        raise RuntimeError(
+            f"UPLOAD_PATH is not set on model: {instance.__class__.__name__}"
+        )
+
+    return path
+
+
 class BaseHeaderImage(models.Model):
 
     class Meta:
@@ -46,7 +62,7 @@ class BaseHeaderImage(models.Model):
     path variables should be slugified.
     """
 
-    UPLOAD_FILE_PATH: str
+    UPLOAD_PATH: str
 
     apply_filter = models.BooleanField(
         _('Apply filter'),
@@ -57,7 +73,7 @@ class BaseHeaderImage(models.Model):
     )
     image = models.ImageField(
         _('Image'),
-        upload_to=UPLOAD_FILE_PATH,
+        upload_to=get_public_image_upload_path,
         blank=True, 
         null=True,
         help_text=(
