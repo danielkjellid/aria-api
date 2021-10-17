@@ -15,7 +15,7 @@ from users.api.serializers import (PasswordResetConfirmSerializer,
                                    UserNoteSerializer, UserSerializer,
                                    UsersSerializer, AccountVerificationSerializer, AccountVerificationConfirmSerializer)
 from users.models import User
-from utils.pagination import PageNumberSetPagination
+from core.pagination import PageNumberSetPagination
 from audit_logs.models import LogEntry
 from notes.models import NoteEntry
 from notes.serializers import CreateNoteSerializer, UpdateNoteSerializer

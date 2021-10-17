@@ -5,7 +5,7 @@ from core.permissions import HasUserOrGroupPermission
 
 from products.models import Product
 from products.serializers import ProductListByCategorySerializer, ProductListSerializer, ProductSerializer
-from utils.pagination import PageNumberSetPagination
+from core.pagination import PageNumberSetPagination
 
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):

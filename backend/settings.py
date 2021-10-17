@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'core',
     'audit_logs',
     'users',
-    'utils',
     'kitchens',
     'products',
     'product_categorization',
