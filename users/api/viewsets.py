@@ -17,9 +17,8 @@ from users.api.serializers import (PasswordResetConfirmSerializer,
 from users.models import User
 from utils.pagination import PageNumberSetPagination
 from audit_logs.models import LogEntry
-from utils.models import Note
-from utils.api.serializers import CreateNoteSerializer, UpdateNoteSerializer
-
+from notes.models import NoteEntry
+from notes.serializers import CreateNoteSerializer, UpdateNoteSerializer
 
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
@@ -104,7 +103,7 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 class UserNoteAPIView(APIView):
 
-    queryset = Note.objects.all()
+    queryset = NoteEntry.objects.all()
     permission_classes = (IsAdminUser, HasUserOrGroupPermission)
     required_permissions = {
         'GET': ['has_users_list'],
@@ -118,7 +117,7 @@ class UserNoteAPIView(APIView):
 
     def get(self, request, pk):
         user = self.get_object(pk)
-        user_notes = Note.get_notes(user)
+        user_notes = NoteEntry.get_notes(user)
         serializer = UserNoteSerializer(user_notes, many=True)
         return Response(serializer.data)
 
@@ -127,7 +126,7 @@ class UserNoteAPIView(APIView):
         serializer = CreateNoteSerializer(data=request.data)
 
         if serializer.is_valid():
-            Note.create_note(request.user, user, serializer.data['note'])
+            NoteEntry.create_note(request.user, user, serializer.data['note'])
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -137,7 +136,7 @@ class UserNoteAPIView(APIView):
         serializer = UpdateNoteSerializer(data=request.data)
 
         if serializer.is_valid():
-            Note.update_note(request.user, serializer.data['id'], serializer.data['note'])
+            NoteEntry.update_note(request.user, serializer.data['id'], serializer.data['note'])
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

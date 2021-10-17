@@ -14,7 +14,7 @@ from rest_framework import serializers
 from users.models import User
 from audit_logs.models import LogEntry
 from audit_logs.serializers import LogEntrySerializer
-from utils.models import Note
+from notes.models import NoteEntry
 
 
 class UserProfileSerializer(serializers.Serializer):
@@ -37,7 +37,7 @@ class UserNoteSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(source='user')
 
     class Meta:
-        model = Note
+        model = NoteEntry
         fields = ('id', 'profile', 'note', 'updated_at')
 
 
@@ -83,7 +83,7 @@ class UserSerializer(serializers.ModelSerializer):
         return LogEntrySerializer(audit_logs, many=True, read_only=True).data
 
     def get_notes(self, instance):
-        notes = Note.get_notes(instance)
+        notes = NoteEntry.get_notes(instance)
         return UserNoteSerializer(notes, many=True, read_only=True).data
 
     def get_phone_number(self, instance):

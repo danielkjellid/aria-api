@@ -1,6 +1,6 @@
 from django.urls import path
 
-from utils.api.viewsets import NoteDeleteAPIView
+from notes.viewsets import NoteDeleteAPIView
 
 
 urlpatterns = [

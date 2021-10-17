@@ -9,9 +9,9 @@ urlpatterns = [
     path('api/auth/', include('core.urls')),
     path('api/', include('users.api.urls')),
     path('api/', include('kitchens.api.urls')),
-    path('api/', include('utils.api.urls')),
     path('api/', include('products.urls')),
     path('api/', include('product_categorization.urls')),
+    path('api/', include('notes.urls')),
     path('api-auth/', include('rest_framework.urls')),
 ] 
 

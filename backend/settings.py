@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     'kitchens',
     'products',
     'product_categorization',
-    'suppliers'
+    'suppliers',
+    'notes',
 ]
 
 MIDDLEWARE = [
