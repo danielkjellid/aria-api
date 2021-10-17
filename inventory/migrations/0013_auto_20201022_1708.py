@@ -15,16 +15,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='productfile',
             name='file',
-            field=models.FileField(upload_to=inventory.models.product.ProductFile.product_file_directory_path, verbose_name='File'),
+            field=models.FileField(upload_to='some/product/file/path', verbose_name='File'),
         ),
         migrations.AlterField(
             model_name='productimage',
             name='image',
-            field=models.ImageField(blank=True, null=True, upload_to=inventory.models.product.ProductImage.product_image_directory_path, verbose_name='Image'),
+            field=models.ImageField(blank=True, null=True, upload_to='some/product/image/path', verbose_name='Image'),
         ),
         migrations.AlterField(
             model_name='productvariant',
             name='thumbnail',
-            field=imagekit.models.fields.ProcessedImageField(blank=True, null=True, upload_to=inventory.models.product.ProductVariant.product_variant_directory_path),
+            field=imagekit.models.fields.ProcessedImageField(blank=True, null=True, upload_to='some/product/variant/file/path'),
         ),
     ]

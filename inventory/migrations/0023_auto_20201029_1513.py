@@ -15,16 +15,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='product',
             name='thumbnail',
-            field=imagekit.models.fields.ProcessedImageField(blank=True, default='media/products/default.jpg', help_text='Image must be above 380x575px', null=True, upload_to=inventory.models.product.Product.product_directory_path),
+            field=imagekit.models.fields.ProcessedImageField(blank=True, default='media/products/default.jpg', help_text='Image must be above 380x575px', null=True, upload_to='some/product/file/path'),
         ),
         migrations.AlterField(
             model_name='productimage',
             name='image',
-            field=models.ImageField(blank=True, help_text='Image must be above 3072x940px', null=True, upload_to=inventory.models.product.ProductImage.product_image_directory_path, verbose_name='Image'),
+            field=models.ImageField(blank=True, help_text='Image must be above 3072x940px', null=True, upload_to='some/product/image/path', verbose_name='Image'),
         ),
         migrations.AlterField(
             model_name='productvariant',
             name='thumbnail',
-            field=imagekit.models.fields.ProcessedImageField(blank=True, help_text='Image must be above 380x575px', null=True, upload_to=inventory.models.product.ProductVariant.product_variant_directory_path),
+            field=imagekit.models.fields.ProcessedImageField(blank=True, help_text='Image must be above 380x575px', null=True, upload_to='some/product/variant/file/path'),
         ),
     ]
