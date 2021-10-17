@@ -16,7 +16,7 @@ SILENCED_SYSTEM_CHECKS = ['auth.E003', 'auth.W004']
 SECRET_KEY = '{{ secret_key }}'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['{{ allowed_hosts }}']
 
@@ -27,12 +27,7 @@ AUTH_USER_MODEL = 'users.User'
 
 # Authentication settings
 AUTHENTICATION_BACKENDS = [
-    'core.auth_backend.AuthBackend',
-]
-
-# Authentication settings
-AUTHENTICATION_BACKENDS = [
-    'core.auth_backend.AuthBackend',
+    'core.authentication.AuthBackend',
 ]
 
 LOGIN_REDIRECT_URL = '/'
@@ -60,6 +55,7 @@ INSTALLED_APPS = [
     'utils',
     'inventory',
     'kitchens',
+    'products'
 ]
 
 MIDDLEWARE = [
