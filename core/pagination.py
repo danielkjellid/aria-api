@@ -4,7 +4,7 @@ from rest_framework.response import Response
 
 class PageNumberSetPagination(PageNumberPagination):
     """
-    Pagination used for backend tables (overview/list viewpoints)
+    Pagination used for tables (overview/list viewsets)
     """
     
     page_size = 18
