@@ -12,11 +12,6 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ('inventory', '0051_auto_20211017_1607'),
-        ('sites', '0002_alter_domain_unique'),
-    ]
-
     state_operations = [
         migrations.CreateModel(
             name='Product',

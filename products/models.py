@@ -6,8 +6,9 @@ from django.utils.translation import gettext_lazy as _
 from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill
 
+from products.types import ProductStatus
+
 from product_categorization.models import SubCategory
-from inventory.models.common import Status, Unit
 from suppliers.models import Supplier
 
 
@@ -130,6 +131,10 @@ class ProductMaterial(models.Model):
 
 class Product(models.Model):
 
+    class Unit(models.IntegerChoices):
+        SQUARE_METER = 1, _('m2')
+        PCS = 2, _('stk')
+
     def product_directory_path(self, filename):
         """
         Method to upload the files to the appropriate path
@@ -153,8 +158,8 @@ class Product(models.Model):
     )
     status = models.IntegerField(
        _('Status'),
-       choices=Status.choices,
-       default=Status.DRAFT,
+       choices=ProductStatus.choices,
+       default=ProductStatus.DRAFT,
     )
     slug = models.SlugField(
         _('Slug'),
@@ -400,8 +405,8 @@ class ProductVariant(models.Model):
     )
     status = models.IntegerField(
        _('Status'),
-       choices=Status.choices,
-       default=Status.DRAFT,
+       choices=ProductStatus.choices,
+       default=ProductStatus.DRAFT,
     )
     thumbnail = ProcessedImageField(
         upload_to=product_variant_directory_path,
