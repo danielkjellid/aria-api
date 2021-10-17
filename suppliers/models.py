@@ -45,7 +45,7 @@ class Supplier(models.Model):
     )
     sites = models.ManyToManyField(
         Site,
-        related_name='supplier_site',
+        related_name='suppliers',
         blank=True
     )
 
