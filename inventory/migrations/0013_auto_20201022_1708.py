@@ -2,7 +2,6 @@
 
 from django.db import migrations, models
 import imagekit.models.fields
-import inventory.models.product
 
 
 class Migration(migrations.Migration):

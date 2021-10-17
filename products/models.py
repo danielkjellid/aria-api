@@ -8,7 +8,7 @@ from imagekit.processors import ResizeToFill
 
 from inventory.models.category import SubCategory
 from inventory.models.common import Status, Unit
-from inventory.models.supplier import Supplier
+from suppliers.models import Supplier
 
 
 class Size(models.Model):
