@@ -25,7 +25,6 @@ class Migration(migrations.Migration):
                 ('supplier_discount', models.FloatField(blank=True, help_text='Supplier discount in percent. E.g. 0.2 = 20%', null=True)),
                 ('origin_country', models.CharField(max_length=255, verbose_name='Origin country')),
                 ('is_active', models.BooleanField(default=True, help_text='Designates whether the category should be treated as active.', verbose_name='Active')),
-                ('sites', models.ManyToManyField(blank=True, related_name='suppliers', to='sites.Site')),
             ],
             options={
                 'verbose_name': 'supplier',
@@ -33,7 +32,6 @@ class Migration(migrations.Migration):
             },
             managers=[
                 ('objects', django.db.models.manager.Manager()),
-                ('on_site', django.contrib.sites.managers.CurrentSiteManager()),
             ],
         ),
     ]
