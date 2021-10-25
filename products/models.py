@@ -6,7 +6,9 @@ from django.utils.translation import gettext_lazy as _
 from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill
 
-from products.types import ProductStatus
+from core.fields import ChoiceArrayField
+
+from products import enums
 
 from product_categorization.models import SubCategory
 from suppliers.models import Supplier
@@ -158,8 +160,8 @@ class Product(models.Model):
     )
     status = models.IntegerField(
        _('Status'),
-       choices=ProductStatus.choices,
-       default=ProductStatus.DRAFT,
+       choices=enums.ProductStatus.choices,
+       default=enums.ProductStatus.DRAFT,
     )
     slug = models.SlugField(
         _('Slug'),
@@ -202,14 +204,17 @@ class Product(models.Model):
         ProductColor,
         related_name='product_color'
     )
+    temp_styles = ChoiceArrayField(models.CharField(choices=enums.ProductStyles.choices, max_length=50), null=True)
     styles = models.ManyToManyField(
         ProductStyle,
         related_name='product_style'
     )
+    temp_applications = ChoiceArrayField(models.CharField(choices=enums.ProductApplications.choices, max_length=50), null=True)
     applications = models.ManyToManyField(
         ProductApplication,
         related_name='product_application'
     )
+    temp_materials = ChoiceArrayField(models.CharField(choices=enums.ProductMaterials.choices, max_length=50), null=True)
     materials = models.ManyToManyField(
         ProductMaterial,
         related_name='product_material'
@@ -243,6 +248,7 @@ class Product(models.Model):
         related_name='product_site',
         blank=True
     )
+    is_imported_from_external_source = models.BooleanField(default=False)
     
     objects = models.Manager()
     on_site = CurrentSiteManager()
@@ -259,6 +265,44 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name.strip()
+
+    def get_materials_display(self):
+        """
+        Return a list of human readable labels
+        """
+        
+        # TODO: Remove value as dict, done now to not mess up frontend
+        return [
+            {"name": v.label} for v in enums.ProductMaterials 
+            for material in self.temp_materials 
+            if v.value == material
+        ]
+
+    def get_styles_display(self):
+        """
+        Return a list of human readable labels
+        """
+
+        # TODO: Remove value as dict, done now to not mess up frontend
+        return [
+            {"name": v.label} for v in enums.ProductMaterials 
+            for style in self.temp_styles 
+            if v.value == style
+        ]
+
+    def get_applications_display(self):
+        """
+        Return a list of human readable labels
+        """
+
+        # TODO: Remove value as dict, done now to not mess up frontend
+        return [
+            {"name": v.label} for v in enums.ProductMaterials 
+            for application in self.temp_applications 
+            if v.value == application
+        ]
+
+
 
 
 class ProductSiteState(models.Model):
@@ -405,8 +449,8 @@ class ProductVariant(models.Model):
     )
     status = models.IntegerField(
        _('Status'),
-       choices=ProductStatus.choices,
-       default=ProductStatus.DRAFT,
+       choices=enums.ProductStatus.choices,
+       default=enums.ProductStatus.DRAFT,
     )
     thumbnail = ProcessedImageField(
         upload_to=product_variant_directory_path,
