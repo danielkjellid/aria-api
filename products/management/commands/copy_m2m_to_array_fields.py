@@ -8,10 +8,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         
-        products = Product.objects.filter(id=120)
+        products = Product.objects.all()
 
-        for product in products:
+        for i, product in enumerate(products):
             
+            print(f'Currently processing {i + 1} of {len(products)} products.')
+
             product_materials = product.materials.all()
             product_applications = product.applications.all()
             product_styles = product.styles.all()
