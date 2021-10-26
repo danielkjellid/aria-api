@@ -1,9 +1,9 @@
 from typing import Any, Dict, Mapping, Iterable
 from django.contrib.postgres.fields import ArrayField
 from django import forms
-from django.forms import SelectMultiple
+from django.forms import CheckboxSelectMultiple
 
-class ArraySelectMultiple(SelectMultiple):
+class ArraySelectMultiple(CheckboxSelectMultiple):
     def value_omitted_from_data(self, data: Dict[str, Any], files: Mapping[str, Iterable[Any]], name: str) -> bool:
         return False
 

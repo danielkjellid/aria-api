@@ -4,7 +4,7 @@ from django.utils.text import slugify
 from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill
 
-from products.types import ProductStatus
+from products.enums import ProductStatus
 from suppliers.models import Supplier
 
 class SilkColor(models.Model):
