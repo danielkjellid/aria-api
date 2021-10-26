@@ -236,43 +236,29 @@ class Product(models.Model):
     def __str__(self):
         return self.name.strip()
 
-    def get_materials_display(self):
+    def _get_array_field_labels(self, field, enum):
         """
-        Return a list of human readable labels
+        Return a list of human readable labels for ArrayChoiceFields
         """
-        
+
+        if field is None:
+            return []
+
         # TODO: Remove value as dict, done now to not mess up frontend
         return [
-            {"name": v.label} for v in enums.ProductMaterials 
-            for material in self.materials 
-            if v.value == material
+            {"name": item.label} for item in enum
+            for f in field
+            if item.value == f
         ]
+
+    def get_materials_display(self):
+        return self._get_array_field_labels(self.materials, enums.ProductMaterials)
 
     def get_styles_display(self):
-        """
-        Return a list of human readable labels
-        """
-
-        # TODO: Remove value as dict, done now to not mess up frontend
-        return [
-            {"name": v.label} for v in enums.ProductStyles 
-            for style in self.styles 
-            if v.value == style
-        ]
+        return self._get_array_field_labels(self.styles, enums.ProductStyles)
 
     def get_applications_display(self):
-        """
-        Return a list of human readable labels
-        """
-        
-        # TODO: Remove value as dict, done now to not mess up frontend
-        return [
-            {"name": v.label} for v in enums.ProductApplications 
-            for application in self.applications 
-            if v.value == application
-        ]
-
-
+        return self._get_array_field_labels(self.applications, enums.ProductApplications)
 
 
 class ProductSiteState(models.Model):
