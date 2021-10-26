@@ -116,9 +116,9 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
     unit = serializers.SerializerMethodField()
     categories = ProductInstanceNameSerializer(source='category', read_only=True, many=True)
     colors = InstanceColorSerializer(read_only=True, many=True)
-    styles = ProductInstanceNameSerializer(read_only=True, many=True)
-    applications = ProductInstanceNameSerializer(read_only=True, many=True)
-    materials = ProductInstanceNameSerializer(read_only=True, many=True)
+    styles = serializers.SerializerMethodField()
+    applications = serializers.SerializerMethodField()
+    materials = serializers.SerializerMethodField()
     variants = ProductVariantSerializer(read_only=True, many=True)
     site_state = serializers.SerializerMethodField()
 
@@ -149,6 +149,22 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
 
         return ProductSiteStateSerializer(site_state, read_only=True).data
 
+    def get_styles(self, product):
+        styles = product.get_styles_display()
+
+        return ProductInstanceNameSerializer(styles, read_only=True, many=True).data
+
+
+    def get_applications(self, product):
+        applications = product.get_applications_display()
+
+        return ProductInstanceNameSerializer(applications, read_only=True, many=True).data
+
+    def get_materials(self, product):
+        materials = product.get_materials_display()
+
+        return ProductInstanceNameSerializer(materials, read_only=True, many=True).data
+
     
 class ProductSiteStateSerializer(serializers.ModelSerializer):
 
@@ -178,9 +194,9 @@ class ProductSerializer(serializers.ModelSerializer):
 
     unit = serializers.SerializerMethodField()
     colors = ProductInstanceNameSerializer(read_only=True, many=True)
-    styles = ProductInstanceNameSerializer(read_only=True, many=True)
-    applications = ProductInstanceNameSerializer(read_only=True, many=True)
-    materials = ProductInstanceNameSerializer(read_only=True, many=True)
+    styles = serializers.SerializerMethodField()
+    applications = serializers.SerializerMethodField()
+    materials = serializers.SerializerMethodField()
     sizes = serializers.SerializerMethodField()
     images = ProductImageSerializer(read_only=True, many=True)
     variants = ProductVariantSerializer(read_only=True, many=True)
@@ -231,6 +247,22 @@ class ProductSerializer(serializers.ModelSerializer):
         site_state = ProductSiteState.on_site.get(product=product)
 
         return ProductSiteStateSerializer(site_state, read_only=True).data
+
+    def get_styles(self, product):
+        styles = product.get_styles_display()
+
+        return ProductInstanceNameSerializer(styles, read_only=True, many=True).data
+
+
+    def get_applications(self, product):
+        applications = product.get_applications_display()
+
+        return ProductInstanceNameSerializer(applications, read_only=True, many=True).data
+
+    def get_materials(self, product):
+        materials = product.get_materials_display()
+
+        return ProductInstanceNameSerializer(materials, read_only=True, many=True).data
 
 
 class ProductNameImageSerializer(serializers.ModelSerializer):

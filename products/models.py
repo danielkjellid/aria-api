@@ -285,7 +285,7 @@ class Product(models.Model):
 
         # TODO: Remove value as dict, done now to not mess up frontend
         return [
-            {"name": v.label} for v in enums.ProductMaterials 
+            {"name": v.label} for v in enums.ProductStyles 
             for style in self.temp_styles 
             if v.value == style
         ]
@@ -294,10 +294,10 @@ class Product(models.Model):
         """
         Return a list of human readable labels
         """
-
+        
         # TODO: Remove value as dict, done now to not mess up frontend
         return [
-            {"name": v.label} for v in enums.ProductMaterials 
+            {"name": v.label} for v in enums.ProductApplications 
             for application in self.temp_applications 
             if v.value == application
         ]
