@@ -11,7 +11,7 @@ class ProductStatus(models.IntegerChoices):
 class ProductStyles(models.TextChoices):
     CLASSIC = 'classic', 'Klassisk'
     CONCRETE = 'concrete', 'Betong'
-    LUXURIOUS = 'luxurious', 'Luksus'
+    LUXURIOUS = 'luxurious', 'Lux' # TODO: change the label after convertion is done
     MARBLE = 'marble', 'Marmor'
     NATURAL = 'natural', 'Naturlig'
     SCANDINAVIAN = 'scandinavian', 'Skandinavisk'
