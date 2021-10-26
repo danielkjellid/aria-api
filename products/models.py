@@ -86,51 +86,6 @@ class ProductColor(models.Model):
         return self.name.strip()
 
 
-class ProductStyle(models.Model):
-    name = models.CharField(
-        _('Name'),
-        max_length=100,
-        unique=True
-    )
-
-    class Meta:
-        verbose_name = _('Product style')
-        verbose_name_plural = _('Product styles')
-
-    def __str__(self):
-        return self.name.strip()
-
-
-class ProductApplication(models.Model):
-    name = models.CharField(
-        _('Name'),
-        max_length=100,
-        unique=True
-    )
-
-    class Meta:
-        verbose_name = _('Product application')
-        verbose_name_plural = _('Product applications')
-
-    def __str__(self):
-        return self.name.strip()
-
-
-class ProductMaterial(models.Model):
-    name = models.CharField(
-        _('Name'),
-        max_length=100,
-        unique=True
-    )
-
-    class Meta:
-        verbose_name = _('Product material')
-        verbose_name_plural = _('Product materials')
-
-    def __str__(self):
-        return self.name.strip()
-
-
 class Product(models.Model):
 
     class Unit(models.IntegerChoices):
@@ -204,20 +159,35 @@ class Product(models.Model):
         ProductColor,
         related_name='product_color'
     )
-    temp_styles = ChoiceArrayField(models.CharField(choices=enums.ProductStyles.choices, max_length=50), null=True)
-    styles = models.ManyToManyField(
-        ProductStyle,
-        related_name='product_style'
+    styles = ChoiceArrayField(
+        models.CharField(
+            choices=enums.ProductStyles.choices, 
+            max_length=50
+        ), 
+        null=True,
+        help_text=_(
+            'Which style the product line represent. Want to add more options? Reach out to Daniel.'
+        ),
     )
-    temp_applications = ChoiceArrayField(models.CharField(choices=enums.ProductApplications.choices, max_length=50), null=True)
-    applications = models.ManyToManyField(
-        ProductApplication,
-        related_name='product_application'
+    applications = ChoiceArrayField(
+        models.CharField(
+            choices=enums.ProductApplications.choices, 
+            max_length=50
+        ), 
+        null=True,
+        help_text=_(
+            'Area of product usage. Want to add more options? Reach out to Daniel.'
+        ),
     )
-    temp_materials = ChoiceArrayField(models.CharField(choices=enums.ProductMaterials.choices, max_length=50), null=True)
-    materials = models.ManyToManyField(
-        ProductMaterial,
-        related_name='product_material'
+    materials = ChoiceArrayField(
+        models.CharField(
+            choices=enums.ProductMaterials.choices, 
+            max_length=50
+        ), 
+        null=True,
+        help_text=_(
+            'Material product is made of. Want to add more options? Reach out to Daniel.'
+        ),
     )
     absorption = models.FloatField(
         null=True,
@@ -274,7 +244,7 @@ class Product(models.Model):
         # TODO: Remove value as dict, done now to not mess up frontend
         return [
             {"name": v.label} for v in enums.ProductMaterials 
-            for material in self.temp_materials 
+            for material in self.materials 
             if v.value == material
         ]
 
@@ -286,7 +256,7 @@ class Product(models.Model):
         # TODO: Remove value as dict, done now to not mess up frontend
         return [
             {"name": v.label} for v in enums.ProductStyles 
-            for style in self.temp_styles 
+            for style in self.styles 
             if v.value == style
         ]
 
@@ -298,7 +268,7 @@ class Product(models.Model):
         # TODO: Remove value as dict, done now to not mess up frontend
         return [
             {"name": v.label} for v in enums.ProductApplications 
-            for application in self.temp_applications 
+            for application in self.applications 
             if v.value == application
         ]
 
