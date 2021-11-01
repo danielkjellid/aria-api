@@ -1,7 +1,7 @@
 import os
 from django.conf import settings
 
-from products.models import Product, ProductSiteState, ProductFile, ProductImage, ProductVariant, ProductVariantSize
+from products.models import Product, ProductSiteState, ProductFile, ProductImage, ProductVariant, ProductSize
 from rest_framework import serializers
 
 class InstanceColorSerializer(serializers.Serializer):
@@ -38,7 +38,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class ProductVariantSizeSerializer(serializers.ModelSerializer):
+class ProductSizeSerializer(serializers.ModelSerializer):
     """
     A serializer to append available sizes to product
     """
@@ -46,7 +46,7 @@ class ProductVariantSizeSerializer(serializers.ModelSerializer):
     name = serializers.StringRelatedField(source='size', read_only=True)
 
     class Meta:
-        model = ProductVariantSize
+        model = ProductSize
         fields = ('id', 'name', 'additional_cost')
         read_only_fields = fields
 
@@ -241,7 +241,7 @@ class ProductSerializer(serializers.ModelSerializer):
         """
 
         sizes = product.sizes.all().order_by('size')
-        return ProductVariantSizeSerializer(sizes, read_only=True, many=True).data
+        return ProductSizeSerializer(sizes, read_only=True, many=True).data
 
     def get_site_state(self, product):
         site_state = ProductSiteState.on_site.get(product=product)

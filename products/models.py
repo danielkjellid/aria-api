@@ -1,6 +1,7 @@
 from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager
 from django.db import models
+from django.db.models import constraints
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from imagekit.models import ImageSpecField, ProcessedImageField
@@ -21,6 +22,16 @@ class Size(models.Model):
         verbose_name = _('Size')
         verbose_name_plural = _('Sizes')
         ordering = ['width', 'height', 'depth', 'circumference']
+        constraints = [
+            models.UniqueConstraint(
+                fields=["width", "height"],
+                name=('one_height_width_combo')
+            ),
+            models.UniqueConstraint(
+                fields=["width", "height", "depth"],
+                name=('one_height_width_depth_combo')
+            )
+        ]
 
     width = models.IntegerField(
         _('Width'),
@@ -118,7 +129,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
     supplier = models.ForeignKey(
         Supplier,
         on_delete=models.CASCADE,
-        related_name='supplier_product'
+        related_name='products'
     )
     category = models.ManyToManyField(
         SubCategory,
@@ -168,7 +179,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
     )
     colors = models.ManyToManyField(
         ProductColor,
-        related_name='product_color'
+        related_name='products'
     )
     styles = ChoiceArrayField(
         models.CharField(
@@ -206,7 +217,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
     )
     sites = models.ManyToManyField(
         Site,
-        related_name='product_site',
+        related_name='products',
         blank=True
     )
     is_imported_from_external_source = models.BooleanField(default=False)
@@ -251,12 +262,12 @@ class ProductSiteState(BaseModel):
     site = models.ForeignKey(
         Site,
         on_delete=models.CASCADE,
-        related_name='site_state'
+        related_name='states'
     )
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
-        related_name='product_site_state'
+        related_name='site_states'
     )
     gross_price = models.FloatField(_('Gross price'))
     display_price = models.BooleanField(
@@ -348,11 +359,17 @@ class ProductVariant(BaseThumbnailImageModel):
         return self.name
 
 
-class ProductVariantSize(models.Model):
+class ProductSize(models.Model):
 
     class Meta:
         verbose_name = _('Product size')
         verbose_name_plural = _('Product sizes')
+        constraints = [
+            models.UniqueConstraint(
+                fields=["product", "size"], 
+                name=('unique_product_size')
+            )
+        ]
 
     product = models.ForeignKey(
         Product,
@@ -361,10 +378,10 @@ class ProductVariantSize(models.Model):
     )
     size = models.ForeignKey(
         Size,
-        on_delete=models.CASCADE,
-        related_name='variant_sizes'
+        on_delete=models.PROTECT,
+        related_name='product'
     )
-    additional_cost = models.FloatField(_('Additional cost'))
+    additional_cost = models.FloatField(_('Additional cost'), default=0.0)
 
 
     def __str__(self):
