@@ -1,8 +1,12 @@
+import os
 from django.db import models
+from django.utils.text import slugify
 from django.db.models.expressions import Case, When
 from django.utils.translation import gettext_lazy as _
 from imagekit.models import ImageSpecField
+from imagekit.models.fields import ProcessedImageField
 from imagekit.processors import ResizeToFill
+from core.utils import get_static_asset_upload_path
 
 
 class BaseManager(models.Manager):
@@ -20,41 +24,44 @@ class BaseQuerySet(models.QuerySet):
 
 class BaseModel(models.Model):
     """
-    Keep track of created time and modified time in models
+    Keep track of created time and modified time in models.
     """
 
     class Meta:
         abstract = True
 
-    created_time = models.DateTimeField(_('created time'), auto_now_add=True)
-    modified_time = models.DateTimeField(_('modified_time'), auto_now=True)
+    created_at = models.DateTimeField(_('created time'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('modified time'), auto_now=True)
 
     object = BaseManager.from_queryset(BaseQuerySet)()
 
 
-def get_public_image_upload_path(instance: "BaseHeaderImage", filename: str) -> str:
+class BaseImageModel(models.Model):
     """
-    Get the path of which to upload the image.
+    Generic image model, usually inherited by models with
+    specified ImageKit fields.
     """
 
-    # Each image model is required to specify where images should be uploaded
-    try:
-        path = instance.UPLOAD_PATH.lower()
-    except AttributeError:
-        raise RuntimeError(
-            f"UPLOAD_PATH is not set on model: {instance.__class__.__name__}"
-        )
+    class Meta:
+        abstract = True
 
-    return path
+    UPLOAD_PATH: str
+    
+    image = models.ImageField(
+        _('Image'),
+        upload_to=get_static_asset_upload_path,
+        blank=True, 
+        null=True,
+    )
 
 
-class BaseHeaderImage(models.Model):
+class BaseHeaderImageModel(BaseImageModel):
 
     class Meta:
         abstract = True
 
     """
-    Generic model for storing and uploading all version needed for an image.
+    Generic model for storing and uploading all version needed for an header image.
     To add this to a model, create a subclass with the UPLOAD_FILE_PATH 
     attribute specified to the path where the image should be uploaded.
 
@@ -70,15 +77,6 @@ class BaseHeaderImage(models.Model):
         help_text=_(
             'Apply filter to image if the image is light to maintain an acceptable contrast'
         ),
-    )
-    image = models.ImageField(
-        _('Image'),
-        upload_to=get_public_image_upload_path,
-        blank=True, 
-        null=True,
-        help_text=(
-            _('Image must be above 3072x940px')
-        )
     )
     image_512x512 = ImageSpecField(
         source='image', 
@@ -123,3 +121,39 @@ class BaseHeaderImage(models.Model):
         options={'quality': 90}
     )
 
+
+class BaseThumbnailImageModel(models.Model):
+    
+    class Meta:
+        abstract = True
+
+    UPLOAD_PATH: str
+
+    # Options for setting height/width, with defaults
+    WIDTH: int = 380 
+    HEIGHT: int = 575
+
+    thumbnail = ProcessedImageField(
+        upload_to=get_static_asset_upload_path,
+        processors=[ResizeToFill(WIDTH, HEIGHT)],
+        format='JPEG',
+        options={'quality': 90},
+        blank=True,
+        null=True,
+        help_text=(
+            f'Image must be above {WIDTH}x{HEIGHT}px'
+        )
+    )    
+
+
+class BaseFileModel(BaseModel):
+
+    class Meta:
+        abstract = True
+
+    UPLOAD_PATH: str
+
+    file = models.FileField(
+        _('File'), 
+        upload_to=get_static_asset_upload_path
+    )

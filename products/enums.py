@@ -32,3 +32,8 @@ class ProductMaterials(models.TextChoices):
     METAL = 'metal', 'Metall'
     PORCELAIN = 'porcelain', 'Porselen'
     WOOD = 'wood', 'Tre'
+
+
+class ProductUnit(models.IntegerChoices):
+    SQUARE_METER = 1, 'm2'
+    PCS = 2, 'stk'
