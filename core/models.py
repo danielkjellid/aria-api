@@ -140,6 +140,7 @@ class BaseThumbnailImageModel(models.Model):
         options={'quality': 90},
         blank=True,
         null=True,
+        default='media/products/default.jpg',
         help_text=(
             f'Image must be above {WIDTH}x{HEIGHT}px'
         )
