@@ -364,12 +364,6 @@ class ProductSize(models.Model):
     class Meta:
         verbose_name = _('Product size')
         verbose_name_plural = _('Product sizes')
-        constraints = [
-            models.UniqueConstraint(
-                fields=["product", "size"],
-                name=('unique_product_size')
-            )
-        ]
 
     product = models.ForeignKey(
         Product,
