@@ -1,4 +1,3 @@
-import enum
 from django.core.management.base import BaseCommand
 from products.models import Product, ProductApplication, ProductMaterial, ProductStyle
 from products import enums

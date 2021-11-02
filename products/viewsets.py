@@ -4,6 +4,7 @@ from rest_framework.permissions import AllowAny, IsAdminUser
 from core.permissions import HasUserOrGroupPermission
 
 from products.models import Product
+from products.enums import ProductStatus
 from products.serializers import ProductListByCategorySerializer, ProductListSerializer, ProductSerializer
 from core.pagination import PageNumberSetPagination
 
@@ -23,12 +24,7 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
         'GET': ['has_products_list'],
         'POST': ['has_product_add'],
     }
-
-    def get_serializer_class(self):
-        if self.request.method == 'GET':
-            return ProductListSerializer
-
-        return ProductListSerializer
+    serializer_class = ProductListSerializer
 
 
 class ProductListByCategoryAPIView(generics.ListAPIView):
@@ -51,7 +47,7 @@ class ProductListByCategoryAPIView(generics.ListAPIView):
 
         return Product.on_site.filter(
             category__parent__slug=category, 
-            status=3
+            status=ProductStatus.AVAILABLE
         ).distinct()
 
 

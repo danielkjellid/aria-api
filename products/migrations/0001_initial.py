@@ -6,6 +6,7 @@ import django.db.models.deletion
 import django.db.models.manager
 import imagekit.models.fields
 import products.models
+import core.utils
 
 
 class Migration(migrations.Migration):
@@ -35,7 +36,7 @@ class Migration(migrations.Migration):
                 ('absorption', models.FloatField(blank=True, null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Date created')),
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Date updated')),
-                ('thumbnail', imagekit.models.fields.ProcessedImageField(blank=True, default='media/products/default.jpg', help_text='Image must be above 380x575px', null=True, upload_to=products.models.Product.product_directory_path)),
+                ('thumbnail', imagekit.models.fields.ProcessedImageField(blank=True, default='media/products/default.jpg', help_text='Image must be above 380x575px', null=True, upload_to=core.utils.get_static_asset_upload_path)),
             ],
             options={
                 'verbose_name': 'Product',
@@ -126,7 +127,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255, verbose_name='Product variant name')),
                 ('status', models.IntegerField(choices=[(1, 'Draft'), (2, 'Hidden'), (3, 'Available'), (4, 'Discontinued')], default=1, verbose_name='Status')),
-                ('thumbnail', imagekit.models.fields.ProcessedImageField(blank=True, help_text='Image must be above 380x575px', null=True, upload_to=products.models.ProductVariant.product_variant_directory_path)),
+                ('thumbnail', imagekit.models.fields.ProcessedImageField(blank=True, help_text='Image must be above 380x575px', null=True, upload_to=core.utils.get_static_asset_upload_path)),
                 ('additional_cost', models.FloatField(verbose_name='Additional cost')),
                 ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='variants', to='products.Product')),
             ],
@@ -157,7 +158,7 @@ class Migration(migrations.Migration):
             name='ProductImage',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image', models.ImageField(blank=True, help_text='Image must be above 3072x940px', null=True, upload_to=products.models.ProductImage.product_image_directory_path, verbose_name='Image')),
+                ('image', models.ImageField(blank=True, help_text='Image must be above 3072x940px', null=True, upload_to='some/image/path', verbose_name='Image')),
                 ('apply_filter', models.BooleanField(default=False, help_text='Apply filter to image if the image is light to maintain an acceptable contrast', verbose_name='Apply filter')),
                 ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='images', to='products.Product')),
             ],
@@ -171,7 +172,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255, verbose_name='Product file name')),
-                ('file', models.FileField(upload_to=products.models.ProductFile.product_file_directory_path, verbose_name='File')),
+                ('file', models.FileField(upload_to=core.utils.get_static_asset_upload_path, verbose_name='File')),
                 ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='files', to='products.Product')),
             ],
             options={

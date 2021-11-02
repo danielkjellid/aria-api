@@ -1,12 +1,14 @@
 from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager
 from django.db import models
+from django.db.models import constraints
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill
 
 from core.fields import ChoiceArrayField
+from core.models import BaseFileModel, BaseModel, BaseHeaderImageModel, BaseThumbnailImageModel
 
 from products import enums
 
@@ -15,6 +17,22 @@ from suppliers.models import Supplier
 
 
 class Size(models.Model):
+
+    class Meta:
+        verbose_name = _('Size')
+        verbose_name_plural = _('Sizes')
+        ordering = ['width', 'height', 'depth', 'circumference']
+        constraints = [
+            models.UniqueConstraint(
+                fields=["width", "height"],
+                name=('one_height_width_combo')
+            ),
+            models.UniqueConstraint(
+                fields=["width", "height", "depth"],
+                name=('one_height_width_depth_combo')
+            )
+        ]
+
     width = models.IntegerField(
         _('Width'),
         blank=True,
@@ -48,25 +66,25 @@ class Size(models.Model):
         )
     )
 
-    class Meta:
-        verbose_name = _('Size')
-        verbose_name_plural = _('Sizes')
-        ordering = ['width', 'height', 'depth', 'circumference']
-
     def __str__(self):
-        if self.depth is not None and self.circumference is None and self.width is None and self.height is None:
-            full_name = 'B%s x H%s x D%s' % (self.width, self.height, self.depth)
-            return full_name.strip()
+        if self.depth is not None and self.width is not None and self.height is not None and self.circumference is None:
+            full_name = f'B{self.width} x H{self.height} x D{self.depth}'
+            return full_name
 
-        if self.circumference is not None:
-            full_name = 'Ø%s' % (self.circumference)
-            return full_name.strip()
-        
-        full_name = 'B%s x H%s' % (self.width, self.height)
-        return full_name.strip()
+        if self.circumference is not None and self.width is None and self.height is None and self.depth is None:
+            full_name = f'Ø{self.circumference}'
+            return full_name
+
+        full_name = f'B{self.width} x H{self.height}'
+        return full_name
 
 
 class ProductColor(models.Model):
+
+    class Meta:
+        verbose_name = _('Product color')
+        verbose_name_plural = _('Product colors')
+
     name = models.CharField(
         _('Name'),
         max_length=100,
@@ -78,26 +96,30 @@ class ProductColor(models.Model):
         unique=True
     )
 
-    class Meta:
-        verbose_name = _('Product color')
-        verbose_name_plural = _('Product colors')
-
     def __str__(self):
-        return self.name.strip()
+        return self.name
 
 
-class Product(models.Model):
+class Product(BaseModel, BaseThumbnailImageModel):
 
-    class Unit(models.IntegerChoices):
-        SQUARE_METER = 1, _('m2')
-        PCS = 2, _('stk')
+    objects = models.Manager()
+    on_site = CurrentSiteManager()
 
-    def product_directory_path(self, filename):
-        """
-        Method to upload the files to the appropriate path
-        """
-        
-        return 'media/products/{0}/{1}/images/{2}'.format(slugify(self.supplier.name), slugify(self.name), filename)
+    class Meta:
+        verbose_name = _('Product')
+        verbose_name_plural = _('Products')
+        permissions = (
+            ('has_products_list', 'Can list products'),
+            ('has_product_edit', 'Can edit a single product instance'),
+            ('has_product_add', 'Can add a single product instance'),
+            ('has_product_delete', 'Can delete a single product instance')
+        )
+
+    @property
+    def product_directory(self):
+        return f'media/products/{slugify(self.supplier.name)}/{slugify(self.name)}/images'
+
+    UPLOAD_PATH = product_directory
 
     name = models.CharField(
         _('Product name'),
@@ -107,7 +129,7 @@ class Product(models.Model):
     supplier = models.ForeignKey(
         Supplier,
         on_delete=models.CASCADE,
-        related_name='supplier_product'
+        related_name='products'
     )
     category = models.ManyToManyField(
         SubCategory,
@@ -127,8 +149,8 @@ class Product(models.Model):
     )
     search_keywords = models.CharField(
         _('Search keywords'),
-        max_length=255, 
-        unique=False, 
+        max_length=255,
+        unique=False,
         blank=True,
         null=True,
     )
@@ -141,8 +163,8 @@ class Product(models.Model):
     description = models.TextField(_('Description'))
     unit = models.IntegerField(
        _('Unit'),
-       choices=Unit.choices,
-       default=Unit.SQUARE_METER,
+       choices=enums.ProductUnit.choices,
+       default=enums.ProductUnit.SQUARE_METER,
     )
     vat_rate = models.FloatField(
         _('VAT Rate'),
@@ -157,13 +179,13 @@ class Product(models.Model):
     )
     colors = models.ManyToManyField(
         ProductColor,
-        related_name='product_color'
+        related_name='products'
     )
     styles = ChoiceArrayField(
         models.CharField(
-            choices=enums.ProductStyles.choices, 
+            choices=enums.ProductStyles.choices,
             max_length=50
-        ), 
+        ),
         null=True,
         help_text=_(
             'Which style the product line represent. Want to add more options? Reach out to Daniel.'
@@ -171,9 +193,9 @@ class Product(models.Model):
     )
     applications = ChoiceArrayField(
         models.CharField(
-            choices=enums.ProductApplications.choices, 
+            choices=enums.ProductApplications.choices,
             max_length=50
-        ), 
+        ),
         null=True,
         help_text=_(
             'Area of product usage. Want to add more options? Reach out to Daniel.'
@@ -181,9 +203,9 @@ class Product(models.Model):
     )
     materials = ChoiceArrayField(
         models.CharField(
-            choices=enums.ProductMaterials.choices, 
+            choices=enums.ProductMaterials.choices,
             max_length=50
-        ), 
+        ),
         null=True,
         help_text=_(
             'Material product is made of. Want to add more options? Reach out to Daniel.'
@@ -193,48 +215,15 @@ class Product(models.Model):
         null=True,
         blank=True
     )
-    created_at = models.DateTimeField(
-        _('Date created'), 
-        auto_now_add=True
-    )
-    updated_at = models.DateTimeField(
-        _('Date updated'),
-        auto_now=True
-    )
-    thumbnail = ProcessedImageField(
-        upload_to=product_directory_path,
-        processors=[ResizeToFill(380, 575)],
-        format='JPEG',
-        options={'quality': 90},
-        blank=True,
-        null=True,
-        default='media/products/default.jpg',
-        help_text=(
-            _('Image must be above 380x575px')
-        )
-    )
     sites = models.ManyToManyField(
         Site,
-        related_name='product_site',
+        related_name='products',
         blank=True
     )
     is_imported_from_external_source = models.BooleanField(default=False)
-    
-    objects = models.Manager()
-    on_site = CurrentSiteManager()
-
-    class Meta:
-        verbose_name = _('Product')
-        verbose_name_plural = _('Products')
-        permissions = (
-            ('has_products_list', 'Can list products'),
-            ('has_product_edit', 'Can edit a single product instance'),
-            ('has_product_add', 'Can add a single product instance'),
-            ('has_product_delete', 'Can delete a single product instance')
-        )
 
     def __str__(self):
-        return self.name.strip()
+        return self.name
 
     def _get_array_field_labels(self, field, enum):
         """
@@ -261,16 +250,24 @@ class Product(models.Model):
         return self._get_array_field_labels(self.applications, enums.ProductApplications)
 
 
-class ProductSiteState(models.Model):
+class ProductSiteState(BaseModel):
+
+    class Meta:
+        verbose_name = _('Product site state')
+        verbose_name_plural = _('Product site states')
+
+    objects = models.Manager()
+    on_site = CurrentSiteManager()
+
     site = models.ForeignKey(
         Site,
         on_delete=models.CASCADE,
-        related_name='site_state'
+        related_name='states'
     )
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
-        related_name='product_site_state'
+        related_name='site_states'
     )
     gross_price = models.FloatField(_('Gross price'))
     display_price = models.BooleanField(
@@ -291,7 +288,7 @@ class ProductSiteState(models.Model):
         _('Can be picked up'),
         default=False,
         help_text=_(
-           'Designates whether the product can be purchased and picked up in store' 
+           'Designates whether the product can be purchased and picked up in store'
         )
     )
     supplier_purchase_price = models.FloatField(
@@ -303,95 +300,37 @@ class ProductSiteState(models.Model):
         default=0.0
     )
 
-    objects = models.Manager()
-    on_site = CurrentSiteManager()
 
-class ProductImage(models.Model):
+class ProductImage(BaseHeaderImageModel):
 
-    def product_image_directory_path(self, filename):
-        """
-        Method to upload the files to the appropriate path
-        """
+    class Meta:
+        verbose_name = _('Product image')
+        verbose_name_plural = _('Product images')
 
-        return 'media/products/{0}/{1}/images/{2}'.format(slugify(self.product.supplier.name), slugify(self.product.name), filename)
+    @property
+    def product_image_directory(self):
+        return f'media/products/{slugify(self.product.supplier.name)}/{slugify(self.product.name)}/images'
+
+    UPLOAD_PATH = product_image_directory
 
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
         related_name='images',
     )
-    image = models.ImageField(
-        _('Image'),
-        upload_to=product_image_directory_path,
-        blank=True, 
-        null=True,
-        help_text=(
-            _('Image must be above 3072x940px')
-        )
-    )
-    apply_filter = models.BooleanField(
-        _('Apply filter'),
-        default=False,
-        help_text=_(
-            'Apply filter to image if the image is light to maintain an acceptable contrast'
-        ),
-    )
-    image_512x512 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(512, 512)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_1024x1024 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(1024, 1024)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_1024x480 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(1024, 480)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_1536x660 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(1536, 660)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_2048x800 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(2048, 800)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_2560x940 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(2560, 940)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_3072x940 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(3072, 940)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
+
+
+class ProductVariant(BaseThumbnailImageModel):
 
     class Meta:
-        verbose_name = _('Product image')
-        verbose_name_plural = _('Product images')
+        verbose_name = _('Product variant')
+        verbose_name_plural = _('Product variants')
 
+    @property
+    def product_variant_directory(self):
+        return f'media/products/{slugify(self.product.supplier.name)}/{slugify(self.product.name)}/variants/'
 
-class ProductVariant(models.Model):
-
-    def product_variant_directory_path(self, filename):
-        """
-        Method to upload the files to the appropriate path
-        """
-
-        return 'media/products/{0}/{1}/variants/{2}'.format(slugify(self.product.supplier.name), slugify(self.product.name), filename)
+    UPLOAD_PATH = product_variant_directory
 
     product = models.ForeignKey(
         Product,
@@ -408,34 +347,30 @@ class ProductVariant(models.Model):
        choices=enums.ProductStatus.choices,
        default=enums.ProductStatus.DRAFT,
     )
-    thumbnail = ProcessedImageField(
-        upload_to=product_variant_directory_path,
-        processors=[ResizeToFill(380, 575)],
-        format='JPEG',
-        options={'quality': 90},
-        blank=True,
-        null=True,
-        help_text=(
-            _('Image must be above 380x575px')
-        )
-    )
     image = ImageSpecField(
-        source='thumbnail', 
-        processors=[ResizeToFill(80, 80)], 
-        format='JPEG', 
+        source='thumbnail',
+        processors=[ResizeToFill(80, 80)],
+        format='JPEG',
         options={'quality': 90}
     )
-    additional_cost = models.FloatField(_('Additional cost'))
-
-    class Meta:
-        verbose_name = _('Product variant')
-        verbose_name_plural = _('Product variants')
+    additional_cost = models.FloatField(_('Additional cost'), default=0.0)
 
     def __str__(self):
-        return self.name.strip()
+        return self.name
 
 
-class ProductVariantSize(models.Model):
+class ProductSize(models.Model):
+
+    class Meta:
+        verbose_name = _('Product size')
+        verbose_name_plural = _('Product sizes')
+        constraints = [
+            models.UniqueConstraint(
+                fields=["product", "size"],
+                name=('unique_product_size')
+            )
+        ]
+
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
@@ -443,27 +378,27 @@ class ProductVariantSize(models.Model):
     )
     size = models.ForeignKey(
         Size,
-        on_delete=models.CASCADE,
-        related_name='variant_sizes'
+        on_delete=models.PROTECT,
+        related_name='product'
     )
-    additional_cost = models.FloatField(_('Additional cost'))
+    additional_cost = models.FloatField(_('Additional cost'), default=0.0)
 
-    class Meta:
-        verbose_name = _('Product size')
-        verbose_name_plural = _('Product sizes')
 
     def __str__(self):
-        return '%s - %s' % (self.product, self.size)
+        return f'{self.product} - {self.size}'
 
 
-class ProductFile(models.Model):
+class ProductFile(BaseFileModel):
 
-    def product_file_directory_path(self, filename):
-        """
-        Method to upload the files to the appropriate path
-        """
+    class Meta:
+        verbose_name = _('Product file')
+        verbose_name_plural = _('Product files')
 
-        return 'media/products/{0}/{1}/files/{2}'.format(slugify(self.product.supplier.name), slugify(self.product.name), filename)
+    @property
+    def product_file_directory(self):
+        return f'media/products/{slugify(self.product.supplier.name)}/{slugify(self.product.name)}/files'
+
+    UPLOAD_PATH = product_file_directory
 
     product = models.ForeignKey(
         Product,
@@ -475,14 +410,6 @@ class ProductFile(models.Model):
         max_length=255,
         unique=False
     )
-    file = models.FileField(
-        _('File'),
-        upload_to=product_file_directory_path
-    )
-
-    class Meta:
-        verbose_name = _('Product file')
-        verbose_name_plural = _('Product files')
 
     def __str__(self):
-        return self.name.strip()
+        return self.name

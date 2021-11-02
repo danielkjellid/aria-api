@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from products.models import Product, ProductVariant, ProductColor, ProductFile, ProductImage, ProductVariantSize, ProductSiteState, Size
+from products.models import Product, ProductVariant, ProductColor, ProductFile, ProductImage, ProductSize, ProductSiteState, Size
 
 class SizeAdmin(admin.ModelAdmin):
     model = Size
@@ -21,8 +21,8 @@ class ProductFileInline(admin.StackedInline):
     model = ProductFile
 
 
-class ProductVariantSizeInline(admin.StackedInline):
-    model = ProductVariantSize
+class ProductSizeInline(admin.StackedInline):
+    model = ProductSize
 
 
 class ProductVariantInline(admin.StackedInline):
@@ -38,7 +38,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('status', 'supplier__name', 'category',)
     filter_horizontal = ('sites', 'colors', 'category',)
     ordering = ['name']
-    inlines = [ProductSiteStateInline, ProductImageInline, ProductFileInline, ProductVariantInline, ProductVariantSizeInline]
+    inlines = [ProductSiteStateInline, ProductImageInline, ProductFileInline, ProductVariantInline, ProductSizeInline]
 
 
 admin.site.register(ProductColor, ProductColorAdmin)
