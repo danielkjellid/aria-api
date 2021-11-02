@@ -67,14 +67,14 @@ class Size(models.Model):
     )
 
     def __str__(self):
-        if self.depth is not None and self.circumference is None and self.width is None and self.height is None:
+        if self.depth is not None and self.width is not None and self.height is not None and self.circumference is None:
             full_name = f'B{self.width} x H{self.height} x D{self.depth}'
             return full_name
 
-        if self.circumference is not None:
+        if self.circumference is not None and self.width is None and self.height is None and self.depth is None:
             full_name = f'Ø{self.circumference}'
             return full_name
-        
+
         full_name = f'B{self.width} x H{self.height}'
         return full_name
 
@@ -120,7 +120,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
         return f'media/products/{slugify(self.supplier.name)}/{slugify(self.name)}/images'
 
     UPLOAD_PATH = product_directory
-    
+
     name = models.CharField(
         _('Product name'),
         max_length=255,
@@ -149,8 +149,8 @@ class Product(BaseModel, BaseThumbnailImageModel):
     )
     search_keywords = models.CharField(
         _('Search keywords'),
-        max_length=255, 
-        unique=False, 
+        max_length=255,
+        unique=False,
         blank=True,
         null=True,
     )
@@ -183,9 +183,9 @@ class Product(BaseModel, BaseThumbnailImageModel):
     )
     styles = ChoiceArrayField(
         models.CharField(
-            choices=enums.ProductStyles.choices, 
+            choices=enums.ProductStyles.choices,
             max_length=50
-        ), 
+        ),
         null=True,
         help_text=_(
             'Which style the product line represent. Want to add more options? Reach out to Daniel.'
@@ -193,9 +193,9 @@ class Product(BaseModel, BaseThumbnailImageModel):
     )
     applications = ChoiceArrayField(
         models.CharField(
-            choices=enums.ProductApplications.choices, 
+            choices=enums.ProductApplications.choices,
             max_length=50
-        ), 
+        ),
         null=True,
         help_text=_(
             'Area of product usage. Want to add more options? Reach out to Daniel.'
@@ -203,9 +203,9 @@ class Product(BaseModel, BaseThumbnailImageModel):
     )
     materials = ChoiceArrayField(
         models.CharField(
-            choices=enums.ProductMaterials.choices, 
+            choices=enums.ProductMaterials.choices,
             max_length=50
-        ), 
+        ),
         null=True,
         help_text=_(
             'Material product is made of. Want to add more options? Reach out to Daniel.'
@@ -288,7 +288,7 @@ class ProductSiteState(BaseModel):
         _('Can be picked up'),
         default=False,
         help_text=_(
-           'Designates whether the product can be purchased and picked up in store' 
+           'Designates whether the product can be purchased and picked up in store'
         )
     )
     supplier_purchase_price = models.FloatField(
@@ -310,7 +310,7 @@ class ProductImage(BaseHeaderImageModel):
     @property
     def product_image_directory(self):
         return f'media/products/{slugify(self.product.supplier.name)}/{slugify(self.product.name)}/images'
-    
+
     UPLOAD_PATH = product_image_directory
 
     product = models.ForeignKey(
@@ -348,9 +348,9 @@ class ProductVariant(BaseThumbnailImageModel):
        default=enums.ProductStatus.DRAFT,
     )
     image = ImageSpecField(
-        source='thumbnail', 
-        processors=[ResizeToFill(80, 80)], 
-        format='JPEG', 
+        source='thumbnail',
+        processors=[ResizeToFill(80, 80)],
+        format='JPEG',
         options={'quality': 90}
     )
     additional_cost = models.FloatField(_('Additional cost'), default=0.0)
@@ -366,7 +366,7 @@ class ProductSize(models.Model):
         verbose_name_plural = _('Product sizes')
         constraints = [
             models.UniqueConstraint(
-                fields=["product", "size"], 
+                fields=["product", "size"],
                 name=('unique_product_size')
             )
         ]

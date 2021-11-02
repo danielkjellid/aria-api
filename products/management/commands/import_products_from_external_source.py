@@ -21,8 +21,8 @@ class Command(BaseCommand):
             required=True
         )
         parser.add_argument(
-            '--source', 
-            type=str, 
+            '--source',
+            type=str,
             default=None,
             help='Source of which to get the products from',
             required=True
@@ -43,7 +43,7 @@ class Command(BaseCommand):
         # A list of required keys, used in sanity check before object
         # creation.
         required_keys = ['collection_name', 'description_nor', 'sizes', 'variants', 'files']
-        
+
         # Get data from source and load it as json
         products_data_url = requests.get(source)
         products_data = products_data_url.json()
@@ -70,7 +70,7 @@ class Command(BaseCommand):
             variants = product.get('variants')
             files = product.get('files')
 
-            # This variable is determined if there is an 
+            # This variable is determined if there is an
             # asterix present in the sizes string
             special_size = False
 
@@ -82,7 +82,7 @@ class Command(BaseCommand):
             if '*' in sizes_list:
                 special_size = True
                 sizes_list.remove('*')
-            
+
             # Reiterate over the array and split variables by delimiter
             # return it as a list of dicts with keys height and width.
             sizes_dict_list = self._split_and_convert_sizes(sizes_list)
@@ -199,7 +199,7 @@ class Command(BaseCommand):
         Convert list to dict with height/width keys
         """
         sizes = []
-        
+
         for size in sizes_list:
             size_item = size.split('x')
             sizes.append({"height": int(size_item[0]), "width": int(size_item[1])})
@@ -211,7 +211,7 @@ class Command(BaseCommand):
         Get a remote asset through an url, create a temporary file, and upload
         asset locally.
         """
-        
+
         session = requests.Session()
         session.headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.131 Safari/537.36'
         response = session.get(url, stream=True)
@@ -229,13 +229,3 @@ class Command(BaseCommand):
             lf.write(block)
 
         return File(lf, filename)
-
-
-
-
-
-            
-
-
-        
-
