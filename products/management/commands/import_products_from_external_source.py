@@ -108,7 +108,7 @@ class Command(BaseCommand):
                         name=product_name,
                         supplier=supplier,
                         status=ProductStatus.DRAFT,
-                        slug=slugify(product_name),
+                        slug=f'{slugify(supplier.name)}-{slugify(product_name)}',
                         short_description=short_description,
                         description=description,
                         available_in_special_sizes=special_size,
@@ -141,12 +141,12 @@ class Command(BaseCommand):
                     for variant in variants:
                         ProductVariant.objects.create(
                             product=created_product,
-                            name=variant['name'],
+                            name=variant['name'].title(),
                             status=ProductStatus.AVAILABLE,
                             thumbnail=self._get_remote_asset(variant['image_url'], variant['name']),
                             additional_cost=0.0
                         )
-                        self.stdout.write(f'Variant {variant["name"]} added.')
+                        self.stdout.write(f'Variant {variant["name"].title()} added.')
                     self.stdout.write('All variants created.')
 
                     # Create files instances

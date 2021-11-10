@@ -144,7 +144,8 @@ class Product(BaseModel, BaseThumbnailImageModel):
         _('Slug'),
         max_length=255,
         help_text=_(
-            'A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.'
+            'A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.',
+            'We try to use <supplier_name>-<product_name>.'
         ),
     )
     search_keywords = models.CharField(
