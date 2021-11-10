@@ -158,7 +158,8 @@ class Product(BaseModel, BaseThumbnailImageModel):
         _('Short Description'),
         help_text=_(
             'The short description will be displayed on the top part of the product, above the variant selection'
-        )
+        ),
+        null=True
     )
     description = models.TextField(_('Description'))
     unit = models.IntegerField(
