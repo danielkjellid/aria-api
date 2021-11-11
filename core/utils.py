@@ -26,17 +26,17 @@ def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
         pass
 
     if thumbnail and isinstance(instance._meta.get_field('thumbnail'), ImageField):
-        if instance.thumbnail:
+        if instance.thumbnail and instance.thumbnail.path:
             parent_dir = os.path.dirname(instance.thumbnail.path)
             instance.thumbnail.delete(save=False)
 
     if image and isinstance(instance._meta.get_field('image'), ImageField):
-        if instance.image:
+        if instance.image and instance.image.path:
             parent_dir = os.path.dirname(instance.image.path)
             instance.image.delete(save=False)
 
     if file and isinstance(instance._meta.get_field('file'), FileField):
-        if instance.file:
+        if instance.file and instance.file.path:
             parent_dir = os.path.dirname(instance.file.path)
             instance.file.delete(save=False)
 
