@@ -17,21 +17,9 @@ from suppliers.models import Supplier
 
 
 class Size(models.Model):
-
-    class Meta:
-        verbose_name = _('Size')
-        verbose_name_plural = _('Sizes')
-        ordering = ['width', 'height', 'depth', 'circumference']
-        constraints = [
-            models.UniqueConstraint(
-                fields=["width", "height"],
-                name=('one_height_width_combo')
-            ),
-            models.UniqueConstraint(
-                fields=["width", "height", "depth"],
-                name=('one_height_width_depth_combo')
-            )
-        ]
+    """
+    A dimension of which a product exists in.
+    """
 
     width = models.IntegerField(
         _('Width'),
@@ -66,6 +54,21 @@ class Size(models.Model):
         )
     )
 
+    class Meta:
+        verbose_name = _('Size')
+        verbose_name_plural = _('Sizes')
+        ordering = ['width', 'height', 'depth', 'circumference']
+        constraints = [
+            models.UniqueConstraint(
+                fields=["width", "height"],
+                name=('one_height_width_combo')
+            ),
+            models.UniqueConstraint(
+                fields=["width", "height", "depth"],
+                name=('one_height_width_depth_combo')
+            )
+        ]
+
     def __str__(self):
         if self.depth is not None and self.width is not None and self.height is not None and self.circumference is None:
             full_name = f'B{self.width} x H{self.height} x D{self.depth}'
@@ -79,11 +82,93 @@ class Size(models.Model):
         return full_name
 
 
-class ProductColor(models.Model):
+class Variant(BaseThumbnailImageModel):
+    """
+    A variant is another version of the product, for
+    example color, pattern etc.
+    """
+
+    @property
+    def variant_upload_path(self):
+        return f'media/products/variants/{self.id}-{slugify(self.name)}/'
+
+    UPLOAD_PATH = variant_upload_path
+
+    name = models.CharField(
+        _('Product variant name'),
+        max_length=255,
+    )
+    status = models.IntegerField(
+        _('Status'),
+        choices=enums.ProductStatus.choices,
+        default=enums.ProductStatus.DRAFT,
+    )
+    image = ImageSpecField(
+        source='thumbnail',
+        processors=[ResizeToFill(80, 80)],
+        format='JPEG',
+        options={'quality': 90}
+    )
 
     class Meta:
-        verbose_name = _('Product color')
-        verbose_name_plural = _('Product colors')
+        verbose_name = _('Variant')
+        verbose_name_plural = _('Variants')
+
+    def __str__(self):
+        return self.name
+
+
+class ProductOptions(BaseModel):
+    """
+    A combination of variant and size for a product, used
+    to set the price based on selection.
+    """
+
+    product = models.ForeignKey(
+        'products.Product',
+        on_delete=models.CASCADE,
+        related_name='options'
+    )
+    variant = models.ForeignKey(
+        'products.Variant',
+        on_delete=models.PROTECT,
+        related_name='product_options',
+        null=True,
+        blank=True
+    )
+    size = models.ForeignKey(
+        'products.Size',
+        on_delete=models.PROTECT,
+        related_name='product_options',
+        null=True,
+        blank=True
+    )
+    price = models.DecimalField(
+        decimal_places=2,
+        max_digits=8,
+        default=0.00
+    )
+
+    class Meta:
+        verbose_name = _('Product option')
+        verbose_name_plural = _('Product options')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['product', 'variant', 'size'],
+                name=('one_option_combo_per_variant_size')
+            )
+        ]
+
+    @property
+    def vat(self):
+        return self.price * self.product.vat_rate
+
+
+class ProductColor(models.Model):
+    """
+    Color categories bellonging to products. Used for
+    filtering frontend.
+    """
 
     name = models.CharField(
         _('Name'),
@@ -99,21 +184,16 @@ class ProductColor(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = _('Product color')
+        verbose_name_plural = _('Product colors')
+
 
 class Product(BaseModel, BaseThumbnailImageModel):
-
-    objects = models.Manager()
-    on_site = CurrentSiteManager()
-
-    class Meta:
-        verbose_name = _('Product')
-        verbose_name_plural = _('Products')
-        permissions = (
-            ('has_products_list', 'Can list products'),
-            ('has_product_edit', 'Can edit a single product instance'),
-            ('has_product_add', 'Can add a single product instance'),
-            ('has_product_delete', 'Can delete a single product instance')
-        )
+    """
+    Product model, containing all relevant fields for products
+    in the store.
+    """
 
     @property
     def product_directory(self):
@@ -128,7 +208,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
     )
     supplier = models.ForeignKey(
         Supplier,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='products'
     )
     category = models.ManyToManyField(
@@ -223,6 +303,19 @@ class Product(BaseModel, BaseThumbnailImageModel):
     )
     is_imported_from_external_source = models.BooleanField(default=False)
 
+    objects = models.Manager()
+    on_site = CurrentSiteManager()
+
+    class Meta:
+        verbose_name = _('Product')
+        verbose_name_plural = _('Products')
+        permissions = (
+            ('has_products_list', 'Can list products'),
+            ('has_product_edit', 'Can edit a single product instance'),
+            ('has_product_add', 'Can add a single product instance'),
+            ('has_product_delete', 'Can delete a single product instance')
+        )
+
     def __str__(self):
         return self.name
 
@@ -252,21 +345,18 @@ class Product(BaseModel, BaseThumbnailImageModel):
 
 
 class ProductSiteState(BaseModel):
-
-    class Meta:
-        verbose_name = _('Product site state')
-        verbose_name_plural = _('Product site states')
-
-    objects = models.Manager()
-    on_site = CurrentSiteManager()
+    """
+    We support multiple sites from the same frontend. This
+    model allow for different settings based on site.
+    """
 
     site = models.ForeignKey(
         Site,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='states'
     )
     product = models.ForeignKey(
-        Product,
+        "products.Product",
         on_delete=models.CASCADE,
         related_name='site_states'
     )
@@ -301,12 +391,22 @@ class ProductSiteState(BaseModel):
         default=0.0
     )
 
-
-class ProductImage(BaseHeaderImageModel):
+    objects = models.Manager()
+    on_site = CurrentSiteManager()
 
     class Meta:
-        verbose_name = _('Product image')
-        verbose_name_plural = _('Product images')
+        verbose_name = _('Product site state')
+        verbose_name_plural = _('Product site states')
+
+
+
+
+class ProductImage(BaseHeaderImageModel):
+    """
+    Images bellonging to a product. Inherits a image
+    models, which creates all needed versions of the
+    uploaded image.
+    """
 
     @property
     def product_image_directory(self):
@@ -315,17 +415,18 @@ class ProductImage(BaseHeaderImageModel):
     UPLOAD_PATH = product_image_directory
 
     product = models.ForeignKey(
-        Product,
+        "products.Product",
         on_delete=models.CASCADE,
         related_name='images',
     )
 
+    class Meta:
+        verbose_name = _('Product image')
+        verbose_name_plural = _('Product images')
+
+
 
 class ProductVariant(BaseThumbnailImageModel):
-
-    class Meta:
-        verbose_name = _('Product variant')
-        verbose_name_plural = _('Product variants')
 
     @property
     def product_variant_directory(self):
@@ -356,6 +457,10 @@ class ProductVariant(BaseThumbnailImageModel):
     )
     additional_cost = models.FloatField(_('Additional cost'), default=0.0)
 
+    class Meta:
+        verbose_name = _('Product variant')
+        verbose_name_plural = _('Product variants')
+
     def __str__(self):
         return self.name
 
@@ -384,10 +489,10 @@ class ProductSize(models.Model):
 
 
 class ProductFile(BaseFileModel):
-
-    class Meta:
-        verbose_name = _('Product file')
-        verbose_name_plural = _('Product files')
+    """
+    A single file bellonging to a products. This is
+    typically a supplier catalog etc.
+    """
 
     @property
     def product_file_directory(self):
@@ -405,6 +510,10 @@ class ProductFile(BaseFileModel):
         max_length=255,
         unique=False
     )
+
+    class Meta:
+        verbose_name = _('Product file')
+        verbose_name_plural = _('Product files')
 
     def __str__(self):
         return self.name
