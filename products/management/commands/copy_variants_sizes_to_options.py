@@ -2,9 +2,8 @@ from django.core.management.base import BaseCommand, CommandParser
 from django.utils.text import slugify
 from django.db import transaction
 from products.enums import ProductStatus
-from products.models import Product, ProductOptions, Variant
+from products.models import Product, ProductOption, Variant
 from django.core.files.base import ContentFile
-from django_s3_storage.storage import S3Storage
 
 class CopyException(Exception):
     """
@@ -25,7 +24,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options) -> None:
 
         confirm = options['confirm']
-
         products = Product.objects.all()
 
         try:
@@ -57,7 +55,7 @@ class Command(BaseCommand):
                         for product_size in product_sizes:
 
                             self.stdout.write(f'Combining {variant} with {product_size.size}')
-                            ProductOptions.objects.create(
+                            ProductOption.objects.create(
                                 product=product,
                                 variant=variant,
                                 size=product_size.size,
@@ -65,7 +63,7 @@ class Command(BaseCommand):
                             )
                             self.stdout.write(f'Option created.')
 
-                options_count = ProductOptions.objects.all().count()
+                options_count = ProductOption.objects.all().count()
 
                 self.stdout.write(f'Migration finished, created {options_count} options.')
 

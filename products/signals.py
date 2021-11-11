@@ -12,5 +12,3 @@ from products.models import Product, ProductImage, ProductVariant, ProductFile, 
 @receiver(post_delete, sender=Variant)
 def delete_product_files(sender, instance, *args, **kwargs):
     cleanup_files_from_deleted_instance(sender=sender, instance=instance, *args, **kwargs)
-
-

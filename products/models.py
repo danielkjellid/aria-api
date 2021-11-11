@@ -281,7 +281,7 @@ class ProductSiteState(BaseModel):
         verbose_name_plural = _('Product site states')
 
 
-class ProductOptions(BaseModel):
+class ProductOption(BaseModel):
     """
     A combination of variant and size for a product, used
     to set the price based on selection.
@@ -306,7 +306,7 @@ class ProductOptions(BaseModel):
         null=True,
         blank=True
     )
-    price = models.DecimalField(
+    gross_price = models.DecimalField(
         decimal_places=2,
         max_digits=8,
         default=0.00

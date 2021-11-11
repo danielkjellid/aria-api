@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from products.models import Product, ProductVariant, Color, ProductFile, ProductImage, ProductSize, ProductSiteState, Size, ProductOptions, Variant
+from products.models import Product, ProductVariant, Color, ProductFile, ProductImage, ProductSize, ProductSiteState, Size, ProductOption, Variant
 
 class SizeAdmin(admin.ModelAdmin):
     model = Size
@@ -43,13 +43,13 @@ class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductSiteStateInline, ProductImageInline, ProductFileInline, ProductVariantInline, ProductSizeInline]
 
 
-class ProductOptionsAdmin(admin.ModelAdmin):
-    model = ProductOptions
+class ProductOptionAdmin(admin.ModelAdmin):
+    model = ProductOption
     list_display = ('product', 'variant', 'size')
 
 
 admin.site.register(Color, ColorAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Size, SizeAdmin)
-admin.site.register(ProductOptions, ProductOptionsAdmin)
+admin.site.register(ProductOption, ProductOptionAdmin)
 admin.site.register(Variant, VariantAdmin)

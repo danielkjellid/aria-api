@@ -40,6 +40,7 @@ def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
             parent_dir = os.path.dirname(instance.file.path)
             instance.file.delete(save=False)
 
+    # TODO: Delete remote empty dirs from s3 as well
     # Delete empty folders locally
     if settings.DEBUG and parent_dir and os.path.isdir(parent_dir) and len(os.listdir(parent_dir)) == 0:
         os.rmdir(parent_dir)
