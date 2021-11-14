@@ -1,8 +1,11 @@
 import os
+from typing import Union
 from django.core.exceptions import FieldDoesNotExist
 from django.utils.text import slugify
-from django.db.models import Model, ImageField, FileField
+from django.db.models import Model, ImageField, FileField, Field
+from imagekit.models import ProcessedImageField
 from django.conf import settings
+from django_s3_storage.storage import S3Storage
 
 def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
     """
@@ -13,37 +16,71 @@ def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
     if instance is None:
         raise AttributeError('No instance sent from signal.')
 
-    thumbnail = None
-    image = None
-    file = None
-    parent_dir = None
+    def _cleanup_folders(parent_dir: str = None, storage_key: str = None) -> None:
+        # Since we use AWS in prod and a normal file structure in the media folder
+        # in development, check if debug is active and if parent key is sent in.
+        if settings.DEBUG and parent_dir:
+            # Check if parent_dir is a folder, and that the folder is empty
+            if os.path.isdir(parent_dir) and len(os.listdir(parent_dir)) == 0:
+                # If so, delete the folder
+                os.rmdir(parent_dir)
+        # If we're not in debug, check if storage_key was sent int
+        elif storage_key:
+            # Assert that the key actually exists
+            assert (storage_key is not None), 'Storage key is none, not able to cleanup remote folder'
 
-    try:
-        thumbnail = instance._meta.get_field('thumbnail')
-        image = instance._meta.get_field('image')
-        file = instance._meta.get_field('file')
-    except FieldDoesNotExist:
-        pass
+            # Create a new storage instance based in s3 bucket
+            storage = S3Storage(aws_s3_bucket_name=settings.AWS_S3_BUCKET_NAME)
 
-    if thumbnail and isinstance(instance._meta.get_field('thumbnail'), ImageField):
-        if instance.thumbnail and instance.thumbnail.path:
-            parent_dir = os.path.dirname(instance.thumbnail.path)
-            instance.thumbnail.delete(save=False)
+            # Get the "dir" key of file deleted
+            parent_dir_key = storage_key.rsplit('/', 1)[0] # Get everything before last /
 
-    if image and isinstance(instance._meta.get_field('image'), ImageField):
-        if instance.image and instance.image.path:
-            parent_dir = os.path.dirname(instance.image.path)
-            instance.image.delete(save=False)
+            # Check if ket exists
+            if storage.exists(parent_dir_key):
+                # Extract dirs and files within the key
+                dirs, files = storage.list_dir(parent_dir_key)
 
-    if file and isinstance(instance._meta.get_field('file'), FileField):
-        if instance.file and instance.file.path:
-            parent_dir = os.path.dirname(instance.file.path)
-            instance.file.delete(save=False)
+                # If both are empty, delete the folder
+                if len(dirs) == 0 and len(files) == 0:
+                    storage.delete(parent_dir_key)
 
-    # TODO: Delete remote empty dirs from s3 as well
-    # Delete empty folders locally
-    if settings.DEBUG and parent_dir and os.path.isdir(parent_dir) and len(os.listdir(parent_dir)) == 0:
-        os.rmdir(parent_dir)
+
+    def _cleanup_file(instance: "Model", meta_field: str) -> None:
+        instance_field = None
+        parent_dir = None
+        storage_key = None
+
+        # Attempt to get field and field and field properties
+        try:
+            instance_field = instance._meta.get_field(meta_field)
+            field = getattr(instance, meta_field)
+        except FieldDoesNotExist:
+            pass
+
+        # Check if field meta exists, and that field is type Image, ProcessedImage or File
+        if field and instance_field and isinstance(instance_field, (ImageField, ProcessedImageField, FileField)):
+            # Since we use AWS in prod, and normal file structure in development
+            # check if path property of instance field exists
+            if field.path:
+                # Find correct parent folder, and delete the file/image
+                parent_dir = os.path.dirname(field.path)
+                field.delete(save=False)
+            else:
+                # Get the storage key remote and delete the file/image
+                # django_s3_storage handles the remote deletion by
+                # overrideing the delete method for us.
+                storage_key = field.name
+                field.delete(save=False)
+
+            # When the file is deleted, perfor preliminary check on the folder
+            # to delete empty folders from the system as well
+            _cleanup_folders(parent_dir=parent_dir, storage_key=storage_key)
+
+
+    _cleanup_file(instance=instance, meta_field='thumbnail')
+    _cleanup_file(instance=instance, meta_field='image')
+    _cleanup_file(instance=instance, meta_field='file')
+
 
 
 def get_static_asset_upload_path(instance: "Model", filename: str) -> str:
