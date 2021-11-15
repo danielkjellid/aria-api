@@ -23,7 +23,6 @@ def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
             if os.path.isdir(parent_dir) and len(os.listdir(parent_dir)) == 0:
                 # If so, delete the folder
                 os.rmdir(parent_dir)
-                print('cleaned up folder')
         # If we're not in debug, check if storage_key was sent int
         elif storage_key:
             # Assert that the key actually exists
