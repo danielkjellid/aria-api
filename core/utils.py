@@ -38,7 +38,7 @@ def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
             # Check if ket exists
             if storage.exists(parent_dir_key):
                 # Extract dirs and files within the key
-                dirs, files = storage.list_dir(parent_dir_key)
+                dirs, files = storage.listdir(parent_dir_key)
 
                 # If both are empty, delete the folder
                 if len(dirs) == 0 and len(files) == 0:
