@@ -1,14 +1,23 @@
 from django.contrib import admin
 
-from products.models import Product, ProductVariant, ProductColor, ProductFile, ProductImage, ProductSize, ProductSiteState, Size
+from products.models import Product, ProductVariant, Color, ProductFile, ProductImage, ProductSize, ProductSiteState, Size, ProductOption, Variant
 
 class SizeAdmin(admin.ModelAdmin):
     model = Size
     # list_display = ('height', 'width', 'depth', 'circumference')
     # ordering = ('height', 'width', 'depth', 'circumference')
 
-class ProductColorAdmin(admin.ModelAdmin):
-    model = ProductColor
+class ProductSizeAdmin(admin.ModelAdmin):
+    model = ProductSize
+
+class VariantAdmin(admin.ModelAdmin):
+    model = Variant
+
+class ProductVariantAdmin(admin.ModelAdmin):
+    model = ProductVariant
+
+class ColorAdmin(admin.ModelAdmin):
+    model = Color
     list_display = ('name', 'color_hex')
     ordering = ['name']
 
@@ -29,7 +38,7 @@ class ProductVariantInline(admin.StackedInline):
     model = ProductVariant
 
 class ProductSiteStateInline(admin.StackedInline):
-    model = ProductSiteState  
+    model = ProductSiteState
 
 
 class ProductAdmin(admin.ModelAdmin):
@@ -41,6 +50,15 @@ class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductSiteStateInline, ProductImageInline, ProductFileInline, ProductVariantInline, ProductSizeInline]
 
 
-admin.site.register(ProductColor, ProductColorAdmin)
+class ProductOptionAdmin(admin.ModelAdmin):
+    model = ProductOption
+    list_display = ('product', 'variant', 'size')
+
+
+admin.site.register(Color, ColorAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Size, SizeAdmin)
+admin.site.register(ProductOption, ProductOptionAdmin)
+admin.site.register(Variant, VariantAdmin)
+admin.site.register(ProductSize, ProductSizeAdmin)
+admin.site.register(ProductVariant, ProductVariantAdmin)
