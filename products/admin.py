@@ -1,20 +1,7 @@
 from django.contrib import admin
 
-from products.models import Product, ProductVariant, Color, ProductFile, ProductImage, ProductSize, ProductSiteState, Size, ProductOption, Variant
+from products.models import Product, Color, ProductFile, ProductImage, ProductSiteState, Size, ProductOption, Variant
 
-class SizeAdmin(admin.ModelAdmin):
-    model = Size
-    # list_display = ('height', 'width', 'depth', 'circumference')
-    # ordering = ('height', 'width', 'depth', 'circumference')
-
-class ProductSizeAdmin(admin.ModelAdmin):
-    model = ProductSize
-
-class VariantAdmin(admin.ModelAdmin):
-    model = Variant
-
-class ProductVariantAdmin(admin.ModelAdmin):
-    model = ProductVariant
 
 class ColorAdmin(admin.ModelAdmin):
     model = Color
@@ -30,12 +17,9 @@ class ProductFileInline(admin.StackedInline):
     model = ProductFile
 
 
-class ProductSizeInline(admin.StackedInline):
-    model = ProductSize
+class ProductOptionsInline(admin.StackedInline):
+    model = ProductOption
 
-
-class ProductVariantInline(admin.StackedInline):
-    model = ProductVariant
 
 class ProductSiteStateInline(admin.StackedInline):
     model = ProductSiteState
@@ -47,7 +31,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('status', 'supplier__name', 'category',)
     filter_horizontal = ('sites', 'colors', 'category',)
     ordering = ['name']
-    inlines = [ProductSiteStateInline, ProductImageInline, ProductFileInline, ProductVariantInline, ProductSizeInline]
+    inlines = [ProductSiteStateInline, ProductImageInline, ProductFileInline, ProductOptionsInline]
 
 
 class ProductOptionAdmin(admin.ModelAdmin):
@@ -57,8 +41,4 @@ class ProductOptionAdmin(admin.ModelAdmin):
 
 admin.site.register(Color, ColorAdmin)
 admin.site.register(Product, ProductAdmin)
-admin.site.register(Size, SizeAdmin)
 admin.site.register(ProductOption, ProductOptionAdmin)
-admin.site.register(Variant, VariantAdmin)
-admin.site.register(ProductSize, ProductSizeAdmin)
-admin.site.register(ProductVariant, ProductVariantAdmin)
