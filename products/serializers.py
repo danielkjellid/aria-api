@@ -24,33 +24,6 @@ class ProductInstanceNameSerializer(serializers.ModelSerializer):
         fields = ['name']
         read_only_fields = fields
 
-
-class ProductVariantSerializer(serializers.ModelSerializer):
-    """
-    A serializer to append available variants to product
-    """
-
-    image = serializers.ImageField(read_only=True)
-
-    class Meta:
-        model = ProductVariant
-        fields = ('id', 'name', 'thumbnail', 'image', 'additional_cost')
-        read_only_fields = fields
-
-
-class ProductSizeSerializer(serializers.ModelSerializer):
-    """
-    A serializer to append available sizes to product
-    """
-
-    name = serializers.StringRelatedField(source='size', read_only=True)
-
-    class Meta:
-        model = ProductSize
-        fields = ('id', 'name', 'additional_cost')
-        read_only_fields = fields
-
-
 class VariantSerializer(serializers.ModelSerializer):
 
     image = serializers.ImageField(read_only=True)
@@ -153,10 +126,9 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
     styles = serializers.SerializerMethodField()
     applications = serializers.SerializerMethodField()
     materials = serializers.SerializerMethodField()
-    variants = ProductVariantSerializer(read_only=True, many=True)
     site_state = serializers.SerializerMethodField()
     options = ProductOptionSerializer(read_only=True, many=True)
-    test_variants = serializers.SerializerMethodField()
+    variants = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -174,7 +146,6 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
             'variants',
             'site_state',
             'options',
-            'test_variants'
         )
         read_only_fields = fields
 
@@ -203,7 +174,7 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
 
         return ProductInstanceNameSerializer(materials, read_only=True, many=True).data
 
-    def get_test_variants(self, product):
+    def get_variants(self, product):
         product_variants = Variant.objects.filter(product_options__product=product).distinct()
 
         return VariantSerializer(product_variants, read_only=True, many=True).data
@@ -242,7 +213,7 @@ class ProductSerializer(serializers.ModelSerializer):
     materials = serializers.SerializerMethodField()
     sizes = serializers.SerializerMethodField()
     images = ProductImageSerializer(read_only=True, many=True)
-    variants = ProductVariantSerializer(read_only=True, many=True)
+    variants = serializers.SerializerMethodField()
     files = ProductFileSerializer(read_only=True, many=True)
     origin_country = serializers.StringRelatedField(source='supplier.origin_country', read_only=True )
     site_state = serializers.SerializerMethodField()
@@ -283,8 +254,8 @@ class ProductSerializer(serializers.ModelSerializer):
         Order sizes based on width
         """
 
-        sizes = product.sizes.all().order_by('size')
-        return ProductSizeSerializer(sizes, read_only=True, many=True).data
+        sizes = Size.objects.filter(product_options__product=product).distinct().order_by('width', 'height', 'depth', 'circumference')
+        return SizeSerializer(sizes, read_only=True, many=True).data
 
     def get_site_state(self, product):
         site_state = ProductSiteState.on_site.get(product=product)
@@ -307,6 +278,11 @@ class ProductSerializer(serializers.ModelSerializer):
 
         return ProductInstanceNameSerializer(materials, read_only=True, many=True).data
 
+    def get_variants(self, product):
+        product_variants = Variant.objects.filter(product_options__product=product).distinct()
+
+        return VariantSerializer(product_variants, read_only=True, many=True).data
+
 
 class ProductNameImageSerializer(serializers.ModelSerializer):
 
@@ -323,7 +299,7 @@ class ProductListSerializer(serializers.ModelSerializer):
     product = ProductNameImageSerializer(source='*')
     unit = serializers.CharField(source='get_unit_display')
     status = serializers.CharField(source='get_status_display') # get display name of integer choice
-    variants = ProductVariantSerializer(read_only=True, many=True)
+    variants = serializers.SerializerMethodField()
     site_state = serializers.SerializerMethodField()
 
     class Meta:
@@ -341,3 +317,8 @@ class ProductListSerializer(serializers.ModelSerializer):
         site_state = ProductSiteState.on_site.get(product=product)
 
         return ProductSiteStateSerializer(site_state, read_only=True).data
+
+    def get_variants(self, product):
+        product_variants = Variant.objects.filter(product_options__product=product).distinct()
+
+        return VariantSerializer(product_variants, read_only=True, many=True).data
