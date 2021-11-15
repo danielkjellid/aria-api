@@ -62,12 +62,12 @@ def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
         if field and instance_field and isinstance(instance_field, (ImageField, ProcessedImageField, FileField)):
             # Since we use AWS in prod, and normal file structure in development
             # check if path property of instance field exists
-            if field.path:
-                # Find correct parent folder, and delete the file/image
-                parent_dir = os.path.dirname(field.path)
-                field.delete(save=False)
-                print('deleted file')
-            else:
+            try:
+                if field.path:
+                    # Find correct parent folder, and delete the file/image
+                    parent_dir = os.path.dirname(field.path)
+                    field.delete(save=False)
+            except NotImplementedError:
                 # Get the storage key remote and delete the file/image
                 # django_s3_storage handles the remote deletion by
                 # overrideing the delete method for us.

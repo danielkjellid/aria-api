@@ -52,13 +52,24 @@ class Command(BaseCommand):
 
                         variant.thumbnail.save(f'{slugify(variant.name)}-{variant_image_copy_name}', variant_image_copy)
 
-                        for product_size in product_sizes:
+                        if len(list(product_sizes)) > 0:
+                            for product_size in product_sizes:
 
-                            self.stdout.write(f'Combining {variant} with {product_size.size}')
+                                self.stdout.write(f'Combining {variant} with {product_size.size}')
+                                ProductOption.objects.create(
+                                    product=product,
+                                    variant=variant,
+                                    size=product_size.size,
+                                    gross_price=0.00
+                                )
+                                self.stdout.write(f'Option created.')
+                        elif product.available_in_special_sizes:
+
+                            self.stdout.write(f'Combining {variant} with special size')
                             ProductOption.objects.create(
                                 product=product,
                                 variant=variant,
-                                size=product_size.size,
+                                size=None,
                                 gross_price=0.00
                             )
                             self.stdout.write(f'Option created.')
