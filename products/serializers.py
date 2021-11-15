@@ -1,7 +1,7 @@
 import os
 from django.conf import settings
 
-from products.models import Product, ProductOption, ProductSiteState, ProductFile, ProductImage, ProductVariant, ProductSize, Size, Variant
+from products.models import Product, ProductOption, ProductSiteState, ProductFile, ProductImage, Size, Variant
 from rest_framework import serializers
 
 class InstanceColorSerializer(serializers.Serializer):
