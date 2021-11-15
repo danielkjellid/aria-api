@@ -59,7 +59,7 @@ class Command(BaseCommand):
                                 product=product,
                                 variant=variant,
                                 size=product_size.size,
-                                price=0.00
+                                gross_price=0.00
                             )
                             self.stdout.write(f'Option created.')
 

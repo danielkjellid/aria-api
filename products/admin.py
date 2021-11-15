@@ -7,8 +7,15 @@ class SizeAdmin(admin.ModelAdmin):
     # list_display = ('height', 'width', 'depth', 'circumference')
     # ordering = ('height', 'width', 'depth', 'circumference')
 
+class ProductSizeAdmin(admin.ModelAdmin):
+    model = ProductSize
+
 class VariantAdmin(admin.ModelAdmin):
     model = Variant
+
+class ProductVariantAdmin(admin.ModelAdmin):
+    model = ProductVariant
+
 class ColorAdmin(admin.ModelAdmin):
     model = Color
     list_display = ('name', 'color_hex')
@@ -53,3 +60,5 @@ admin.site.register(Product, ProductAdmin)
 admin.site.register(Size, SizeAdmin)
 admin.site.register(ProductOption, ProductOptionAdmin)
 admin.site.register(Variant, VariantAdmin)
+admin.site.register(ProductSize, ProductSizeAdmin)
+admin.site.register(ProductVariant, ProductVariantAdmin)

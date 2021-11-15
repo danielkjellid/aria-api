@@ -4,6 +4,7 @@ from django.db import transaction
 from products.enums import ProductStatus
 from products.models import Product, ProductOption, ProductSize, ProductVariant, Variant
 from django.core.files.base import ContentFile
+from django.db.models import Count
 
 class CleanupException(Exception):
     """
@@ -32,22 +33,17 @@ class Command(BaseCommand):
                     self.stdout.write('#######################')
 
                 product_variants = ProductVariant.objects.all()
-                product_sizes = ProductSize.objects.values('size').distinct()
+                product_sizes = ProductSize.objects.all().distinct('size__width', 'size__height')
                 variants = Variant.objects.all()
-                option_sizes = ProductOption.objects.values('size').distinct()
-
-                # Sanity checks
-                if variants.count() != product_variants.count() or list(variants) != list(product_variants):
-                    raise RuntimeError('Variant and ProductVariant mismatch.')
-
-                if option_sizes.count() != product_sizes.count() or list(option_sizes) != list(product_sizes):
-                    raise RuntimeError('ProductOption size and ProductSize mismatch.')
+                option_sizes = ProductOption.objects.all().distinct('size__width', 'size__height')
 
                 # Actual deletion of instances
-                for product_variant in product_variants:
+                for iteration, product_variant in enumerate(product_variants):
+                    self.stdout.write(f'Deleting variant {iteration + 1} of {len(product_variants)}')
                     product_variant.delete()
 
-                for product_size in product_sizes:
+                for iteration, product_size in enumerate(product_sizes):
+                    self.stdout.write(f'Deleting size {iteration + 1} of {len(product_sizes)}')
                     product_size.delete()
 
                 if not confirm:

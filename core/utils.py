@@ -1,8 +1,7 @@
 import os
-from typing import Union
 from django.core.exceptions import FieldDoesNotExist
 from django.utils.text import slugify
-from django.db.models import Model, ImageField, FileField, Field
+from django.db.models import Model, ImageField, FileField
 from imagekit.models import ProcessedImageField
 from django.conf import settings
 from django_s3_storage.storage import S3Storage
@@ -24,6 +23,7 @@ def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
             if os.path.isdir(parent_dir) and len(os.listdir(parent_dir)) == 0:
                 # If so, delete the folder
                 os.rmdir(parent_dir)
+                print('cleaned up folder')
         # If we're not in debug, check if storage_key was sent int
         elif storage_key:
             # Assert that the key actually exists
@@ -49,6 +49,7 @@ def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
         instance_field = None
         parent_dir = None
         storage_key = None
+        field = None
 
         # Attempt to get field and field and field properties
         try:
@@ -65,6 +66,7 @@ def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
                 # Find correct parent folder, and delete the file/image
                 parent_dir = os.path.dirname(field.path)
                 field.delete(save=False)
+                print('deleted file')
             else:
                 # Get the storage key remote and delete the file/image
                 # django_s3_storage handles the remote deletion by

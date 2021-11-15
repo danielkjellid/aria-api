@@ -326,6 +326,9 @@ class ProductOption(BaseModel):
     def vat(self):
         return self.price * self.product.vat_rate
 
+    def __str__(self):
+        return f'{self.product} - {self.variant} - {self.size}'
+
 
 class Size(models.Model):
     """
