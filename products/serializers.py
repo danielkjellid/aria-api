@@ -1,8 +1,9 @@
 import os
 from django.conf import settings
 
-from products.models import Product, ProductOption, ProductSiteState, ProductFile, ProductImage, Size, Variant
 from rest_framework import serializers
+from products.models import Product, ProductOption, ProductSiteState, ProductFile, ProductImage, Size, Variant
+from products.selectors import get_related_unique_variants
 
 class InstanceColorSerializer(serializers.Serializer):
     """
@@ -175,7 +176,7 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
         return ProductInstanceNameSerializer(materials, read_only=True, many=True).data
 
     def get_variants(self, product):
-        product_variants = Variant.objects.filter(product_options__product=product).distinct()
+        product_variants = get_related_unique_variants(product=product)
 
         return VariantSerializer(product_variants, read_only=True, many=True).data
 
@@ -279,7 +280,7 @@ class ProductSerializer(serializers.ModelSerializer):
         return ProductInstanceNameSerializer(materials, read_only=True, many=True).data
 
     def get_variants(self, product):
-        product_variants = Variant.objects.filter(product_options__product=product).distinct()
+        product_variants = get_related_unique_variants(product=product)
 
         return VariantSerializer(product_variants, read_only=True, many=True).data
 
@@ -319,6 +320,6 @@ class ProductListSerializer(serializers.ModelSerializer):
         return ProductSiteStateSerializer(site_state, read_only=True).data
 
     def get_variants(self, product):
-        product_variants = Variant.objects.filter(product_options__product=product).distinct()
+        product_variants = get_related_unique_variants(product=product)
 
         return VariantSerializer(product_variants, read_only=True, many=True).data
