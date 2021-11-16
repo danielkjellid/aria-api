@@ -1,3 +1,4 @@
+from typing import Tuple
 import requests
 from django.contrib.sites.models import Site
 from django.core.files import File
@@ -6,7 +7,7 @@ from django.db import transaction
 from django.utils.text import slugify
 from products.enums import ProductStatus
 from suppliers.models import Supplier
-from products.models import Product, ProductFile, ProductSiteState, ProductSize, ProductVariant, Size
+from products.models import Product, ProductFile, ProductSiteState, Size, Variant, ProductOption
 from tempfile import NamedTemporaryFile
 
 class ProductImportException(Exception):
@@ -68,55 +69,23 @@ class Command(BaseCommand):
                     self.stdout.write('#######################')
 
                 # Start loop and creation of products
-                for iteration, product in enumerate(products_data):
+                for iteration, data in enumerate(products_data):
 
                     self.stdout.write(f'Currently processing {iteration + 1} of {len(products_data)} products')
 
                     # Sanity check to check that all necessary
                     # keys are present.
                     for required_key in required_keys:
-                        assert required_key in product.keys()
+                        assert required_key in data.keys()
 
-                    # Store local variables fetched from data source
-                    product_name = product.get('collection_name')
-                    short_description = product.get("short_description_nor")
-                    description = product.get("description_nor")
-                    sizes = product.get('sizes')
-                    variants = product.get('variants')
-                    files = product.get('files')
 
-                    # This variable is determined if there is an
-                    # asterix present in the sizes string
-                    special_size = False
+                    variants = data.get('variants')
+                    files = data.get('files')
 
-                    # Convert sizes from list to string, splitting on ","
-                    # and removing whitespace
-                    sizes_list = [size.strip() for size in sizes.split(',')]
+                    # Create products and manipulate sizes
+                    created_product, sizes_dict_list = self._create_imported_product(supplier=supplier, **data)
 
-                    # Handle if product comes in special sizes
-                    if '*' in sizes_list:
-                        special_size = True
-                        sizes_list.remove('*')
-
-                    # Reiterate over the array and split variables by delimiter
-                    # return it as a list of dicts with keys height and width.
-                    sizes_dict_list = self._split_and_convert_sizes(sizes_list)
-
-                    # Create product instance
-                    self.stdout.write(f'Creating product {iteration + 1}...')
-                    created_product = Product.object.create(
-                        name=product_name,
-                        supplier=supplier,
-                        status=ProductStatus.DRAFT,
-                        slug=f'{slugify(supplier.name)}-{slugify(product_name)}',
-                        short_description=short_description,
-                        description=description,
-                        available_in_special_sizes=special_size,
-                        is_imported_from_external_source=True,
-                    )
-                    self.stdout.write(f'Product {created_product.name} created.')
-
-                    # Add site to m2m rel.
+                    # Add product to m2m site rel.
                     self.stdout.write('Adding active site to product...')
                     created_product.sites.add(site)
                     created_product.save()
@@ -124,86 +93,25 @@ class Command(BaseCommand):
 
                     # Create site state for m2m rel.
                     self.stdout.write('Creating site state...')
-                    ProductSiteState.object.create(
-                        site=site,
-                        product=created_product,
-                        gross_price=0.0,
-                        display_price=False,
-                        can_be_purchased_online=False,
-                        can_be_picked_up=False,
-                        supplier_purchase_price=0.0,
-                        supplier_shipping_cost=0.0
-                    )
-                    self.stdout.write('Site state created.')
-
-                    # Create variants instances
-                    self.stdout.write('Creating variants...')
-                    for variant in variants:
-                        ProductVariant.objects.create(
-                            product=created_product,
-                            name=variant['name'].title(),
-                            status=ProductStatus.AVAILABLE,
-                            thumbnail=self._get_remote_asset(variant['image_url'], variant['name']),
-                            additional_cost=0.0
-                        )
-                        self.stdout.write(f'Variant {variant["name"].title()} added.')
-                    self.stdout.write('All variants created.')
+                    self._create_product_site_rel(site=site, product=created_product)
 
                     # Create files instances
                     self.stdout.write('Creating files...')
-                    for file in files:
-                        name: str
-                        value: str
+                    self._create_product_files(files=files, product=created_product, confirm=confirm)
 
-                        for key, value in file.items():
-                            if key == 'technical_sheet_url':
-                                name = 'Spesifikasjoner'
-                            elif key == 'laying_system_url':
-                                name = 'Leggingsmønster'
-                            elif key == 'dop_certification_url':
-                                name = 'Sertifisering'
-                            elif key == 'environment_certification_url':
-                                name = 'Miljøsertifisering'
-                            elif key == 'k2_catalog_url':
-                                name = 'K2 Katalog'
-                            else:
-                                name = 'Katalog'
+                    # Get or create variants instances
+                    self.stdout.write('Fetching/creating variants...')
+                    variants_to_link = self._create_and_get_product_variants_to_link(variants=variants, confirm=confirm)
 
-                            value = value
+                    # Get or create sizes instances
+                    self.stdout.write('Fetching/creating sizes...')
+                    sizes_to_link = self._create_and_get_sizes_to_link(sizes=sizes_dict_list)
 
-                        ProductFile.object.create(
-                            product=created_product,
-                            name=name,
-                            file=self._get_remote_asset(value, name)
-                        )
-                        self.stdout.write(f'File {name} added.')
-                    self.stdout.write('All files created.')
+                    # Create product options to link sizes and variants
+                    self.stdout.write('Linking sizes and variants to product...')
+                    self._get_and_link_sizes_variants(variants=variants_to_link, sizes=sizes_to_link, product=created_product)
 
-                    # Create sizes instances
-                    self.stdout.write('Getting and creating appropriate sizes...')
-                    sizes_to_link = []
-
-                    for size_set in sizes_dict_list:
-                        height = size_set.get('height')
-                        width = size_set.get('width')
-
-                        size = Size.objects.get_or_create(
-                            width=width,
-                            height=height
-                        )
-
-                        sizes_to_link.append(size)
-                    self.stdout.write('All sizes fetched and ready to link.')
-
-                    # Relate sizes to product
-                    self.stdout.write('Linking sizes to product...')
-                    for size, created in sizes_to_link:
-                        ProductSize.objects.create(
-                            product=created_product,
-                            size=size,
-                            additional_cost=0.0
-                        )
-                    self.stdout.write('All sizes linked.')
+                    # End of operation
                     self.stdout.write('----------------------------------------------')
 
                 if not confirm:
@@ -250,3 +158,173 @@ class Command(BaseCommand):
             lf.write(block)
 
         return File(lf, filename)
+
+    def _create_imported_product(self, supplier: "Supplier", **kwargs) -> Tuple["Product", list]:
+        """
+        Create the product itself, and manipulate size list (need to check if special
+        character is present in sizes list).
+        """
+
+        product_name = kwargs.get('collection_name')
+        short_description = kwargs.get("short_description_nor", None)
+        description = kwargs.get("description_nor")
+        sizes = kwargs.get('sizes')
+
+        # Not every datasource has a short_desc, therefore, we get the first
+        # sentence of desc, and extracts it.
+        if short_description is None and description is not None:
+            short_description = f'{description.split(".")[0]}.'
+            description = f'{description.partition(".")[2].strip()}.'
+
+        # This variable is determined if there is an
+        # asterix present in the sizes string
+        is_special_size = False
+
+        # Convert sizes from list to string, splitting on ","
+        # and removing whitespace
+        sizes_list = [size.strip() for size in sizes.split(',')]
+
+        # Handle if product comes in special sizes
+        if '*' in sizes_list:
+            is_special_size = True
+            sizes_list.remove('*')
+
+        created_product = Product.objects.create(
+            name=product_name,
+            supplier=supplier,
+            status=ProductStatus.DRAFT,
+            slug=f'{slugify(supplier.name)}-{slugify(product_name)}',
+            short_description=short_description,
+            description=description,
+            available_in_special_sizes=is_special_size,
+            is_imported_from_external_source=True,
+        )
+
+        self.stdout.write(f'Product {created_product.name} created.')
+
+        # Reiterate over the array and split variables by delimiter
+        # return it as a list of dicts with keys height and width.
+        sizes_dict_list = self._split_and_convert_sizes(sizes_list)
+
+        return created_product, sizes_dict_list
+
+
+    def _create_product_site_rel(self, site: "Site", product: "Product") -> None:
+        """
+        Create product site state for m2m rel.
+        """
+
+        ProductSiteState.objects.create(
+            site=site,
+            product=product,
+            gross_price=0.0,
+            display_price=False,
+            can_be_purchased_online=False,
+            can_be_picked_up=False,
+            supplier_purchase_price=0.0,
+            supplier_shipping_cost=0.0
+        )
+        self.stdout.write('Site state created.')
+
+
+    def _create_product_files(self, files: "list[str]", product: "Product", confirm: "bool") -> None:
+        """
+        Create file instance belloning to product.
+        """
+
+        for file in files:
+            name: str
+            value: str
+
+            for key, value in file.items():
+                if key == 'technical_sheet_url':
+                    name = 'Spesifikasjoner'
+                elif key == 'laying_system_url':
+                    name = 'Leggingsmønster'
+                elif key == 'dop_certification_url':
+                    name = 'Sertifisering'
+                elif key == 'environment_certification_url':
+                    name = 'Miljøsertifisering'
+                elif key == 'k2_catalog_url':
+                    name = 'K2 Katalog'
+                else:
+                    name = 'Katalog'
+
+                value = value
+
+            ProductFile.objects.create(
+                product=product,
+                name=name,
+                file=self._get_remote_asset(value, name) if confirm else None
+            )
+            self.stdout.write(f'File {name} added.')
+        self.stdout.write('All files created.')
+
+
+    def _create_and_get_product_variants_to_link(self, variants: "list", confirm: "bool") -> "list":
+        """
+        Create or get appropriate variants and append them to a list to link
+        it and sizes later.
+        """
+
+        variants_to_link = []
+
+        for variant in variants:
+            created_variant = Variant.objects.get_or_create(
+                name=variant['name'].title(),
+                status=ProductStatus.AVAILABLE,
+                thumbnail=self._get_remote_asset(variant['image_url'], variant['name']) if confirm else None,
+            )
+
+            variants_to_link.append(created_variant)
+            self.stdout.write(f'Variant {variant["name"].title()} added.')
+        self.stdout.write('All variants created and ready to link.')
+
+        return variants_to_link
+
+
+    def _create_and_get_sizes_to_link(self, sizes: "list") -> "list":
+        """
+        Create or get appropriate sizes and append them to a list to link
+        it and variants later.
+        """
+
+        sizes_to_link = []
+
+        for size_set in sizes:
+            height = size_set.get('height')
+            width = size_set.get('width')
+
+            size = Size.objects.get_or_create(
+                width=width,
+                height=height
+            )
+
+            sizes_to_link.append(size)
+        self.stdout.write('All sizes fetched/created and ready to link.')
+
+        return sizes_to_link
+
+    def _get_and_link_sizes_variants(self, variants: "list", sizes: "list", product: "Product") -> None:
+        """
+        Create product options by combining variants with sizes.
+        """
+
+        for variant, created in variants:
+            if len(sizes) > 0:
+                for size, created in sizes:
+                    ProductOption.objects.create(
+                        product=product,
+                        variant=variant,
+                        size=size,
+                        gross_price=0.00
+                    )
+            else:
+                ProductOption.objects.create(
+                    product=product,
+                    variant=variant,
+                    size=None,
+                    gross_price=0.00
+                )
+
+        self.stdout.write('Sizes and variants linked and added to product.')
