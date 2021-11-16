@@ -3,16 +3,6 @@ from django.contrib import admin
 from products.models import Product, Color, ProductFile, ProductImage, ProductSiteState, Size, ProductOption, Variant
 
 
-class ColorAdmin(admin.ModelAdmin):
-    model = Color
-    list_display = ('name', 'color_hex')
-    ordering = ['name']
-
-
-class VariantAdmin(admin.ModelAdmin):
-    model = Variant
-
-
 class ProductImageInline(admin.StackedInline):
     model = ProductImage
 
@@ -29,21 +19,32 @@ class ProductSiteStateInline(admin.StackedInline):
     model = ProductSiteState
 
 
+@admin.register(Color)
+class ColorAdmin(admin.ModelAdmin):
+    list_display = ('name', 'color_hex')
+    ordering = ['name']
+
+
+@admin.register(Variant)
+class VariantAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+    list_display = ('id', 'name', 'status')
+    ordering = ['-id']
+
+
+@admin.register(ProductOption)
+class ProductOptionAdmin(admin.ModelAdmin):
+    search_fields = ('product__name', 'variant__name')
+    list_display = ('product', 'variant', 'size')
+    ordering = ('-id', 'product__name')
+
+
+@admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    model = Product
+    search_fields = ('supplier__name', 'name', 'slug')
     list_display = ('name', 'status', 'slug')
     list_filter = ('status', 'supplier__name', 'category',)
     filter_horizontal = ('sites', 'colors', 'category',)
-    ordering = ['name']
+    ordering = ['-id']
     inlines = [ProductSiteStateInline, ProductImageInline, ProductFileInline, ProductOptionsInline]
 
-
-class ProductOptionAdmin(admin.ModelAdmin):
-    model = ProductOption
-    list_display = ('product', 'variant', 'size')
-
-
-admin.site.register(Color, ColorAdmin)
-admin.site.register(Product, ProductAdmin)
-admin.site.register(ProductOption, ProductOptionAdmin)
-admin.site.register(Variant, VariantAdmin)
