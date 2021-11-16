@@ -263,18 +263,23 @@ class Command(BaseCommand):
 
     def _create_and_get_product_variants_to_link(self, variants: "list", confirm: "bool") -> "list":
         """
-        Create or get appropriate variants and append them to a list to link
+        Create appropriate variants and append them to a list to link
         it and sizes later.
         """
 
         variants_to_link = []
 
         for variant in variants:
-            created_variant = Variant.objects.get_or_create(
+            created_variant = Variant.objects.create(
                 name=variant['name'].title(),
                 status=ProductStatus.AVAILABLE,
-                thumbnail=self._get_remote_asset(variant['image_url'], variant['name']) if confirm else None,
             )
+
+            # Since the file needs the id to be created, save the thumbnail after
+            # creation.
+            if confirm:
+                file = self._get_remote_asset(variant['image_url'], variant['name'])
+                created_variant.thumbnail.save(f'{slugify(variant["name"])}', file)
 
             variants_to_link.append(created_variant)
             self.stdout.write(f'Variant {variant["name"].title()} added.')
@@ -310,7 +315,7 @@ class Command(BaseCommand):
         Create product options by combining variants with sizes.
         """
 
-        for variant, created in variants:
+        for variant in variants:
             if len(sizes) > 0:
                 for size, created in sizes:
                     ProductOption.objects.create(

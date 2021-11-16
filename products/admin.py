@@ -9,6 +9,10 @@ class ColorAdmin(admin.ModelAdmin):
     ordering = ['name']
 
 
+class VariantAdmin(admin.ModelAdmin):
+    model = Variant
+
+
 class ProductImageInline(admin.StackedInline):
     model = ProductImage
 
@@ -42,3 +46,4 @@ class ProductOptionAdmin(admin.ModelAdmin):
 admin.site.register(Color, ColorAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductOption, ProductOptionAdmin)
+admin.site.register(Variant, VariantAdmin)
