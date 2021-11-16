@@ -157,7 +157,7 @@ class Command(BaseCommand):
 
             lf.write(block)
 
-        return File(lf, filename)
+        return File(lf, f'{filename}.pdf')
 
     def _create_imported_product(self, supplier: "Supplier", **kwargs) -> Tuple["Product", list]:
         """
