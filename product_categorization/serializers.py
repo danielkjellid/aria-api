@@ -61,12 +61,12 @@ class CategorySerializer(serializers.ModelSerializer):
     A serializer to display a specific category instance
     """
 
-    image = BaseHeaderImageSerializer(source='*', read_only=True)
+    images = BaseHeaderImageSerializer(source='*', read_only=True)
 
     class Meta:
         model = Category
         fields = (
             'name',
-            'image',
+            'images',
         )
         read_only_fields = fields
