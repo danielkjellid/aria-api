@@ -19,6 +19,8 @@ class Category(BaseModel, BaseHeaderImageModel):
     def category_image_directory_path(self):
         return f'media/categories/{slugify(self.name)}'
 
+    UPLOAD_PATH = category_image_directory_path
+
     name = models.CharField(
         _('Category name'),
         max_length=255,
