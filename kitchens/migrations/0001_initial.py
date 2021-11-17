@@ -102,7 +102,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Date created')),
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Date updated')),
                 ('apply_filter', models.BooleanField(default=False, help_text='Apply filter to image if the image is light to maintain an acceptable contrast', verbose_name='Apply filter')),
-                ('image', models.ImageField(blank=True, help_text='Image must be above 3072x940px', null=True, upload_to=kitchens.models.Kitchen.kitchen_directory_path, verbose_name='Image')),
+                ('image', models.ImageField(blank=True, help_text='Image must be above 3072x940px', null=True, upload_to='some/kitchen/path/', verbose_name='Image')),
                 ('decor_variants', models.ManyToManyField(blank=True, related_name='kitchen_decor', to='kitchens.Decor')),
                 ('exclusive_variants', models.ManyToManyField(blank=True, related_name='kitchen_exclusive', to='kitchens.ExclusiveColor')),
                 ('laminate_variants', models.ManyToManyField(blank=True, related_name='kitchen_decor', to='kitchens.LaminateColor')),

@@ -2,6 +2,7 @@ import os
 from django.conf import settings
 
 from rest_framework import serializers
+from core.serializers import BaseHeaderImageSerializer
 from products.models import Product, ProductOption, ProductSiteState, ProductFile, ProductImage, Size, Variant
 from products.selectors import get_related_unique_variants
 
@@ -45,7 +46,6 @@ class SizeSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-
 class ProductOptionSerializer(serializers.ModelSerializer):
     """
     A serializer to dispay current options (combination of variants)
@@ -68,52 +68,6 @@ class ProductFileSerializer(serializers.ModelSerializer):
         model = ProductFile
         fields = ('name', 'file')
         read_only_fields = fields
-
-
-class ProductImageSerializer(serializers.ModelSerializer):
-
-    image_512x512 = serializers.SerializerMethodField()
-    image_1024x1024 = serializers.SerializerMethodField()
-    image_1024x480 = serializers.SerializerMethodField()
-    image_1536x660 = serializers.SerializerMethodField()
-    image_2048x800 = serializers.SerializerMethodField()
-    image_2560x940 = serializers.SerializerMethodField()
-    image_3072x940 = serializers.SerializerMethodField()
-
-    class Meta:
-        model = ProductImage
-        fields = (
-            'apply_filter',
-            'image_512x512',
-            'image_1024x1024',
-            'image_1024x480',
-            'image_1536x660',
-            'image_2048x800',
-            'image_2560x940',
-            'image_3072x940',
-        )
-        read_only_fields = fields
-
-    def get_image_512x512(self, image):
-        return os.path.join(settings.MEDIA_URL, str(image.image_512x512))
-
-    def get_image_1024x1024(self, image):
-        return os.path.join(settings.MEDIA_URL, str(image.image_1024x1024))
-
-    def get_image_1024x480(self, image):
-        return os.path.join(settings.MEDIA_URL, str(image.image_1024x480))
-
-    def get_image_1536x660(self, image):
-        return os.path.join(settings.MEDIA_URL, str(image.image_1536x660))
-
-    def get_image_2048x800(self, image):
-        return os.path.join(settings.MEDIA_URL, str(image.image_2048x800))
-
-    def get_image_2560x940(self, image):
-        return os.path.join(settings.MEDIA_URL, str(image.image_2560x940))
-
-    def get_image_3072x940(self, image):
-        return os.path.join(settings.MEDIA_URL, str(image.image_3072x940))
 
 
 class ProductListByCategorySerializer(serializers.ModelSerializer):
@@ -164,7 +118,6 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
 
         return ProductInstanceNameSerializer(styles, read_only=True, many=True).data
 
-
     def get_applications(self, product):
         applications = product.get_applications_display()
 
@@ -213,7 +166,7 @@ class ProductSerializer(serializers.ModelSerializer):
     applications = serializers.SerializerMethodField()
     materials = serializers.SerializerMethodField()
     sizes = serializers.SerializerMethodField()
-    images = ProductImageSerializer(read_only=True, many=True)
+    images = BaseHeaderImageSerializer(read_only=True, many=True)
     variants = serializers.SerializerMethodField()
     files = ProductFileSerializer(read_only=True, many=True)
     origin_country = serializers.StringRelatedField(source='supplier.origin_country', read_only=True )
