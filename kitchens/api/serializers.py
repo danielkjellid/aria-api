@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from core.serializers import BaseHeaderImageSerializer
 from kitchens.models import Kitchen
 
 
@@ -58,14 +59,7 @@ class KitchenSerializer(serializers.ModelSerializer):
     laminate_variants = InstanceColorSerializer(read_only=True, many=True)
     exclusive_variants = InstanceColorSerializer(read_only=True, many=True)
     trend_variants = InstanceColorSerializer(read_only=True, many=True)
-    image_512x512 = serializers.ImageField(read_only=True)
-    image_1024x1024 = serializers.ImageField(read_only=True)
-    image_1536x1536 = serializers.ImageField(read_only=True)
-    image_1024x480 = serializers.ImageField(read_only=True)
-    image_1536x660 = serializers.ImageField(read_only=True)
-    image_2048x800 = serializers.ImageField(read_only=True)
-    image_2560x940 = serializers.ImageField(read_only=True)
-    image_3072x940 = serializers.ImageField(read_only=True)
+    images = BaseHeaderImageSerializer(source='*', read_only=True)
 
     class Meta:
         model = Kitchen
@@ -84,14 +78,7 @@ class KitchenSerializer(serializers.ModelSerializer):
             'laminate_variants',
             'exclusive_variants',
             'trend_variants',
-            'image_512x512',
-            'image_1024x1024',
-            'image_1536x1536',
-            'image_1024x480',
-            'image_1536x660',
-            'image_2048x800',
-            'image_2560x940',
-            'image_3072x940',
+            'images',
         )
         read_only_fields = fields
 
@@ -101,5 +88,5 @@ class KitchenSerializer(serializers.ModelSerializer):
             formatted_from_price = '%0.2f' % (instance.example_from_price)
 
             return formatted_from_price
-        
+
         return None

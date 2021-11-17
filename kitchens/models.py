@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
 from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill
+from core.models import BaseHeaderImageModel, BaseModel
 
 from products.enums import ProductStatus
 from suppliers.models import Supplier
@@ -150,15 +151,13 @@ class TrendColor(models.Model):
 
 
 
-class Kitchen(models.Model):
+class Kitchen(BaseModel, BaseHeaderImageModel):
 
-    def kitchen_directory_path(self, filename):
-        """
-        Method to upload the files to the appropriate path
-        """
+    @property
+    def kitchen_image_directory(self):
+        return f'media/kitchens/{slugify(self.name)}'
 
-        return 'media/kitchens/{0}/{1}'.format(slugify(self.name), filename)
-
+    UPLOAD_PATH = kitchen_image_directory
 
     name = models.CharField(
         _('Kitchen name'),
@@ -239,7 +238,7 @@ class Kitchen(models.Model):
         blank=True
     )
     created_at = models.DateTimeField(
-        _('Date created'), 
+        _('Date created'),
         auto_now_add=True
     )
     updated_at = models.DateTimeField(
@@ -253,73 +252,22 @@ class Kitchen(models.Model):
             'Apply filter to image if the image is light to maintain an acceptable contrast'
         ),
     )
-    image = models.ImageField(
-        _('Image'),
-        help_text=(
-            _('Image must be above 3072x940px')
-        ),
-        upload_to=kitchen_directory_path,
-        blank=True,
-        null=True
-    )
-    image_512x512 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(512, 512)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_1024x1024 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(1024, 1024)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_1024x480 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(1024, 480)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_1536x660 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(1536, 660)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_2048x800 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(2048, 800)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_2560x940 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(2560, 940)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_3072x940 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(3072, 940)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
     thumbnail_500x305 = ImageSpecField(
         source='image',
         processors=[ResizeToFill(500, 305)],
-        format='JPEG', 
+        format='JPEG',
         options={'quality': 90}
     )
     thumbnail_660x400 = ImageSpecField(
         source='image',
         processors=[ResizeToFill(660, 400)],
-        format='JPEG', 
+        format='JPEG',
         options={'quality': 90}
     )
     thumbnail_850x520 = ImageSpecField(
         source='image',
         processors=[ResizeToFill(850, 520)],
-        format='JPEG', 
+        format='JPEG',
         options={'quality': 90}
     )
 
@@ -328,4 +276,4 @@ class Kitchen(models.Model):
         verbose_name_plural = _('Kitchens')
 
     def __str__(self):
-        return self.name.strip()
+        return self.name

@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('slug', models.SlugField(help_text='A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.', verbose_name='Slug')),
                 ('ordering', models.PositiveSmallIntegerField(blank=True, default=0, help_text='Order  in which the category should be displayed.', verbose_name='Order')),
                 ('width', models.CharField(blank=True, choices=[('full', 'Fullwidth'), ('half', 'Half')], default='full', max_length=4, null=True, verbose_name='Width')),
-                ('image', models.ImageField(blank=True, help_text='Category image, should only be used on top level parents!', null=True, upload_to=product_categorization.models.Category.category_directory_path, verbose_name='Image')),
+                ('image', models.ImageField(blank=True, help_text='Category image, should only be used on top level parents!', null=True, upload_to='some/category/path/', verbose_name='Image')),
                 ('apply_filter', models.BooleanField(default=False, help_text='Apply filter to image if the image is light to maintain an acceptable contrast', verbose_name='Apply filter')),
                 ('display_in_navbar', models.BooleanField(default=True, help_text='Designates whether the category should be displayed in the nav dropdown.', verbose_name='Display in navigation bar')),
                 ('is_active', models.BooleanField(default=True, help_text='Designates whether the category should be treated as active.', verbose_name='Active')),

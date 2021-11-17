@@ -1,5 +1,5 @@
-import os
 from django.conf import settings
+from core.serializers import BaseHeaderImageSerializer
 
 from product_categorization.models import Category, SubCategory
 from rest_framework import serializers
@@ -12,11 +12,11 @@ class SubCategoryNavigationListSerializer(serializers.ModelSerializer):
 
     slug = serializers.SlugField(read_only=True)
 
-    class Meta: 
+    class Meta:
         model = SubCategory
         fields = ('id', 'name', 'slug', 'ordering')
         read_only_fields = fields
-        
+
 
 class CategoryNavigationListSerializer(serializers.ModelSerializer):
     """
@@ -40,13 +40,8 @@ class CategoryListSerializer(serializers.ModelSerializer):
     """
     A serializer to display the top level categories and associated images in app
     """
-    image_512x512 = serializers.SerializerMethodField()
-    image_1024x1024 = serializers.SerializerMethodField()
-    image_1024x480 = serializers.SerializerMethodField()
-    image_1536x660 = serializers.SerializerMethodField()
-    image_2048x800 = serializers.SerializerMethodField()
-    image_2560x940 = serializers.SerializerMethodField()
-    image_3072x940 = serializers.SerializerMethodField()
+
+    images = BaseHeaderImageSerializer(source='*', read_only=True)
 
     class Meta:
         model = Category
@@ -56,37 +51,9 @@ class CategoryListSerializer(serializers.ModelSerializer):
             'slug',
             'ordering',
             'width',
-            'apply_filter',
-            'image_512x512',
-            'image_1024x1024',
-            'image_1024x480',
-            'image_1536x660',
-            'image_2048x800',
-            'image_2560x940',
-            'image_3072x940',
+            'images',
         )
         read_only_fields = fields
-
-    def get_image_512x512(self, category):
-        return os.path.join(settings.MEDIA_URL, str(category.image_512x512))
-
-    def get_image_1024x1024(self, category):
-        return os.path.join(settings.MEDIA_URL, str(category.image_1024x1024))
-
-    def get_image_1024x480(self, category):
-        return os.path.join(settings.MEDIA_URL, str(category.image_1024x480))
-
-    def get_image_1536x660(self, category):
-        return os.path.join(settings.MEDIA_URL, str(category.image_1536x660))
-
-    def get_image_2048x800(self, category):
-        return os.path.join(settings.MEDIA_URL, str(category.image_2048x800))
-
-    def get_image_2560x940(self, category):
-        return os.path.join(settings.MEDIA_URL, str(category.image_2560x940))
-
-    def get_image_3072x940(self, category):
-        return os.path.join(settings.MEDIA_URL, str(category.image_3072x940))
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -94,46 +61,12 @@ class CategorySerializer(serializers.ModelSerializer):
     A serializer to display a specific category instance
     """
 
-    image_512x512 = serializers.SerializerMethodField()
-    image_1024x1024 = serializers.SerializerMethodField()
-    image_1024x480 = serializers.SerializerMethodField()
-    image_1536x660 = serializers.SerializerMethodField()
-    image_2048x800 = serializers.SerializerMethodField()
-    image_2560x940 = serializers.SerializerMethodField()
-    image_3072x940 = serializers.SerializerMethodField()
+    image = BaseHeaderImageSerializer(source='*', read_only=True)
 
     class Meta:
         model = Category
         fields = (
             'name',
-            'apply_filter',
-            'image_512x512',
-            'image_1024x1024',
-            'image_1024x480',
-            'image_1536x660',
-            'image_2048x800',
-            'image_2560x940',
-            'image_3072x940',
+            'image',
         )
         read_only_fields = fields
-
-    def get_image_512x512(self, category):
-        return os.path.join(settings.MEDIA_URL, str(category.image_512x512))
-
-    def get_image_1024x1024(self, category):
-        return os.path.join(settings.MEDIA_URL, str(category.image_1024x1024))
-
-    def get_image_1024x480(self, category):
-        return os.path.join(settings.MEDIA_URL, str(category.image_1024x480))
-
-    def get_image_1536x660(self, category):
-        return os.path.join(settings.MEDIA_URL, str(category.image_1536x660))
-
-    def get_image_2048x800(self, category):
-        return os.path.join(settings.MEDIA_URL, str(category.image_2048x800))
-
-    def get_image_2560x940(self, category):
-        return os.path.join(settings.MEDIA_URL, str(category.image_2560x940))
-
-    def get_image_3072x940(self, category):
-        return os.path.join(settings.MEDIA_URL, str(category.image_3072x940))

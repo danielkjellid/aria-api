@@ -6,23 +6,22 @@ from django.utils.text import slugify
 from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill
 
+from core.models import BaseHeaderImageModel, BaseModel
 
-class Category(models.Model):
+
+class Category(BaseModel, BaseHeaderImageModel):
 
     class CategoryWidth(models.TextChoices):
         FULL = 'full', _('Fullwidth')
         HALF = 'half', _('Half')
 
-    def category_directory_path(self, filename):
-        """
-        Method to upload the files to the appropriate path
-        """
-        
-        return 'media/categories/{0}/{1}'.format(slugify(self.name), filename)
+    @property
+    def category_image_directory_path(self):
+        return f'media/categories/{slugify(self.name)}'
 
     name = models.CharField(
-        _('Category name'), 
-        max_length=255, 
+        _('Category name'),
+        max_length=255,
         unique=False
     )
     slug = models.SlugField(
@@ -41,70 +40,12 @@ class Category(models.Model):
         default=0
     )
     width = models.CharField(
-        _('Width'), 
-        max_length=4, 
+        _('Width'),
+        max_length=4,
         choices=CategoryWidth.choices,
         default=CategoryWidth.FULL,
         blank=True,
         null=True,
-    )
-    image = models.ImageField(
-        _('Image'),
-        upload_to=category_directory_path,
-        help_text=_(
-            'Category image, should only be used on top level parents!'
-        ),
-        blank=True, 
-        null=True,
-    )
-    apply_filter = models.BooleanField(
-        _('Apply filter'),
-        default=False,
-        help_text=_(
-            'Apply filter to image if the image is light to maintain an acceptable contrast'
-        ),
-    )
-    image_512x512 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(512, 512)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_1024x1024 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(1024, 1024)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_1024x480 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(1024, 480)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_1536x660 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(1536, 660)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_2048x800 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(2048, 800)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_2560x940 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(2560, 940)], 
-        format='JPEG', 
-        options={'quality': 90}
-    )
-    image_3072x940 = ImageSpecField(
-        source='image', 
-        processors=[ResizeToFill(3072, 940)], 
-        format='JPEG', 
-        options={'quality': 90}
     )
     display_in_navbar = models.BooleanField(
         _('Display in navigation bar'),
@@ -140,13 +81,13 @@ class Category(models.Model):
 class SubCategory(models.Model):
 
     parent = models.ForeignKey(
-        Category, 
-        on_delete=models.CASCADE, 
-        related_name='children', 
+        Category,
+        on_delete=models.CASCADE,
+        related_name='children',
     )
     name = models.CharField(
-        _('Category name'), 
-        max_length=255, 
+        _('Category name'),
+        max_length=255,
         unique=False
     )
     slug = models.SlugField(

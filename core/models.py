@@ -84,39 +84,33 @@ class BaseHeaderImageModel(BaseImageModel):
         format='JPEG',
         options={'quality': 90}
     )
+    image_640x275 = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(640, 275)],
+        format='JPEG',
+        options={'quality': 90}
+    )
     image_1024x1024 = ImageSpecField(
         source='image',
         processors=[ResizeToFill(1024, 1024)],
         format='JPEG',
         options={'quality': 90}
     )
-    image_1024x480 = ImageSpecField(
+    image_1024x575 = ImageSpecField(
         source='image',
-        processors=[ResizeToFill(1024, 480)],
+        processors=[ResizeToFill(1024, 575)],
         format='JPEG',
         options={'quality': 90}
     )
-    image_1536x660 = ImageSpecField(
+    image_1536x860 = ImageSpecField(
         source='image',
-        processors=[ResizeToFill(1536, 660)],
+        processors=[ResizeToFill(1536, 860)],
         format='JPEG',
         options={'quality': 90}
     )
-    image_2048x800 = ImageSpecField(
+    image_2048x1150 = ImageSpecField(
         source='image',
-        processors=[ResizeToFill(2048, 800)],
-        format='JPEG',
-        options={'quality': 90}
-    )
-    image_2560x940 = ImageSpecField(
-        source='image',
-        processors=[ResizeToFill(2560, 940)],
-        format='JPEG',
-        options={'quality': 90}
-    )
-    image_3072x940 = ImageSpecField(
-        source='image',
-        processors=[ResizeToFill(3072, 940)],
+        processors=[ResizeToFill(2048, 1150)],
         format='JPEG',
         options={'quality': 90}
     )
