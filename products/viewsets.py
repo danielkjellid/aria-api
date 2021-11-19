@@ -48,7 +48,7 @@ class ProductListByCategoryAPIView(generics.ListAPIView):
         return Product.on_site.filter(
             category__parent__slug=category,
             status=ProductStatus.AVAILABLE
-        )
+        ).distinct('pk').order_by('-id')
 
 
 class ProductRetrieveAPIView(generics.RetrieveAPIView):
