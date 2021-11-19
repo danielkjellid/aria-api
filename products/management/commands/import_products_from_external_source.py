@@ -247,8 +247,10 @@ class Command(BaseCommand):
                     name = 'Miljøsertifisering'
                 elif key == 'k2_catalog_url':
                     name = 'K2 Katalog'
-                else:
+                elif key == 'catalog_url':
                     name = 'Katalog'
+                else:
+                    raise RuntimeError('Catalog %s does not have the correct key. Is _url appended in the key name?', file)
 
                 value = value
 
