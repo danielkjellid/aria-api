@@ -21,12 +21,12 @@ class BaseHeaderImageSerializer(serializers.Serializer):
     """
 
     apply_filter = serializers.ImageField()
-    image_512x512 = serializers.ImageField()
-    image_640x275 = serializers.ImageField()
-    image_1024x1024 = serializers.ImageField()
-    image_1024x575 = serializers.ImageField()
-    image_1536x860 = serializers.ImageField()
-    image_2048x1150 = serializers.ImageField()
+    image_512x512 = serializers.CharField(source='image_512x512.url')
+    image_640x275 = serializers.CharField(source='image_640x275.url')
+    image_1024x1024 = serializers.CharField(source='image_1024x1024.url')
+    image_1024x575 = serializers.CharField(source='image_1024x575.url')
+    image_1536x860 = serializers.CharField(source='image_1536x860.url')
+    image_2048x1150 = serializers.CharField(source='image_2048x1150.url')
 
     class Meta:
         fields = (
