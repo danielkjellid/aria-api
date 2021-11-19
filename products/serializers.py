@@ -28,7 +28,7 @@ class ProductInstanceNameSerializer(serializers.ModelSerializer):
 
 class VariantSerializer(serializers.ModelSerializer):
 
-    image = serializers.ImageField(read_only=True)
+    image = serializers.CharField(source='image.url', read_only=True)
 
     class Meta:
         model = Variant
@@ -82,7 +82,6 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
     applications = serializers.SerializerMethodField()
     materials = serializers.SerializerMethodField()
     site_state = serializers.SerializerMethodField()
-    options = ProductOptionSerializer(read_only=True, many=True)
     variants = serializers.SerializerMethodField()
 
     class Meta:
@@ -100,7 +99,6 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
             'thumbnail',
             'variants',
             'site_state',
-            'options',
         )
         read_only_fields = fields
 
