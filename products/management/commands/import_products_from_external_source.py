@@ -34,6 +34,12 @@ class Command(BaseCommand):
             required=True
         )
         parser.add_argument(
+            '--add_absorption',
+            action='store_true',
+            dest='add_absorption',
+            help="Tiles need the absorption attr, this sets it to the default 0,05%",
+        )
+        parser.add_argument(
             '--confirm',
             action='store_true',
             dest='confirm',
@@ -44,6 +50,7 @@ class Command(BaseCommand):
         # Get given parameteres
         supplier_id = options['supplier_id']
         source = options['source']
+        add_absorption = options['add_absorption']
         confirm = options['confirm']
 
         # A list of required keys, used in sanity check before object
@@ -83,7 +90,7 @@ class Command(BaseCommand):
                     files = data.get('files')
 
                     # Create products and manipulate sizes
-                    created_product, sizes_dict_list = self._create_imported_product(supplier=supplier, **data)
+                    created_product, sizes_dict_list = self._create_imported_product(supplier=supplier, add_absorption=add_absorption, **data)
 
                     # Add product to m2m site rel.
                     self.stdout.write('Adding active site to product...')
@@ -159,7 +166,7 @@ class Command(BaseCommand):
 
         return File(lf, f'{filename}.pdf')
 
-    def _create_imported_product(self, supplier: "Supplier", **kwargs) -> Tuple["Product", list]:
+    def _create_imported_product(self, supplier: "Supplier", add_absorption: "bool", **kwargs) -> Tuple["Product", list]:
         """
         Create the product itself, and manipulate size list (need to check if special
         character is present in sizes list).
@@ -174,7 +181,7 @@ class Command(BaseCommand):
         # sentence of desc, and extracts it.
         if short_description is None and description is not None:
             short_description = f'{description.split(".")[0]}.'
-            description = f'{description.partition(".")[2].strip()}.'
+            description = f'{description.partition(".")[2].strip()}'
 
         # This variable is determined if there is an
         # asterix present in the sizes string
@@ -198,6 +205,7 @@ class Command(BaseCommand):
             description=description,
             available_in_special_sizes=is_special_size,
             is_imported_from_external_source=True,
+            absorption=0.05 if add_absorption is True else None
         )
 
         self.stdout.write(f'Product {created_product.name} created.')
