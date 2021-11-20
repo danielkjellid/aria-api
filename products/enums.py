@@ -17,6 +17,7 @@ class ProductStyles(models.TextChoices):
     SCANDINAVIAN = 'scandinavian', 'Skandinavisk'
     STRUCTURED = 'structured', 'Strukturert'
     WOODENSTRUCTURE = 'woodenstructure', 'Trestruktur'
+    MODERN = 'modern', 'Moderne'
 
 
 class ProductApplications(models.TextChoices):
