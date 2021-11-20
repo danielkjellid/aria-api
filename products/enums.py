@@ -34,6 +34,7 @@ class ProductMaterials(models.TextChoices):
     METAL = 'metal', 'Metall'
     PORCELAIN = 'porcelain', 'Porselen'
     WOOD = 'wood', 'Tre'
+    MIRROR = 'mirror', 'Speil'
 
 
 class ProductUnit(models.IntegerChoices):
