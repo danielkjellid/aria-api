@@ -27,7 +27,7 @@ class ColorAdmin(admin.ModelAdmin):
 
 @admin.register(Size)
 class SizeAdmin(admin.ModelAdmin):
-    list_display = ('width', 'height', 'depth', 'circumfence')
+    list_display = ('width', 'height', 'depth', 'circumference')
     ordering = ('width', 'height')
 
 
