@@ -25,6 +25,12 @@ class ColorAdmin(admin.ModelAdmin):
     ordering = ['name']
 
 
+@admin.register(Size)
+class SizeAdmin(admin.ModelAdmin):
+    list_display = ('width', 'height', 'depth', 'circumfence')
+    ordering = ('width', 'height')
+
+
 @admin.register(Variant)
 class VariantAdmin(admin.ModelAdmin):
     search_fields = ['name']
