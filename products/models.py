@@ -294,7 +294,7 @@ class ProductOption(BaseModel):
     )
     variant = models.ForeignKey(
         'products.Variant',
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         related_name='product_options',
         null=True,
         blank=True
