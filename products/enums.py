@@ -19,6 +19,7 @@ class ProductStyles(models.TextChoices):
     WOODENSTRUCTURE = 'woodenstructure', 'Trestruktur'
     MODERN = 'modern', 'Moderne'
     CIRCULAR = 'circular', 'Rundt'
+    SQUARE = 'square', 'Firkantet'
     MIRROR_WITH_LIGHT = 'mirrorwithlight', 'Speil med lys'
 
 
