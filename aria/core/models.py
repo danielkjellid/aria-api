@@ -14,7 +14,7 @@ class BaseManager(models.Manager):
 
 
 class BaseQuerySet(models.QuerySet):
-    def order_by_ids(self, ids): #TODO: add type annotation
+    def order_by_ids(self, ids):  # TODO: add type annotation
         if not ids:
             return self
 
@@ -30,8 +30,8 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
-    created_at = models.DateTimeField(_('created time'), auto_now_add=True)
-    updated_at = models.DateTimeField(_('modified time'), auto_now=True)
+    created_at = models.DateTimeField(_("created time"), auto_now_add=True)
+    updated_at = models.DateTimeField(_("modified time"), auto_now=True)
 
     objects = BaseManager.from_queryset(BaseQuerySet)()
 
@@ -48,7 +48,7 @@ class BaseImageModel(models.Model):
     UPLOAD_PATH: str
 
     image = models.ImageField(
-        _('Image'),
+        _("Image"),
         upload_to=get_static_asset_upload_path,
         blank=True,
         null=True,
@@ -56,7 +56,6 @@ class BaseImageModel(models.Model):
 
 
 class BaseHeaderImageModel(BaseImageModel):
-
     class Meta:
         abstract = True
 
@@ -72,52 +71,51 @@ class BaseHeaderImageModel(BaseImageModel):
     UPLOAD_PATH: str
 
     apply_filter = models.BooleanField(
-        _('Apply filter'),
+        _("Apply filter"),
         default=False,
         help_text=_(
-            'Apply filter to image if the image is light to maintain an acceptable contrast'
+            "Apply filter to image if the image is light to maintain an acceptable contrast"
         ),
     )
     image_512x512 = ImageSpecField(
-        source='image',
+        source="image",
         processors=[ResizeToFill(512, 512)],
-        format='JPEG',
-        options={'quality': 90}
+        format="JPEG",
+        options={"quality": 90},
     )
     image_640x275 = ImageSpecField(
-        source='image',
+        source="image",
         processors=[ResizeToFill(640, 275)],
-        format='JPEG',
-        options={'quality': 90}
+        format="JPEG",
+        options={"quality": 90},
     )
     image_1024x1024 = ImageSpecField(
-        source='image',
+        source="image",
         processors=[ResizeToFill(1024, 1024)],
-        format='JPEG',
-        options={'quality': 90}
+        format="JPEG",
+        options={"quality": 90},
     )
     image_1024x575 = ImageSpecField(
-        source='image',
+        source="image",
         processors=[ResizeToFill(1024, 575)],
-        format='JPEG',
-        options={'quality': 90}
+        format="JPEG",
+        options={"quality": 90},
     )
     image_1536x860 = ImageSpecField(
-        source='image',
+        source="image",
         processors=[ResizeToFill(1536, 860)],
-        format='JPEG',
-        options={'quality': 90}
+        format="JPEG",
+        options={"quality": 90},
     )
     image_2048x1150 = ImageSpecField(
-        source='image',
+        source="image",
         processors=[ResizeToFill(2048, 1150)],
-        format='JPEG',
-        options={'quality': 90}
+        format="JPEG",
+        options={"quality": 90},
     )
 
 
 class BaseThumbnailImageModel(models.Model):
-
     class Meta:
         abstract = True
 
@@ -130,25 +128,19 @@ class BaseThumbnailImageModel(models.Model):
     thumbnail = ProcessedImageField(
         upload_to=get_static_asset_upload_path,
         processors=[ResizeToFill(WIDTH, HEIGHT)],
-        format='JPEG',
-        options={'quality': 90},
+        format="JPEG",
+        options={"quality": 90},
         blank=True,
         null=True,
         # default='media/products/default.jpg',
-        help_text=(
-            f'Image must be above {WIDTH}x{HEIGHT}px'
-        )
+        help_text=(f"Image must be above {WIDTH}x{HEIGHT}px"),
     )
 
 
 class BaseFileModel(BaseModel):
-
     class Meta:
         abstract = True
 
     UPLOAD_PATH: str
 
-    file = models.FileField(
-        _('File'),
-        upload_to=get_static_asset_upload_path
-    )
+    file = models.FileField(_("File"), upload_to=get_static_asset_upload_path)

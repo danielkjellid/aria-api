@@ -1,1 +1,1 @@
-default_app_config = 'aria.products.apps.ProductsConfig'
+default_app_config = "aria.products.apps.ProductsConfig"

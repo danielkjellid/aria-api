@@ -3,17 +3,15 @@ from aria.notes.models import NoteEntry
 
 
 class NoteListSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = NoteEntry
-        fields = '__all__'
+        fields = "__all__"
 
 
 class CreateNoteSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = NoteEntry
-        fields = ('note', )
+        fields = ("note",)
 
 
 class UpdateNoteSerializer(serializers.Serializer):

@@ -3,8 +3,17 @@ from django.conf import settings
 
 from rest_framework import serializers
 from aria.core.serializers import BaseHeaderImageSerializer
-from aria.products.models import Product, ProductOption, ProductSiteState, ProductFile, ProductImage, Size, Variant
+from aria.products.models import (
+    Product,
+    ProductOption,
+    ProductSiteState,
+    ProductFile,
+    ProductImage,
+    Size,
+    Variant,
+)
 from aria.products.selectors import get_related_unique_variants
+
 
 class InstanceColorSerializer(serializers.Serializer):
     """
@@ -23,26 +32,27 @@ class ProductInstanceNameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['name']
+        fields = ["name"]
         read_only_fields = fields
+
 
 class VariantSerializer(serializers.ModelSerializer):
 
-    image = serializers.CharField(source='image.url', read_only=True)
+    image = serializers.CharField(source="image.url", read_only=True)
 
     class Meta:
         model = Variant
-        fields = ('id', 'name', 'thumbnail', 'image')
+        fields = ("id", "name", "thumbnail", "image")
         read_only_fields = fields
 
 
 class SizeSerializer(serializers.ModelSerializer):
 
-    name = serializers.StringRelatedField(source='*')
+    name = serializers.StringRelatedField(source="*")
 
     class Meta:
         model = Size
-        fields = ('id', 'name')
+        fields = ("id", "name")
         read_only_fields = fields
 
 
@@ -57,7 +67,8 @@ class ProductOptionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductOption
-        fields = ('id', 'variant', 'size', 'gross_price')
+        fields = ("id", "variant", "size", "gross_price")
+
 
 class ProductFileSerializer(serializers.ModelSerializer):
     """
@@ -66,7 +77,7 @@ class ProductFileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductFile
-        fields = ('name', 'file')
+        fields = ("name", "file")
         read_only_fields = fields
 
 
@@ -76,7 +87,9 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
     """
 
     unit = serializers.SerializerMethodField()
-    categories = ProductInstanceNameSerializer(source='category', read_only=True, many=True)
+    categories = ProductInstanceNameSerializer(
+        source="category", read_only=True, many=True
+    )
     colors = InstanceColorSerializer(read_only=True, many=True)
     styles = serializers.SerializerMethodField()
     applications = serializers.SerializerMethodField()
@@ -87,21 +100,20 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = (
-            'id',
-            'name',
-            'slug',
-            'unit',
-            'categories',
-            'colors',
-            'styles',
-            'applications',
-            'materials',
-            'thumbnail',
-            'variants',
-            'site_state',
+            "id",
+            "name",
+            "slug",
+            "unit",
+            "categories",
+            "colors",
+            "styles",
+            "applications",
+            "materials",
+            "thumbnail",
+            "variants",
+            "site_state",
         )
         read_only_fields = fields
-
 
     def get_unit(self, product):
         return product.get_unit_display()
@@ -119,7 +131,9 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
     def get_applications(self, product):
         applications = product.get_applications_display()
 
-        return ProductInstanceNameSerializer(applications, read_only=True, many=True).data
+        return ProductInstanceNameSerializer(
+            applications, read_only=True, many=True
+        ).data
 
     def get_materials(self, product):
         materials = product.get_materials_display()
@@ -135,13 +149,14 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
 class ProductSiteStateSerializer(serializers.ModelSerializer):
 
     gross_price = serializers.SerializerMethodField()
+
     class Meta:
         model = ProductSiteState
         fields = (
-            'gross_price',
-            'display_price',
-            'can_be_purchased_online',
-            'can_be_picked_up',
+            "gross_price",
+            "display_price",
+            "can_be_purchased_online",
+            "can_be_picked_up",
         )
         read_only_fields = fields
 
@@ -149,9 +164,10 @@ class ProductSiteStateSerializer(serializers.ModelSerializer):
         """
         Format price to always have two decimals
         """
-        formatted_price = '%0.2f' % (instance.gross_price)
+        formatted_price = "%0.2f" % (instance.gross_price)
 
         return formatted_price.strip()
+
 
 class ProductSerializer(serializers.ModelSerializer):
     """
@@ -167,30 +183,32 @@ class ProductSerializer(serializers.ModelSerializer):
     images = BaseHeaderImageSerializer(read_only=True, many=True)
     variants = serializers.SerializerMethodField()
     files = ProductFileSerializer(read_only=True, many=True)
-    origin_country = serializers.StringRelatedField(source='supplier.origin_country', read_only=True )
+    origin_country = serializers.StringRelatedField(
+        source="supplier.origin_country", read_only=True
+    )
     site_state = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = (
-            'id',
-            'unit',
-            'name',
-            'slug',
-            'short_description',
-            'description',
-            'available_in_special_sizes',
-            'absorption',
-            'sizes',
-            'colors',
-            'styles',
-            'applications',
-            'materials',
-            'images',
-            'variants',
-            'files',
-            'origin_country',
-            'site_state'
+            "id",
+            "unit",
+            "name",
+            "slug",
+            "short_description",
+            "description",
+            "available_in_special_sizes",
+            "absorption",
+            "sizes",
+            "colors",
+            "styles",
+            "applications",
+            "materials",
+            "images",
+            "variants",
+            "files",
+            "origin_country",
+            "site_state",
         )
         read_only_fields = fields
 
@@ -206,7 +224,11 @@ class ProductSerializer(serializers.ModelSerializer):
         Order sizes based on width
         """
 
-        sizes = Size.objects.filter(product_options__product=product).distinct().order_by('width', 'height', 'depth', 'circumference')
+        sizes = (
+            Size.objects.filter(product_options__product=product)
+            .distinct()
+            .order_by("width", "height", "depth", "circumference")
+        )
         return SizeSerializer(sizes, read_only=True, many=True).data
 
     def get_site_state(self, product):
@@ -219,11 +241,12 @@ class ProductSerializer(serializers.ModelSerializer):
 
         return ProductInstanceNameSerializer(styles, read_only=True, many=True).data
 
-
     def get_applications(self, product):
         applications = product.get_applications_display()
 
-        return ProductInstanceNameSerializer(applications, read_only=True, many=True).data
+        return ProductInstanceNameSerializer(
+            applications, read_only=True, many=True
+        ).data
 
     def get_materials(self, product):
         materials = product.get_materials_display()
@@ -237,33 +260,24 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class ProductNameImageSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Product
-        fields = (
-            'name',
-            'thumbnail'
-        )
+        fields = ("name", "thumbnail")
 
 
 class ProductListSerializer(serializers.ModelSerializer):
 
-    product = ProductNameImageSerializer(source='*')
-    unit = serializers.CharField(source='get_unit_display')
-    status = serializers.CharField(source='get_status_display') # get display name of integer choice
+    product = ProductNameImageSerializer(source="*")
+    unit = serializers.CharField(source="get_unit_display")
+    status = serializers.CharField(
+        source="get_status_display"
+    )  # get display name of integer choice
     variants = serializers.SerializerMethodField()
     site_state = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = (
-            'id',
-            'product',
-            'unit',
-            'status',
-            'variants',
-            'site_state'
-        )
+        fields = ("id", "product", "unit", "status", "variants", "site_state")
 
     def get_site_state(self, product):
         site_state = ProductSiteState.on_site.get(product=product)

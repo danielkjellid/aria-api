@@ -3,8 +3,11 @@ from django.contrib.postgres.fields import ArrayField
 from django import forms
 from django.forms import CheckboxSelectMultiple
 
+
 class ArraySelectMultiple(CheckboxSelectMultiple):
-    def value_omitted_from_data(self, data: Dict[str, Any], files: Mapping[str, Iterable[Any]], name: str) -> bool:
+    def value_omitted_from_data(
+        self, data: Dict[str, Any], files: Mapping[str, Iterable[Any]], name: str
+    ) -> bool:
         return False
 
 
@@ -27,7 +30,7 @@ class ChoiceArrayField(ArrayField):
             "choices": self.base_field.choices,
             "coerce": self.base_field.to_python,
             "widget": ArraySelectMultiple,
-            "required": not self.null and not self.default
+            "required": not self.null and not self.default,
         }
         defaults.update(kwargs)
 

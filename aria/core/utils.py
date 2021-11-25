@@ -6,6 +6,7 @@ from imagekit.models import ProcessedImageField
 from django.conf import settings
 from django_s3_storage.storage import S3Storage
 
+
 def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
     """
     Function to fire when a model instance is deleted, and we need to cleanup
@@ -13,7 +14,7 @@ def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
 
     """
     if instance is None:
-        raise AttributeError('No instance sent from signal.')
+        raise AttributeError("No instance sent from signal.")
 
     def _cleanup_folders(parent_dir: str = None, storage_key: str = None) -> None:
         # Since we use AWS in prod and a normal file structure in the media folder
@@ -26,13 +27,17 @@ def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
         # If we're not in debug, check if storage_key was sent int
         elif storage_key:
             # Assert that the key actually exists
-            assert (storage_key is not None), 'Storage key is none, not able to cleanup remote folder'
+            assert (
+                storage_key is not None
+            ), "Storage key is none, not able to cleanup remote folder"
 
             # Create a new storage instance based in s3 bucket
             storage = S3Storage(aws_s3_bucket_name=settings.AWS_S3_BUCKET_NAME)
 
             # Get the "dir" key of file deleted
-            parent_dir_key = storage_key.rsplit('/', 1)[0] # Get everything before last /
+            parent_dir_key = storage_key.rsplit("/", 1)[
+                0
+            ]  # Get everything before last /
 
             # Check if ket exists
             if storage.exists(parent_dir_key):
@@ -42,7 +47,6 @@ def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
                 # If both are empty, delete the folder
                 if len(dirs) == 0 and len(files) == 0:
                     storage.delete(parent_dir_key)
-
 
     def _cleanup_file(instance: "Model", meta_field: str) -> None:
         instance_field = None
@@ -58,7 +62,11 @@ def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
             pass
 
         # Check if field meta exists, and that field is type Image, ProcessedImage or File
-        if field and instance_field and isinstance(instance_field, (ImageField, ProcessedImageField, FileField)):
+        if (
+            field
+            and instance_field
+            and isinstance(instance_field, (ImageField, ProcessedImageField, FileField))
+        ):
             # Since we use AWS in prod, and normal file structure in development
             # check if path property of instance field exists
             try:
@@ -77,11 +85,9 @@ def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
             # to delete empty folders from the system as well
             _cleanup_folders(parent_dir=parent_dir, storage_key=storage_key)
 
-
-    _cleanup_file(instance=instance, meta_field='thumbnail')
-    _cleanup_file(instance=instance, meta_field='image')
-    _cleanup_file(instance=instance, meta_field='file')
-
+    _cleanup_file(instance=instance, meta_field="thumbnail")
+    _cleanup_file(instance=instance, meta_field="image")
+    _cleanup_file(instance=instance, meta_field="file")
 
 
 def get_static_asset_upload_path(instance: "Model", filename: str) -> str:
@@ -99,4 +105,4 @@ def get_static_asset_upload_path(instance: "Model", filename: str) -> str:
 
     name, extension = os.path.splitext(filename)
 
-    return f'{path}/{slugify(name)}{extension}'
+    return f"{path}/{slugify(name)}{extension}"

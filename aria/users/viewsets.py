@@ -9,11 +9,17 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from aria.core.permissions import HasUserOrGroupPermission
-from aria.users.serializers import (PasswordResetConfirmSerializer,
-                                   PasswordResetSerializer,
-                                   RequestUserSerializer, UserCreateSerializer,
-                                   UserNoteSerializer, UserSerializer,
-                                   UsersSerializer, AccountVerificationSerializer, AccountVerificationConfirmSerializer)
+from aria.users.serializers import (
+    PasswordResetConfirmSerializer,
+    PasswordResetSerializer,
+    RequestUserSerializer,
+    UserCreateSerializer,
+    UserNoteSerializer,
+    UserSerializer,
+    UsersSerializer,
+    AccountVerificationSerializer,
+    AccountVerificationConfirmSerializer,
+)
 from aria.users.models import User
 from aria.core.pagination import PageNumberSetPagination
 from aria.audit_logs.models import LogEntry
@@ -28,9 +34,10 @@ from django.utils.encoding import force_bytes
 
 sensitive_post_parameters_m = method_decorator(
     sensitive_post_parameters(
-        'password', 'old_password', 'new_password1', 'new_password2'
+        "password", "old_password", "new_password1", "new_password2"
     )
 )
+
 
 class UsersListAPIView(generics.ListAPIView):
     """
@@ -39,14 +46,14 @@ class UsersListAPIView(generics.ListAPIView):
     Returns list of users.
     """
 
-    queryset = User.on_site.all().order_by('id')
+    queryset = User.on_site.all().order_by("id")
     pagination_class = PageNumberSetPagination
     serializer_class = UsersSerializer
     filter_backends = [filters.SearchFilter]
-    search_fields = ('first_name', 'last_name', 'email', 'phone_number')
+    search_fields = ("first_name", "last_name", "email", "phone_number")
     permission_classes = (IsAdminUser, HasUserOrGroupPermission)
     required_permissions = {
-        'GET': ['has_users_list'],
+        "GET": ["has_users_list"],
     }
 
 
@@ -61,9 +68,9 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
     permission_classes = (IsAdminUser, HasUserOrGroupPermission)
     required_permissions = {
-        'GET': ['has_users_list'],
-        'PUT': ['has_user_edit'],
-        'DELETE': ['has_user_delete']
+        "GET": ["has_users_list"],
+        "PUT": ["has_user_edit"],
+        "DELETE": ["has_user_delete"],
     }
 
     def put(self, request, pk):
@@ -72,7 +79,7 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
         if serializer.is_valid():
             # store old user in variable
-            old_user_instance = get_object_or_404(User, pk = pk)
+            old_user_instance = get_object_or_404(User, pk=pk)
             # update user instance
             serializer.save()
             # create logging instance by comparing old vs. new user fields
@@ -89,9 +96,9 @@ class UserNoteAPIView(APIView):
     queryset = NoteEntry.objects.all()
     permission_classes = (IsAdminUser, HasUserOrGroupPermission)
     required_permissions = {
-        'GET': ['has_users_list'],
-        'POST': ['has_notes_add'],
-        'PUT': ['has_note_edit'],
+        "GET": ["has_users_list"],
+        "POST": ["has_notes_add"],
+        "PUT": ["has_note_edit"],
     }
 
     def get_object(self, pk):
@@ -109,7 +116,7 @@ class UserNoteAPIView(APIView):
         serializer = CreateNoteSerializer(data=request.data)
 
         if serializer.is_valid():
-            NoteEntry.create_note(request.user, user, serializer.data['note'])
+            NoteEntry.create_note(request.user, user, serializer.data["note"])
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -119,18 +126,20 @@ class UserNoteAPIView(APIView):
         serializer = UpdateNoteSerializer(data=request.data)
 
         if serializer.is_valid():
-            NoteEntry.update_note(request.user, serializer.data['id'], serializer.data['note'])
+            NoteEntry.update_note(
+                request.user, serializer.data["id"], serializer.data["note"]
+            )
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class RequestUserRetrieveAPIView(generics.RetrieveAPIView):
     """
     View for getting info about request user
     """
-    permission_classes = (IsAuthenticated, )
+
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         serializer = RequestUserSerializer(request.user)
@@ -143,7 +152,7 @@ class UserCreateAPIView(generics.CreateAPIView):
     """
 
     # set view public
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
     authentication_classes = ()
 
     # use the UserCreate serializer
@@ -168,8 +177,9 @@ class PasswordResetView(generics.GenericAPIView):
     Accepts the following POST parameters: email
     Returns the success/fail message.
     """
+
     serializer_class = PasswordResetSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
     authentication_classes = ()
 
     def post(self, request, *args, **kwargs):
@@ -182,8 +192,8 @@ class PasswordResetView(generics.GenericAPIView):
         serializer.save()
 
         return Response(
-            {'detail': _('Password reset e-mail has been sent.')},
-            status=status.HTTP_200_OK
+            {"detail": _("Password reset e-mail has been sent.")},
+            status=status.HTTP_200_OK,
         )
 
 
@@ -197,8 +207,9 @@ class PasswordResetConfirmView(generics.GenericAPIView):
 
     Returns the success/fail message.
     """
+
     serializer_class = PasswordResetConfirmSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
     authentication_classes = ()
 
     @sensitive_post_parameters_m
@@ -211,8 +222,8 @@ class PasswordResetConfirmView(generics.GenericAPIView):
         serializer.save()
 
         return Response(
-            {'detail': _('Password has been reset with the new password')},
-            status=status.HTTP_200_OK
+            {"detail": _("Password has been reset with the new password")},
+            status=status.HTTP_200_OK,
         )
 
 
@@ -225,7 +236,7 @@ class AccountVerificationView(generics.GenericAPIView):
     """
 
     serializer_class = AccountVerificationSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
     authentication_classes = ()
 
     def post(self, request, *args, **kwargs):
@@ -235,8 +246,8 @@ class AccountVerificationView(generics.GenericAPIView):
         serializer.save()
 
         return Response(
-            {'detail': _('Email verification has been sent.')},
-            status=status.HTTP_200_OK
+            {"detail": _("Email verification has been sent.")},
+            status=status.HTTP_200_OK,
         )
 
 
@@ -251,7 +262,7 @@ class AccountVerificationConfirmView(generics.GenericAPIView):
     """
 
     serializer_class = AccountVerificationConfirmSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
     authentication_classes = ()
 
     def post(self, request, *args, **kwargs):
@@ -260,6 +271,5 @@ class AccountVerificationConfirmView(generics.GenericAPIView):
         serializer.save()
 
         return Response(
-            {'detail': _('Account email verified')},
-            status=status.HTTP_200_OK
+            {"detail": _("Account email verified")}, status=status.HTTP_200_OK
         )

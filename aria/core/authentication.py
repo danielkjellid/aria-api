@@ -5,6 +5,7 @@ from django.conf import settings
 
 User = get_user_model()
 
+
 class AuthBackend(ModelBackend):
     """
     Custom authentication backend to support login for multiple sites
@@ -26,6 +27,8 @@ class AuthBackend(ModelBackend):
 
     def get_user(self, user_id):
         try:
-            return User.objects.get(id=user_id, site=Site.objects.get(pk=settings.SITE_ID))
+            return User.objects.get(
+                id=user_id, site=Site.objects.get(pk=settings.SITE_ID)
+            )
         except User.DoesNotExist:
             return None

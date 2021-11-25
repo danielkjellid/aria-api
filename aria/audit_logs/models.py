@@ -14,43 +14,34 @@ from aria.users.models import User
 
 
 class LogEntry(models.Model):
-    user = models.ForeignKey(
-        User,
-        related_name='log_entries',
-        on_delete = models.CASCADE
-    )
+    user = models.ForeignKey(User, related_name="log_entries", on_delete=models.CASCADE)
     content_type = models.ForeignKey(
         ContentType,
         models.SET_NULL,
-        verbose_name = _('content type'),
-        blank = True,
-        null = True,
-        related_name='logs'
+        verbose_name=_("content type"),
+        blank=True,
+        null=True,
+        related_name="logs",
     )
     object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey(
-        'content_type',
-        'object_id'
-    )
+    content_object = GenericForeignKey("content_type", "object_id")
     change = models.JSONField()
     date_of_change = models.DateTimeField(
-        _('changed at'),
-        default = timezone.now,
-        editable = False
+        _("changed at"), default=timezone.now, editable=False
     )
 
     # add the auditlog model to the LogEntryManager
     objects = LogEntryManager()
 
     class Meta:
-        verbose_name = _('Audit log entry')
-        verbose_name_plural = _('Audit log entries')
+        verbose_name = _("Audit log entry")
+        verbose_name_plural = _("Audit log entries")
 
     # method for creating an change message
     def create_log_entry(request, obj, old_instance):
 
         # get the new version of the instance by querying the object
-        new_instance = obj.objects.get(pk = old_instance.pk)
+        new_instance = obj.objects.get(pk=old_instance.pk)
 
         # get content type for object
         ct = ContentType.objects.get_for_model(new_instance)
@@ -72,31 +63,28 @@ class LogEntry(models.Model):
 
                 # format changemessage as JSON
                 change_message = {
-                    'field': field.name,
-                    'old_value': old_value,
-                    'new_value': new_value
+                    "field": field.name,
+                    "old_value": old_value,
+                    "new_value": new_value,
                 }
-
 
                 # use constructor created in manager to create a new model instance
                 LogEntry.objects.log_update(
-                    user = request,
-                    content_type = ct,
-                    content_object = new_instance,
-                    object_id = new_instance.pk,
-                    change = change_message,
-                    date_of_change = timezone.now()
+                    user=request,
+                    content_type=ct,
+                    content_object=new_instance,
+                    object_id=new_instance.pk,
+                    change=change_message,
+                    date_of_change=timezone.now(),
                 )
 
     def get_logs(instance):
 
         ct = ContentType.objects.get_for_model(instance)
 
-        return LogEntry.objects.filter(
-            content_type = ct,
-            object_id = instance.pk
-        ).order_by('-date_of_change')
-
+        return LogEntry.objects.filter(content_type=ct, object_id=instance.pk).order_by(
+            "-date_of_change"
+        )
 
     # property to parse and return the changed JSON
     @cached_property

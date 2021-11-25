@@ -9,22 +9,67 @@ class UserAdmin(UserAdmin):
     add_form = UserCreationForm
     form = UserChangeForm
     model = User
-    list_display = ('first_name', 'last_name', 'email', 'is_staff', 'is_active')
-    list_filter = ('is_staff', 'is_active', 'has_confirmed_email')
+    list_display = ("first_name", "last_name", "email", "is_staff", "is_active")
+    list_filter = ("is_staff", "is_active", "has_confirmed_email")
     fieldsets = (
-        ('Personal', {'fields': ('first_name', 'last_name', 'avatar_color', 'date_joined', 'last_login', 'password', 'birth_date')}),
-        ('Contact', {'fields': ('phone_number', 'email', 'has_confirmed_email', 'street_address', 'zip_code', 'zip_place')}),
-        ('Marketing', {'fields': ('disabled_emails', 'subscribed_to_newsletter', 'allow_personalization', 'allow_third_party_personalization', 'acquisition_source', 'site')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        (
+            "Personal",
+            {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "avatar_color",
+                    "date_joined",
+                    "last_login",
+                    "password",
+                    "birth_date",
+                )
+            },
+        ),
+        (
+            "Contact",
+            {
+                "fields": (
+                    "phone_number",
+                    "email",
+                    "has_confirmed_email",
+                    "street_address",
+                    "zip_code",
+                    "zip_place",
+                )
+            },
+        ),
+        (
+            "Marketing",
+            {
+                "fields": (
+                    "disabled_emails",
+                    "subscribed_to_newsletter",
+                    "allow_personalization",
+                    "allow_third_party_personalization",
+                    "acquisition_source",
+                    "site",
+                )
+            },
+        ),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                )
+            },
+        ),
     )
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2')
-        }),
+        (None, {"classes": ("wide",), "fields": ("email", "password1", "password2")}),
     )
-    search_fields = ('first_name', 'last_name', 'email')
-    ordering = ('first_name',)
+    search_fields = ("first_name", "last_name", "email")
+    ordering = ("first_name",)
 
 
 admin.site.register(User, UserAdmin)

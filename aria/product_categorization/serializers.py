@@ -14,7 +14,7 @@ class SubCategoryNavigationListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SubCategory
-        fields = ('id', 'name', 'slug', 'ordering')
+        fields = ("id", "name", "slug", "ordering")
         read_only_fields = fields
 
 
@@ -28,12 +28,14 @@ class CategoryNavigationListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ('id', 'name', 'slug', 'children')
+        fields = ("id", "name", "slug", "children")
         read_only_fields = fields
 
     def get_children(self, instance):
-        children = instance.children.filter(sites=settings.SITE_ID).order_by('ordering')
-        return SubCategoryNavigationListSerializer(children, many=True, read_only=True).data
+        children = instance.children.filter(sites=settings.SITE_ID).order_by("ordering")
+        return SubCategoryNavigationListSerializer(
+            children, many=True, read_only=True
+        ).data
 
 
 class CategoryListSerializer(serializers.ModelSerializer):
@@ -41,17 +43,17 @@ class CategoryListSerializer(serializers.ModelSerializer):
     A serializer to display the top level categories and associated images in app
     """
 
-    images = BaseHeaderImageSerializer(source='*', read_only=True)
+    images = BaseHeaderImageSerializer(source="*", read_only=True)
 
     class Meta:
         model = Category
         fields = (
-            'id',
-            'name',
-            'slug',
-            'ordering',
-            'width',
-            'images',
+            "id",
+            "name",
+            "slug",
+            "ordering",
+            "width",
+            "images",
         )
         read_only_fields = fields
 
@@ -61,12 +63,12 @@ class CategorySerializer(serializers.ModelSerializer):
     A serializer to display a specific category instance
     """
 
-    images = BaseHeaderImageSerializer(source='*', read_only=True)
+    images = BaseHeaderImageSerializer(source="*", read_only=True)
 
     class Meta:
         model = Category
         fields = (
-            'name',
-            'images',
+            "name",
+            "images",
         )
         read_only_fields = fields

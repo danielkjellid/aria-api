@@ -33,11 +33,11 @@ class UserNoteSerializer(serializers.ModelSerializer):
     A serializer to display notes associated with a specific user
     """
 
-    profile = UserProfileSerializer(source='user')
+    profile = UserProfileSerializer(source="user")
 
     class Meta:
         model = NoteEntry
-        fields = ('id', 'profile', 'note', 'updated_at')
+        fields = ("id", "profile", "note", "updated_at")
 
 
 class UsersSerializer(serializers.ModelSerializer):
@@ -45,11 +45,11 @@ class UsersSerializer(serializers.ModelSerializer):
     A serializer to display all users registered in the app
     """
 
-    profile = UserProfileSerializer(source='*')
+    profile = UserProfileSerializer(source="*")
 
     class Meta:
         model = User
-        fields = ('id', 'profile', 'email', 'is_active', 'date_joined')
+        fields = ("id", "profile", "email", "is_active", "date_joined")
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -57,13 +57,12 @@ class UserSerializer(serializers.ModelSerializer):
     A serializer to retrive a specific user instance
     """
 
-    profile = UserProfileSerializer(source='*', read_only=True)
+    profile = UserProfileSerializer(source="*", read_only=True)
     address = serializers.SerializerMethodField()
     acquisition_source = serializers.SerializerMethodField()
     audit_logs = serializers.SerializerMethodField()
     notes = serializers.SerializerMethodField()
     phone_number = serializers.SerializerMethodField()
-
 
     def get_full_name(self, instance):
         return instance.get_full_name()
@@ -73,12 +72,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_acquisition_source(self, instance):
         if not instance.acquisition_source:
-            return 'N/A'
+            return "N/A"
 
         return instance.acquisition_source
 
     def get_audit_logs(self, instance):
-        audit_logs = LogEntry.get_logs(instance) # TODO: change to manager
+        audit_logs = LogEntry.get_logs(instance)  # TODO: change to manager
         return LogEntrySerializer(audit_logs, many=True, read_only=True).data
 
     def get_notes(self, instance):
@@ -87,13 +86,20 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_phone_number(self, instance):
         if not instance.phone_number:
-            return 'N/A'
+            return "N/A"
 
         return instance.get_formatted_phone()
 
     class Meta:
         model = User
-        exclude = ('password', 'groups', 'user_permissions', 'is_superuser', 'is_staff', 'avatar_color')
+        exclude = (
+            "password",
+            "groups",
+            "user_permissions",
+            "is_superuser",
+            "is_staff",
+            "avatar_color",
+        )
 
 
 class RequestUserSerializer(serializers.ModelSerializer):
@@ -110,7 +116,19 @@ class RequestUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('first_name', 'full_name', 'avatar_color', 'initial', 'email', 'is_authenticated', 'permissions', 'group_permissions', 'is_staff', 'is_superuser', 'has_confirmed_email')
+        fields = (
+            "first_name",
+            "full_name",
+            "avatar_color",
+            "initial",
+            "email",
+            "is_authenticated",
+            "permissions",
+            "group_permissions",
+            "is_staff",
+            "is_superuser",
+            "has_confirmed_email",
+        )
 
     def get_full_name(self, user):
         if user.is_authenticated:
@@ -132,14 +150,18 @@ class RequestUserSerializer(serializers.ModelSerializer):
         if not user.is_authenticated:
             return None
 
-        permissions = Permission.objects.filter(user=user.id).values_list('codename', flat=True)
+        permissions = Permission.objects.filter(user=user.id).values_list(
+            "codename", flat=True
+        )
         return permissions
 
     def get_group_permissions(self, user):
         if not user.is_authenticated:
             return None
 
-        group_permissions = Permission.objects.filter(group__user=user.id).values_list('codename', flat=True)
+        group_permissions = Permission.objects.filter(group__user=user.id).values_list(
+            "codename", flat=True
+        )
         return group_permissions
 
     def get_is_authenticated(self, user):
@@ -151,61 +173,68 @@ class UserCreateSerializer(serializers.ModelSerializer):
     A serializer for creating a user instance
     """
 
-    password = serializers.CharField(min_length=8, write_only=True, required=True, style={'input_type': 'password'})
-    password2 = serializers.CharField(min_length=8, write_only=True, style={'input_type': 'password'}, label='Confirm password')
+    password = serializers.CharField(
+        min_length=8, write_only=True, required=True, style={"input_type": "password"}
+    )
+    password2 = serializers.CharField(
+        min_length=8,
+        write_only=True,
+        style={"input_type": "password"},
+        label="Confirm password",
+    )
 
     class Meta:
         model = User
         fields = (
-            'first_name',
-            'last_name',
-            'phone_number',
-            'birth_date',
-            'email',
-            'password',
-            'password2',
-            'street_address',
-            'zip_code',
-            'zip_place',
-            'subscribed_to_newsletter',
-            'allow_personalization',
-            'allow_third_party_personalization'
+            "first_name",
+            "last_name",
+            "phone_number",
+            "birth_date",
+            "email",
+            "password",
+            "password2",
+            "street_address",
+            "zip_code",
+            "zip_place",
+            "subscribed_to_newsletter",
+            "allow_personalization",
+            "allow_third_party_personalization",
         )
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {"password": {"write_only": True}}
 
     def validate(self, data):
         # add site property to data
-        data['site'] = Site.objects.get(pk=settings.SITE_ID)
+        data["site"] = Site.objects.get(pk=settings.SITE_ID)
 
-        email = data.get('email')
-        password = data.get('password')
-        password2 = data.get('password2')
-        site = data.get('site')
+        email = data.get("email")
+        password = data.get("password")
+        password2 = data.get("password2")
+        site = data.get("site")
 
         # check if passwords are equal
         if password != password2:
-            raise serializers.ValidationError (
-                {'password': 'Begge passordene må være like.'}
+            raise serializers.ValidationError(
+                {"password": "Begge passordene må være like."}
             )
 
         # check if email is unique
-        if (email and User.on_site.filter(email=email).exists()):
-            raise serializers.ValidationError (
-                {'email': 'E-post adressen eksiterer allerede.'}
+        if email and User.on_site.filter(email=email).exists():
+            raise serializers.ValidationError(
+                {"email": "E-post adressen eksiterer allerede."}
             )
 
         # check if site exists
         if not site:
-            raise serializers.ValidationError (
-                {'site': 'Error getting site, please contact an admin'}
+            raise serializers.ValidationError(
+                {"site": "Error getting site, please contact an admin"}
             )
 
         return data
 
     def create(self, validated_data):
         # remove password and password 2 from data
-        password = validated_data.pop('password', None)
-        password2 = validated_data.pop('password2', None)
+        password = validated_data.pop("password", None)
+        password2 = validated_data.pop("password2", None)
 
         # create a new model instance
         instance = self.Meta.model(**validated_data)
@@ -231,9 +260,7 @@ class PasswordResetSerializer(serializers.Serializer):
         """
         Override this method to change default email options
         """
-        return {
-            'html_email_template_name': 'email/password_reset_email.html'
-        }
+        return {"html_email_template_name": "email/password_reset_email.html"}
 
     def validate_email(self, value):
         """
@@ -246,14 +273,13 @@ class PasswordResetSerializer(serializers.Serializer):
 
         return value
 
-
     def save(self):
-        request = self.context.get('request')
+        request = self.context.get("request")
 
         options = {
-            'use_https': request.is_secure(),
-            'from_email': getattr(settings, 'DEFAULT_FROM_EMAIL'),
-            'request': request
+            "use_https": request.is_secure(),
+            "from_email": getattr(settings, "DEFAULT_FROM_EMAIL"),
+            "request": request,
         }
 
         options.update(self.get_email_options())
@@ -274,10 +300,10 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
     def validate(self, attrs):
 
         try:
-            uid = force_text(uid_decoder(attrs['uid']))
+            uid = force_text(uid_decoder(attrs["uid"]))
             self.user = User.on_site.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            raise serializers.ValidationError({'uid': ['Invalid value']})
+            raise serializers.ValidationError({"uid": ["Invalid value"]})
 
         self.custom_validation(attrs)
 
@@ -288,8 +314,8 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
         if not self.set_password_form.is_valid():
             raise serializers.ValidationError(self.set_password_form.errors)
-        if not default_token_generator.check_token(self.user, attrs['token']):
-            raise serializers.ValidationError({'token': ['Invalid value']})
+        if not default_token_generator.check_token(self.user, attrs["token"]):
+            raise serializers.ValidationError({"token": ["Invalid value"]})
 
         return attrs
 
@@ -311,39 +337,45 @@ class AccountVerificationSerializer(serializers.Serializer):
             if self.user.is_active:
                 return value
         except User.DoesNotExist:
-            raise serializers.ValidationError({'detail': _('User does not exist')})
-
+            raise serializers.ValidationError({"detail": _("User does not exist")})
 
     def validate(self, data):
         """
         Check if email isn't already confirmed
         """
         if self.user.has_confirmed_email:
-            raise serializers.ValidationError({'detail': _('Email is already confirmed, unable to resend verification email')})
+            raise serializers.ValidationError(
+                {
+                    "detail": _(
+                        "Email is already confirmed, unable to resend verification email"
+                    )
+                }
+            )
 
         return data
-
 
     def save(self):
         current_site = Site.objects.get_current()
 
         # constructor for verification email
         # sends uid and token in email
-        user_verification_email = render_to_string('email/verify_account.html', {
-            'protocol': 'https',
-            'domain': current_site.domain,
-            'user': self.user,
-            'uid': uid_encoder(force_bytes(self.user.pk)),
-            'token': default_token_generator.make_token(self.user)
-        })
+        user_verification_email = render_to_string(
+            "email/verify_account.html",
+            {
+                "protocol": "https",
+                "domain": current_site.domain,
+                "user": self.user,
+                "uid": uid_encoder(force_bytes(self.user.pk)),
+                "token": default_token_generator.make_token(self.user),
+            },
+        )
 
         # use email_user method and send verification email
         self.user.email_user(
-            '%s %s' % ('Bekreft kontoen din på', current_site.name),
-            '%s %s' % ('Bekreft kontoen din på', current_site.name),
-            html_message=user_verification_email
+            "%s %s" % ("Bekreft kontoen din på", current_site.name),
+            "%s %s" % ("Bekreft kontoen din på", current_site.name),
+            html_message=user_verification_email,
         )
-
 
 
 class AccountVerificationConfirmSerializer(serializers.Serializer):
@@ -353,19 +385,21 @@ class AccountVerificationConfirmSerializer(serializers.Serializer):
     def validate(self, attrs):
 
         try:
-            uid = force_text(uid_decoder(attrs['uid']))
+            uid = force_text(uid_decoder(attrs["uid"]))
             self.user = User.on_site.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            raise serializers.ValidationError({'uid': ['Invalid value']})
+            raise serializers.ValidationError({"uid": ["Invalid value"]})
 
-        if not default_token_generator.check_token(self.user, attrs['token']):
-            raise serializers.ValidationError({'token': ['Invalid value']})
+        if not default_token_generator.check_token(self.user, attrs["token"]):
+            raise serializers.ValidationError({"token": ["Invalid value"]})
 
         if self.user.has_confirmed_email:
-            raise serializers.ValidationError({'detail': _('Konto er allerede verifisert')})
+            raise serializers.ValidationError(
+                {"detail": _("Konto er allerede verifisert")}
+            )
 
         return attrs
 
     def save(self):
-        self.user.has_confirmed_email=True
+        self.user.has_confirmed_email = True
         self.user.save()

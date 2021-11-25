@@ -3,24 +3,25 @@ from django.contrib.sites.models import Site
 
 from urllib.parse import urlparse
 
+
 class DynamicSiteDomainMiddleware:
     """
-    Used to set SITE_ID dynamically, and accordingly based 
+    Used to set SITE_ID dynamically, and accordingly based
     on the site making the request.
     """
-    
+
     def __init__(self, get_response):
         # one time configuration and initialization
         self.get_response = get_response
 
     def __call__(self, request):
-        
-        if request.META.get('HTTP_REFERER') is not None:
+
+        if request.META.get("HTTP_REFERER") is not None:
             # get hostname from origin making the request
             # if we use djangos built in get_host() it will always return
             # the server ip/hostname
             # which is not what we want when using rest framework
-            host = urlparse(request.META.get('HTTP_REFERER')).hostname
+            host = urlparse(request.META.get("HTTP_REFERER")).hostname
 
             # check if host exists, so we don't hinder request made
             # through the django admin

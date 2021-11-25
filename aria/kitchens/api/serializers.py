@@ -26,13 +26,13 @@ class KitchenListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Kitchen
         fields = (
-            'id',
-            'name',
-            'slug',
-            'thumbnail_description',
-            'thumbnail_500x305',
-            'thumbnail_660x400',
-            'thumbnail_850x520'
+            "id",
+            "name",
+            "slug",
+            "thumbnail_description",
+            "thumbnail_500x305",
+            "thumbnail_660x400",
+            "thumbnail_850x520",
         )
         read_only_fields = fields
 
@@ -44,7 +44,6 @@ class KitchenVariantImageSerializer(serializers.Serializer):
 
     name = serializers.CharField(read_only=True)
     image = serializers.ImageField()
-
 
 
 class KitchenSerializer(serializers.ModelSerializer):
@@ -59,33 +58,33 @@ class KitchenSerializer(serializers.ModelSerializer):
     laminate_variants = InstanceColorSerializer(read_only=True, many=True)
     exclusive_variants = InstanceColorSerializer(read_only=True, many=True)
     trend_variants = InstanceColorSerializer(read_only=True, many=True)
-    images = BaseHeaderImageSerializer(source='*', read_only=True)
+    images = BaseHeaderImageSerializer(source="*", read_only=True)
 
     class Meta:
         model = Kitchen
         fields = (
-            'id',
-            'name',
-            'slug',
-            'description',
-            'apply_filter',
-            'extra_description',
-            'example_from_price',
-            'can_be_painted',
-            'silk_variants',
-            'decor_variants',
-            'plywood_variants',
-            'laminate_variants',
-            'exclusive_variants',
-            'trend_variants',
-            'images',
+            "id",
+            "name",
+            "slug",
+            "description",
+            "apply_filter",
+            "extra_description",
+            "example_from_price",
+            "can_be_painted",
+            "silk_variants",
+            "decor_variants",
+            "plywood_variants",
+            "laminate_variants",
+            "exclusive_variants",
+            "trend_variants",
+            "images",
         )
         read_only_fields = fields
 
     def get_example_from_price(self, instance):
 
         if instance.example_from_price:
-            formatted_from_price = '%0.2f' % (instance.example_from_price)
+            formatted_from_price = "%0.2f" % (instance.example_from_price)
 
             return formatted_from_price
 
