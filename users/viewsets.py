@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.permissions import HasUserOrGroupPermission
-from users.api.serializers import (PasswordResetConfirmSerializer,
+from users.serializers import (PasswordResetConfirmSerializer,
                                    PasswordResetSerializer,
                                    RequestUserSerializer, UserCreateSerializer,
                                    UserNoteSerializer, UserSerializer,
@@ -86,7 +86,7 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     def put(self, request, pk):
         user = get_object_or_404(User, pk = pk)
         serializer = UserSerializer(user, data=request.data)
-        
+
         if serializer.is_valid():
             # store old user in variable
             old_user_instance = get_object_or_404(User, pk = pk)
@@ -94,7 +94,7 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
             serializer.save()
             # create logging instance by comparing old vs. new user fields
             LogEntry.create_log_entry(request.user, User, old_user_instance)
-            
+
             # return updated user
             return Response(serializer.data)
 
@@ -128,7 +128,7 @@ class UserNoteAPIView(APIView):
         if serializer.is_valid():
             NoteEntry.create_note(request.user, user, serializer.data['note'])
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
@@ -172,7 +172,7 @@ class UserCreateAPIView(generics.CreateAPIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-                
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -209,7 +209,7 @@ class PasswordResetConfirmView(generics.GenericAPIView):
     Password reset e-mail link is confirmed, therefore
     this resets the user's password.
 
-    Accept the following POST parameters: token, uid, new_password1, 
+    Accept the following POST parameters: token, uid, new_password1,
     new_password2
 
     Returns the success/fail message.
@@ -228,7 +228,7 @@ class PasswordResetConfirmView(generics.GenericAPIView):
         serializer.save()
 
         return Response(
-            {'detail': _('Password has been reset with the new password')}, 
+            {'detail': _('Password has been reset with the new password')},
             status=status.HTTP_200_OK
         )
 
@@ -277,6 +277,6 @@ class AccountVerificationConfirmView(generics.GenericAPIView):
         serializer.save()
 
         return Response(
-            {'detail': _('Account email verified')}, 
+            {'detail': _('Account email verified')},
             status=status.HTTP_200_OK
         )

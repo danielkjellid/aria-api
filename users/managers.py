@@ -11,8 +11,10 @@ class UserManager(BaseUserManager):
         """
         Create and save a user with the given email and password
         """
+
         if not email:
             raise ValueError(_('The email must be set'))
+
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
@@ -23,6 +25,7 @@ class UserManager(BaseUserManager):
         """
         Create and save a SuperUser with the given email and password
         """
+
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
