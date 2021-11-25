@@ -61,6 +61,25 @@ Pillow = "^8.4.0"
 Django = "^3.2.9"
 
 [tool.poetry.dev-dependencies]
+flake8 = "^4.0.1"
+black = "^21.11b1"
+flake8-black = "^0.2.3"
+isort = "^5.10.1"
+flake8-isort = "^4.1.1"
+
+[tool.black]
+target-version = ['py39']
+include = '\.pyi?$'
+extend-exclude = 'migrations'
+safe = true
+
+[tool.isort]
+profile = "black"
+skip_gitignore = true
+skip_glob = "*migrations*"
+known_django = ["django", "rest_framework"]
+sections = ["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+combine_as_imports = true
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
