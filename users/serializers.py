@@ -1,14 +1,13 @@
 from django.conf import settings
-from django.contrib.auth import authenticate
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
-from django.contrib.auth.models import Permission, update_last_login
+from django.contrib.auth.models import Permission
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_decode as uid_decoder
 from django.utils.http import urlsafe_base64_encode as uid_encoder
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from users.models import User
@@ -75,7 +74,7 @@ class UserSerializer(serializers.ModelSerializer):
     def get_acquisition_source(self, instance):
         if not instance.acquisition_source:
             return 'N/A'
-        
+
         return instance.acquisition_source
 
     def get_audit_logs(self, instance):
@@ -95,7 +94,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = ('password', 'groups', 'user_permissions', 'is_superuser', 'is_staff', 'avatar_color')
-        
+
 
 class RequestUserSerializer(serializers.ModelSerializer):
     """
@@ -116,7 +115,7 @@ class RequestUserSerializer(serializers.ModelSerializer):
     def get_full_name(self, user):
         if user.is_authenticated:
             return user.get_full_name()
-        
+
         return None
 
     def get_initial(self, user):
@@ -128,7 +127,7 @@ class RequestUserSerializer(serializers.ModelSerializer):
             return user.email
 
         return None
-    
+
     def get_permissions(self, user):
         if not user.is_authenticated:
             return None
@@ -142,7 +141,7 @@ class RequestUserSerializer(serializers.ModelSerializer):
 
         group_permissions = Permission.objects.filter(group__user=user.id).values_list('codename', flat=True)
         return group_permissions
-    
+
     def get_is_authenticated(self, user):
         return user.is_authenticated
 
@@ -182,7 +181,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         password = data.get('password')
         password2 = data.get('password2')
         site = data.get('site')
-        
+
         # check if passwords are equal
         if password != password2:
             raise serializers.ValidationError (
@@ -247,7 +246,7 @@ class PasswordResetSerializer(serializers.Serializer):
 
         return value
 
-    
+
     def save(self):
         request = self.context.get('request')
 
@@ -301,7 +300,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 class AccountVerificationSerializer(serializers.Serializer):
 
     email = serializers.EmailField()
-    
+
     def validate_email(self, value):
         """
         Check if email exits on site, and that the user,
@@ -314,7 +313,7 @@ class AccountVerificationSerializer(serializers.Serializer):
         except User.DoesNotExist:
             raise serializers.ValidationError({'detail': _('User does not exist')})
 
-    
+
     def validate(self, data):
         """
         Check if email isn't already confirmed
@@ -340,8 +339,8 @@ class AccountVerificationSerializer(serializers.Serializer):
 
         # use email_user method and send verification email
         self.user.email_user(
-            '%s %s' % ('Bekreft kontoen din på', current_site.name), 
-            '%s %s' % ('Bekreft kontoen din på', current_site.name), 
+            '%s %s' % ('Bekreft kontoen din på', current_site.name),
+            '%s %s' % ('Bekreft kontoen din på', current_site.name),
             html_message=user_verification_email
         )
 
@@ -352,7 +351,7 @@ class AccountVerificationConfirmSerializer(serializers.Serializer):
     token = serializers.CharField()
 
     def validate(self, attrs):
-        
+
         try:
             uid = force_text(uid_decoder(attrs['uid']))
             self.user = User.on_site.get(pk=uid)
@@ -370,4 +369,3 @@ class AccountVerificationConfirmSerializer(serializers.Serializer):
     def save(self):
         self.user.has_confirmed_email=True
         self.user.save()
-    

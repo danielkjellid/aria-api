@@ -13,7 +13,7 @@ from users.managers import UserManager
 
 class User(AbstractBaseUser, PermissionsMixin):
     """
-    User model which inherits AbstractBaseuser. AbstractBaseUser provides the 
+    User model which inherits AbstractBaseuser. AbstractBaseUser provides the
     core implementation of a user model.
     """
 
@@ -119,8 +119,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         help_text=_('Designates whether the user is automatically granted all permissions.'),
     )
     site = models.ForeignKey(
-        Site, 
-        on_delete=models.CASCADE,
+        Site,
+        on_delete=models.SET_NULL,
         null=True
     )
 
@@ -133,6 +133,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name= _('user')
         verbose_name_plural = _('users')
+        unique_together = ['email', 'site']
         permissions = (
             ('has_users_list', 'Can list users'),
             ('has_user_edit', 'Can edit a single user instance'),
@@ -141,19 +142,20 @@ class User(AbstractBaseUser, PermissionsMixin):
         )
 
     def __str__(self):
-        return '%s %s' % (self.first_name, self.last_name)
+        return f'{self.first_name} {self.last_name}'
 
     def get_full_name(self):
         """
         Return the first_name plus the last_name, with a space in between.
         """
-        full_name = '%s %s' % (self.first_name, self.last_name)
-        return full_name.strip()
+
+        return f'{self.first_name} {self.last_name}'
 
     def get_short_name(self):
         """
         Return the first_name of the user
         """
+
         return self.first_name
 
     def get_initial(self):
@@ -172,18 +174,22 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         Return the full address containing streetname, zip code and place
         """
-        address = '%s, %s %s' % (self.street_address, self.zip_code, self.zip_place)
-        return address.strip()
+
+        return f'{self.street_address}, {self.zip_code} {self.zip_place}'
 
     def get_formatted_phone(self):
-
+        """
+        Returns a formatted version of the phone number
+        """
         parsed_phone = phonenumbers.parse(self.phone_number, 'NO') #TODO: Handle different country codes
         formatted_phone = phonenumbers.format_number(parsed_phone, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
 
         return formatted_phone
 
     def email_user(self, subject, message, from_email=None, **kwargs):
-        """Send an email to this user."""
+        """
+        Send an email to this user.
+        """
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
 
