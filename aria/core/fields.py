@@ -1,6 +1,7 @@
-from typing import Any, Dict, Mapping, Iterable
-from django.contrib.postgres.fields import ArrayField
+from typing import Any, Dict, Iterable, Mapping
+
 from django import forms
+from django.contrib.postgres.fields import ArrayField
 from django.forms import CheckboxSelectMultiple
 
 

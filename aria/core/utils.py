@@ -1,10 +1,12 @@
 import os
-from django.core.exceptions import FieldDoesNotExist
-from django.utils.text import slugify
-from django.db.models import Model, ImageField, FileField
-from imagekit.models import ProcessedImageField
+
 from django.conf import settings
+from django.core.exceptions import FieldDoesNotExist
+from django.db.models import FileField, ImageField, Model
+from django.utils.text import slugify
+
 from django_s3_storage.storage import S3Storage
+from imagekit.models import ProcessedImageField
 
 
 def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):

@@ -1,13 +1,13 @@
 from django.contrib import admin
 
 from aria.products.models import (
-    Product,
     Color,
+    Product,
     ProductFile,
     ProductImage,
+    ProductOption,
     ProductSiteState,
     Size,
-    ProductOption,
     Variant,
 )
 

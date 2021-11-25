@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from aria.suppliers.models import Supplier
 
 

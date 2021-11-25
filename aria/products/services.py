@@ -1,10 +1,9 @@
 from django.core.files import File
+from django.db.models import Model
 from django.utils.text import slugify
 
-from aria.products.models import Variant, Product, ProductOption
 from aria.products.enums import ProductStatus
-from django.db.models import Model
-
+from aria.products.models import Product, ProductOption, Variant
 from aria.products.selectors import get_related_unique_variants
 
 

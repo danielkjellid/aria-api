@@ -1,21 +1,24 @@
+from tempfile import NamedTemporaryFile
 from typing import Tuple
-import requests
+
 from django.contrib.sites.models import Site
 from django.core.files import File
 from django.core.management.base import BaseCommand, CommandParser
 from django.db import transaction
 from django.utils.text import slugify
+
+import requests
+
 from aria.products.enums import ProductStatus
-from aria.suppliers.models import Supplier
 from aria.products.models import (
     Product,
     ProductFile,
+    ProductOption,
     ProductSiteState,
     Size,
     Variant,
-    ProductOption,
 )
-from tempfile import NamedTemporaryFile
+from aria.suppliers.models import Supplier
 
 
 class ProductImportException(Exception):

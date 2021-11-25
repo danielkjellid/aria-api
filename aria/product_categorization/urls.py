@@ -1,8 +1,9 @@
 from django.urls import path
+
 from aria.product_categorization.viewsets import (
     CategoriesNavigationListAPIView,
-    CategoryRetrieveAPIView,
     CategoryListAPIView,
+    CategoryRetrieveAPIView,
 )
 from aria.products.viewsets import ProductListByCategoryAPIView
 

@@ -1,10 +1,11 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
+from django.utils.translation import gettext_lazy as _
+
 from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill
-from aria.core.models import BaseHeaderImageModel, BaseModel
 
+from aria.core.models import BaseHeaderImageModel, BaseModel
 from aria.products.enums import ProductStatus
 from aria.suppliers.models import Supplier
 

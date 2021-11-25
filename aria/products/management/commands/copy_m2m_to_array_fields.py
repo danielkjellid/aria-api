@@ -1,11 +1,12 @@
 from django.core.management.base import BaseCommand
+
+from aria.products import enums
 from aria.products.models import (
     Product,
     ProductApplication,
     ProductMaterial,
     ProductStyle,
 )
-from aria.products import enums
 
 
 class Command(BaseCommand):

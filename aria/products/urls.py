@@ -1,4 +1,5 @@
 from django.urls import path
+
 from aria.products.viewsets import (
     ProductListByCategoryAPIView,
     ProductListCreateAPIView,

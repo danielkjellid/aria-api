@@ -5,15 +5,17 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
-from django.utils.http import urlsafe_base64_decode as uid_decoder
-from django.utils.http import urlsafe_base64_encode as uid_encoder
+from django.utils.http import (
+    urlsafe_base64_decode as uid_decoder,
+    urlsafe_base64_encode as uid_encoder,
+)
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
-from aria.users.models import User
 from aria.audit_logs.models import LogEntry
 from aria.audit_logs.serializers import LogEntrySerializer
 from aria.notes.models import NoteEntry
+from aria.users.models import User
 
 
 class UserProfileSerializer(serializers.Serializer):

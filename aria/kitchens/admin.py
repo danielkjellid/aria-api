@@ -1,11 +1,12 @@
 from django.contrib import admin
+
 from aria.kitchens.models import (
-    Kitchen,
-    SilkColor,
     Decor,
-    Plywood,
-    LaminateColor,
     ExclusiveColor,
+    Kitchen,
+    LaminateColor,
+    Plywood,
+    SilkColor,
     TrendColor,
 )
 

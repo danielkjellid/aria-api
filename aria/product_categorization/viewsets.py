@@ -1,12 +1,12 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 
+from aria.product_categorization.models import Category
 from aria.product_categorization.serializers import (
-    CategoryNavigationListSerializer,
     CategoryListSerializer,
+    CategoryNavigationListSerializer,
     CategorySerializer,
 )
-from aria.product_categorization.models import Category
 
 
 class CategoriesNavigationListAPIView(generics.ListAPIView):

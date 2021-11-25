@@ -3,7 +3,6 @@ from django.dispatch import receiver
 
 from aria.kitchens.models import Kitchen, KitchenDecor, KitchenPlywood
 
-
 """
 The signals bellow fires when a kitchen (or individual decor or plywood) is deleted,
 and cleans up the associated files, deleting them from the system.

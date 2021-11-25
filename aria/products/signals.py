@@ -1,14 +1,13 @@
-from django.dispatch import receiver
 from django.db.models.signals import post_delete, pre_delete
+from django.dispatch import receiver
 
 from aria.core.utils import cleanup_files_from_deleted_instance
-
 from aria.products.models import (
     Product,
-    ProductImage,
     ProductFile,
-    Variant,
+    ProductImage,
     ProductOption,
+    Variant,
 )
 from aria.products.services import delete_related_variants
 

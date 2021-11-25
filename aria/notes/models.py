@@ -1,11 +1,10 @@
-from django.db import models
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from aria.notes.managers import NoteManager
-
 from aria.users.models import User
 
 

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from aria.users.forms import UserCreationForm, UserChangeForm
+from aria.users.forms import UserChangeForm, UserCreationForm
 from aria.users.models import User
 
 

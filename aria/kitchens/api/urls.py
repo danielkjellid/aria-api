@@ -1,4 +1,5 @@
 from django.urls import path
+
 from aria.kitchens.api.viewsets import KitchenListAPIView, KitchenRetrieveAPIView
 
 urlpatterns = [

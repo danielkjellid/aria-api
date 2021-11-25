@@ -1,5 +1,7 @@
-from typing import Union, List
+from typing import List, Union
+
 from django.db.models import QuerySet
+
 from aria.products.models import Product, Variant
 
 

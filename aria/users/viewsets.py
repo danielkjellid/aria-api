@@ -1,4 +1,8 @@
+from django.contrib.auth.tokens import default_token_generator
+from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
 from rest_framework import filters, generics, permissions, status
@@ -8,8 +12,15 @@ from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from aria.audit_logs.models import LogEntry
+from aria.core.pagination import PageNumberSetPagination
 from aria.core.permissions import HasUserOrGroupPermission
+from aria.notes.models import NoteEntry
+from aria.notes.serializers import CreateNoteSerializer, UpdateNoteSerializer
+from aria.users.models import User
 from aria.users.serializers import (
+    AccountVerificationConfirmSerializer,
+    AccountVerificationSerializer,
     PasswordResetConfirmSerializer,
     PasswordResetSerializer,
     RequestUserSerializer,
@@ -17,20 +28,7 @@ from aria.users.serializers import (
     UserNoteSerializer,
     UserSerializer,
     UsersSerializer,
-    AccountVerificationSerializer,
-    AccountVerificationConfirmSerializer,
 )
-from aria.users.models import User
-from aria.core.pagination import PageNumberSetPagination
-from aria.audit_logs.models import LogEntry
-from aria.notes.models import NoteEntry
-from aria.notes.serializers import CreateNoteSerializer, UpdateNoteSerializer
-
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_encode
-from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes
-
 
 sensitive_post_parameters_m = method_decorator(
     sensitive_post_parameters(

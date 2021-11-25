@@ -1,8 +1,8 @@
 from django.conf import settings
-from aria.core.serializers import BaseHeaderImageSerializer
-
-from aria.product_categorization.models import Category, SubCategory
 from rest_framework import serializers
+
+from aria.core.serializers import BaseHeaderImageSerializer
+from aria.product_categorization.models import Category, SubCategory
 
 
 class SubCategoryNavigationListSerializer(serializers.ModelSerializer):

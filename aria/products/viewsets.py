@@ -1,16 +1,15 @@
 from rest_framework import filters, generics
 from rest_framework.permissions import AllowAny, IsAdminUser
 
+from aria.core.pagination import PageNumberSetPagination
 from aria.core.permissions import HasUserOrGroupPermission
-
-from aria.products.models import Product
 from aria.products.enums import ProductStatus
+from aria.products.models import Product
 from aria.products.serializers import (
     ProductListByCategorySerializer,
     ProductListSerializer,
     ProductSerializer,
 )
-from aria.core.pagination import PageNumberSetPagination
 
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):

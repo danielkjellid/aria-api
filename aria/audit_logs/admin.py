@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from aria.audit_logs.models import LogEntry
 
 

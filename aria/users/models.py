@@ -1,13 +1,14 @@
 import random
-import phonenumbers
-from django.contrib.sites.models import Site
+
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.sites.managers import CurrentSiteManager
-from django.db import models
-from django.contrib.auth.models import AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin
-from django.utils.translation import gettext_lazy as _
-from django.utils import timezone
+from django.contrib.sites.models import Site
 from django.core.mail import send_mail
+from django.db import models
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+
+import phonenumbers
 
 from aria.users.managers import UserManager
 

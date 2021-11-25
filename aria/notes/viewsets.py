@@ -2,7 +2,6 @@ from rest_framework import generics
 from rest_framework.permissions import IsAdminUser
 
 from aria.core.permissions import HasUserOrGroupPermission
-
 from aria.notes.models import NoteEntry
 
 

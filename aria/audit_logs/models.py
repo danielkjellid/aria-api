@@ -1,15 +1,14 @@
 import json
 
-from django.db import models
-from django.contrib.postgres.fields import JSONField
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres.fields import JSONField
+from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from aria.audit_logs.managers import LogEntryManager
-
 from aria.users.models import User
 
 

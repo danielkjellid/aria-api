@@ -1,12 +1,12 @@
+from django import forms
 from django.contrib.auth.forms import (
     AuthenticationForm,
-    UserCreationForm,
     UserChangeForm,
+    UserCreationForm,
 )
+from django.utils.translation import gettext, gettext_lazy as _
 
 from aria.users.models import User
-from django import forms
-from django.utils.translation import gettext, gettext_lazy as _
 
 
 class UserCreationForm(UserCreationForm):
