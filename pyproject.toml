@@ -58,6 +58,7 @@ whitenoise = "5.2.0"
 psycopg2 = "^2.8.6"
 psycopg2-binary = "^2.8.6"
 Pillow = "^8.4.0"
+Django = "^3.2.9"
 
 [tool.poetry.dev-dependencies]
 
