@@ -49,7 +49,7 @@ INSTALLED_APPS = [
 
     'django_s3_storage',
     'imagekit',
-    
+
     'core',
     'audit_logs',
     'users',
@@ -176,6 +176,8 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 DEFAULT_FROM_EMAIL = '{{ DEFAULT_FROM_EMAIL }}'
+
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 try:
     from backend.local_settings import *

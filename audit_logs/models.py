@@ -15,24 +15,24 @@ from users.models import User
 
 class LogEntry(models.Model):
     user = models.ForeignKey(
-        User, 
-        related_name='log_entries', 
+        User,
+        related_name='log_entries',
         on_delete = models.CASCADE
     )
     content_type = models.ForeignKey(
-        ContentType, 
-        models.SET_NULL, 
-        verbose_name = _('content type'), 
-        blank = True, 
+        ContentType,
+        models.SET_NULL,
+        verbose_name = _('content type'),
+        blank = True,
         null = True,
         related_name='logs'
     )
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(
-        'content_type', 
+        'content_type',
         'object_id'
     )
-    change = JSONField()
+    change = models.JSONField()
     date_of_change = models.DateTimeField(
         _('changed at'),
         default = timezone.now,
@@ -57,11 +57,11 @@ class LogEntry(models.Model):
 
         # loop for checking fields on the old instance and compare it to the new one
         for field in obj._meta.get_fields():
-            
+
             # filter out reverse relations to prevent typerror
             if isinstance(field, models.ManyToOneRel):
                 continue
-            
+
             # get the value of old and new fields
             old_value = getattr(old_instance, field.name)
             new_value = getattr(new_instance, field.name)
@@ -70,7 +70,7 @@ class LogEntry(models.Model):
             if old_value != new_value:
                 # print('After check')
 
-                # format changemessage as JSON 
+                # format changemessage as JSON
                 change_message = {
                     'field': field.name,
                     'old_value': old_value,
@@ -97,7 +97,7 @@ class LogEntry(models.Model):
             object_id = instance.pk
         ).order_by('-date_of_change')
 
-    
+
     # property to parse and return the changed JSON
     @cached_property
     # cached property is useful as it stops parsing the changes on every access
