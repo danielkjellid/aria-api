@@ -54,23 +54,6 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     """
     View for viewing, updating or deleting a single user instance
 
-    Accepts the followinf POST/PUT parameters:
-    - last_login
-    - email
-    - first_name
-    - last_name
-    - phone_number
-    - has_confirmed_email
-    - street_address
-    - zip_code
-    - zip_place
-    - disabled_emails
-    - subscribed_to_newsletter
-    - allow_personalization
-    - allow_third_party_personalization
-    - date_joined
-    - is_active
-
     Returns a single user instance
     """
 
@@ -84,7 +67,7 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     }
 
     def put(self, request, pk):
-        user = get_object_or_404(User, pk = pk)
+        user = get_object_or_404(User, pk=pk)
         serializer = UserSerializer(user, data=request.data)
 
         if serializer.is_valid():
