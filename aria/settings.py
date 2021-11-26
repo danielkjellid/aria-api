@@ -128,8 +128,8 @@ DJANGO_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles",
     "django.contrib.sites",
+    "django.contrib.staticfiles",
 ]
 
 THIRD_PARTY_APPS = [
@@ -188,7 +188,7 @@ MEDIA_URL = env.str("MEDIA_URL", default="/media/")
 
 # Static files
 STATIC_ROOT = str(PUBLIC_ROOT_PATH / "static")
-STATIC_URL = env.str("STATIC_URL")
+STATIC_URL = env.str("STATIC_URL", default='/static/')
 
 IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = "imagekit.cachefiles.strategies.Optimistic"
 
@@ -295,7 +295,7 @@ if DJANGO_EXTENSIONS_INSTALLED:
     INSTALLED_APPS += ["django_extensions"]
 
 
-django_heroku.settings(locals())
+django_heroku.settings(locals(), staticfiles=False)
 
 # django_heroku sets sslmode to required by default
 # this overrides it in the dev env.
