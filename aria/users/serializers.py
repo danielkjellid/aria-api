@@ -241,8 +241,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         # create a new model instance
         instance = self.Meta.model(**validated_data)
 
-        # set password
-        if password is not None:
+        if password is not None and password == password2:
             instance.set_password(password)
 
         instance.save()

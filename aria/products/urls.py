@@ -1,10 +1,6 @@
 from django.urls import path
 
-from aria.products.viewsets import (
-    ProductListByCategoryAPIView,
-    ProductListCreateAPIView,
-    ProductRetrieveAPIView,
-)
+from aria.products.viewsets import ProductListCreateAPIView, ProductRetrieveAPIView
 
 urlpatterns = [
     # endpoint for getting all products

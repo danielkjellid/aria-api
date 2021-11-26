@@ -19,6 +19,7 @@ class KitchenAdmin(admin.ModelAdmin):
 
 admin.site.register(Kitchen, KitchenAdmin)
 
+
 # to be removed
 class KitchenSilkAdmin(admin.ModelAdmin):
     model = SilkColor
