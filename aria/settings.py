@@ -273,6 +273,9 @@ REST_FRAMEWORK = {
         default=["rest_framework_simplejwt.authentication.JWTAuthentication"],
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_RENDERER_CLASSES": env.list(
+        "DEFAULT_RENDERER_CLASSES", default=["rest_framework.renderers.JSONRenderer"]
+    ),
     "DATETIME_FORMAT": "%d. %B %Y %H:%M",
     "DATETIME_INPUT_FORMATS": ["%d. %B %Y %H:%M"],
 }
