@@ -1,4 +1,7 @@
 import os
+import environ
+import warnings
+import pathlib
 from datetime import timedelta
 
 import django_heroku
@@ -7,26 +10,44 @@ import django_heroku
 # Environment #
 ###############
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROJECT_ROOT = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-)
+warnings.filterwarnings("ignore", message="Error reading .env", category=UserWarning)
+env = environ.Env()
+
+# If ENV_PATH is set, load that file first, so it wins over any conflicting
+# environment variables in `.env`
+if "ENV_PATH" in env:
+    env.read_env(env.str("ENV_PATH"))
+
+env.read_env(".env")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = env.bool("DEBUG", default=False)
+
+# Only true in the production environment. Mostly used to guard against running
+# dangerous management commands in production.
+PRODUCTION = env.bool("PRODUCTION", default=False)
+
+ENVIRONMENT = env.str("ENVIRONMENT", default='dev')
+
+BASE_DIR = (pathlib.Path(__file__).parent / "..").resolve()
 
 #################
 # Django basics #
 #################
 
 # Silenced system checks to prevent warnings about username not unique constraint
-SILENCED_SYSTEM_CHECKS = ["auth.E003", "auth.W004"]
+SILENCED_SYSTEM_CHECKS = env.list("SILENCED_SYSTEM_CHECKS", default=[])
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "{{ secret_key }}"
+SECRET_KEY = env.str("DJANGO_SECRET_KEY", default='dev-env-secret-9fprvf3c@7x4ur##')
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+HTTPS_ONLY = env.bool("HTTPS_ONLY", default=False)
+
+SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
+
+SECURE_PROXY_SSL_HEADER = env.tuple('SECURE_PROXY_SSL_HEADER')
 
 DEFAULT_SITE_ID = 1
 SITE_ID = DEFAULT_SITE_ID
@@ -34,11 +55,11 @@ SITE_ID = DEFAULT_SITE_ID
 ROOT_URLCONF = "aria.urls"
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
-ALLOWED_HOSTS = ["{{ allowed_hosts }}"]
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
-CORS_ALLOWED_ORIGINS = []
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
 
-APPEND_SLASH = True
+APPEND_SLASH = env.bool('APPEND_SLASH', default=True)
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
@@ -69,7 +90,7 @@ WSGI_APPLICATION = "aria.wsgi.application"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "DIRS": [str(BASE_DIR / "aria/templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -141,13 +162,38 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 # Files backend: django_s3_storage #
 ####################################
 
+AWS_REGION = "eu-north-1"
+AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY")
+AWS_S3_BUCKET_NAME = env.str("AWS_S3_BUCKET_NAME")
+
+AWS_S3_ADDRESSING_STYLE = "auto"
+AWS_S3_BUCKET_AUTH = False
+AWS_S3_MAX_AGE_SECONDS = 60 * 60 * 24 * 365  # 1 year.
+AWS_S3_SIGNATURE_VERSION = None
+AWS_S3_FILE_OVERWRITE = False
+AWS_S3_BUCKET_AUTH_STATIC = False
+AWS_S3_BUCKET_NAME_STATIC = env.str('AWS_S3_BUCKET_NAME_STATIC')
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_S3_BUCKET_NAME}.s3.amazonaws.com"
 
 ##########
 # Files #
 #########
 
-STATIC_ROOT = os.path.join(f"{BASE_DIR}", "staticfiles")
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+if ENVIRONMENT == 'dev':
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+else:
+    DEFAULT_FILE_STORAGE = "django_s3_storage.storage.S3Storage"
+    STATICFILES_STORAGE = "django_s3_storage.storage.StaticS3Storage"
+
+PUBLIC_ROOT_PATH = BASE_DIR / "public"
+
+MEDIA_ROOT = str(PUBLIC_ROOT_PATH / "media")
+MEDIA_URL = env.str('MEDIA_URL', default='/media/')
+
+# Static files
+STATIC_ROOT = str(PUBLIC_ROOT_PATH / "static")
+STATIC_URL = env.str('STATIC_URL', default='/static/')
 
 IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = "imagekit.cachefiles.strategies.Optimistic"
 
@@ -182,6 +228,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Databases #
 #############
 
+DATABASES = {
+    'default': env.db(),
+}
 
 ##########
 # Caches #
@@ -213,25 +262,22 @@ SIMPLE_JWT = {
 
 EMAIL_HOST = "smtp.sendgrid.net"
 EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = "{{ SENDGRID_API_KEY }}"
+EMAIL_HOST_PASSWORD = env.str('SENDGRID_API_KEY')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-DEFAULT_FROM_EMAIL = "{{ DEFAULT_FROM_EMAIL }}"
+DEFAULT_FROM_EMAIL = env.str('DEFAULT_FROM_EMAIL')
 
 ##################
 # REST framework #
 ##################
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ),
+    "DEFAULT_AUTHENTICATION_CLASSES": env.list('DEFAULT_AUTHENTICATION_CLASSES', default=['rest_framework_simplejwt.authentication.JWTAuthentication']),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DATETIME_FORMAT": "%d. %B %Y %H:%M",
     "DATETIME_INPUT_FORMATS": ["%d. %B %Y %H:%M"],
 }
-
 
 #####################
 # Django Extensions #
@@ -253,3 +299,8 @@ except ImportError:
     pass
 
 django_heroku.settings(locals())
+
+# django_heroku sets sslmode to required by default
+# this overrides it in the dev env.
+if ENVIRONMENT == 'dev':
+    locals()['DATABASES']['default']['OPTIONS']['sslmode'] = 'disable'
