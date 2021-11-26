@@ -1,10 +1,9 @@
-import os
-import environ
-import warnings
 import pathlib
+import warnings
 from datetime import timedelta
 
 import django_heroku
+import environ
 
 ###############
 # Environment #
@@ -20,46 +19,40 @@ if "ENV_PATH" in env:
 
 env.read_env(".env")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DEBUG", default=False)
-
-# Only true in the production environment. Mostly used to guard against running
-# dangerous management commands in production.
-PRODUCTION = env.bool("PRODUCTION", default=False)
-
-ENVIRONMENT = env.str("ENVIRONMENT", default='dev')
+ENVIRONMENT = env.str("ENVIRONMENT", default="dev")
 
 BASE_DIR = (pathlib.Path(__file__).parent / "..").resolve()
+
+DEBUG = env.bool("DEBUG", default=False)
 
 #################
 # Django basics #
 #################
 
 # Silenced system checks to prevent warnings about username not unique constraint
-SILENCED_SYSTEM_CHECKS = env.list("SILENCED_SYSTEM_CHECKS", default=[])
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.str("DJANGO_SECRET_KEY", default='dev-env-secret-9fprvf3c@7x4ur##')
 
-DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+SECRET_KEY = env.str("DJANGO_SECRET_KEY", default="dev-env-secret-9fprvf3c@7x4ur##")
 
-HTTPS_ONLY = env.bool("HTTPS_ONLY", default=False)
-
-SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
-
-SECURE_PROXY_SSL_HEADER = env.tuple('SECURE_PROXY_SSL_HEADER')
+SILENCED_SYSTEM_CHECKS = env.list("SILENCED_SYSTEM_CHECKS", default=[])
 
 DEFAULT_SITE_ID = 1
 SITE_ID = DEFAULT_SITE_ID
 
 ROOT_URLCONF = "aria.urls"
 
-# Hosts/domain names that are valid for this site; required if DEBUG is False
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 
-CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
 
-APPEND_SLASH = env.bool('APPEND_SLASH', default=True)
+HTTPS_ONLY = env.bool("HTTPS_ONLY", default=False)
+
+SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
+
+SECURE_PROXY_SSL_HEADER = env.tuple("SECURE_PROXY_SSL_HEADER")
+
+APPEND_SLASH = env.bool("APPEND_SLASH", default=True)
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
@@ -82,6 +75,8 @@ USE_L10N = True
 USE_TZ = True
 
 WSGI_APPLICATION = "aria.wsgi.application"
+
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 #############
 # Templates #
@@ -173,15 +168,15 @@ AWS_S3_MAX_AGE_SECONDS = 60 * 60 * 24 * 365  # 1 year.
 AWS_S3_SIGNATURE_VERSION = None
 AWS_S3_FILE_OVERWRITE = False
 AWS_S3_BUCKET_AUTH_STATIC = False
-AWS_S3_BUCKET_NAME_STATIC = env.str('AWS_S3_BUCKET_NAME_STATIC')
+AWS_S3_BUCKET_NAME_STATIC = env.str("AWS_S3_BUCKET_NAME_STATIC")
 AWS_S3_CUSTOM_DOMAIN = f"{AWS_S3_BUCKET_NAME}.s3.amazonaws.com"
 
 ##########
 # Files #
 #########
 
-if ENVIRONMENT == 'dev':
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+if ENVIRONMENT == "dev":
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 else:
     DEFAULT_FILE_STORAGE = "django_s3_storage.storage.S3Storage"
     STATICFILES_STORAGE = "django_s3_storage.storage.StaticS3Storage"
@@ -189,11 +184,11 @@ else:
 PUBLIC_ROOT_PATH = BASE_DIR / "public"
 
 MEDIA_ROOT = str(PUBLIC_ROOT_PATH / "media")
-MEDIA_URL = env.str('MEDIA_URL', default='/media/')
+MEDIA_URL = env.str("MEDIA_URL", default="/media/")
 
 # Static files
 STATIC_ROOT = str(PUBLIC_ROOT_PATH / "static")
-STATIC_URL = env.str('STATIC_URL', default='/static/')
+STATIC_URL = env.str("STATIC_URL", default="/static/")
 
 IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = "imagekit.cachefiles.strategies.Optimistic"
 
@@ -229,7 +224,7 @@ AUTH_PASSWORD_VALIDATORS = [
 #############
 
 DATABASES = {
-    'default': env.db(),
+    "default": env.db(),
 }
 
 ##########
@@ -262,18 +257,21 @@ SIMPLE_JWT = {
 
 EMAIL_HOST = "smtp.sendgrid.net"
 EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = env.str('SENDGRID_API_KEY')
+EMAIL_HOST_PASSWORD = env.str("SENDGRID_API_KEY")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-DEFAULT_FROM_EMAIL = env.str('DEFAULT_FROM_EMAIL')
+DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL")
 
 ##################
 # REST framework #
 ##################
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": env.list('DEFAULT_AUTHENTICATION_CLASSES', default=['rest_framework_simplejwt.authentication.JWTAuthentication']),
+    "DEFAULT_AUTHENTICATION_CLASSES": env.list(
+        "DEFAULT_AUTHENTICATION_CLASSES",
+        default=["rest_framework_simplejwt.authentication.JWTAuthentication"],
+    ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DATETIME_FORMAT": "%d. %B %Y %H:%M",
     "DATETIME_INPUT_FORMATS": ["%d. %B %Y %H:%M"],
@@ -284,7 +282,7 @@ REST_FRAMEWORK = {
 #####################
 
 try:
-    import django_extensions
+    import django_extensions  # noqa: 401
 except ImportError:
     DJANGO_EXTENSIONS_INSTALLED = False
 else:
@@ -298,5 +296,5 @@ django_heroku.settings(locals())
 
 # django_heroku sets sslmode to required by default
 # this overrides it in the dev env.
-if ENVIRONMENT == 'dev':
-    locals()['DATABASES']['default']['OPTIONS']['sslmode'] = 'disable'
+if ENVIRONMENT == "dev":
+    locals()["DATABASES"]["default"]["OPTIONS"]["sslmode"] = "disable"
