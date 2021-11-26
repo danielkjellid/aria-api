@@ -188,7 +188,7 @@ MEDIA_URL = env.str("MEDIA_URL", default="/media/")
 
 # Static files
 STATIC_ROOT = str(PUBLIC_ROOT_PATH / "static")
-STATIC_URL = env.str("STATIC_URL", default="/static/")
+STATIC_URL = env.str("STATIC_URL")
 
 IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = "imagekit.cachefiles.strategies.Optimistic"
 
