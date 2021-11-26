@@ -293,10 +293,6 @@ else:
 if DJANGO_EXTENSIONS_INSTALLED:
     INSTALLED_APPS += ["django_extensions"]
 
-try:
-    from aria.local_settings import *
-except ImportError:
-    pass
 
 django_heroku.settings(locals())
 
