@@ -286,11 +286,11 @@ REST_FRAMEWORK = {
 # Sentry #
 ##########
 
-SENTRY_DSN_KEY = env.str('SENTRY_DSN_KEY', default=None)
+SENTRY_DSN = env.str('SENTRY_DSN', default=None)
 
-if SENTRY_DSN_KEY is not None:
+if SENTRY_DSN is not None:
     sentry_sdk.init(
-        dsn=SENTRY_DSN_KEY,
+        dsn=SENTRY_DSN,
         integrations=[DjangoIntegration()],
 
         # Set traces_sample_rate to 1.0 to capture 100%
