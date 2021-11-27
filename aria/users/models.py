@@ -10,8 +10,8 @@ from django.utils.translation import gettext_lazy as _
 
 import phonenumbers
 
-from aria.users.managers import UserManager
 from aria.users.enums import AvatarColors
+from aria.users.managers import UserManager
 
 
 class User(AbstractBaseUser, PermissionsMixin):

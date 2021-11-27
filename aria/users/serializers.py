@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
-from django.contrib.auth.models import Permission
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
@@ -16,7 +15,7 @@ from aria.audit_logs.models import LogEntry
 from aria.audit_logs.serializers import LogEntrySerializer
 from aria.notes.models import NoteEntry
 from aria.users.models import User
-from aria.users.selectors import get_user_permissions, get_user_group_permissions
+from aria.users.selectors import get_user_group_permissions, get_user_permissions
 
 
 class UserProfileSerializer(serializers.Serializer):
@@ -55,7 +54,7 @@ class UserSerializer(serializers.ModelSerializer):
     """
 
     profile = UserProfileSerializer(source="*", read_only=True)
-    address = serializers.CharField(source='full_address')
+    address = serializers.CharField(source="full_address")
     acquisition_source = serializers.SerializerMethodField()
     audit_logs = serializers.SerializerMethodField()
     notes = serializers.SerializerMethodField()
@@ -71,7 +70,6 @@ class UserSerializer(serializers.ModelSerializer):
             "is_staff",
             "avatar_color",
         )
-
 
     def get_acquisition_source(self, instance):
         if not instance.acquisition_source:
@@ -92,7 +90,6 @@ class UserSerializer(serializers.ModelSerializer):
             return "N/A"
 
         return instance.formatted_phone_number
-
 
 
 class RequestUserSerializer(serializers.ModelSerializer):
@@ -122,7 +119,6 @@ class RequestUserSerializer(serializers.ModelSerializer):
             "is_superuser",
             "has_confirmed_email",
         )
-
 
     def get_permissions(self, user):
         return get_user_permissions(user=user)
