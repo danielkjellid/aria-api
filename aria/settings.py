@@ -87,7 +87,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [str(BASE_DIR / "aria/templates")],
+        "DIRS": [str(BASE_DIR / "public/templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
