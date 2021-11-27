@@ -19,15 +19,9 @@ from aria.users.models import User
 
 
 class UserProfileSerializer(serializers.Serializer):
-    full_name = serializers.SerializerMethodField()
-    initial = serializers.SerializerMethodField()
+    full_name = serializers.CharField()
+    initial = serializers.CharField()
     avatar_color = serializers.CharField()
-
-    def get_full_name(self, instance):
-        return instance.get_full_name()
-
-    def get_initial(self, instance):
-        return instance.get_initial()
 
 
 class UserNoteSerializer(serializers.ModelSerializer):
@@ -60,17 +54,23 @@ class UserSerializer(serializers.ModelSerializer):
     """
 
     profile = UserProfileSerializer(source="*", read_only=True)
-    address = serializers.SerializerMethodField()
+    address = serializers.CharField(source='full_address')
     acquisition_source = serializers.SerializerMethodField()
     audit_logs = serializers.SerializerMethodField()
     notes = serializers.SerializerMethodField()
     phone_number = serializers.SerializerMethodField()
 
-    def get_full_name(self, instance):
-        return instance.get_full_name()
+    class Meta:
+        model = User
+        exclude = (
+            "password",
+            "groups",
+            "user_permissions",
+            "is_superuser",
+            "is_staff",
+            "avatar_color",
+        )
 
-    def get_address(self, instance):
-        return instance.get_address()
 
     def get_acquisition_source(self, instance):
         if not instance.acquisition_source:
@@ -90,18 +90,8 @@ class UserSerializer(serializers.ModelSerializer):
         if not instance.phone_number:
             return "N/A"
 
-        return instance.get_formatted_phone()
+        return instance.formatted_phone_number
 
-    class Meta:
-        model = User
-        exclude = (
-            "password",
-            "groups",
-            "user_permissions",
-            "is_superuser",
-            "is_staff",
-            "avatar_color",
-        )
 
 
 class RequestUserSerializer(serializers.ModelSerializer):
@@ -109,12 +99,12 @@ class RequestUserSerializer(serializers.ModelSerializer):
     A serializer to retrieve the current user
     """
 
-    full_name = serializers.SerializerMethodField()
+    full_name = serializers.CharField()
     initial = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
     permissions = serializers.SerializerMethodField()
     group_permissions = serializers.SerializerMethodField()
-    is_authenticated = serializers.SerializerMethodField()
+    is_authenticated = serializers.BooleanField()
 
     class Meta:
         model = User
@@ -132,15 +122,6 @@ class RequestUserSerializer(serializers.ModelSerializer):
             "has_confirmed_email",
         )
 
-    def get_full_name(self, user):
-        if user.is_authenticated:
-            return user.get_full_name()
-
-        return None
-
-    def get_initial(self, user):
-        if user.is_authenticated:
-            return user.get_initial()
 
     def get_email(self, user):
         if user.is_authenticated:
@@ -165,9 +146,6 @@ class RequestUserSerializer(serializers.ModelSerializer):
             "codename", flat=True
         )
         return group_permissions
-
-    def get_is_authenticated(self, user):
-        return user.is_authenticated
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
