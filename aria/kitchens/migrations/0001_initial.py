@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255, verbose_name='Kitchen decor name')),
-                ('image', imagekit.models.fields.ProcessedImageField(upload_to=aria.kitchens.models.Decor.kitchen_decor_directory_path)),
+                ('image', imagekit.models.fields.ProcessedImageField(upload_to='some/kitchen/path')),
             ],
             options={
                 'verbose_name': 'Decor',
@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255, verbose_name='Kitchen decor name')),
-                ('image', imagekit.models.fields.ProcessedImageField(upload_to=aria.kitchens.models.Plywood.kitchen_plywood_directory_path)),
+                ('image', imagekit.models.fields.ProcessedImageField(upload_to='some/kitchen/path')),
             ],
             options={
                 'verbose_name': 'Plywood',

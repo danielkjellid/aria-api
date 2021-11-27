@@ -18,7 +18,7 @@ class BaseHeaderImageSerializer(serializers.Serializer):
     are inherited by BaseHeaderImageModel in core.models.
     """
 
-    apply_filter = serializers.ImageField()
+    apply_filter = serializers.BooleanField()
     image_512x512 = serializers.CharField(source="image_512x512.url", read_only=True)
     image_640x275 = serializers.CharField(source="image_640x275.url", read_only=True)
     image_1024x1024 = serializers.CharField(
