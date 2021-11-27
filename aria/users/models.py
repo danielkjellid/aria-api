@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 import phonenumbers
 
+from aria.users.enums import AvatarColors
 from aria.users.managers import UserManager
 
 
@@ -18,15 +19,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     User model which inherits AbstractBaseuser. AbstractBaseUser provides the
     core implementation of a user model.
     """
-
-    AVATAR_COLOR_CHOICES = [
-        ("#F87171", "Red"),
-        ("#FBBF24", "Yellow"),
-        ("#34D399", "Green"),
-        ("#60A5FA", "Blue"),
-        ("#A78BFA", "Purple"),
-        ("#F472B6", "Pink"),
-    ]
 
     email = models.EmailField(
         _("email address"),
@@ -47,7 +39,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         _("avatar color"),
         max_length=8,
         unique=False,
-        choices=AVATAR_COLOR_CHOICES,
+        choices=AvatarColors.choices,
     )
     phone_number = models.CharField(max_length=30)
     has_confirmed_email = models.BooleanField(default=False)
@@ -139,21 +131,24 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
-    def get_full_name(self):
+    @property
+    def full_name(self):
         """
         Return the first_name plus the last_name, with a space in between.
         """
 
         return f"{self.first_name} {self.last_name}"
 
-    def get_short_name(self):
+    @property
+    def short_name(self):
         """
         Return the first_name of the user
         """
 
         return self.first_name
 
-    def get_initial(self):
+    @property
+    def initial(self):
         """
         Return initial for first name of user
         """
@@ -165,14 +160,16 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         return initial
 
-    def get_address(self):
+    @property
+    def full_address(self):
         """
         Return the full address containing streetname, zip code and place
         """
 
         return f"{self.street_address}, {self.zip_code} {self.zip_place}"
 
-    def get_formatted_phone(self):
+    @property
+    def formatted_phone_number(self):
         """
         Returns a formatted version of the phone number
         """

@@ -16,4 +16,4 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static("/media/", document_root=settings.MEDIA_ROOT)
-    urlpatterns += static('/static/', document_root=settings.STATIC_ROOT)
+    urlpatterns += static("/static/", document_root=settings.STATIC_ROOT)

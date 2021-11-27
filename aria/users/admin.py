@@ -5,6 +5,7 @@ from aria.users.forms import UserChangeForm, UserCreationForm
 from aria.users.models import User
 
 
+@admin.register(User)
 class UserAdmin(UserAdmin):
     add_form = UserCreationForm
     form = UserChangeForm
@@ -70,6 +71,3 @@ class UserAdmin(UserAdmin):
     )
     search_fields = ("first_name", "last_name", "email")
     ordering = ("first_name",)
-
-
-admin.site.register(User, UserAdmin)
