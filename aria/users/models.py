@@ -121,6 +121,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name = _("user")
         verbose_name_plural = _("users")
         unique_together = ["email", "site"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["email", "site"],
+                name=("email_site_unique_user")
+            )
+        ]
         permissions = (
             ("has_users_list", "Can list users"),
             ("has_user_edit", "Can edit a single user instance"),
