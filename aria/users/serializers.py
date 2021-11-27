@@ -16,6 +16,7 @@ from aria.audit_logs.models import LogEntry
 from aria.audit_logs.serializers import LogEntrySerializer
 from aria.notes.models import NoteEntry
 from aria.users.models import User
+from aria.users.selectors import get_user_permissions, get_user_group_permissions
 
 
 class UserProfileSerializer(serializers.Serializer):
@@ -100,8 +101,8 @@ class RequestUserSerializer(serializers.ModelSerializer):
     """
 
     full_name = serializers.CharField()
-    initial = serializers.SerializerMethodField()
-    email = serializers.SerializerMethodField()
+    initial = serializers.CharField()
+    email = serializers.CharField()
     permissions = serializers.SerializerMethodField()
     group_permissions = serializers.SerializerMethodField()
     is_authenticated = serializers.BooleanField()
@@ -123,29 +124,11 @@ class RequestUserSerializer(serializers.ModelSerializer):
         )
 
 
-    def get_email(self, user):
-        if user.is_authenticated:
-            return user.email
-
-        return None
-
     def get_permissions(self, user):
-        if not user.is_authenticated:
-            return None
-
-        permissions = Permission.objects.filter(user=user.id).values_list(
-            "codename", flat=True
-        )
-        return permissions
+        return get_user_permissions(user=user)
 
     def get_group_permissions(self, user):
-        if not user.is_authenticated:
-            return None
-
-        group_permissions = Permission.objects.filter(group__user=user.id).values_list(
-            "codename", flat=True
-        )
-        return group_permissions
+        return get_user_group_permissions(user=user)
 
 
 class UserCreateSerializer(serializers.ModelSerializer):

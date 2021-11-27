@@ -1,7 +1,7 @@
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
-from rest_framework import filters, generics, status
+from rest_framework import filters, generics, serializers, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
@@ -133,10 +133,13 @@ class RequestUserRetrieveAPIView(generics.RetrieveAPIView):
     """
 
     permission_classes = (IsAuthenticated,)
+    serializer_class = RequestUserSerializer
 
     def get(self, request):
-        serializer = RequestUserSerializer(request.user)
-        return Response(serializer.data)
+        user = get_object_or_404(User, pk=request.user.id)
+        serializer = self.serializer_class(user)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class UserCreateAPIView(generics.CreateAPIView):
