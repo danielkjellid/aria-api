@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
-from django.contrib.auth.models import Permission
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
@@ -16,18 +15,13 @@ from aria.audit_logs.models import LogEntry
 from aria.audit_logs.serializers import LogEntrySerializer
 from aria.notes.models import NoteEntry
 from aria.users.models import User
+from aria.users.selectors import get_user_group_permissions, get_user_permissions
 
 
 class UserProfileSerializer(serializers.Serializer):
-    full_name = serializers.SerializerMethodField()
-    initial = serializers.SerializerMethodField()
+    full_name = serializers.CharField()
+    initial = serializers.CharField()
     avatar_color = serializers.CharField()
-
-    def get_full_name(self, instance):
-        return instance.get_full_name()
-
-    def get_initial(self, instance):
-        return instance.get_initial()
 
 
 class UserNoteSerializer(serializers.ModelSerializer):
@@ -60,17 +54,22 @@ class UserSerializer(serializers.ModelSerializer):
     """
 
     profile = UserProfileSerializer(source="*", read_only=True)
-    address = serializers.SerializerMethodField()
+    address = serializers.CharField(source="full_address")
     acquisition_source = serializers.SerializerMethodField()
     audit_logs = serializers.SerializerMethodField()
     notes = serializers.SerializerMethodField()
     phone_number = serializers.SerializerMethodField()
 
-    def get_full_name(self, instance):
-        return instance.get_full_name()
-
-    def get_address(self, instance):
-        return instance.get_address()
+    class Meta:
+        model = User
+        exclude = (
+            "password",
+            "groups",
+            "user_permissions",
+            "is_superuser",
+            "is_staff",
+            "avatar_color",
+        )
 
     def get_acquisition_source(self, instance):
         if not instance.acquisition_source:
@@ -90,18 +89,7 @@ class UserSerializer(serializers.ModelSerializer):
         if not instance.phone_number:
             return "N/A"
 
-        return instance.get_formatted_phone()
-
-    class Meta:
-        model = User
-        exclude = (
-            "password",
-            "groups",
-            "user_permissions",
-            "is_superuser",
-            "is_staff",
-            "avatar_color",
-        )
+        return instance.formatted_phone_number
 
 
 class RequestUserSerializer(serializers.ModelSerializer):
@@ -109,12 +97,12 @@ class RequestUserSerializer(serializers.ModelSerializer):
     A serializer to retrieve the current user
     """
 
-    full_name = serializers.SerializerMethodField()
-    initial = serializers.SerializerMethodField()
-    email = serializers.SerializerMethodField()
+    full_name = serializers.CharField()
+    initial = serializers.CharField()
+    email = serializers.CharField()
     permissions = serializers.SerializerMethodField()
     group_permissions = serializers.SerializerMethodField()
-    is_authenticated = serializers.SerializerMethodField()
+    is_authenticated = serializers.BooleanField()
 
     class Meta:
         model = User
@@ -132,42 +120,11 @@ class RequestUserSerializer(serializers.ModelSerializer):
             "has_confirmed_email",
         )
 
-    def get_full_name(self, user):
-        if user.is_authenticated:
-            return user.get_full_name()
-
-        return None
-
-    def get_initial(self, user):
-        if user.is_authenticated:
-            return user.get_initial()
-
-    def get_email(self, user):
-        if user.is_authenticated:
-            return user.email
-
-        return None
-
     def get_permissions(self, user):
-        if not user.is_authenticated:
-            return None
-
-        permissions = Permission.objects.filter(user=user.id).values_list(
-            "codename", flat=True
-        )
-        return permissions
+        return get_user_permissions(user=user)
 
     def get_group_permissions(self, user):
-        if not user.is_authenticated:
-            return None
-
-        group_permissions = Permission.objects.filter(group__user=user.id).values_list(
-            "codename", flat=True
-        )
-        return group_permissions
-
-    def get_is_authenticated(self, user):
-        return user.is_authenticated
+        return get_user_group_permissions(user=user)
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
