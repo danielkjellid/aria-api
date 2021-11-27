@@ -1,8 +1,9 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 
-from aria.kitchens.api.serializers import KitchenListSerializer, KitchenSerializer
+from aria.kitchens.serializers import KitchenListSerializer, KitchenSerializer
 from aria.kitchens.models import Kitchen
+from aria.products.enums import ProductStatus
 
 
 class KitchenListAPIView(generics.ListAPIView):
@@ -13,7 +14,7 @@ class KitchenListAPIView(generics.ListAPIView):
     permission_classes = (AllowAny,)
     authentication_classes = ()
     serializer_class = KitchenListSerializer
-    queryset = Kitchen.objects.filter(status=3).order_by("id")
+    queryset = Kitchen.objects.filter(status=ProductStatus.AVAILABLE).order_by("id")
 
 
 class KitchenRetrieveAPIView(generics.RetrieveAPIView):

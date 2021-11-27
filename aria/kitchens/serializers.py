@@ -14,7 +14,15 @@ class InstanceColorSerializer(serializers.Serializer):
     color_hex = serializers.CharField(read_only=True)
 
 
-# kitchen serializers
+class KitchenVariantImageSerializer(serializers.Serializer):
+    """
+    Serializer for kitchen variants which uses an image instead of a color
+    """
+
+    name = serializers.CharField(read_only=True)
+    image = serializers.ImageField()
+
+
 class KitchenListSerializer(serializers.ModelSerializer):
     """
     Serializer for getting a list over kitchens
@@ -38,21 +46,13 @@ class KitchenListSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class KitchenVariantImageSerializer(serializers.Serializer):
-    """
-    Serializer for kitchen variants which uses an image instead of a color
-    """
-
-    name = serializers.CharField(read_only=True)
-    image = serializers.ImageField()
-
 
 class KitchenSerializer(serializers.ModelSerializer):
     """
     Serializer for getting a specific kitchen instance
     """
 
-    example_from_price = serializers.SerializerMethodField()
+    example_from_price = serializers.DecimalField(decimal_places=2, max_digits=8)
     silk_variants = InstanceColorSerializer(read_only=True, many=True)
     decor_variants = KitchenVariantImageSerializer(read_only=True, many=True)
     plywood_variants = KitchenVariantImageSerializer(read_only=True, many=True)
@@ -81,12 +81,3 @@ class KitchenSerializer(serializers.ModelSerializer):
             "images",
         )
         read_only_fields = fields
-
-    def get_example_from_price(self, instance):
-
-        if instance.example_from_price:
-            formatted_from_price = "%0.2f" % (instance.example_from_price)
-
-            return formatted_from_price
-
-        return None

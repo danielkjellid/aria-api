@@ -5,112 +5,13 @@ from django.utils.translation import gettext_lazy as _
 from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill
 
-from aria.core.models import BaseHeaderImageModel, BaseModel
+from aria.core.models import BaseHeaderImageModel, BaseModel, BaseThumbnailImageModel
 from aria.products.enums import ProductStatus
 from aria.suppliers.models import Supplier
 
 
-class SilkColor(models.Model):
-
-    name = models.CharField(_("Kitchen silk name"), max_length=255, unique=False)
-    color_hex = models.CharField(_("Color code"), max_length=7, unique=True)
-
-    class Meta:
-        verbose_name = _("Silk color")
-        verbose_name_plural = _("Silk colors")
-
-    def __str__(self):
-        return self.name.strip()
-
-
-class Decor(models.Model):
-    def kitchen_decor_directory_path(self, filename):
-        """
-        Method to upload the files to the appropriate path
-        """
-
-        return "media/kitchens/decors/{0}/{1}".format(slugify(self.name), filename)
-
-    name = models.CharField(_("Kitchen decor name"), max_length=255, unique=False)
-    image = ProcessedImageField(
-        upload_to=kitchen_decor_directory_path,
-        processors=[ResizeToFill(80, 80)],
-        format="JPEG",
-        options={"quality": 90},
-    )
-
-    class Meta:
-        verbose_name = _("Decor")
-        verbose_name_plural = _("Decors")
-
-    def __str__(self):
-        return self.name.strip()
-
-
-class Plywood(models.Model):
-    def kitchen_plywood_directory_path(self, filename):
-        """
-        Method to upload the files to the appropriate path
-        """
-
-        return "media/kitchens/plywoods/{0}/{1}".format(slugify(self.name), filename)
-
-    name = models.CharField(_("Kitchen decor name"), max_length=255, unique=False)
-    image = ProcessedImageField(
-        upload_to=kitchen_plywood_directory_path,
-        processors=[ResizeToFill(80, 80)],
-        format="JPEG",
-        options={"quality": 90},
-    )
-
-    class Meta:
-        verbose_name = _("Plywood")
-        verbose_name_plural = _("Plywoods")
-
-    def __str__(self):
-        return self.name.strip()
-
-
-class LaminateColor(models.Model):
-
-    name = models.CharField(_("Kitchen laminate name"), max_length=255, unique=False)
-    color_hex = models.CharField(_("Color code"), max_length=7, unique=True)
-
-    class Meta:
-        verbose_name = _("Laminate color")
-        verbose_name_plural = _("Laminates colors")
-
-    def __str__(self):
-        return self.name.strip()
-
-
-class ExclusiveColor(models.Model):
-
-    name = models.CharField(_("Kitchen exclusive name"), max_length=255, unique=False)
-    color_hex = models.CharField(_("Color code"), max_length=7, unique=True)
-
-    class Meta:
-        verbose_name = _("Exclusive color")
-        verbose_name_plural = _("Exclusive colors")
-
-    def __str__(self):
-        return self.name.strip()
-
-
-class TrendColor(models.Model):
-
-    name = models.CharField(_("Kitchen trend name"), max_length=255, unique=False)
-    color_hex = models.CharField(_("Color code"), max_length=7, unique=True)
-
-    class Meta:
-        verbose_name = _("Trend color")
-        verbose_name_plural = _("Trend colors")
-
-    def __str__(self):
-        return self.name.strip()
-
-
 class Kitchen(BaseModel, BaseHeaderImageModel):
+
     @property
     def kitchen_image_directory(self):
         return f"media/kitchens/{slugify(self.name)}"
@@ -145,7 +46,7 @@ class Kitchen(BaseModel, BaseHeaderImageModel):
         blank=True,
         null=True,
     )
-    example_from_price = models.FloatField(_("From price"), blank=True, null=True)
+    example_from_price = models.DecimalField(decimal_places=2, max_digits=8, null=True, blank=True)
     can_be_painted = models.BooleanField(
         _("Can be painted"),
         default=False,
@@ -154,22 +55,22 @@ class Kitchen(BaseModel, BaseHeaderImageModel):
         ),
     )
     silk_variants = models.ManyToManyField(
-        SilkColor, related_name="kitchen_silk", blank=True
+        "kitchens.SilkColor", related_name="kitchen_silk", blank=True
     )
     decor_variants = models.ManyToManyField(
-        Decor, related_name="kitchen_decor", blank=True
+        "kitchens.Decor", related_name="kitchen_decor", blank=True
     )
     plywood_variants = models.ManyToManyField(
-        Plywood, related_name="kitchen_plywood", blank=True
+        "kitchens.Plywood", related_name="kitchen_plywood", blank=True
     )
     laminate_variants = models.ManyToManyField(
-        LaminateColor, related_name="kitchen_decor", blank=True
+        "kitchens.LaminateColor", related_name="kitchen_decor", blank=True
     )
     exclusive_variants = models.ManyToManyField(
-        ExclusiveColor, related_name="kitchen_exclusive", blank=True
+        "kitchens.ExclusiveColor", related_name="kitchen_exclusive", blank=True
     )
     trend_variants = models.ManyToManyField(
-        TrendColor, related_name="kitchen_decor", blank=True
+        "kitchens.TrendColor", related_name="kitchen_decor", blank=True
     )
     created_at = models.DateTimeField(_("Date created"), auto_now_add=True)
     updated_at = models.DateTimeField(_("Date updated"), auto_now=True)
@@ -205,3 +106,115 @@ class Kitchen(BaseModel, BaseHeaderImageModel):
 
     def __str__(self):
         return self.name
+
+class SilkColor(models.Model):
+
+    name = models.CharField(_("Kitchen silk name"), max_length=255, unique=False)
+    color_hex = models.CharField(_("Color code"), max_length=7, unique=True)
+
+    class Meta:
+        verbose_name = _("Silk color")
+        verbose_name_plural = _("Silk colors")
+
+    def __str__(self):
+        return self.name
+
+
+class Decor(BaseThumbnailImageModel):
+    # TODO: Remove image when images are uploaded to thumbnail instead
+    image = ProcessedImageField(
+        upload_to='t',
+        processors=[ResizeToFill(80, 80)],
+        format="JPEG",
+        options={"quality": 90},
+        blank=True,
+        null=True,
+    )
+    name = models.CharField(_("Kitchen decor name"), max_length=255, unique=False)
+
+    @property
+    def kitchen_decor_upload_path(self):
+        return f'media/kitchens/decors/{self.name}'
+
+    # Set height and with of generated image (in pixels)
+    WIDTH = 80
+    HEIGHT = 80
+
+    UPLOAD_PATH = kitchen_decor_upload_path
+
+    class Meta:
+        verbose_name = _("Decor")
+        verbose_name_plural = _("Decors")
+
+    def __str__(self):
+        return self.name
+
+
+class Plywood(BaseThumbnailImageModel):
+    # TODO: Remove image when images are uploaded to thumbnail instead
+    image = ProcessedImageField(
+        upload_to='t',
+        processors=[ResizeToFill(80, 80)],
+        format="JPEG",
+        options={"quality": 90},
+        blank=True,
+        null=True,
+    )
+    name = models.CharField(_("Kitchen playwood name"), max_length=255, unique=False)
+
+    @property
+    def kitchen_playwood_upload_path(self):
+        return f'media/kitchens/plywoods/{self.name}'
+
+    # Set height and with of generated image (in pixels)
+    WIDTH = 80
+    HEIGHT = 80
+
+    UPLOAD_PATH = kitchen_playwood_upload_path
+
+    class Meta:
+        verbose_name = _("Plywood")
+        verbose_name_plural = _("Plywoods")
+
+    def __str__(self):
+        return self.name
+
+
+class LaminateColor(models.Model):
+
+    name = models.CharField(_("Kitchen laminate name"), max_length=255, unique=False)
+    color_hex = models.CharField(_("Color code"), max_length=7, unique=True)
+
+    class Meta:
+        verbose_name = _("Laminate color")
+        verbose_name_plural = _("Laminates colors")
+
+    def __str__(self):
+        return self.name
+
+
+class ExclusiveColor(models.Model):
+
+    name = models.CharField(_("Kitchen exclusive name"), max_length=255, unique=False)
+    color_hex = models.CharField(_("Color code"), max_length=7, unique=True)
+
+    class Meta:
+        verbose_name = _("Exclusive color")
+        verbose_name_plural = _("Exclusive colors")
+
+    def __str__(self):
+        return self.name
+
+
+class TrendColor(models.Model):
+
+    name = models.CharField(_("Kitchen trend name"), max_length=255, unique=False)
+    color_hex = models.CharField(_("Color code"), max_length=7, unique=True)
+
+    class Meta:
+        verbose_name = _("Trend color")
+        verbose_name_plural = _("Trend colors")
+
+    def __str__(self):
+        return self.name
+
