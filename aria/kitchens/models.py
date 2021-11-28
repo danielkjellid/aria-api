@@ -134,7 +134,7 @@ class Decor(BaseThumbnailImageModel):
 
     @property
     def kitchen_decor_upload_path(self):
-        return f'media/kitchens/decors/{self.name}'
+        return f'media/kitchens/decors/{slugify(self.name)}'
 
     # Set height and with of generated image (in pixels)
     WIDTH = 80
@@ -164,7 +164,7 @@ class Plywood(BaseThumbnailImageModel):
 
     @property
     def kitchen_playwood_upload_path(self):
-        return f'media/kitchens/plywoods/{self.name}'
+        return f'media/kitchens/plywoods/{slugify(self.name)}'
 
     # Set height and with of generated image (in pixels)
     WIDTH = 80
