@@ -52,7 +52,7 @@ class BaseImageModel(models.Model):
         upload_to=get_static_asset_upload_path,
         blank=True,
         null=False,
-        default='media/front/default_2048x1150.jpeg'
+        default="media/front/default_2048x1150.jpeg",
     )
 
 
@@ -133,7 +133,7 @@ class BaseThumbnailImageModel(models.Model):
         options={"quality": 90},
         blank=True,
         null=False,
-        default=f'media/front/default_{WIDTH}x{HEIGHT}.jpeg',
+        default=f"media/front/default_{WIDTH}x{HEIGHT}.jpeg",
         help_text=(f"Image must be above {WIDTH}x{HEIGHT}px"),
     )
 

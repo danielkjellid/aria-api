@@ -22,6 +22,7 @@ class KitchenVariantImageSerializer(serializers.Serializer):
     name = serializers.CharField(read_only=True)
     image = serializers.CharField(source="thumbnail.url")
 
+
 class KitchenListSerializer(serializers.ModelSerializer):
     """
     Serializer for getting a list over kitchens
@@ -43,7 +44,6 @@ class KitchenListSerializer(serializers.ModelSerializer):
             "thumbnail_850x520",
         )
         read_only_fields = fields
-
 
 
 class KitchenSerializer(serializers.ModelSerializer):

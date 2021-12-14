@@ -11,7 +11,6 @@ from aria.suppliers.models import Supplier
 
 
 class Kitchen(BaseModel, BaseHeaderImageModel):
-
     @property
     def kitchen_image_directory(self):
         return f"media/kitchens/{slugify(self.name)}"
@@ -46,7 +45,9 @@ class Kitchen(BaseModel, BaseHeaderImageModel):
         blank=True,
         null=True,
     )
-    example_from_price = models.DecimalField(decimal_places=2, max_digits=8, null=True, blank=True)
+    example_from_price = models.DecimalField(
+        decimal_places=2, max_digits=8, null=True, blank=True
+    )
     can_be_painted = models.BooleanField(
         _("Can be painted"),
         default=False,
@@ -107,6 +108,7 @@ class Kitchen(BaseModel, BaseHeaderImageModel):
     def __str__(self):
         return self.name
 
+
 class SilkColor(models.Model):
 
     name = models.CharField(_("Kitchen silk name"), max_length=255, unique=False)
@@ -123,7 +125,7 @@ class SilkColor(models.Model):
 class Decor(BaseThumbnailImageModel):
     # TODO: Remove image when images are uploaded to thumbnail instead
     image = ProcessedImageField(
-        upload_to='t',
+        upload_to="t",
         processors=[ResizeToFill(80, 80)],
         format="JPEG",
         options={"quality": 90},
@@ -134,7 +136,7 @@ class Decor(BaseThumbnailImageModel):
 
     @property
     def kitchen_decor_upload_path(self):
-        return f'media/kitchens/decors/{slugify(self.name)}'
+        return f"media/kitchens/decors/{slugify(self.name)}"
 
     # Set height and with of generated image (in pixels)
     WIDTH = 80
@@ -153,7 +155,7 @@ class Decor(BaseThumbnailImageModel):
 class Plywood(BaseThumbnailImageModel):
     # TODO: Remove image when images are uploaded to thumbnail instead
     image = ProcessedImageField(
-        upload_to='t',
+        upload_to="t",
         processors=[ResizeToFill(80, 80)],
         format="JPEG",
         options={"quality": 90},
@@ -164,7 +166,7 @@ class Plywood(BaseThumbnailImageModel):
 
     @property
     def kitchen_playwood_upload_path(self):
-        return f'media/kitchens/plywoods/{slugify(self.name)}'
+        return f"media/kitchens/plywoods/{slugify(self.name)}"
 
     # Set height and with of generated image (in pixels)
     WIDTH = 80
@@ -217,4 +219,3 @@ class TrendColor(models.Model):
 
     def __str__(self):
         return self.name
-

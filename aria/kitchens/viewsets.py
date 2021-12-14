@@ -1,8 +1,8 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 
-from aria.kitchens.serializers import KitchenListSerializer, KitchenSerializer
 from aria.kitchens.models import Kitchen
+from aria.kitchens.serializers import KitchenListSerializer, KitchenSerializer
 from aria.products.enums import ProductStatus
 
 

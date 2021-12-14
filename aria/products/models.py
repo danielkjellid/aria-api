@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 from django.db import models
@@ -283,17 +285,34 @@ class Size(models.Model):
     A dimension of which a product exists in.
     """
 
-    width = models.IntegerField(
-        _("Width"), blank=True, null=True, help_text=_("width in centimeters")
+    width = models.DecimalField(
+        _("width"),
+        decimal_places=2,
+        max_digits=6,
+        blank=True,
+        null=True,
+        help_text=_("width in centimeters"),
     )
-    height = models.IntegerField(
-        _("Height"), blank=True, null=True, help_text=_("height in centimeters")
+    height = models.DecimalField(
+        _("height"),
+        decimal_places=2,
+        max_digits=6,
+        blank=True,
+        null=True,
+        help_text=_("height in centimeters"),
     )
-    depth = models.IntegerField(
-        _("Depth"), blank=True, null=True, help_text=_("depth in centimeters")
+    depth = models.DecimalField(
+        _("depth"),
+        decimal_places=2,
+        max_digits=6,
+        blank=True,
+        null=True,
+        help_text=_("depth in centimeters"),
     )
-    circumference = models.IntegerField(
-        _("Circumference"),
+    circumference = models.DecimalField(
+        _("circumference"),
+        decimal_places=2,
+        max_digits=6,
         blank=True,
         null=True,
         help_text=_("circumference in centimeters"),
@@ -305,12 +324,9 @@ class Size(models.Model):
         ordering = ["width", "height", "depth", "circumference"]
         constraints = [
             models.UniqueConstraint(
-                fields=["width", "height"], name=("one_height_width_combo")
-            ),
-            models.UniqueConstraint(
-                fields=["width", "height", "depth"],
-                name=("one_height_width_depth_combo"),
-            ),
+                fields=["width", "height", "depth", "circumference"],
+                name="size_combo_unique",
+            )
         ]
 
     def __str__(self):
@@ -320,8 +336,7 @@ class Size(models.Model):
             and self.height is not None
             and self.circumference is None
         ):
-            full_name = f"B{self.width} x H{self.height} x D{self.depth}"
-            return full_name
+            return f"B{self.convert_to_self_repr(self.width)} x H{self.convert_to_self_repr(self.height)} x D{self.convert_to_self_repr(self.depth)}"
 
         if (
             self.circumference is not None
@@ -329,11 +344,19 @@ class Size(models.Model):
             and self.height is None
             and self.depth is None
         ):
-            full_name = f"Ø{self.circumference}"
-            return full_name
+            return f"Ø{self.convert_to_self_repr(self.circumference)}"
 
-        full_name = f"B{self.width} x H{self.height}"
-        return full_name
+        return f"B{self.convert_to_self_repr(self.width)} x H{self.convert_to_self_repr(self.height)}"
+
+    def convert_to_self_repr(self, n):
+        """
+        Returns a whole number is decimals is .0
+        """
+
+        if Decimal(n) % 1 == 0:
+            return int(n)
+
+        return n
 
 
 class Variant(BaseThumbnailImageModel):
