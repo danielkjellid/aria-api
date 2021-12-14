@@ -6,6 +6,7 @@ from django.core.files import File
 from django.core.management.base import BaseCommand, CommandParser
 from django.db import transaction
 from django.utils.text import slugify
+from decimal import Decimal
 
 import requests
 
@@ -65,16 +66,6 @@ class Command(BaseCommand):
         add_absorption = options["add_absorption"]
         confirm = options["confirm"]
 
-        # A list of required keys, used in sanity check before object
-        # creation.
-        required_keys = [
-            "collection_name",
-            "description_nor",
-            "sizes",
-            "variants",
-            "files",
-        ]
-
         # Get data from source and load it as json
         products_data_url = requests.get(source)
         products_data = products_data_url.json()
@@ -96,17 +87,16 @@ class Command(BaseCommand):
                 # Start loop and creation of products
                 for iteration, data in enumerate(products_data):
 
+                    assert data["collection_name"], "Key collection_name is missing, but is required"
+                    assert data["description_nor"], "Key description_nor is missing, but is required"
+                    assert data["sizes"], "Key sizes is missing, but is required"
+
                     self.stdout.write(
                         f"Currently processing {iteration + 1} of {len(products_data)} products"
                     )
 
-                    # Sanity check to check that all necessary
-                    # keys are present.
-                    for required_key in required_keys:
-                        assert required_key in data.keys()
-
-                    variants = data.get("variants")
-                    files = data.get("files")
+                    variants = data.get("variants", None)
+                    files = data.get("files", None)
 
                     # Create products and manipulate sizes
                     created_product, sizes_dict_list = self._create_imported_product(
@@ -124,16 +114,18 @@ class Command(BaseCommand):
                     self._create_product_site_rel(site=site, product=created_product)
 
                     # Create files instances
-                    self.stdout.write("Creating files...")
-                    self._create_product_files(
-                        files=files, product=created_product, confirm=confirm
-                    )
+                    if files is not None:
+                        self.stdout.write("Creating files...")
+                        self._create_product_files(
+                            files=files, product=created_product, confirm=confirm
+                        )
 
                     # Get or create variants instances
-                    self.stdout.write("Fetching/creating variants...")
-                    variants_to_link = self._create_and_get_product_variants_to_link(
-                        variants=variants, confirm=confirm
-                    )
+                    if variants is not None:
+                        self.stdout.write("Fetching/creating variants...")
+                        variants_to_link = self._create_and_get_product_variants_to_link(
+                            variants=variants, confirm=confirm
+                        )
 
                     # Get or create sizes instances
                     self.stdout.write("Fetching/creating sizes...")
@@ -141,12 +133,15 @@ class Command(BaseCommand):
                         sizes=sizes_dict_list
                     )
 
+
                     # Create product options to link sizes and variants
+                    price = data.get('price', None)
                     self.stdout.write("Linking sizes and variants to product...")
                     self._get_and_link_sizes_variants(
                         variants=variants_to_link,
                         sizes=sizes_to_link,
                         product=created_product,
+                        price=price
                     )
 
                     # End of operation
@@ -167,8 +162,13 @@ class Command(BaseCommand):
         sizes = []
 
         for size in sizes_list:
-            size_item = size.split("x")
-            sizes.append({"height": int(size_item[0]), "width": int(size_item[1])})
+            size_items = size.split("x")
+            if len(size_items) == 1:
+                sizes.append({"height": None, "width": None, "depth": None, "circumference": size_items[0]})
+            elif len(size_items) == 3:
+                sizes.append({"height": Decimal(size_items[0]), "width": Decimal(size_items[1]), "depth": Decimal(size_items[2]), "circumference": None})
+            else:
+                sizes.append({"height": Decimal(size_items[0]), "width": Decimal(size_items[1]), "depth": None, "circumference": None})
 
         return sizes
 
@@ -270,43 +270,23 @@ class Command(BaseCommand):
         self.stdout.write("Site state created.")
 
     def _create_product_files(
-        self, files: "list[str]", product: "Product", confirm: "bool"
+        self, files: "list", product: "Product", confirm: "bool"
     ) -> None:
         """
         Create file instance belloning to product.
         """
 
         for file in files:
-            name: str
-            value: str
 
-            for key, value in file.items():
-                if key == "technical_sheet_url":
-                    name = "Spesifikasjoner"
-                elif key == "laying_system_url":
-                    name = "Leggingsmønster"
-                elif key == "dop_certification_url":
-                    name = "Sertifisering"
-                elif key == "environment_certification_url":
-                    name = "Miljøsertifisering"
-                elif key == "k2_catalog_url":
-                    name = "K2 Katalog"
-                elif key == "catalog_url":
-                    name = "Katalog"
-                else:
-                    raise RuntimeError(
-                        "Catalog %s does not have the correct key. Is _url appended in the key name?",
-                        file,
-                    )
-
-                value = value
+            assert file["name"], "Key name in files list does not exist, but is required"
+            assert file["file_url"], "Key file_url in files list does not exist, but is required"
 
             ProductFile.objects.create(
                 product=product,
-                name=name,
-                file=self._get_remote_asset(value, name) if confirm else None,
+                name=file["name"],
+                file=self._get_remote_asset(file["file_url"], file["name"]) if confirm else None,
             )
-            self.stdout.write(f"File {name} added.")
+            self.stdout.write(f"File {file['name']} added.")
         self.stdout.write("All files created.")
 
     def _create_and_get_product_variants_to_link(
@@ -320,20 +300,36 @@ class Command(BaseCommand):
         variants_to_link = []
 
         for variant in variants:
+            name = variant.get("name", None)
+            image_url = variant.get("image_url", None)
+
+            if name is None and image_url is None:
+                continue
+
+            # If image url is not specified, we assume to use an already
+            # existing variant.
+            if name is not None and image_url is None:
+                gotten_variant = Variant.objects.get(name=name.title())
+                variants_to_link.append(gotten_variant)
+                self.stdout.write(f'Exiting variant {gotten_variant.name} added.')
+                continue
+
+            # If image_url exists, we create a new variant with correct
+            # properties.
             created_variant = Variant.objects.create(
-                name=variant["name"].title(),
+                name=name.title(),
                 status=ProductStatus.AVAILABLE,
             )
 
             # Since the file needs the id to be created, save the thumbnail after
             # creation.
             if confirm:
-                file = self._get_remote_asset(variant["image_url"], variant["name"])
-                created_variant.thumbnail.save(f'{slugify(variant["name"])}', file)
+                file = self._get_remote_asset(image_url, name)
+                created_variant.thumbnail.save(f'{slugify(name)}', file)
 
             variants_to_link.append(created_variant)
-            self.stdout.write(f'Variant {variant["name"].title()} added.')
-        self.stdout.write("All variants created and ready to link.")
+            self.stdout.write(f'Variant {name.title()} added.')
+        self.stdout.write("All variants gotten/created and ready to link.")
 
         return variants_to_link
 
@@ -346,32 +342,36 @@ class Command(BaseCommand):
         sizes_to_link = []
 
         for size_set in sizes:
-            height = size_set.get("height")
-            width = size_set.get("width")
-
-            size = Size.objects.get_or_create(width=width, height=height)
-
+            size = Size.objects.get_or_create(**size_set)
             sizes_to_link.append(size)
         self.stdout.write("All sizes fetched/created and ready to link.")
 
         return sizes_to_link
 
     def _get_and_link_sizes_variants(
-        self, variants: "list", sizes: "list", product: "Product"
+        self, variants: "list", sizes: "list", product: "Product", price: "Decimal"
     ) -> None:
         """
         Create product options by combining variants with sizes.
         """
 
-        for variant in variants:
-            if len(sizes) > 0:
-                for size, created in sizes:
+        if len(sizes) > 0 and len(variants) > 0:
+            for variant in variants:
+                for size, _ in sizes:
                     ProductOption.objects.create(
-                        product=product, variant=variant, size=size, gross_price=0.00
+                        product=product, variant=variant, size=size, gross_price=price if price else 0.00
                     )
-            else:
+
+        if len(sizes) > 0 and len(variants) <= 0:
+            for size, _ in sizes:
                 ProductOption.objects.create(
-                    product=product, variant=variant, size=None, gross_price=0.00
+                    product=product, variant=None, size=size, gross_price=price if price else 0.00
+                )
+
+        if len(variants) > 0 and len(sizes) <= 0:
+            for variant in variants:
+                ProductOption.objects.create(
+                    product=product, variant=variant, size=None, gross_price=price if price else 0.00
                 )
 
         self.stdout.write("Sizes and variants linked and added to product.")
