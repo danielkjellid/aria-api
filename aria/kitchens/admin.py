@@ -22,6 +22,8 @@ class KitchenAdmin(admin.ModelAdmin):
 @admin.register(Decor)
 class KitchenDecorAdmin(admin.ModelAdmin):
     model = Decor
+
+
 @admin.register(Plywood)
 class KitchenPlywoodAdmin(admin.ModelAdmin):
     model = Plywood

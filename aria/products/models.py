@@ -1,10 +1,10 @@
+from decimal import Decimal
+
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
-
-from decimal import Decimal
 
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
@@ -291,7 +291,7 @@ class Size(models.Model):
         max_digits=6,
         blank=True,
         null=True,
-        help_text=_("width in centimeters")
+        help_text=_("width in centimeters"),
     )
     height = models.DecimalField(
         _("height"),
@@ -299,7 +299,7 @@ class Size(models.Model):
         max_digits=6,
         blank=True,
         null=True,
-        help_text=_("height in centimeters")
+        help_text=_("height in centimeters"),
     )
     depth = models.DecimalField(
         _("depth"),
@@ -307,7 +307,7 @@ class Size(models.Model):
         max_digits=6,
         blank=True,
         null=True,
-        help_text=_("depth in centimeters")
+        help_text=_("depth in centimeters"),
     )
     circumference = models.DecimalField(
         _("circumference"),
@@ -324,7 +324,8 @@ class Size(models.Model):
         ordering = ["width", "height", "depth", "circumference"]
         constraints = [
             models.UniqueConstraint(
-                fields=["width", "height", "depth", "circumference"], name="size_combo_unique"
+                fields=["width", "height", "depth", "circumference"],
+                name="size_combo_unique",
             )
         ]
 

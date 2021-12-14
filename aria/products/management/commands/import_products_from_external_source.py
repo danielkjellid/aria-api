@@ -1,3 +1,4 @@
+from decimal import Decimal
 from tempfile import NamedTemporaryFile
 from typing import Tuple
 
@@ -6,7 +7,6 @@ from django.core.files import File
 from django.core.management.base import BaseCommand, CommandParser
 from django.db import transaction
 from django.utils.text import slugify
-from decimal import Decimal
 
 import requests
 
@@ -87,8 +87,12 @@ class Command(BaseCommand):
                 # Start loop and creation of products
                 for iteration, data in enumerate(products_data):
 
-                    assert data["collection_name"], "Key collection_name is missing, but is required"
-                    assert data["description_nor"], "Key description_nor is missing, but is required"
+                    assert data[
+                        "collection_name"
+                    ], "Key collection_name is missing, but is required"
+                    assert data[
+                        "description_nor"
+                    ], "Key description_nor is missing, but is required"
                     assert data["sizes"], "Key sizes is missing, but is required"
 
                     self.stdout.write(
@@ -123,8 +127,10 @@ class Command(BaseCommand):
                     # Get or create variants instances
                     if variants is not None:
                         self.stdout.write("Fetching/creating variants...")
-                        variants_to_link = self._create_and_get_product_variants_to_link(
-                            variants=variants, confirm=confirm
+                        variants_to_link = (
+                            self._create_and_get_product_variants_to_link(
+                                variants=variants, confirm=confirm
+                            )
                         )
 
                     # Get or create sizes instances
@@ -133,15 +139,14 @@ class Command(BaseCommand):
                         sizes=sizes_dict_list
                     )
 
-
                     # Create product options to link sizes and variants
-                    price = data.get('price', None)
+                    price = data.get("price", None)
                     self.stdout.write("Linking sizes and variants to product...")
                     self._get_and_link_sizes_variants(
                         variants=variants_to_link,
                         sizes=sizes_to_link,
                         product=created_product,
-                        price=price
+                        price=price,
                     )
 
                     # End of operation
@@ -164,11 +169,32 @@ class Command(BaseCommand):
         for size in sizes_list:
             size_items = size.split("x")
             if len(size_items) == 1:
-                sizes.append({"height": None, "width": None, "depth": None, "circumference": size_items[0]})
+                sizes.append(
+                    {
+                        "height": None,
+                        "width": None,
+                        "depth": None,
+                        "circumference": size_items[0],
+                    }
+                )
             elif len(size_items) == 3:
-                sizes.append({"height": Decimal(size_items[0]), "width": Decimal(size_items[1]), "depth": Decimal(size_items[2]), "circumference": None})
+                sizes.append(
+                    {
+                        "height": Decimal(size_items[0]),
+                        "width": Decimal(size_items[1]),
+                        "depth": Decimal(size_items[2]),
+                        "circumference": None,
+                    }
+                )
             else:
-                sizes.append({"height": Decimal(size_items[0]), "width": Decimal(size_items[1]), "depth": None, "circumference": None})
+                sizes.append(
+                    {
+                        "height": Decimal(size_items[0]),
+                        "width": Decimal(size_items[1]),
+                        "depth": None,
+                        "circumference": None,
+                    }
+                )
 
         return sizes
 
@@ -278,13 +304,19 @@ class Command(BaseCommand):
 
         for file in files:
 
-            assert file["name"], "Key name in files list does not exist, but is required"
-            assert file["file_url"], "Key file_url in files list does not exist, but is required"
+            assert file[
+                "name"
+            ], "Key name in files list does not exist, but is required"
+            assert file[
+                "file_url"
+            ], "Key file_url in files list does not exist, but is required"
 
             ProductFile.objects.create(
                 product=product,
                 name=file["name"],
-                file=self._get_remote_asset(file["file_url"], file["name"]) if confirm else None,
+                file=self._get_remote_asset(file["file_url"], file["name"])
+                if confirm
+                else None,
             )
             self.stdout.write(f"File {file['name']} added.")
         self.stdout.write("All files created.")
@@ -311,7 +343,7 @@ class Command(BaseCommand):
             if name is not None and image_url is None:
                 gotten_variant = Variant.objects.get(name=name.title())
                 variants_to_link.append(gotten_variant)
-                self.stdout.write(f'Exiting variant {gotten_variant.name} added.')
+                self.stdout.write(f"Exiting variant {gotten_variant.name} added.")
                 continue
 
             # If image_url exists, we create a new variant with correct
@@ -325,10 +357,10 @@ class Command(BaseCommand):
             # creation.
             if confirm:
                 file = self._get_remote_asset(image_url, name)
-                created_variant.thumbnail.save(f'{slugify(name)}', file)
+                created_variant.thumbnail.save(f"{slugify(name)}", file)
 
             variants_to_link.append(created_variant)
-            self.stdout.write(f'Variant {name.title()} added.')
+            self.stdout.write(f"Variant {name.title()} added.")
         self.stdout.write("All variants gotten/created and ready to link.")
 
         return variants_to_link
@@ -359,19 +391,28 @@ class Command(BaseCommand):
             for variant in variants:
                 for size, _ in sizes:
                     ProductOption.objects.create(
-                        product=product, variant=variant, size=size, gross_price=price if price else 0.00
+                        product=product,
+                        variant=variant,
+                        size=size,
+                        gross_price=price if price else 0.00,
                     )
 
         if len(sizes) > 0 and len(variants) <= 0:
             for size, _ in sizes:
                 ProductOption.objects.create(
-                    product=product, variant=None, size=size, gross_price=price if price else 0.00
+                    product=product,
+                    variant=None,
+                    size=size,
+                    gross_price=price if price else 0.00,
                 )
 
         if len(variants) > 0 and len(sizes) <= 0:
             for variant in variants:
                 ProductOption.objects.create(
-                    product=product, variant=variant, size=None, gross_price=price if price else 0.00
+                    product=product,
+                    variant=variant,
+                    size=None,
+                    gross_price=price if price else 0.00,
                 )
 
         self.stdout.write("Sizes and variants linked and added to product.")

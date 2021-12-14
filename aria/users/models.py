@@ -123,8 +123,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         unique_together = ["email", "site"]
         constraints = [
             models.UniqueConstraint(
-                fields=["email", "site"],
-                name=("email_site_unique_user")
+                fields=["email", "site"], name=("email_site_unique_user")
             )
         ]
         permissions = (
