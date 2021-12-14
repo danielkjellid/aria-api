@@ -353,10 +353,7 @@ class Size(models.Model):
         Returns a whole number is decimals is .0
         """
 
-        if Decimal(n) % 1 == 0:
-            return int(n)
-
-        return n
+        return str(round(n, 1) if n % 1 else int(n))
 
 
 class Variant(BaseThumbnailImageModel):
