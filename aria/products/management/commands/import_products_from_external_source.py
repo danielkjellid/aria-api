@@ -10,6 +10,7 @@ from django.utils.text import slugify
 
 import requests
 
+from aria.product_categorization.models import SubCategory
 from aria.products.enums import ProductStatus
 from aria.products.models import (
     Product,
@@ -101,6 +102,7 @@ class Command(BaseCommand):
 
                     variants = data.get("variants", None)
                     files = data.get("files", None)
+                    categories = data.get("categories", None)
 
                     # Create products and manipulate sizes
                     created_product, sizes_dict_list = self._create_imported_product(
@@ -112,6 +114,13 @@ class Command(BaseCommand):
                     created_product.sites.add(site)
                     created_product.save()
                     self.stdout.write("Active site added.")
+
+                    if categories is not None:
+                        self.stdout.write("Adding categories to product...")
+                        self._create_product_category_rels(
+                            categories=categories, product=created_product
+                        )
+                        self.stdout.write("All categories added.")
 
                     # Create site state for m2m rel.
                     self.stdout.write("Creating site state...")
@@ -277,6 +286,15 @@ class Command(BaseCommand):
         sizes_dict_list = self._split_and_convert_sizes(sizes_list)
 
         return created_product, sizes_dict_list
+
+    def _create_product_category_rels(
+        self, categories: "list[str]", product: "Product"
+    ) -> None:
+        splitted_category_slugs = categories.split(",")
+
+        for slug in splitted_category_slugs:
+            cat = SubCategory.objects.get(slug=slug)
+            product.category.add(cat)
 
     def _create_product_site_rel(self, site: "Site", product: "Product") -> None:
         """
