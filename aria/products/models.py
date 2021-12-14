@@ -386,6 +386,11 @@ class Variant(BaseThumbnailImageModel):
         format="JPEG",
         options={"quality": 90},
     )
+    is_standard = models.BooleanField(
+        _("standard"),
+        default=False,
+        help_text=_('designates if a variant should be treated as standard. This is to avoid multiple instances of the same variant. This field will also prevent cleanup deletion of these models.')
+    )
 
     class Meta:
         verbose_name = _("Variant")
