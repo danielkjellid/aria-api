@@ -40,6 +40,7 @@ class ProductMaterials(models.TextChoices):
     MIRROR = "mirror", "Speil"
     BRUSHED_STEEL = "brushedsteel", "Pusset stål"
     STAINLESS_STEEL = "stainlesssteel", "Rustfritt stål"
+    COMPOSITE = "composite", "Kompositt"
 
 
 class ProductUnit(models.IntegerChoices):
