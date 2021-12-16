@@ -38,6 +38,8 @@ class ProductMaterials(models.TextChoices):
     PORCELAIN = "porcelain", "Porselen"
     WOOD = "wood", "Tre"
     MIRROR = "mirror", "Speil"
+    BRUSHED_STEEL = "brushedsteel", "Pusset stål"
+    STAINLESS_STEEL = "stainlesssteel", "Rustfritt stål"
 
 
 class ProductUnit(models.IntegerChoices):
