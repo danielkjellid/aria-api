@@ -20,6 +20,7 @@ class ProductStyles(models.TextChoices):
     MODERN = "modern", "Moderne"
     CIRCULAR = "circular", "Rundt"
     SQUARE = "square", "Firkantet"
+    OVAL = "oval", "Ovalt"
     MIRROR_WITH_LIGHT = "mirrorwithlight", "Speil med lys"
 
 
