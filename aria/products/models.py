@@ -35,7 +35,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
 
     UPLOAD_PATH = product_directory
 
-    name = models.CharField(_("Product name"), max_length=255, unique=True)
+    name = models.CharField(_("Product name"), max_length=255, unique=False)
     supplier = models.ForeignKey(
         Supplier, on_delete=models.PROTECT, related_name="products"
     )
