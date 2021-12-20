@@ -152,8 +152,8 @@ class Command(BaseCommand):
                     price = data.get("price", None)
                     self.stdout.write("Linking sizes and variants to product...")
                     self._get_and_link_sizes_variants(
-                        variants=variants_to_link if variants_to_link else None,
-                        sizes=sizes_to_link if sizes_to_link else None,
+                        variants=variants_to_link if variants else [],
+                        sizes=sizes_to_link,
                         product=created_product,
                         price=price,
                     )
