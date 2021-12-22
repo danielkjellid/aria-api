@@ -43,7 +43,8 @@ class SizeAdmin(admin.ModelAdmin):
 @admin.register(Variant)
 class VariantAdmin(admin.ModelAdmin):
     search_fields = ["name"]
-    list_display = ("id", "name")
+    list_display = ("id", "name", "image", "is_standard")
+    list_filter = ("is_standard", )
     ordering = ["-id"]
 
 

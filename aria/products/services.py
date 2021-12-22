@@ -20,7 +20,7 @@ def create_variant(
             thumbnail,
         )
 
-    new_variant = Variant.objects.create(name=name.title(), status=status)
+    new_variant = Variant.objects.create(name=name.title())
 
     # Variants needs an id to save files because the folder structure is
     # <id>-<name>/file, therefore we have to create the variant first,
