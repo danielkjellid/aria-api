@@ -261,6 +261,11 @@ class ProductOption(BaseModel):
         blank=True,
     )
     gross_price = models.DecimalField(decimal_places=2, max_digits=8, default=0.00)
+    status = models.IntegerField(
+        _("Status"),
+        choices=enums.ProductStatus.choices,
+        default=enums.ProductStatus.AVAILABLE,
+    )
 
     class Meta:
         verbose_name = _("Product option")
@@ -371,11 +376,6 @@ class Variant(BaseThumbnailImageModel):
     name = models.CharField(
         _("Product variant name"),
         max_length=255,
-    )
-    status = models.IntegerField(
-        _("Status"),
-        choices=enums.ProductStatus.choices,
-        default=enums.ProductStatus.DRAFT,
     )
     image = ImageSpecField(
         source="thumbnail",

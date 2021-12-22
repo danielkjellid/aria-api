@@ -368,7 +368,6 @@ class Command(BaseCommand):
             # properties.
             created_variant = Variant.objects.create(
                 name=name.title(),
-                status=ProductStatus.AVAILABLE,
             )
 
             # Since the file needs the id to be created, save the thumbnail after
@@ -413,6 +412,7 @@ class Command(BaseCommand):
                         variant=variant,
                         size=size,
                         gross_price=price if price else 0.00,
+                        status=ProductStatus.AVAILABLE
                     )
 
         if len(sizes) > 0 and len(variants) <= 0:
@@ -422,6 +422,7 @@ class Command(BaseCommand):
                     variant=None,
                     size=size,
                     gross_price=price if price else 0.00,
+                    status=ProductStatus.AVAILABLE
                 )
 
         if len(variants) > 0 and len(sizes) <= 0:
@@ -431,6 +432,7 @@ class Command(BaseCommand):
                     variant=variant,
                     size=None,
                     gross_price=price if price else 0.00,
+                    status=ProductStatus.AVAILABLE
                 )
 
         self.stdout.write("Sizes and variants linked and added to product.")
