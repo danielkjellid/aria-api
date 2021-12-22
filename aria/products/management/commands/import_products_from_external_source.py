@@ -359,10 +359,16 @@ class Command(BaseCommand):
             # If image url is not specified, we assume to use an already
             # existing variant.
             if name is not None and image_url is None:
-                gotten_variant = Variant.objects.get(name=name.title())
-                variants_to_link.append(gotten_variant)
-                self.stdout.write(f"Exiting variant {gotten_variant.name} added.")
-                continue
+                gotten_variant = None
+                try:
+                    gotten_variant = Variant.objects.get(name=name.title())
+                    variants_to_link.append(gotten_variant)
+                    self.stdout.write(f"Existing variant {gotten_variant.name} added.")
+                    continue
+                except Variant.MultipleObjectsReturned:
+                    gotten_variant = Variant.objects.get(name=name.title(), is_standard=True)
+                    variants_to_link.append(gotten_variant)
+                    self.stdout.write(f"Existing standard variant {gotten_variant.name} added.")
 
             # If image_url exists, we create a new variant with correct
             # properties.
