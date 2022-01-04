@@ -40,6 +40,7 @@ class ProductMaterials(models.TextChoices):
     WOOD = "wood", "Tre"
     OAK = "oak", "Eik"
     MDF = "mdf", "MDF"
+    LAMINATE = "laminate", "Laminat"
     MIRROR = "mirror", "Speil"
     BRUSHED_STEEL = "brushedsteel", "Pusset stål"
     STAINLESS_STEEL = "stainlesssteel", "Rustfritt stål"
