@@ -362,28 +362,27 @@ class Command(BaseCommand):
                 gotten_variant = None
                 try:
                     gotten_variant = Variant.objects.get(name=name.title())
-                    variants_to_link.append(gotten_variant)
                     self.stdout.write(f"Existing variant {gotten_variant.name} added.")
-                    continue
                 except Variant.MultipleObjectsReturned:
                     gotten_variant = Variant.objects.get(name=name.title(), is_standard=True)
-                    variants_to_link.append(gotten_variant)
                     self.stdout.write(f"Existing standard variant {gotten_variant.name} added.")
 
-            # If image_url exists, we create a new variant with correct
-            # properties.
-            created_variant = Variant.objects.create(
-                name=name.title(),
-            )
+                variants_to_link.append(gotten_variant)
+            else:
+                # If image_url exists, we create a new variant with correct
+                # properties.
+                created_variant = Variant.objects.create(
+                    name=name.title(),
+                )
 
-            # Since the file needs the id to be created, save the thumbnail after
-            # creation.
-            if confirm:
-                file = self._get_remote_asset(image_url, name)
-                created_variant.thumbnail.save(f"{slugify(name)}", file)
+                # Since the file needs the id to be created, save the thumbnail after
+                # creation.
+                if confirm:
+                    file = self._get_remote_asset(image_url, name)
+                    created_variant.thumbnail.save(f"{slugify(name)}", file)
 
-            variants_to_link.append(created_variant)
-            self.stdout.write(f"Variant {name.title()} added.")
+                variants_to_link.append(created_variant)
+                self.stdout.write(f"Variant {name.title()} added.")
         self.stdout.write("All variants gotten/created and ready to link.")
 
         return variants_to_link
