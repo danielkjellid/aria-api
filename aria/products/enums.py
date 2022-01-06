@@ -22,6 +22,7 @@ class ProductStyles(models.TextChoices):
     SQUARE = "square", "Firkantet"
     OVAL = "oval", "Ovalt"
     MIRROR_WITH_LIGHT = "mirrorwithlight", "Speil med lys"
+    INDUSTRIAL = "industrial", "Industriell"
 
 
 class ProductApplications(models.TextChoices):
