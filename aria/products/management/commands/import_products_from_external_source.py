@@ -268,7 +268,7 @@ class Command(BaseCommand):
             sizes_list.remove("*")
 
         created_product = Product.objects.create(
-            name=product_name,
+            name=product_name.title(),
             supplier=supplier,
             status=ProductStatus.DRAFT,
             slug=f"{slugify(supplier.name)}-{slugify(product_name)}",
