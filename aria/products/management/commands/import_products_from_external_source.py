@@ -290,7 +290,7 @@ class Command(BaseCommand):
     def _create_product_category_rels(
         self, categories: "list[str]", product: "Product"
     ) -> None:
-        splitted_category_slugs = categories.split(",")
+        splitted_category_slugs = [category.strip() for category in categories.split(",")]
 
         for slug in splitted_category_slugs:
             cat = SubCategory.objects.get(slug=slug)
