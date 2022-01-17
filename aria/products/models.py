@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 from django.db import models
@@ -8,11 +6,14 @@ from django.utils.translation import gettext_lazy as _
 
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
+from imagekit.models.fields import ProcessedImageField
+
 
 from aria.core.fields import ChoiceArrayField
 from aria.core.models import (
     BaseFileModel,
     BaseHeaderImageModel,
+    BaseImageModel,
     BaseModel,
     BaseThumbnailImageModel,
 )
@@ -432,21 +433,22 @@ class Color(models.Model):
         verbose_name_plural = _("Colors")
 
 
-class Shape(models.Model):
+class Shape(BaseImageModel):
     """
     Shape bellonging to a product. Used for filtering frontend.
     """
 
     @property
-    def size_upload_path(self):
+    def shape_upload_path(self):
         return f"media/products/sizes/{slugify(self.name)}/"
 
-    UPLOAD_PATH = size_upload_path
+    UPLOAD_PATH = shape_upload_path
 
     name = models.CharField(_("Name"), max_length=30, unique=True)
-    image = ImageSpecField(
-        source="thumbnail",
-        processors=[ResizeToFill(80, 80)],
-        format="JPEG",
-        options={"quality": 90},
-    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _("Shape")
+        verbose_name_plural = _("Shapes")

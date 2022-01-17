@@ -122,19 +122,15 @@ class BaseThumbnailImageModel(models.Model):
 
     UPLOAD_PATH: str
 
-    # Options for setting height/width, with defaults
-    WIDTH: int = 380
-    HEIGHT: int = 575
-
     thumbnail = ProcessedImageField(
         upload_to=get_static_asset_upload_path,
-        processors=[ResizeToFill(WIDTH, HEIGHT)],
+        processors=[ResizeToFill(380, 575)],
         format="JPEG",
         options={"quality": 90},
         blank=True,
         null=False,
-        default=f"media/front/default_{WIDTH}x{HEIGHT}.jpeg",
-        help_text=(f"Image must be above {WIDTH}x{HEIGHT}px"),
+        default="media/front/default_380x575.jpeg",
+        help_text=(f"Image must be above 380x575px"),
     )
 
 

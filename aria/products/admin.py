@@ -42,7 +42,7 @@ class SizeAdmin(admin.ModelAdmin):
 
 
 @admin.register(Shape)
-class SizeAdmin(admin.ModelAdmin):
+class ShapeAdmin(admin.ModelAdmin):
     list_display = ("name", "image")
     ordering = ("name",)
 
