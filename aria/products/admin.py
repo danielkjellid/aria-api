@@ -9,6 +9,7 @@ from aria.products.models import (
     ProductSiteState,
     Size,
     Variant,
+    Shape,
 )
 
 
@@ -40,11 +41,17 @@ class SizeAdmin(admin.ModelAdmin):
     ordering = ("width", "height")
 
 
+@admin.register(Shape)
+class SizeAdmin(admin.ModelAdmin):
+    list_display = ("name", "image")
+    ordering = ("name",)
+
+
 @admin.register(Variant)
 class VariantAdmin(admin.ModelAdmin):
     search_fields = ["name"]
     list_display = ("id", "name", "image", "is_standard")
-    list_filter = ("is_standard", )
+    list_filter = ("is_standard",)
     ordering = ["-id"]
 
 
