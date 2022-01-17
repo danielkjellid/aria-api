@@ -75,6 +75,7 @@ class ProductAdmin(admin.ModelAdmin):
         "sites",
         "colors",
         "category",
+        "shapes",
     )
     ordering = ["-id"]
     inlines = [

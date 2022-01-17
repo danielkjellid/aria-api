@@ -115,9 +115,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
     rooms = ChoiceArrayField(
         models.CharField(choices=enums.ProductRooms.choices, max_length=50),
         null=True,
-        help_text=_(
-            "Material product is made of. Want to add more options? Reach out to Daniel."
-        ),
+        help_text=_("Rooms applicable to product."),
     )
     absorption = models.FloatField(null=True, blank=True)
     sites = models.ManyToManyField(Site, related_name="products", blank=True)
