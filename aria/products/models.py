@@ -66,7 +66,8 @@ class Product(BaseModel, BaseThumbnailImageModel):
         ),
         null=True,
     )
-    description = models.TextField(_("Description"))
+    description = models.TextField(_("Description"), null=True)
+    new_description = models.TextField(_("New description"))
     unit = models.IntegerField(
         _("Unit"),
         choices=enums.ProductUnit.choices,
@@ -81,6 +82,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
         ),
     )
     colors = models.ManyToManyField("products.Color", related_name="products")
+    shapes = models.ManyToManyField("products.Shape", related_name="products")
     styles = ChoiceArrayField(
         models.CharField(choices=enums.ProductStyles.choices, max_length=50),
         null=True,
@@ -97,6 +99,20 @@ class Product(BaseModel, BaseThumbnailImageModel):
     )
     materials = ChoiceArrayField(
         models.CharField(choices=enums.ProductMaterials.choices, max_length=50),
+        null=True,
+        help_text=_(
+            "Material product is made of. Want to add more options? Reach out to Daniel."
+        ),
+    )
+    new_materials = ChoiceArrayField(
+        models.CharField(choices=enums.NewProductMaterials.choices, max_length=50),
+        null=True,
+        help_text=_(
+            "Material product is made of. Want to add more options? Reach out to Daniel."
+        ),
+    )
+    rooms = ChoiceArrayField(
+        models.CharField(choices=enums.ProductRooms.choices, max_length=50),
         null=True,
         help_text=_(
             "Material product is made of. Want to add more options? Reach out to Daniel."
@@ -386,7 +402,9 @@ class Variant(BaseThumbnailImageModel):
     is_standard = models.BooleanField(
         _("standard"),
         default=False,
-        help_text=_('designates if a variant should be treated as standard. This is to avoid multiple instances of the same variant. This field will also prevent cleanup deletion of these models.')
+        help_text=_(
+            "designates if a variant should be treated as standard. This is to avoid multiple instances of the same variant. This field will also prevent cleanup deletion of these models."
+        ),
     )
 
     class Meta:
@@ -412,3 +430,23 @@ class Color(models.Model):
     class Meta:
         verbose_name = _("Color")
         verbose_name_plural = _("Colors")
+
+
+class Shape(models.Model):
+    """
+    Shape bellonging to a product. Used for filtering frontend.
+    """
+
+    @property
+    def size_upload_path(self):
+        return f"media/products/sizes/{slugify(self.name)}/"
+
+    UPLOAD_PATH = size_upload_path
+
+    name = models.CharField(_("Name"), max_length=30, unique=True)
+    image = ImageSpecField(
+        source="thumbnail",
+        processors=[ResizeToFill(80, 80)],
+        format="JPEG",
+        options={"quality": 90},
+    )
