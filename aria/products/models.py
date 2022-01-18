@@ -83,7 +83,9 @@ class Product(BaseModel, BaseThumbnailImageModel):
         ),
     )
     colors = models.ManyToManyField("products.Color", related_name="products")
-    shapes = models.ManyToManyField("products.Shape", related_name="products")
+    shapes = models.ManyToManyField(
+        "products.Shape", related_name="products", blank=True
+    )
     styles = ChoiceArrayField(
         models.CharField(choices=enums.ProductStyles.choices, max_length=50),
         null=True,
