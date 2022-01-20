@@ -7,22 +7,25 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sites', '0002_alter_domain_unique'),
-        ('users', '0002_auto_20210324_2355'),
+        ("users", "0002_auto_20210324_2355"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='site',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='sites.site'),
+            model_name="user",
+            name="site",
+            field=models.ForeignKey(
+                null=True, on_delete=django.db.models.deletion.SET_NULL, to="sites.site"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='user',
-            unique_together={('email', 'site')},
+            name="user",
+            unique_together={("email", "site")},
         ),
         migrations.AddConstraint(
-            model_name='user',
-            constraint=models.UniqueConstraint(fields=('email', 'site'), name='email_site_unique_user'),
+            model_name="user",
+            constraint=models.UniqueConstraint(
+                fields=("email", "site"), name="email_site_unique_user"
+            ),
         ),
     ]

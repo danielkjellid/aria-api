@@ -14,205 +14,557 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('product_categorization', '0001_initial'),
-        ('suppliers', '0001_initial'),
-        ('sites', '0002_alter_domain_unique'),
+        ("product_categorization", "0001_initial"),
+        ("suppliers", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Product',
+            name="Product",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, unique=True, verbose_name='Product name')),
-                ('status', models.IntegerField(choices=[(1, 'Draft'), (2, 'Hidden'), (3, 'Available'), (4, 'Discontinued')], default=1, verbose_name='Status')),
-                ('slug', models.SlugField(help_text='A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.', max_length=255, verbose_name='Slug')),
-                ('search_keywords', models.CharField(blank=True, max_length=255, null=True, verbose_name='Search keywords')),
-                ('short_description', models.TextField(help_text='The short description will be displayed on the top part of the product, above the variant selection', verbose_name='Short Description')),
-                ('description', models.TextField(verbose_name='Description')),
-                ('unit', models.IntegerField(choices=[(1, 'm2'), (2, 'stk')], default=1, verbose_name='Unit')),
-                ('vat_rate', models.FloatField(default=0.25, verbose_name='VAT Rate')),
-                ('available_in_special_sizes', models.BooleanField(default=False, help_text='Designates whether the product comes in sizes out of the ordinary', verbose_name='Available in special sizes')),
-                ('absorption', models.FloatField(blank=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Date created')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Date updated')),
-                ('thumbnail', imagekit.models.fields.ProcessedImageField(blank=True, default='media/products/default.jpg', help_text='Image must be above 380x575px', null=True, upload_to=aria.core.utils.get_static_asset_upload_path)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        max_length=255, unique=True, verbose_name="Product name"
+                    ),
+                ),
+                (
+                    "status",
+                    models.IntegerField(
+                        choices=[
+                            (1, "Draft"),
+                            (2, "Hidden"),
+                            (3, "Available"),
+                            (4, "Discontinued"),
+                        ],
+                        default=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                (
+                    "slug",
+                    models.SlugField(
+                        help_text="A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.",
+                        max_length=255,
+                        verbose_name="Slug",
+                    ),
+                ),
+                (
+                    "search_keywords",
+                    models.CharField(
+                        blank=True,
+                        max_length=255,
+                        null=True,
+                        verbose_name="Search keywords",
+                    ),
+                ),
+                (
+                    "short_description",
+                    models.TextField(
+                        help_text="The short description will be displayed on the top part of the product, above the variant selection",
+                        verbose_name="Short Description",
+                    ),
+                ),
+                ("description", models.TextField(verbose_name="Description")),
+                (
+                    "unit",
+                    models.IntegerField(
+                        choices=[(1, "m2"), (2, "stk")], default=1, verbose_name="Unit"
+                    ),
+                ),
+                ("vat_rate", models.FloatField(default=0.25, verbose_name="VAT Rate")),
+                (
+                    "available_in_special_sizes",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates whether the product comes in sizes out of the ordinary",
+                        verbose_name="Available in special sizes",
+                    ),
+                ),
+                ("absorption", models.FloatField(blank=True, null=True)),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="Date created"
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="Date updated"),
+                ),
+                (
+                    "thumbnail",
+                    imagekit.models.fields.ProcessedImageField(
+                        blank=True,
+                        default="media/products/default.jpg",
+                        help_text="Image must be above 380x575px",
+                        null=True,
+                        upload_to=aria.core.utils.get_static_asset_upload_path,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Product',
-                'verbose_name_plural': 'Products',
-                'permissions': (('has_products_list', 'Can list products'), ('has_product_edit', 'Can edit a single product instance'), ('has_product_add', 'Can add a single product instance'), ('has_product_delete', 'Can delete a single product instance')),
+                "verbose_name": "Product",
+                "verbose_name_plural": "Products",
+                "permissions": (
+                    ("has_products_list", "Can list products"),
+                    ("has_product_edit", "Can edit a single product instance"),
+                    ("has_product_add", "Can add a single product instance"),
+                    ("has_product_delete", "Can delete a single product instance"),
+                ),
             },
             managers=[
-                ('objects', django.db.models.manager.Manager()),
-                ('on_site', django.contrib.sites.managers.CurrentSiteManager()),
+                ("objects", django.db.models.manager.Manager()),
+                ("on_site", django.contrib.sites.managers.CurrentSiteManager()),
             ],
         ),
         migrations.CreateModel(
-            name='ProductApplication',
+            name="ProductApplication",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True, verbose_name='Name')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(max_length=100, unique=True, verbose_name="Name"),
+                ),
             ],
             options={
-                'verbose_name': 'Product application',
-                'verbose_name_plural': 'Product applications',
+                "verbose_name": "Product application",
+                "verbose_name_plural": "Product applications",
             },
         ),
         migrations.CreateModel(
-            name='ProductColor',
+            name="ProductColor",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True, verbose_name='Name')),
-                ('color_hex', models.CharField(max_length=7, unique=True, verbose_name='Color code')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(max_length=100, unique=True, verbose_name="Name"),
+                ),
+                (
+                    "color_hex",
+                    models.CharField(
+                        max_length=7, unique=True, verbose_name="Color code"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Product color',
-                'verbose_name_plural': 'Product colors',
+                "verbose_name": "Product color",
+                "verbose_name_plural": "Product colors",
             },
         ),
         migrations.CreateModel(
-            name='ProductMaterial',
+            name="ProductMaterial",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True, verbose_name='Name')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(max_length=100, unique=True, verbose_name="Name"),
+                ),
             ],
             options={
-                'verbose_name': 'Product material',
-                'verbose_name_plural': 'Product materials',
+                "verbose_name": "Product material",
+                "verbose_name_plural": "Product materials",
             },
         ),
         migrations.CreateModel(
-            name='ProductStyle',
+            name="ProductStyle",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True, verbose_name='Name')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(max_length=100, unique=True, verbose_name="Name"),
+                ),
             ],
             options={
-                'verbose_name': 'Product style',
-                'verbose_name_plural': 'Product styles',
+                "verbose_name": "Product style",
+                "verbose_name_plural": "Product styles",
             },
         ),
         migrations.CreateModel(
-            name='Size',
+            name="Size",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('width', models.IntegerField(blank=True, help_text='width in centimeters', null=True, verbose_name='Width')),
-                ('height', models.IntegerField(blank=True, help_text='height in centimeters', null=True, verbose_name='Height')),
-                ('depth', models.IntegerField(blank=True, help_text='depth in centimeters', null=True, verbose_name='Depth')),
-                ('circumference', models.IntegerField(blank=True, help_text='circumference in centimeters', null=True, verbose_name='Circumference')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "width",
+                    models.IntegerField(
+                        blank=True,
+                        help_text="width in centimeters",
+                        null=True,
+                        verbose_name="Width",
+                    ),
+                ),
+                (
+                    "height",
+                    models.IntegerField(
+                        blank=True,
+                        help_text="height in centimeters",
+                        null=True,
+                        verbose_name="Height",
+                    ),
+                ),
+                (
+                    "depth",
+                    models.IntegerField(
+                        blank=True,
+                        help_text="depth in centimeters",
+                        null=True,
+                        verbose_name="Depth",
+                    ),
+                ),
+                (
+                    "circumference",
+                    models.IntegerField(
+                        blank=True,
+                        help_text="circumference in centimeters",
+                        null=True,
+                        verbose_name="Circumference",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Size',
-                'verbose_name_plural': 'Sizes',
-                'ordering': ['width', 'height', 'depth', 'circumference'],
+                "verbose_name": "Size",
+                "verbose_name_plural": "Sizes",
+                "ordering": ["width", "height", "depth", "circumference"],
             },
         ),
         migrations.CreateModel(
-            name='ProductVariantSize',
+            name="ProductVariantSize",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('additional_cost', models.FloatField(verbose_name='Additional cost')),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sizes', to='products.Product')),
-                ('size', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='variant_sizes', to='products.Size')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("additional_cost", models.FloatField(verbose_name="Additional cost")),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="sizes",
+                        to="products.Product",
+                    ),
+                ),
+                (
+                    "size",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="variant_sizes",
+                        to="products.Size",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Product size',
-                'verbose_name_plural': 'Product sizes',
+                "verbose_name": "Product size",
+                "verbose_name_plural": "Product sizes",
             },
         ),
         migrations.CreateModel(
-            name='ProductVariant',
+            name="ProductVariant",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, verbose_name='Product variant name')),
-                ('status', models.IntegerField(choices=[(1, 'Draft'), (2, 'Hidden'), (3, 'Available'), (4, 'Discontinued')], default=1, verbose_name='Status')),
-                ('thumbnail', imagekit.models.fields.ProcessedImageField(blank=True, help_text='Image must be above 380x575px', null=True, upload_to=aria.core.utils.get_static_asset_upload_path)),
-                ('additional_cost', models.FloatField(verbose_name='Additional cost')),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='variants', to='products.Product')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        max_length=255, verbose_name="Product variant name"
+                    ),
+                ),
+                (
+                    "status",
+                    models.IntegerField(
+                        choices=[
+                            (1, "Draft"),
+                            (2, "Hidden"),
+                            (3, "Available"),
+                            (4, "Discontinued"),
+                        ],
+                        default=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                (
+                    "thumbnail",
+                    imagekit.models.fields.ProcessedImageField(
+                        blank=True,
+                        help_text="Image must be above 380x575px",
+                        null=True,
+                        upload_to=aria.core.utils.get_static_asset_upload_path,
+                    ),
+                ),
+                ("additional_cost", models.FloatField(verbose_name="Additional cost")),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="variants",
+                        to="products.Product",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Product variant',
-                'verbose_name_plural': 'Product variants',
+                "verbose_name": "Product variant",
+                "verbose_name_plural": "Product variants",
             },
         ),
         migrations.CreateModel(
-            name='ProductSiteState',
+            name="ProductSiteState",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('gross_price', models.FloatField(verbose_name='Gross price')),
-                ('display_price', models.BooleanField(default=True, help_text='Designates whether the product price is displayed', verbose_name='Display price to customer')),
-                ('can_be_purchased_online', models.BooleanField(default=False, help_text='Designates whether the product can be purchased and shipped', verbose_name='Can be purchased online')),
-                ('can_be_picked_up', models.BooleanField(default=False, help_text='Designates whether the product can be purchased and picked up in store', verbose_name='Can be picked up')),
-                ('supplier_purchase_price', models.FloatField(default=0.0, verbose_name='Supplier purchase price')),
-                ('supplier_shipping_cost', models.FloatField(default=0.0, verbose_name='Shipping cost')),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='product_site_state', to='products.Product')),
-                ('site', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='site_state', to='sites.Site')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("gross_price", models.FloatField(verbose_name="Gross price")),
+                (
+                    "display_price",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Designates whether the product price is displayed",
+                        verbose_name="Display price to customer",
+                    ),
+                ),
+                (
+                    "can_be_purchased_online",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates whether the product can be purchased and shipped",
+                        verbose_name="Can be purchased online",
+                    ),
+                ),
+                (
+                    "can_be_picked_up",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates whether the product can be purchased and picked up in store",
+                        verbose_name="Can be picked up",
+                    ),
+                ),
+                (
+                    "supplier_purchase_price",
+                    models.FloatField(
+                        default=0.0, verbose_name="Supplier purchase price"
+                    ),
+                ),
+                (
+                    "supplier_shipping_cost",
+                    models.FloatField(default=0.0, verbose_name="Shipping cost"),
+                ),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="product_site_state",
+                        to="products.Product",
+                    ),
+                ),
+                (
+                    "site",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="site_state",
+                        to="sites.Site",
+                    ),
+                ),
             ],
             managers=[
-                ('objects', django.db.models.manager.Manager()),
-                ('on_site', django.contrib.sites.managers.CurrentSiteManager()),
+                ("objects", django.db.models.manager.Manager()),
+                ("on_site", django.contrib.sites.managers.CurrentSiteManager()),
             ],
         ),
         migrations.CreateModel(
-            name='ProductImage',
+            name="ProductImage",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image', models.ImageField(blank=True, help_text='Image must be above 3072x940px', null=True, upload_to='some/image/path', verbose_name='Image')),
-                ('apply_filter', models.BooleanField(default=False, help_text='Apply filter to image if the image is light to maintain an acceptable contrast', verbose_name='Apply filter')),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='images', to='products.Product')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "image",
+                    models.ImageField(
+                        blank=True,
+                        help_text="Image must be above 3072x940px",
+                        null=True,
+                        upload_to="some/image/path",
+                        verbose_name="Image",
+                    ),
+                ),
+                (
+                    "apply_filter",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Apply filter to image if the image is light to maintain an acceptable contrast",
+                        verbose_name="Apply filter",
+                    ),
+                ),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="images",
+                        to="products.Product",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Product image',
-                'verbose_name_plural': 'Product images',
+                "verbose_name": "Product image",
+                "verbose_name_plural": "Product images",
             },
         ),
         migrations.CreateModel(
-            name='ProductFile',
+            name="ProductFile",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, verbose_name='Product file name')),
-                ('file', models.FileField(upload_to=aria.core.utils.get_static_asset_upload_path, verbose_name='File')),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='files', to='products.Product')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(max_length=255, verbose_name="Product file name"),
+                ),
+                (
+                    "file",
+                    models.FileField(
+                        upload_to=aria.core.utils.get_static_asset_upload_path,
+                        verbose_name="File",
+                    ),
+                ),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="files",
+                        to="products.Product",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Product file',
-                'verbose_name_plural': 'Product files',
+                "verbose_name": "Product file",
+                "verbose_name_plural": "Product files",
             },
         ),
         migrations.AddField(
-            model_name='product',
-            name='applications',
-            field=models.ManyToManyField(related_name='product_application', to='products.ProductApplication'),
+            model_name="product",
+            name="applications",
+            field=models.ManyToManyField(
+                related_name="product_application", to="products.ProductApplication"
+            ),
         ),
         migrations.AddField(
-            model_name='product',
-            name='category',
-            field=models.ManyToManyField(related_name='products', to='product_categorization.SubCategory'),
+            model_name="product",
+            name="category",
+            field=models.ManyToManyField(
+                related_name="products", to="product_categorization.SubCategory"
+            ),
         ),
         migrations.AddField(
-            model_name='product',
-            name='colors',
-            field=models.ManyToManyField(related_name='product_color', to='products.ProductColor'),
+            model_name="product",
+            name="colors",
+            field=models.ManyToManyField(
+                related_name="product_color", to="products.ProductColor"
+            ),
         ),
         migrations.AddField(
-            model_name='product',
-            name='materials',
-            field=models.ManyToManyField(related_name='product_material', to='products.ProductMaterial'),
+            model_name="product",
+            name="materials",
+            field=models.ManyToManyField(
+                related_name="product_material", to="products.ProductMaterial"
+            ),
         ),
         migrations.AddField(
-            model_name='product',
-            name='sites',
-            field=models.ManyToManyField(blank=True, related_name='product_site', to='sites.Site'),
+            model_name="product",
+            name="sites",
+            field=models.ManyToManyField(
+                blank=True, related_name="product_site", to="sites.Site"
+            ),
         ),
         migrations.AddField(
-            model_name='product',
-            name='styles',
-            field=models.ManyToManyField(related_name='product_style', to='products.ProductStyle'),
+            model_name="product",
+            name="styles",
+            field=models.ManyToManyField(
+                related_name="product_style", to="products.ProductStyle"
+            ),
         ),
         migrations.AddField(
-            model_name='product',
-            name='supplier',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='supplier_product', to='suppliers.Supplier'),
+            model_name="product",
+            name="supplier",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="supplier_product",
+                to="suppliers.Supplier",
+            ),
         ),
     ]

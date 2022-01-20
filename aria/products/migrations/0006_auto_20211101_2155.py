@@ -7,79 +7,119 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sites', '0002_alter_domain_unique'),
-        ('suppliers', '0003_auto_20211023_1758'),
-        ('products', '0005_auto_20211101_1236'),
+        ("suppliers", "0003_auto_20211023_1758"),
+        ("products", "0005_auto_20211101_1236"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ProductSize',
+            name="ProductSize",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('additional_cost', models.FloatField(default=0.0, verbose_name='Additional cost')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "additional_cost",
+                    models.FloatField(default=0.0, verbose_name="Additional cost"),
+                ),
             ],
             options={
-                'verbose_name': 'Product size',
-                'verbose_name_plural': 'Product sizes',
+                "verbose_name": "Product size",
+                "verbose_name_plural": "Product sizes",
             },
         ),
         migrations.RemoveField(
-            model_name='productvariantsize',
-            name='product',
+            model_name="productvariantsize",
+            name="product",
         ),
         migrations.RemoveField(
-            model_name='productvariantsize',
-            name='size',
+            model_name="productvariantsize",
+            name="size",
         ),
         migrations.AlterField(
-            model_name='product',
-            name='colors',
-            field=models.ManyToManyField(related_name='products', to='products.ProductColor'),
+            model_name="product",
+            name="colors",
+            field=models.ManyToManyField(
+                related_name="products", to="products.ProductColor"
+            ),
         ),
         migrations.AlterField(
-            model_name='product',
-            name='sites',
-            field=models.ManyToManyField(blank=True, related_name='products', to='sites.Site'),
+            model_name="product",
+            name="sites",
+            field=models.ManyToManyField(
+                blank=True, related_name="products", to="sites.Site"
+            ),
         ),
         migrations.AlterField(
-            model_name='product',
-            name='supplier',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='products', to='suppliers.Supplier'),
+            model_name="product",
+            name="supplier",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="products",
+                to="suppliers.Supplier",
+            ),
         ),
         migrations.AlterField(
-            model_name='productsitestate',
-            name='product',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='site_states', to='products.Product'),
+            model_name="productsitestate",
+            name="product",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="site_states",
+                to="products.Product",
+            ),
         ),
         migrations.AlterField(
-            model_name='productsitestate',
-            name='site',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='states', to='sites.Site'),
+            model_name="productsitestate",
+            name="site",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="states",
+                to="sites.Site",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='size',
-            constraint=models.UniqueConstraint(fields=('width', 'height'), name='one_height_width_combo'),
+            model_name="size",
+            constraint=models.UniqueConstraint(
+                fields=("width", "height"), name="one_height_width_combo"
+            ),
         ),
         migrations.AddConstraint(
-            model_name='size',
-            constraint=models.UniqueConstraint(fields=('width', 'height', 'depth'), name='one_height_width_depth_combo'),
+            model_name="size",
+            constraint=models.UniqueConstraint(
+                fields=("width", "height", "depth"), name="one_height_width_depth_combo"
+            ),
         ),
         migrations.DeleteModel(
-            name='ProductVariantSize',
+            name="ProductVariantSize",
         ),
         migrations.AddField(
-            model_name='productsize',
-            name='product',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sizes', to='products.Product'),
+            model_name="productsize",
+            name="product",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="sizes",
+                to="products.Product",
+            ),
         ),
         migrations.AddField(
-            model_name='productsize',
-            name='size',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='product', to='products.Size'),
+            model_name="productsize",
+            name="size",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="product",
+                to="products.Size",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='productsize',
-            constraint=models.UniqueConstraint(fields=('product', 'size'), name='unique_product_size'),
+            model_name="productsize",
+            constraint=models.UniqueConstraint(
+                fields=("product", "size"), name="unique_product_size"
+            ),
         ),
     ]

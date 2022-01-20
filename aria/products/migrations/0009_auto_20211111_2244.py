@@ -9,58 +9,145 @@ import imagekit.models.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sites', '0002_alter_domain_unique'),
-        ('suppliers', '0003_auto_20211023_1758'),
-        ('products', '0008_auto_20211110_1420'),
+        ("suppliers", "0003_auto_20211023_1758"),
+        ("products", "0008_auto_20211110_1420"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Variant',
+            name="Variant",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('thumbnail', imagekit.models.fields.ProcessedImageField(blank=True, default='media/products/default.jpg', help_text='Image must be above 380x575px', null=True, upload_to=aria.core.utils.get_static_asset_upload_path)),
-                ('name', models.CharField(max_length=255, verbose_name='Product variant name')),
-                ('status', models.IntegerField(choices=[(1, 'Draft'), (2, 'Hidden'), (3, 'Available'), (4, 'Discontinued')], default=1, verbose_name='Status')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "thumbnail",
+                    imagekit.models.fields.ProcessedImageField(
+                        blank=True,
+                        default="media/products/default.jpg",
+                        help_text="Image must be above 380x575px",
+                        null=True,
+                        upload_to=aria.core.utils.get_static_asset_upload_path,
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        max_length=255, verbose_name="Product variant name"
+                    ),
+                ),
+                (
+                    "status",
+                    models.IntegerField(
+                        choices=[
+                            (1, "Draft"),
+                            (2, "Hidden"),
+                            (3, "Available"),
+                            (4, "Discontinued"),
+                        ],
+                        default=1,
+                        verbose_name="Status",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Variant',
-                'verbose_name_plural': 'Variants',
+                "verbose_name": "Variant",
+                "verbose_name_plural": "Variants",
             },
         ),
         migrations.AlterModelManagers(
-            name='productfile',
-            managers=[
-            ],
+            name="productfile",
+            managers=[],
         ),
         migrations.AlterField(
-            model_name='product',
-            name='supplier',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='products', to='suppliers.Supplier'),
+            model_name="product",
+            name="supplier",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="products",
+                to="suppliers.Supplier",
+            ),
         ),
         migrations.AlterField(
-            model_name='productsitestate',
-            name='site',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='states', to='sites.Site'),
+            model_name="productsitestate",
+            name="site",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="states",
+                to="sites.Site",
+            ),
         ),
         migrations.CreateModel(
-            name='ProductOptions',
+            name="ProductOptions",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created time')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='modified time')),
-                ('price', models.DecimalField(decimal_places=2, default=0.0, max_digits=8)),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='options', to='products.Product')),
-                ('size', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='product_options', to='products.Size')),
-                ('variant', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='product_options', to='products.Variant')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="created time"
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="modified time"),
+                ),
+                (
+                    "price",
+                    models.DecimalField(decimal_places=2, default=0.0, max_digits=8),
+                ),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="options",
+                        to="products.Product",
+                    ),
+                ),
+                (
+                    "size",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="product_options",
+                        to="products.Size",
+                    ),
+                ),
+                (
+                    "variant",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="product_options",
+                        to="products.Variant",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Product option',
-                'verbose_name_plural': 'Product options',
+                "verbose_name": "Product option",
+                "verbose_name_plural": "Product options",
             },
         ),
         migrations.AddConstraint(
-            model_name='productoptions',
-            constraint=models.UniqueConstraint(fields=('product', 'variant', 'size'), name='one_option_combo_per_variant_size'),
+            model_name="productoptions",
+            constraint=models.UniqueConstraint(
+                fields=("product", "variant", "size"),
+                name="one_option_combo_per_variant_size",
+            ),
         ),
     ]
