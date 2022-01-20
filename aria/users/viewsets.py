@@ -39,7 +39,7 @@ class UsersListAPIView(generics.ListAPIView):
     Returns list of users.
     """
 
-    queryset = User.on_site.all().order_by("id")
+    queryset = User.objects.all().order_by("id")
     pagination_class = PageNumberSetPagination
     serializer_class = UsersSerializer
     filter_backends = [filters.SearchFilter]
@@ -57,7 +57,7 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     Returns a single user instance
     """
 
-    queryset = User.on_site.all()
+    queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAdminUser, HasUserOrGroupPermission)
     required_permissions = {
