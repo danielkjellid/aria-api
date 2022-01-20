@@ -27,10 +27,8 @@ class Supplier(models.Model):
         default=True,
         help_text=_("Designates whether the category should be treated as active."),
     )
-    sites = models.ManyToManyField(Site, related_name="suppliers", blank=True)
 
     objects = models.Manager()
-    on_site = CurrentSiteManager()
 
     class Meta:
         verbose_name = _("supplier")
