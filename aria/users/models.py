@@ -22,7 +22,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(
         _("email address"),
-        unique=False,
+        unique=True,
     )
     first_name = models.CharField(
         _("first name"),

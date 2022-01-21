@@ -52,10 +52,8 @@ class Category(BaseModel, BaseHeaderImageModel):
         default=True,
         help_text=_("Designates whether the category should be treated as active."),
     )
-    sites = models.ManyToManyField(Site, related_name="categories", blank=True)
 
     objects = models.Manager()
-    on_site = CurrentSiteManager()
 
     class Meta:
         verbose_name = _("Category")
@@ -91,10 +89,8 @@ class SubCategory(models.Model):
         default=True,
         help_text=_("Designates whether the category should be treated as active."),
     )
-    sites = models.ManyToManyField(Site, related_name="subcategories", blank=True)
 
     objects = models.Manager()
-    on_site = CurrentSiteManager()
 
     class Meta:
         verbose_name = _("Subcategory")
