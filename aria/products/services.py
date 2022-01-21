@@ -37,7 +37,9 @@ def delete_related_variants(*, instance: "ProductOption") -> None:
     """
 
     # Get variants related to product option,
-    related_variants = Variant.objects.filter(product_options=instance, is_standard=False).distinct("pk")
+    related_variants = Variant.objects.filter(
+        product_options=instance, is_standard=False
+    ).distinct("pk")
 
     for variant in related_variants:
         # Check if there are other products thats linked to the same

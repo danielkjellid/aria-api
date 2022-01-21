@@ -1,13 +1,7 @@
 from rest_framework import serializers
 
 from aria.core.serializers import BaseHeaderImageSerializer
-from aria.products.models import (
-    Product,
-    ProductFile,
-    ProductOption,
-    Size,
-    Variant,
-)
+from aria.products.models import Product, ProductFile, ProductOption, Size, Variant
 from aria.products.selectors import get_related_unique_variants
 
 

@@ -6,9 +6,9 @@ from aria.products.models import (
     ProductFile,
     ProductImage,
     ProductOption,
+    Shape,
     Size,
     Variant,
-    Shape,
 )
 
 

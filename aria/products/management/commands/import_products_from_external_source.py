@@ -11,13 +11,7 @@ import requests
 
 from aria.product_categorization.models import SubCategory
 from aria.products.enums import ProductStatus
-from aria.products.models import (
-    Product,
-    ProductFile,
-    ProductOption,
-    Size,
-    Variant,
-)
+from aria.products.models import Product, ProductFile, ProductOption, Size, Variant
 from aria.suppliers.models import Supplier
 
 
