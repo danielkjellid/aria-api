@@ -1,5 +1,3 @@
-from django.contrib.sites.managers import CurrentSiteManager
-from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
@@ -52,10 +50,8 @@ class Category(BaseModel, BaseHeaderImageModel):
         default=True,
         help_text=_("Designates whether the category should be treated as active."),
     )
-    sites = models.ManyToManyField(Site, related_name="categories", blank=True)
 
     objects = models.Manager()
-    on_site = CurrentSiteManager()
 
     class Meta:
         verbose_name = _("Category")
@@ -97,10 +93,8 @@ class SubCategory(BaseModel, BaseHeaderImageModel, BaseListImageModel):
         default=True,
         help_text=_("Designates whether the category should be treated as active."),
     )
-    sites = models.ManyToManyField(Site, related_name="subcategories", blank=True)
 
     objects = models.Manager()
-    on_site = CurrentSiteManager()
 
     class Meta:
         verbose_name = _("Subcategory")

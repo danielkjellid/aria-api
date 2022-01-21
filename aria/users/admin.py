@@ -49,7 +49,6 @@ class UserAdmin(UserAdmin):
                     "allow_personalization",
                     "allow_third_party_personalization",
                     "acquisition_source",
-                    "site",
                 )
             },
         ),

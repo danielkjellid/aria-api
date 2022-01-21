@@ -1,8 +1,6 @@
 import random
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.contrib.sites.managers import CurrentSiteManager
-from django.contrib.sites.models import Site
 from django.core.mail import send_mail
 from django.db import models
 from django.utils import timezone
@@ -22,7 +20,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(
         _("email address"),
-        unique=False,
+        unique=True,
     )
     first_name = models.CharField(
         _("first name"),
@@ -109,23 +107,15 @@ class User(AbstractBaseUser, PermissionsMixin):
             "Designates whether the user is automatically granted all permissions."
         ),
     )
-    site = models.ForeignKey(Site, on_delete=models.SET_NULL, null=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     objects = UserManager()
-    on_site = CurrentSiteManager()
 
     class Meta:
         verbose_name = _("user")
         verbose_name_plural = _("users")
-        unique_together = ["email", "site"]
-        constraints = [
-            models.UniqueConstraint(
-                fields=["email", "site"], name=("email_site_unique_user")
-            )
-        ]
         permissions = (
             ("has_users_list", "Can list users"),
             ("has_user_edit", "Can edit a single user instance"),

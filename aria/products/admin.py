@@ -6,10 +6,9 @@ from aria.products.models import (
     ProductFile,
     ProductImage,
     ProductOption,
-    ProductSiteState,
+    Shape,
     Size,
     Variant,
-    Shape,
 )
 
 
@@ -23,10 +22,6 @@ class ProductFileInline(admin.StackedInline):
 
 class ProductOptionsInline(admin.StackedInline):
     model = ProductOption
-
-
-class ProductSiteStateInline(admin.StackedInline):
-    model = ProductSiteState
 
 
 @admin.register(Color)
@@ -72,7 +67,6 @@ class ProductAdmin(admin.ModelAdmin):
         "category",
     )
     filter_horizontal = (
-        "sites",
         "colors",
         "category",
         "categories",
@@ -81,7 +75,6 @@ class ProductAdmin(admin.ModelAdmin):
     exclude = ("styles", "applications", "materials", "categories")
     ordering = ["-id"]
     inlines = [
-        ProductSiteStateInline,
         ProductImageInline,
         ProductFileInline,
         ProductOptionsInline,
