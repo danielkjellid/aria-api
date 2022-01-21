@@ -113,7 +113,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "aria.core.middleware.DynamicSiteDomainMiddleware",
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -201,7 +200,7 @@ IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = "imagekit.cachefiles.strategies.Optimistic
 AUTH_USER_MODEL = "users.User"
 
 AUTHENTICATION_BACKENDS = [
-    "aria.core.authentication.AuthBackend",
+    "django.contrib.auth.backends.ModelBackend",
 ]
 
 # Password validation
