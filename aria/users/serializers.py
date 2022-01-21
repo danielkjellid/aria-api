@@ -35,18 +35,6 @@ class UserNoteSerializer(serializers.ModelSerializer):
         fields = ("id", "profile", "note", "updated_at")
 
 
-class UsersSerializer(serializers.ModelSerializer):
-    """
-    A serializer to display all users registered in the app
-    """
-
-    profile = UserProfileSerializer(source="*")
-
-    class Meta:
-        model = User
-        fields = ("id", "profile", "email", "is_active", "date_joined")
-
-
 class UserSerializer(serializers.ModelSerializer):
     """
     A serializer to retrive a specific user instance

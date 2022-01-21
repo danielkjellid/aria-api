@@ -9,14 +9,17 @@ from aria.users.viewsets import (
     UserCreateAPIView,
     UserDetailAPIView,
     UserNoteAPIView,
-    UsersListAPIView,
+    UserListAPI,
 )
 
 urlpatterns = [
+    # Endpoint for getting all users
+    path("", UserListAPI.as_view(), name="user-list"),
+    # -------------------
+    # Not yet refactored
+    # ------------------
     # endpoint for getting info about request user
     path("user/", RequestUserRetrieveAPIView.as_view(), name="request_user"),
-    # endpoint for getting all users
-    path("users/", UsersListAPIView.as_view(), name="users_list"),
     # endpoint for getting a single user instance
     path("users/<int:pk>/", UserDetailAPIView.as_view(), name="user_detail"),
     path("users/<int:pk>/notes/", UserNoteAPIView.as_view(), name="user_notes"),

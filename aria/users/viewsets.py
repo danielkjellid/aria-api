@@ -6,13 +6,21 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import serializers
+
+from django.http import HttpRequest
 
 from aria.audit_logs.models import LogEntry
-from aria.core.pagination import PageNumberSetPagination
+from aria.core.pagination import (
+    LimitOffsetPagination,
+    PageNumberSetPagination,
+    get_paginated_response,
+)
 from aria.core.permissions import HasUserOrGroupPermission
 from aria.notes.models import NoteEntry
 from aria.notes.serializers import CreateNoteSerializer, UpdateNoteSerializer
 from aria.users.models import User
+from aria.users.selectors import user_list
 from aria.users.serializers import (
     AccountVerificationConfirmSerializer,
     AccountVerificationSerializer,
@@ -22,7 +30,6 @@ from aria.users.serializers import (
     UserCreateSerializer,
     UserNoteSerializer,
     UserSerializer,
-    UsersSerializer,
 )
 
 sensitive_post_parameters_m = method_decorator(
@@ -32,22 +39,48 @@ sensitive_post_parameters_m = method_decorator(
 )
 
 
-class UsersListAPIView(generics.ListAPIView):
+class UserListAPI(APIView):
     """
-    View for listing all users in the application.
+    Endpoint for listing all registered users.
 
-    Returns list of users.
+    Returns a list of users.
     """
 
-    queryset = User.objects.all().order_by("id")
-    pagination_class = PageNumberSetPagination
-    serializer_class = UsersSerializer
-    filter_backends = [filters.SearchFilter]
-    search_fields = ("first_name", "last_name", "email", "phone_number")
     permission_classes = (IsAdminUser, HasUserOrGroupPermission)
     required_permissions = {
         "GET": ["has_users_list"],
     }
+
+    class Pagination(LimitOffsetPagination):
+        default_limit = 18
+
+    class FilterSerializer(serializers.Serializer):
+        email = serializers.EmailField(required=False)
+        first_name = serializers.CharField(required=False)
+        last_name = serializers.CharField(required=False)
+        phone_number = serializers.CharField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        email = serializers.EmailField()
+        is_active = serializers.NullBooleanField()
+        date_joined = serializers.DateTimeField()
+
+    def get(self, request: HttpRequest) -> list["User"]:
+        # Make sure the filters are valid, if passed
+        filters_serializer = self.FilterSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        # Get all users in the app
+        users = user_list(filters=filters_serializer.validated_data).order_by("id")
+
+        return get_paginated_response(
+            pagination_class=self.Pagination,
+            serializer_class=self.OutputSerializer,
+            queryset=users,
+            request=request,
+            view=self,
+        )
 
 
 class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
