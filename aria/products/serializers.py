@@ -1,14 +1,7 @@
 from rest_framework import serializers
 
 from aria.core.serializers import BaseHeaderImageSerializer
-from aria.products.models import (
-    Product,
-    ProductFile,
-    ProductOption,
-    ProductSiteState,
-    Size,
-    Variant,
-)
+from aria.products.models import Product, ProductFile, ProductOption, Size, Variant
 from aria.products.selectors import get_related_unique_variants
 
 
@@ -91,8 +84,13 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
     styles = serializers.SerializerMethodField()
     applications = serializers.SerializerMethodField()
     materials = serializers.SerializerMethodField()
-    site_state = serializers.SerializerMethodField()
     variants = serializers.SerializerMethodField()
+    from_price = serializers.DecimalField(
+        source="get_lowest_option_price",
+        decimal_places=2,
+        coerce_to_string=True,
+        max_digits=8,
+    )
 
     class Meta:
         model = Product
@@ -108,17 +106,13 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
             "materials",
             "thumbnail",
             "variants",
-            "site_state",
+            "from_price",
+            "display_price",
         )
         read_only_fields = fields
 
     def get_unit(self, product):
         return product.get_unit_display()
-
-    def get_site_state(self, product):
-        site_state = ProductSiteState.on_site.get(product=product)
-
-        return ProductSiteStateSerializer(site_state, read_only=True).data
 
     def get_styles(self, product):
         styles = product.get_styles_display()
@@ -143,29 +137,6 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
         return VariantSerializer(product_variants, read_only=True, many=True).data
 
 
-class ProductSiteStateSerializer(serializers.ModelSerializer):
-
-    gross_price = serializers.SerializerMethodField()
-
-    class Meta:
-        model = ProductSiteState
-        fields = (
-            "gross_price",
-            "display_price",
-            "can_be_purchased_online",
-            "can_be_picked_up",
-        )
-        read_only_fields = fields
-
-    def get_gross_price(self, instance):
-        """
-        Format price to always have two decimals
-        """
-        formatted_price = "%0.2f" % (instance.gross_price)
-
-        return formatted_price.strip()
-
-
 class ProductSerializer(serializers.ModelSerializer):
     """
     A serializer to get a single product instance
@@ -183,7 +154,6 @@ class ProductSerializer(serializers.ModelSerializer):
     origin_country = serializers.StringRelatedField(
         source="supplier.origin_country", read_only=True
     )
-    site_state = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -205,7 +175,6 @@ class ProductSerializer(serializers.ModelSerializer):
             "variants",
             "files",
             "origin_country",
-            "site_state",
         )
         read_only_fields = fields
 
@@ -227,11 +196,6 @@ class ProductSerializer(serializers.ModelSerializer):
             .order_by("width", "height", "depth", "circumference")
         )
         return SizeSerializer(sizes, read_only=True, many=True).data
-
-    def get_site_state(self, product):
-        site_state = ProductSiteState.on_site.get(product=product)
-
-        return ProductSiteStateSerializer(site_state, read_only=True).data
 
     def get_styles(self, product):
         styles = product.get_styles_display()
@@ -270,16 +234,24 @@ class ProductListSerializer(serializers.ModelSerializer):
         source="get_status_display"
     )  # get display name of integer choice
     variants = serializers.SerializerMethodField()
-    site_state = serializers.SerializerMethodField()
+    from_price = serializers.DecimalField(
+        source="get_lowest_option_price",
+        decimal_places=2,
+        coerce_to_string=True,
+        max_digits=8,
+    )
 
     class Meta:
         model = Product
-        fields = ("id", "product", "unit", "status", "variants", "site_state")
-
-    def get_site_state(self, product):
-        site_state = ProductSiteState.on_site.get(product=product)
-
-        return ProductSiteStateSerializer(site_state, read_only=True).data
+        fields = (
+            "id",
+            "product",
+            "unit",
+            "status",
+            "variants",
+            "from_price",
+            "display_price",
+        )
 
     def get_variants(self, product):
         product_variants = get_related_unique_variants(product=product)
