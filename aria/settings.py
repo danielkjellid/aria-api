@@ -39,9 +39,6 @@ SECRET_KEY = env.str("DJANGO_SECRET_KEY", default="dev-env-secret-9fprvf3c@7x4ur
 
 SILENCED_SYSTEM_CHECKS = env.list("SILENCED_SYSTEM_CHECKS", default=[])
 
-DEFAULT_SITE_ID = 1
-SITE_ID = DEFAULT_SITE_ID
-
 ROOT_URLCONF = "aria.urls"
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
@@ -113,7 +110,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "aria.core.middleware.DynamicSiteDomainMiddleware",
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -130,7 +126,6 @@ DJANGO_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.sites",
     "django.contrib.staticfiles",
 ]
 
@@ -203,7 +198,7 @@ IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = "imagekit.cachefiles.strategies.Optimistic
 AUTH_USER_MODEL = "users.User"
 
 AUTHENTICATION_BACKENDS = [
-    "aria.core.authentication.AuthBackend",
+    "django.contrib.auth.backends.ModelBackend",
 ]
 
 # Password validation
