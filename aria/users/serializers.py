@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import (
@@ -162,13 +161,9 @@ class UserCreateSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def validate(self, data):
-        # add site property to data
-        data["site"] = Site.objects.get(pk=settings.SITE_ID)
-
         email = data.get("email")
         password = data.get("password")
         password2 = data.get("password2")
-        site = data.get("site")
 
         # check if passwords are equal
         if password != password2:
@@ -177,18 +172,10 @@ class UserCreateSerializer(serializers.ModelSerializer):
             )
 
         # check if email is unique
-        if email and User.on_site.filter(email=email).exists():
+        if email and User.objects.filter(email=email).exists():
             raise serializers.ValidationError(
                 {"email": "E-post adressen eksiterer allerede."}
             )
-
-        # check if site exists
-        if not site:
-            raise serializers.ValidationError(
-                {"site": "Error getting site, please contact an admin"}
-            )
-
-        return data
 
     def create(self, validated_data):
         # remove password and password 2 from data
@@ -259,7 +246,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
         try:
             uid = force_text(uid_decoder(attrs["uid"]))
-            self.user = User.on_site.get(pk=uid)
+            self.user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             raise serializers.ValidationError({"uid": ["Invalid value"]})
 
@@ -291,7 +278,7 @@ class AccountVerificationSerializer(serializers.Serializer):
         and that the user in question is active
         """
         try:
-            self.user = User.on_site.get(email__iexact=value)
+            self.user = User.objects.get(email__iexact=value)
             if self.user.is_active:
                 return value
         except User.DoesNotExist:
@@ -313,15 +300,13 @@ class AccountVerificationSerializer(serializers.Serializer):
         return data
 
     def save(self):
-        current_site = Site.objects.get_current()
-
         # constructor for verification email
         # sends uid and token in email
         user_verification_email = render_to_string(
             "email/verify_account.html",
             {
                 "protocol": "https",
-                "domain": current_site.domain,
+                "domain": "https://flis.no",
                 "user": self.user,
                 "uid": uid_encoder(force_bytes(self.user.pk)),
                 "token": default_token_generator.make_token(self.user),
@@ -330,8 +315,7 @@ class AccountVerificationSerializer(serializers.Serializer):
 
         # use email_user method and send verification email
         self.user.email_user(
-            "%s %s" % ("Bekreft kontoen din på", current_site.name),
-            "%s %s" % ("Bekreft kontoen din på", current_site.name),
+            "Bekreft kontoen din på Flishuset",
             html_message=user_verification_email,
         )
 
@@ -344,7 +328,7 @@ class AccountVerificationConfirmSerializer(serializers.Serializer):
 
         try:
             uid = force_text(uid_decoder(attrs["uid"]))
-            self.user = User.on_site.get(pk=uid)
+            self.user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             raise serializers.ValidationError({"uid": ["Invalid value"]})
 
