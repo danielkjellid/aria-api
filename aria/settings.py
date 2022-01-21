@@ -232,6 +232,17 @@ DATABASES = {
     "default": env.db(),
 }
 
+############################
+# Query warnings/tresholds #
+############################
+
+LOG_SQL = env.bool("LOG_SQL", default=False)
+
+if DEBUG:
+    QUERY_COUNT_WARNING_THRESHOLD = 3
+    QUERY_DURATION_WARNING_THRESHOLD = 300  # in ms
+    MIDDLEWARE = ["aria.core.middleware.QueryCountWarningMiddleware"] + MIDDLEWARE
+
 ##########
 # Caches #
 ##########
