@@ -249,7 +249,15 @@ class ProductListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ("id", "product", "unit", "status", "variants", "site_state")
+        fields = (
+            "id",
+            "product",
+            "unit",
+            "status",
+            "variants",
+            "from_price",
+            "display_price",
+        )
 
     def get_variants(self, product):
         product_variants = get_related_unique_variants(product=product)

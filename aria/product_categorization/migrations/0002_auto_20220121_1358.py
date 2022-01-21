@@ -6,26 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('product_categorization', '0001_initial'),
+        ("product_categorization", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelManagers(
-            name='category',
-            managers=[
-            ],
+            name="category",
+            managers=[],
         ),
         migrations.AlterModelManagers(
-            name='subcategory',
-            managers=[
-            ],
-        ),
-        migrations.RemoveField(
-            model_name='category',
-            name='sites',
-        ),
-        migrations.RemoveField(
-            model_name='subcategory',
-            name='sites',
+            name="subcategory",
+            managers=[],
         ),
     ]

@@ -6,30 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0001_initial'),
+        ("users", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelManagers(
-            name='user',
-            managers=[
-            ],
-        ),
-        migrations.RemoveConstraint(
-            model_name='user',
-            name='email_site_unique_user',
+            name="user",
+            managers=[],
         ),
         migrations.AlterField(
-            model_name='user',
-            name='email',
-            field=models.EmailField(max_length=254, unique=True, verbose_name='email address'),
+            model_name="user",
+            name="email",
+            field=models.EmailField(
+                max_length=254, unique=True, verbose_name="email address"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='user',
+            name="user",
             unique_together=set(),
-        ),
-        migrations.RemoveField(
-            model_name='user',
-            name='site',
         ),
     ]

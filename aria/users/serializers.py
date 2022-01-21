@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import (
@@ -301,8 +300,6 @@ class AccountVerificationSerializer(serializers.Serializer):
         return data
 
     def save(self):
-        current_site = Site.objects.get_current()
-
         # constructor for verification email
         # sends uid and token in email
         user_verification_email = render_to_string(

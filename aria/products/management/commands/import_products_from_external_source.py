@@ -2,7 +2,6 @@ from decimal import Decimal
 from tempfile import NamedTemporaryFile
 from typing import Tuple
 
-from django.contrib.sites.models import Site
 from django.core.files import File
 from django.core.management.base import BaseCommand, CommandParser
 from django.db import transaction
@@ -72,7 +71,6 @@ class Command(BaseCommand):
 
         # Common variables for all products in job
         supplier = Supplier.objects.get(id=supplier_id)
-        site = Site.objects.get(pk=1)
 
         try:
             # Wrap entire process in transaction block, that way, if there

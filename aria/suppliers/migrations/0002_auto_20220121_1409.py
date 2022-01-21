@@ -6,17 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('suppliers', '0001_initial'),
+        ("suppliers", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelManagers(
-            name='supplier',
-            managers=[
-            ],
-        ),
-        migrations.RemoveField(
-            model_name='supplier',
-            name='sites',
+            name="supplier",
+            managers=[],
         ),
     ]
