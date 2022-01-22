@@ -1,10 +1,54 @@
+from typing import Any, Optional
+from django.utils import timezone
 from django.db import transaction
+from django.http import HttpRequest
 from aria.core.services import model_update
 from aria.users.models import User
+from django.contrib.auth.models import Group
 
 # TODO:
 # - Add method for creating users
 # - Upon creation, send confimation email
+
+
+def user_create(
+    *,
+    email: str,
+    password: Optional[str] = None,
+    subscribed_to_newsletter: bool = True,
+    send_verification_email: bool = False,
+    group: Optional[Group] = None,
+    request: Optional[HttpRequest] = None,
+    is_staff: bool = False,
+    is_active: bool = True,
+    **additional_fields: Any,
+) -> User:
+    if not email:
+        raise ValueError("Email cannot be none.")
+
+    # Create the new user
+    new_user = User(
+        email=email,
+        is_staff=is_staff,
+        is_active=is_active,
+        subscribed_to_newsletter=subscribed_to_newsletter,
+        date_joined=timezone.now(),
+        **additional_fields,
+    )
+
+    new_user.set_password(password)
+    new_user.save()
+
+    if group:
+        new_user.groups.add(group)
+
+    # TODO: add user channel
+
+    if send_verification_email:
+        # TODO: add send verification email method
+        pass
+
+    return new_user
 
 
 @transaction.atomic
@@ -30,7 +74,6 @@ def user_update(*, user: User, data, log_change=True) -> User:
         "date_joined",
         "is_active",
         "is_staff",
-        "is_superuser",
     ]
 
     user, has_updated, updated_fields = model_update(

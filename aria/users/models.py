@@ -185,6 +185,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def save(self, *args, **kwargs):
         if not self.avatar_color:
-            self.avatar_color = random.choice(self.AVATAR_COLOR_CHOICES)[0]
+            self.avatar_color = random.choice(AvatarColors.choices)[0]
 
         super(User, self).save(*args, **kwargs)

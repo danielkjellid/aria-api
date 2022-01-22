@@ -24,14 +24,13 @@ from aria.notes.models import NoteEntry
 from aria.notes.serializers import CreateNoteSerializer, UpdateNoteSerializer
 from aria.users.models import User
 from aria.users.selectors import user_get, user_list
+from aria.users.services import user_create
 from aria.users.serializers import (
     AccountVerificationConfirmSerializer,
     AccountVerificationSerializer,
     PasswordResetConfirmSerializer,
     PasswordResetSerializer,
     RequestUserSerializer,
-    UserCreateSerializer,
-    UserNoteSerializer,
 )
 from aria.users.services import user_update
 
@@ -188,47 +187,81 @@ class UserUpdateAPI(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class UserNoteAPIView(APIView):
+class UserCreateAPI(APIView):
+    """
+    [PUBLIC] Endpoint for creating a new user instance.
 
-    queryset = NoteEntry.objects.all()
-    permission_classes = (IsAdminUser, HasUserOrGroupPermission)
-    required_permissions = {
-        "GET": ["has_users_list"],
-        "POST": ["has_notes_add"],
-        "PUT": ["has_note_edit"],
-    }
+    Returns the created user.
+    """
 
-    def get_object(self, pk):
-        user = get_object_or_404(User, pk=pk)
-        return user
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
 
-    def get(self, request, pk):
-        user = self.get_object(pk)
-        user_notes = NoteEntry.get_notes(user)
-        serializer = UserNoteSerializer(user_notes, many=True)
-        return Response(serializer.data)
+    class InputSerializer(serializers.Serializer):
+        email = serializers.EmailField()
+        first_name = serializers.CharField()
+        last_name = serializers.CharField()
+        phone_number = serializers.CharField()
+        has_confirmed_email = serializers.NullBooleanField()
+        street_address = serializers.CharField()
+        zip_code = serializers.CharField()
+        zip_place = serializers.CharField()
+        disabled_emails = serializers.NullBooleanField()
+        subscribed_to_newsletter = serializers.NullBooleanField()
+        allow_personalization = serializers.NullBooleanField()
+        allow_third_party_personalization = serializers.NullBooleanField()
+        password = serializers.CharField(min_length=8, write_only=True)
 
-    def post(self, request, pk):
-        user = self.get_object(pk)
-        serializer = CreateNoteSerializer(data=request.data)
+    def post(self, request: HttpRequest) -> HttpResponse:
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        if serializer.is_valid():
-            NoteEntry.create_note(request.user, user, serializer.data["note"])
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        user = user_create(**serializer.validated_data)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(self.InputSerializer(user).data, status=status.HTTP_201_CREATED)
 
-    def put(self, request, pk):
 
-        serializer = UpdateNoteSerializer(data=request.data)
+# class UserNoteAPIView(APIView):
 
-        if serializer.is_valid():
-            NoteEntry.update_note(
-                request.user, serializer.data["id"], serializer.data["note"]
-            )
-            return Response(serializer.data, status=status.HTTP_200_OK)
+#     queryset = NoteEntry.objects.all()
+#     permission_classes = (IsAdminUser, HasUserOrGroupPermission)
+#     required_permissions = {
+#         "GET": ["has_users_list"],
+#         "POST": ["has_notes_add"],
+#         "PUT": ["has_note_edit"],
+#     }
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def get_object(self, pk):
+#         user = get_object_or_404(User, pk=pk)
+#         return user
+
+#     def get(self, request, pk):
+#         user = self.get_object(pk)
+#         user_notes = NoteEntry.get_notes(user)
+#         serializer = UserNoteSerializer(user_notes, many=True)
+#         return Response(serializer.data)
+
+#     def post(self, request, pk):
+#         user = self.get_object(pk)
+#         serializer = CreateNoteSerializer(data=request.data)
+
+#         if serializer.is_valid():
+#             NoteEntry.create_note(request.user, user, serializer.data["note"])
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     def put(self, request, pk):
+
+#         serializer = UpdateNoteSerializer(data=request.data)
+
+#         if serializer.is_valid():
+#             NoteEntry.update_note(
+#                 request.user, serializer.data["id"], serializer.data["note"]
+#             )
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RequestUserRetrieveAPIView(generics.RetrieveAPIView):
@@ -244,28 +277,6 @@ class RequestUserRetrieveAPIView(generics.RetrieveAPIView):
         serializer = self.serializer_class(user)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class UserCreateAPIView(generics.CreateAPIView):
-    """
-    View for creating a user instance
-    """
-
-    # set view public
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-
-    # use the UserCreate serializer
-    serializer_class = UserCreateSerializer
-
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PasswordResetView(generics.GenericAPIView):

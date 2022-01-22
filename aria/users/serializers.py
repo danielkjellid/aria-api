@@ -19,24 +19,6 @@ from aria.users.models import User
 from aria.users.selectors import get_user_group_permissions, get_user_permissions
 
 
-class UserProfileSerializer(serializers.Serializer):
-    full_name = serializers.CharField()
-    initial = serializers.CharField()
-    avatar_color = serializers.CharField()
-
-
-class UserNoteSerializer(serializers.ModelSerializer):
-    """
-    A serializer to display notes associated with a specific user
-    """
-
-    profile = UserProfileSerializer(source="user")
-
-    class Meta:
-        model = NoteEntry
-        fields = ("id", "profile", "note", "updated_at")
-
-
 class RequestUserSerializer(serializers.ModelSerializer):
     """
     A serializer to retrieve the current user
@@ -70,73 +52,6 @@ class RequestUserSerializer(serializers.ModelSerializer):
 
     def get_group_permissions(self, user):
         return get_user_group_permissions(user=user)
-
-
-class UserCreateSerializer(serializers.ModelSerializer):
-    """
-    A serializer for creating a user instance
-    """
-
-    password = serializers.CharField(
-        min_length=8, write_only=True, required=True, style={"input_type": "password"}
-    )
-    password2 = serializers.CharField(
-        min_length=8,
-        write_only=True,
-        style={"input_type": "password"},
-        label="Confirm password",
-    )
-
-    class Meta:
-        model = User
-        fields = (
-            "first_name",
-            "last_name",
-            "phone_number",
-            "birth_date",
-            "email",
-            "password",
-            "password2",
-            "street_address",
-            "zip_code",
-            "zip_place",
-            "subscribed_to_newsletter",
-            "allow_personalization",
-            "allow_third_party_personalization",
-        )
-        extra_kwargs = {"password": {"write_only": True}}
-
-    def validate(self, data):
-        email = data.get("email")
-        password = data.get("password")
-        password2 = data.get("password2")
-
-        # check if passwords are equal
-        if password != password2:
-            raise serializers.ValidationError(
-                {"password": "Begge passordene må være like."}
-            )
-
-        # check if email is unique
-        if email and User.objects.filter(email=email).exists():
-            raise serializers.ValidationError(
-                {"email": "E-post adressen eksiterer allerede."}
-            )
-
-    def create(self, validated_data):
-        # remove password and password 2 from data
-        password = validated_data.pop("password", None)
-        password2 = validated_data.pop("password2", None)
-
-        # create a new model instance
-        instance = self.Meta.model(**validated_data)
-
-        if password is not None and password == password2:
-            instance.set_password(password)
-
-        instance.save()
-
-        return instance
 
 
 class PasswordResetSerializer(serializers.Serializer):
