@@ -129,58 +129,6 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         return self.set_password_form.save()
 
 
-class AccountVerificationSerializer(serializers.Serializer):
-
-    email = serializers.EmailField()
-
-    def validate_email(self, value):
-        """
-        Check if email exits on site, and that the user,
-        and that the user in question is active
-        """
-        try:
-            self.user = User.objects.get(email__iexact=value)
-            if self.user.is_active:
-                return value
-        except User.DoesNotExist:
-            raise serializers.ValidationError({"detail": _("User does not exist")})
-
-    def validate(self, data):
-        """
-        Check if email isn't already confirmed
-        """
-        if self.user.has_confirmed_email:
-            raise serializers.ValidationError(
-                {
-                    "detail": _(
-                        "Email is already confirmed, unable to resend verification email"
-                    )
-                }
-            )
-
-        return data
-
-    def save(self):
-        # constructor for verification email
-        # sends uid and token in email
-        user_verification_email = render_to_string(
-            "email/verify_account.html",
-            {
-                "protocol": "https",
-                "domain": "https://flis.no",
-                "user": self.user,
-                "uid": uid_encoder(force_bytes(self.user.pk)),
-                "token": default_token_generator.make_token(self.user),
-            },
-        )
-
-        # use email_user method and send verification email
-        self.user.email_user(
-            "Bekreft kontoen din på Flishuset",
-            html_message=user_verification_email,
-        )
-
-
 class AccountVerificationConfirmSerializer(serializers.Serializer):
     uid = serializers.CharField()
     token = serializers.CharField()

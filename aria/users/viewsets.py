@@ -1,5 +1,5 @@
 from typing import List
-from django.forms import DateTimeField
+from django.forms import DateTimeField, ValidationError
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
@@ -20,15 +20,11 @@ from aria.core.permissions import HasUserOrGroupPermission
 from aria.core.serializers import inline_serializer
 from aria.users.models import User
 from aria.users.selectors import (
-    user_audit_logs_list,
-    user_get,
     user_list,
-    user_notes_list,
 )
 from aria.users.services import user_create
 from aria.users.serializers import (
     AccountVerificationConfirmSerializer,
-    AccountVerificationSerializer,
     PasswordResetConfirmSerializer,
     PasswordResetSerializer,
     RequestUserSerializer,
@@ -252,7 +248,7 @@ class UserNoteListAPI(APIView):
 
     def get(self, request: HttpRequest, user_id: int) -> HttpResponse:
         user = get_object_or_404(User, pk=user_id)
-        notes_of_user = user_notes_list(user=user)
+        notes_of_user = user.get_notes()
 
         data = self.OutputSerializer(notes_of_user, many=True).data
 
@@ -281,11 +277,39 @@ class UserAuditLogsListAPI(APIView):
 
     def get(self, request: HttpRequest, user_id: int) -> HttpResponse:
         user = get_object_or_404(User, pk=user_id)
-        logs_of_user = user_audit_logs_list(user=user)
+        logs_of_user = user.get_audit_logs()
 
         data = self.OutputSerializer(logs_of_user, many=True).data
 
         return Response(data, status=status.HTTP_200_OK)
+
+
+class UserAccountVerificationAPI(APIView):
+    """
+    [PUBLIC] Endpoint for sending a verification email to the user.
+    """
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    class InputSerializer(serializers.Serializer):
+        email = serializers.EmailField()
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            user = User.objects.get(email__iexact=serializer.validated_data["email"])
+        except User.DoesNotExist:
+            raise ValidationError("User does not exist.")
+
+        user.send_verification_email()
+
+        return Response(
+            {"detail": _("Email verification has been sent.")},
+            status=status.HTTP_200_OK,
+        )
 
 
 class RequestUserRetrieveAPIView(generics.RetrieveAPIView):
@@ -358,30 +382,6 @@ class PasswordResetConfirmView(generics.GenericAPIView):
 
         return Response(
             {"detail": _("Password has been reset with the new password")},
-            status=status.HTTP_200_OK,
-        )
-
-
-class AccountVerificationView(generics.GenericAPIView):
-    """
-    View for sending verification email.
-
-    Accepts the following POST parameters: email
-    Returns the success/fail message.
-    """
-
-    serializer_class = AccountVerificationSerializer
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        serializer.save()
-
-        return Response(
-            {"detail": _("Email verification has been sent.")},
             status=status.HTTP_200_OK,
         )
 

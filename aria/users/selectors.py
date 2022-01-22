@@ -42,20 +42,12 @@ def get_user_group_permissions(user: User) -> List[str]:
 
 
 def user_list(*, filters=None) -> Union[QuerySet, List[User]]:
+    """
+    Returns a queryset of users based on given filters.
+    """
+
     filters = filters or {}
 
     qs = User.objects.all()
 
     return UserFilter(filters, qs).qs
-
-
-def user_get(*, id=None) -> User:
-    return get_object_or_404(User, id)
-
-
-def user_notes_list(*, user: User) -> Union[QuerySet, NoteEntry]:
-    return notes_for_instance_list(instance=user)
-
-
-def user_audit_logs_list(*, user: User) -> Union[QuerySet, LogEntry]:
-    return logs_for_instance_list(instance=user)

@@ -1,4 +1,5 @@
 from typing import Any, Optional
+from django.forms import ValidationError
 from django.utils import timezone
 from django.db import transaction
 from django.http import HttpRequest
@@ -23,6 +24,10 @@ def user_create(
     is_active: bool = True,
     **additional_fields: Any,
 ) -> User:
+    """
+    Creates a new user instance.
+    """
+
     if not email:
         raise ValueError("Email cannot be none.")
 
@@ -53,6 +58,10 @@ def user_create(
 
 @transaction.atomic
 def user_update(*, user: User, data, log_change=True) -> User:
+    """
+    Updates an existing user instance.
+    """
+
     # Non side effect fields are field that does not have
     # any dependencies. E.g. fields that are not used in
     # the generation of for example other fields.

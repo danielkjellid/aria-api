@@ -199,6 +199,9 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
+# NOTE: We only show this in days to users, so it should be set to a number of whole days
+PASSWORD_RESET_TIMEOUT = 14 * 24 * 60 * 60
+
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [

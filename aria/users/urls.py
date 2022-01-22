@@ -2,7 +2,6 @@ from django.urls import path, re_path
 
 from aria.users.viewsets import (
     AccountVerificationConfirmView,
-    AccountVerificationView,
     PasswordResetConfirmView,
     PasswordResetView,
     RequestUserRetrieveAPIView,
@@ -12,12 +11,14 @@ from aria.users.viewsets import (
     UserCreateAPI,
     UserNoteListAPI,
     UserAuditLogsListAPI,
+    UserAccountVerificationAPI,
 )
 
 urlpatterns = [
     # Endpoint for getting all users
     path("", UserListAPI.as_view(), name="user-list"),
     path("create/", UserCreateAPI.as_view(), name="user-create"),
+    path("verify/", UserAccountVerificationAPI.as_view(), name="user-verify"),
     path("<int:user_id>/", UserDetailAPI.as_view(), name="user-detail"),
     path("<int:user_id>/update/", UserUpdateAPI.as_view(), name="user-update"),
     path("<int:user_id>/notes/", UserNoteListAPI.as_view(), name="user-notes"),
@@ -35,7 +36,6 @@ urlpatterns = [
         PasswordResetConfirmView.as_view(),
         name="password_reset_confirm",
     ),
-    path("users/verify/", AccountVerificationView.as_view(), name="verify_account"),
     re_path(
         r"^users/verify/confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$",
         AccountVerificationConfirmView.as_view(),
