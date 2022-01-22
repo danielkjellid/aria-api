@@ -22,9 +22,8 @@ from aria.users.models import User
 from aria.users.selectors import (
     user_list,
 )
-from aria.users.services import user_create
+from aria.users.services import user_create, user_verify_account
 from aria.users.serializers import (
-    AccountVerificationConfirmSerializer,
     PasswordResetConfirmSerializer,
     PasswordResetSerializer,
     RequestUserSerializer,
@@ -312,6 +311,27 @@ class UserAccountVerificationAPI(APIView):
         )
 
 
+class UserAccountVerificationConfirmAPI(APIView):
+    """
+    [PUBLIC] Endpoint for validating email tokens.
+    """
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    class InputSerializer(serializers.Serializer):
+        uid = serializers.CharField()
+        token = serializers.CharField()
+
+    def post(self, request: HttpRequest, uid: str, token: str) -> HttpResponse:
+        user_verify_account(uid=uid, token=token)
+
+        return Response(
+            {"detail": _("Account email verified.")},
+            status=status.HTTP_200_OK,
+        )
+
+
 class RequestUserRetrieveAPIView(generics.RetrieveAPIView):
     """
     View for getting info about request user
@@ -383,28 +403,4 @@ class PasswordResetConfirmView(generics.GenericAPIView):
         return Response(
             {"detail": _("Password has been reset with the new password")},
             status=status.HTTP_200_OK,
-        )
-
-
-class AccountVerificationConfirmView(generics.GenericAPIView):
-    """
-    Verification e-mail link is confirmed, therefore
-    this sets the user.has_confirmed_email to true.
-
-    Accept the following POST parameters: token, uid
-
-    Returns the success/fail message.
-    """
-
-    serializer_class = AccountVerificationConfirmSerializer
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(
-            {"detail": _("Account email verified")}, status=status.HTTP_200_OK
         )

@@ -127,30 +127,3 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
     def save(self):
         return self.set_password_form.save()
-
-
-class AccountVerificationConfirmSerializer(serializers.Serializer):
-    uid = serializers.CharField()
-    token = serializers.CharField()
-
-    def validate(self, attrs):
-
-        try:
-            uid = force_text(uid_decoder(attrs["uid"]))
-            self.user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            raise serializers.ValidationError({"uid": ["Invalid value"]})
-
-        if not default_token_generator.check_token(self.user, attrs["token"]):
-            raise serializers.ValidationError({"token": ["Invalid value"]})
-
-        if self.user.has_confirmed_email:
-            raise serializers.ValidationError(
-                {"detail": _("Konto er allerede verifisert")}
-            )
-
-        return attrs
-
-    def save(self):
-        self.user.has_confirmed_email = True
-        self.user.save()
