@@ -1,3 +1,5 @@
+from typing import List
+from django.forms import DateTimeField
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
@@ -8,19 +10,21 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import serializers
 
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 
 from aria.audit_logs.models import LogEntry
+from aria.audit_logs.selectors import logs_get
 from aria.core.pagination import (
     LimitOffsetPagination,
     PageNumberSetPagination,
     get_paginated_response,
 )
 from aria.core.permissions import HasUserOrGroupPermission
+from aria.core.serializers import inline_serializer
 from aria.notes.models import NoteEntry
 from aria.notes.serializers import CreateNoteSerializer, UpdateNoteSerializer
 from aria.users.models import User
-from aria.users.selectors import user_list
+from aria.users.selectors import user_get, user_list
 from aria.users.serializers import (
     AccountVerificationConfirmSerializer,
     AccountVerificationSerializer,
@@ -28,6 +32,7 @@ from aria.users.serializers import (
     PasswordResetSerializer,
     RequestUserSerializer,
     UserCreateSerializer,
+    UserDetailSerializer,
     UserNoteSerializer,
     UserSerializer,
 )
@@ -65,6 +70,14 @@ class UserListAPI(APIView):
         email = serializers.EmailField()
         is_active = serializers.NullBooleanField()
         date_joined = serializers.DateTimeField()
+        profile = inline_serializer(
+            source="*",
+            fields={
+                "full_name": serializers.CharField(),
+                "initial": serializers.CharField(),
+                "avatar_color": serializers.CharField(),
+            },
+        )
 
     def get(self, request: HttpRequest) -> list["User"]:
         # Make sure the filters are valid, if passed
@@ -81,6 +94,63 @@ class UserListAPI(APIView):
             request=request,
             view=self,
         )
+
+
+class UserDetailAPI(APIView):
+    """
+    Endpoint for listing a specific user. Takes the
+    user id as a parameter.
+
+    Returns a single user instance.
+    """
+
+    permission_classes = (IsAdminUser, HasUserOrGroupPermission)
+    required_permissions = {
+        "GET": ["has_users_list"],
+    }
+
+    class OutputSerializer(serializers.Serializer):
+        # User data
+        first_name = serializers.CharField()
+        last_name = serializers.CharField()
+        email = serializers.EmailField()
+        phone_number = serializers.CharField(source="formatted_phone_number")
+        birth_date = serializers.DateField()
+        has_confirmed_email = serializers.BooleanField()
+
+        # Account data
+        last_login = serializers.DateTimeField()
+        id = serializers.IntegerField()
+        profile = inline_serializer(
+            source="*",
+            read_only=True,
+            fields={
+                "full_name": serializers.CharField(),
+                "initial": serializers.CharField(),
+                "avatar_color": serializers.CharField(),
+            },
+        )
+        date_joined = serializers.DateTimeField()
+        is_active = serializers.BooleanField()
+
+        # Address data
+        full_address = serializers.CharField()
+        street_address = serializers.CharField()
+        zip_code = serializers.IntegerField()
+        zip_place = serializers.CharField()
+
+        # Marketing data
+        acquisition_source = serializers.CharField()
+        disabled_emails = serializers.BooleanField()
+        subscribed_to_newsletter = serializers.BooleanField()
+        allow_personalization = serializers.BooleanField()
+        allow_third_party_personalization = serializers.BooleanField()
+
+    def get(self, request: HttpRequest, user_id: int) -> HttpResponse:
+        user = get_object_or_404(User, pk=user_id)
+        serializer = self.OutputSerializer(user)
+
+        return Response(serializer.data)
 
 
 class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):

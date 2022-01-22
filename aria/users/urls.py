@@ -10,11 +10,13 @@ from aria.users.viewsets import (
     UserDetailAPIView,
     UserNoteAPIView,
     UserListAPI,
+    UserDetailAPI,
 )
 
 urlpatterns = [
     # Endpoint for getting all users
     path("", UserListAPI.as_view(), name="user-list"),
+    path("<int:user_id>/", UserDetailAPI.as_view(), name="user-detail"),
     # -------------------
     # Not yet refactored
     # ------------------

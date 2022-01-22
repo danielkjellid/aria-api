@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
+from django.forms import CharField
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import (
@@ -12,6 +13,7 @@ from rest_framework import serializers
 
 from aria.audit_logs.models import LogEntry
 from aria.audit_logs.serializers import LogEntrySerializer
+from aria.core.serializers import inline_serializer
 from aria.notes.models import NoteEntry
 from aria.users.models import User
 from aria.users.selectors import get_user_group_permissions, get_user_permissions
@@ -33,6 +35,53 @@ class UserNoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = NoteEntry
         fields = ("id", "profile", "note", "updated_at")
+
+
+class UserDetailSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    profile = inline_serializer(
+        source="*",
+        read_only=True,
+        fields={
+            "full_name": serializers.CharField(),
+            "initial": serializers.CharField(),
+            "avatar_color": serializers.CharField(),
+        },
+    )
+    address = serializers.CharField(source="full_address")
+    acquisition_source = serializers.CharField()
+    phone_number = serializers.CharField(source="formatted_phone_number")
+    last_login = serializers.DateTimeField()
+    email = serializers.EmailField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    birth_date = serializers.DateField()
+    has_confirmed_email = serializers.BooleanField()
+    street_address = serializers.CharField()
+    zip_code = serializers.IntegerField()
+    zip_place = serializers.CharField()
+    disabled_emails = serializers.BooleanField()
+    subscribed_to_newsletter = serializers.BooleanField()
+    allow_personalization = serializers.BooleanField()
+    allow_third_party_personalization = serializers.BooleanField()
+    date_joined = serializers.DateTimeField()
+    is_active = serializers.BooleanField()
+    # notes = serializers.SerializerMethodField()
+    audit_logs = inline_serializer(
+        source="*",
+        data=LogEntry.objects.filter(
+            content_type__app_label="users", content_type__model="User", object_id=1
+        ),
+        fields={
+            "user": serializers.CharField(),
+            "change": serializers.JSONField(),
+            "date_of_change": serializers.DateTimeField(),
+        },
+    )
+
+    # def get_audit_logs(self, user):
+    #     audit_logs = LogEntry.get_logs(user)
+    #     return LogEntrySerializer(audit_logs, many=True, read_only=True).data
 
 
 class UserSerializer(serializers.ModelSerializer):
