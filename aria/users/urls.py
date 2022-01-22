@@ -7,8 +7,8 @@ from aria.users.viewsets import (
     PasswordResetView,
     RequestUserRetrieveAPIView,
     UserCreateAPIView,
-    UserDetailAPIView,
     UserNoteAPIView,
+    UserUpdateAPI,
     UserListAPI,
     UserDetailAPI,
 )
@@ -17,13 +17,13 @@ urlpatterns = [
     # Endpoint for getting all users
     path("", UserListAPI.as_view(), name="user-list"),
     path("<int:user_id>/", UserDetailAPI.as_view(), name="user-detail"),
+    path("<int:user_id>/update/", UserUpdateAPI.as_view(), name="user-update"),
     # -------------------
     # Not yet refactored
     # ------------------
     # endpoint for getting info about request user
     path("user/", RequestUserRetrieveAPIView.as_view(), name="request_user"),
     # endpoint for getting a single user instance
-    path("users/<int:pk>/", UserDetailAPIView.as_view(), name="user_detail"),
     path("users/<int:pk>/notes/", UserNoteAPIView.as_view(), name="user_notes"),
     # endpoint for creating a single user instance
     path("users/create/", UserCreateAPIView.as_view(), name="user_create"),

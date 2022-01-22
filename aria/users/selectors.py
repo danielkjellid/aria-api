@@ -1,6 +1,7 @@
 from typing import List, Union
 from django.contrib.auth.models import Permission
 from django.db.models import QuerySet
+from django.shortcuts import get_object_or_404
 
 from aria.users.models import User
 from aria.users.filters import UserFilter
@@ -44,10 +45,5 @@ def user_list(*, filters=None) -> Union[QuerySet, List[User]]:
     return UserFilter(filters, qs).qs
 
 
-def user_get(*, id=None) -> Union[QuerySet, User]:
-    try:
-        user = User.objects.get(pk=id)
-    except User.DoesNotExist:
-        return None
-
-    return user
+def user_get(*, id=None) -> User:
+    return get_object_or_404(User, id)

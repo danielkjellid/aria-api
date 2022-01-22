@@ -16,7 +16,6 @@ from aria.audit_logs.models import LogEntry
 from aria.audit_logs.selectors import logs_get
 from aria.core.pagination import (
     LimitOffsetPagination,
-    PageNumberSetPagination,
     get_paginated_response,
 )
 from aria.core.permissions import HasUserOrGroupPermission
@@ -32,10 +31,9 @@ from aria.users.serializers import (
     PasswordResetSerializer,
     RequestUserSerializer,
     UserCreateSerializer,
-    UserDetailSerializer,
     UserNoteSerializer,
-    UserSerializer,
 )
+from aria.users.services import user_update
 
 sensitive_post_parameters_m = method_decorator(
     sensitive_post_parameters(
@@ -136,7 +134,7 @@ class UserDetailAPI(APIView):
         # Address data
         full_address = serializers.CharField()
         street_address = serializers.CharField()
-        zip_code = serializers.IntegerField()
+        zip_code = serializers.CharField()
         zip_place = serializers.CharField()
 
         # Marketing data
@@ -153,38 +151,41 @@ class UserDetailAPI(APIView):
         return Response(serializer.data)
 
 
-class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+class UserUpdateAPI(APIView):
     """
-    View for viewing, updating or deleting a single user instance
+    Endpoint for updating a specific user. Takes the
+    user id as a parameter and field(s) as payload.
 
-    Returns a single user instance
+    Returns a updated field(s).
     """
 
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
     permission_classes = (IsAdminUser, HasUserOrGroupPermission)
     required_permissions = {
-        "GET": ["has_users_list"],
-        "PUT": ["has_user_edit"],
-        "DELETE": ["has_user_delete"],
+        "POST": ["has_user_edit"],
     }
 
-    def put(self, request, pk):
-        user = get_object_or_404(User, pk=pk)
-        serializer = UserSerializer(user, data=request.data)
+    class InputSerializer(serializers.Serializer):
+        email = serializers.EmailField(required=False)
+        first_name = serializers.CharField(required=False)
+        last_name = serializers.CharField(required=False)
+        phone_number = serializers.CharField(required=False)
+        has_confirmed_email = serializers.NullBooleanField(required=False)
+        street_address = serializers.CharField(required=False)
+        zip_code = serializers.CharField(required=False)
+        zip_place = serializers.CharField(required=False)
+        disabled_emails = serializers.NullBooleanField(required=False)
+        subscribed_to_newsletter = serializers.NullBooleanField(required=False)
+        allow_personalization = serializers.NullBooleanField(required=False)
+        allow_third_party_personalization = serializers.NullBooleanField(required=False)
 
-        if serializer.is_valid():
-            # store old user in variable
-            old_user_instance = get_object_or_404(User, pk=pk)
-            # update user instance
-            serializer.save()
-            # create logging instance by comparing old vs. new user fields
-            LogEntry.create_log_entry(request.user, User, old_user_instance)
+    def post(self, request: HttpRequest, user_id: int) -> HttpResponse:
+        user = get_object_or_404(User, pk=user_id)
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-            # return updated user
-            return Response(serializer.data)
+        user_update(user=user, data=serializer.validated_data)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class UserNoteAPIView(APIView):
