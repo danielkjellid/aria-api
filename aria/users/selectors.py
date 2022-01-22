@@ -2,8 +2,10 @@ from typing import List, Union
 from django.contrib.auth.models import Permission
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
+from aria.audit_logs.selectors import logs_for_instance_list
 from aria.notes.models import NoteEntry
-from aria.notes.selectors import notes_for_instance_get
+from aria.audit_logs.models import LogEntry
+from aria.notes.selectors import notes_for_instance_list
 
 from aria.users.models import User
 from aria.users.filters import UserFilter
@@ -52,4 +54,8 @@ def user_get(*, id=None) -> User:
 
 
 def user_notes_list(*, user: User) -> Union[QuerySet, NoteEntry]:
-    return notes_for_instance_get(instance=user)
+    return notes_for_instance_list(instance=user)
+
+
+def user_audit_logs_list(*, user: User) -> Union[QuerySet, LogEntry]:
+    return logs_for_instance_list(instance=user)

@@ -34,6 +34,11 @@ class LogEntry(models.Model):
     class Meta:
         verbose_name = _("Audit log entry")
         verbose_name_plural = _("Audit log entries")
+        permissions = (
+            ("has_audit_logs_list", "Can view audit logs"),
+            ("has_audit_logs_edit", "Can edit a single log instance"),
+            ("has_audit_logs_delete", "Can delete a single log instance"),
+        )
 
     # method for creating an change message
     def create_log_entry(request, obj, old_instance):

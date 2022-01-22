@@ -19,7 +19,12 @@ from aria.core.pagination import (
 from aria.core.permissions import HasUserOrGroupPermission
 from aria.core.serializers import inline_serializer
 from aria.users.models import User
-from aria.users.selectors import user_get, user_list, user_notes_list
+from aria.users.selectors import (
+    user_audit_logs_list,
+    user_get,
+    user_list,
+    user_notes_list,
+)
 from aria.users.services import user_create
 from aria.users.serializers import (
     AccountVerificationConfirmSerializer,
@@ -226,7 +231,7 @@ class UserNoteListAPI(APIView):
 
     permission_classes = (IsAdminUser, HasUserOrGroupPermission)
     required_permissions = {
-        "GET": ["has_users_list"],
+        "GET": ["has_notes_list"],
     }
 
     class Pagination(LimitOffsetPagination):
@@ -250,6 +255,35 @@ class UserNoteListAPI(APIView):
         notes_of_user = user_notes_list(user=user)
 
         data = self.OutputSerializer(notes_of_user, many=True).data
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class UserAuditLogsListAPI(APIView):
+    """
+    Endpoint for getting audit logs related to a user instance.
+
+    Returns a list of logs on changes to that user.
+    """
+
+    permission_classes = (IsAdminUser, HasUserOrGroupPermission)
+    required_permissions = {
+        "GET": ["has_audit_logs_list"],
+    }
+
+    class Pagination(LimitOffsetPagination):
+        limit = 20
+
+    class OutputSerializer(serializers.Serializer):
+        user = serializers.CharField()
+        change = serializers.JSONField()
+        date_of_change = serializers.DateTimeField()
+
+    def get(self, request: HttpRequest, user_id: int) -> HttpResponse:
+        user = get_object_or_404(User, pk=user_id)
+        logs_of_user = user_audit_logs_list(user=user)
+
+        data = self.OutputSerializer(logs_of_user, many=True).data
 
         return Response(data, status=status.HTTP_200_OK)
 
