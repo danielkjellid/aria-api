@@ -12,18 +12,14 @@ from rest_framework import serializers
 
 from django.http import HttpRequest, HttpResponse
 
-from aria.audit_logs.models import LogEntry
-from aria.audit_logs.selectors import logs_get
 from aria.core.pagination import (
     LimitOffsetPagination,
     get_paginated_response,
 )
 from aria.core.permissions import HasUserOrGroupPermission
 from aria.core.serializers import inline_serializer
-from aria.notes.models import NoteEntry
-from aria.notes.serializers import CreateNoteSerializer, UpdateNoteSerializer
 from aria.users.models import User
-from aria.users.selectors import user_get, user_list
+from aria.users.selectors import user_get, user_list, user_notes_list
 from aria.users.services import user_create
 from aria.users.serializers import (
     AccountVerificationConfirmSerializer,
@@ -54,7 +50,7 @@ class UserListAPI(APIView):
     }
 
     class Pagination(LimitOffsetPagination):
-        default_limit = 18
+        limit = 18
 
     class FilterSerializer(serializers.Serializer):
         email = serializers.EmailField(required=False)
@@ -221,47 +217,41 @@ class UserCreateAPI(APIView):
         return Response(self.InputSerializer(user).data, status=status.HTTP_201_CREATED)
 
 
-# class UserNoteAPIView(APIView):
+class UserNoteListAPI(APIView):
+    """
+    Endpoint for getting notes related to a user instance.
 
-#     queryset = NoteEntry.objects.all()
-#     permission_classes = (IsAdminUser, HasUserOrGroupPermission)
-#     required_permissions = {
-#         "GET": ["has_users_list"],
-#         "POST": ["has_notes_add"],
-#         "PUT": ["has_note_edit"],
-#     }
+    Returns a list of notes bellonging to that user.
+    """
 
-#     def get_object(self, pk):
-#         user = get_object_or_404(User, pk=pk)
-#         return user
+    permission_classes = (IsAdminUser, HasUserOrGroupPermission)
+    required_permissions = {
+        "GET": ["has_users_list"],
+    }
 
-#     def get(self, request, pk):
-#         user = self.get_object(pk)
-#         user_notes = NoteEntry.get_notes(user)
-#         serializer = UserNoteSerializer(user_notes, many=True)
-#         return Response(serializer.data)
+    class Pagination(LimitOffsetPagination):
+        limit = 20
 
-#     def post(self, request, pk):
-#         user = self.get_object(pk)
-#         serializer = CreateNoteSerializer(data=request.data)
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        note = serializers.CharField()
+        updated_at = serializers.DateTimeField()
+        author = inline_serializer(
+            source="user",
+            fields={
+                "full_name": serializers.CharField(),
+                "initial": serializers.CharField(),
+                "avatar_color": serializers.CharField(),
+            },
+        )
 
-#         if serializer.is_valid():
-#             NoteEntry.create_note(request.user, user, serializer.data["note"])
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def get(self, request: HttpRequest, user_id: int) -> HttpResponse:
+        user = get_object_or_404(User, pk=user_id)
+        notes_of_user = user_notes_list(user=user)
 
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        data = self.OutputSerializer(notes_of_user, many=True).data
 
-#     def put(self, request, pk):
-
-#         serializer = UpdateNoteSerializer(data=request.data)
-
-#         if serializer.is_valid():
-#             NoteEntry.update_note(
-#                 request.user, serializer.data["id"], serializer.data["note"]
-#             )
-#             return Response(serializer.data, status=status.HTTP_200_OK)
-
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class RequestUserRetrieveAPIView(generics.RetrieveAPIView):

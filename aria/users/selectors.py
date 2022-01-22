@@ -2,6 +2,8 @@ from typing import List, Union
 from django.contrib.auth.models import Permission
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
+from aria.notes.models import NoteEntry
+from aria.notes.selectors import notes_for_instance_get
 
 from aria.users.models import User
 from aria.users.filters import UserFilter
@@ -47,3 +49,7 @@ def user_list(*, filters=None) -> Union[QuerySet, List[User]]:
 
 def user_get(*, id=None) -> User:
     return get_object_or_404(User, id)
+
+
+def user_notes_list(*, user: User) -> Union[QuerySet, NoteEntry]:
+    return notes_for_instance_get(instance=user)

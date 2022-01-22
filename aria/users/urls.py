@@ -10,6 +10,7 @@ from aria.users.viewsets import (
     UserListAPI,
     UserDetailAPI,
     UserCreateAPI,
+    UserNoteListAPI,
 )
 
 urlpatterns = [
@@ -18,6 +19,7 @@ urlpatterns = [
     path("create/", UserCreateAPI.as_view(), name="user-create"),
     path("<int:user_id>/", UserDetailAPI.as_view(), name="user-detail"),
     path("<int:user_id>/update/", UserUpdateAPI.as_view(), name="user-update"),
+    path("<int:user_id>/notes/", UserNoteListAPI.as_view(), name="user-notes"),
     # -------------------
     # Not yet refactored
     # ------------------
