@@ -287,19 +287,6 @@ class User(AbstractBaseUser, PermissionsMixin):
             html_message=user_verification_email,
         )
 
-    def verify_account(self, uid, token) -> None:
-        if self.has_confirmed_email:
-            raise ValidationError("Email is already verified.")
-
-        decode_uid = uid_decoder(uid)
-        token_is_valid = self.validate_verification_email_token(token)
-
-        if decode_uid == self.id and token_is_valid:
-            self.has_confirmed_email = True
-            self.save()
-        else:
-            raise ValidationError("Token value mismatch, unable to verify account.")
-
     def save(self, *args, **kwargs):
         if not self.avatar_color:
             self.avatar_color = random.choice(AvatarColors.choices)[0]
