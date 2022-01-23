@@ -267,7 +267,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         if self.has_confirmed_email:
             raise ValidationError(
-                "Email is already verified, unable to send verification email."
+                _("Email is already verified, unable to send verification email.")
             )
 
         user_verification_email = render_to_string(

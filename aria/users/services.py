@@ -1,5 +1,4 @@
 from typing import Any, Optional
-from django.forms import ValidationError
 from django.utils import timezone
 from django.db import transaction
 from django.http import HttpRequest
@@ -10,6 +9,9 @@ from django.utils.http import (
     urlsafe_base64_decode as uid_decoder,
 )
 from django.utils.encoding import force_text
+from django.utils.translation import gettext as _
+
+from aria.core.exceptions import ApplicationError
 
 # TODO:
 # - Add method for creating users
@@ -34,6 +36,11 @@ def user_create(
 
     if not email:
         raise ValueError("Email cannot be none.")
+
+    existing_user = User.objects.get(email__iexact=email)
+
+    if existing_user:
+        raise ApplicationError(message=_("User with email already exists."))
 
     # Create the new user
     new_user = User(
@@ -104,10 +111,10 @@ def user_verify_account(*, uid: str, token: str) -> None:
         decode_uid = force_text(uid_decoder(uid))
         user = User.objects.get(id=decode_uid)
     except User.DoesNotExist:
-        raise ValidationError("Unable to find user with provided uid.")
+        raise ApplicationError(message=_("Unable to find user with provided uid."))
 
     if user.has_confirmed_email:
-        raise ValidationError("Account is already verified.")
+        raise ApplicationError(message=_("Account is already verified."))
 
     is_token_valid = user.validate_verification_email_token(token=token)
 
@@ -115,6 +122,4 @@ def user_verify_account(*, uid: str, token: str) -> None:
         user.has_confirmed_email = True
         user.save()
     else:
-        raise ValidationError(
-            "Token is invalid, please try again by sending a new verification email."
-        )
+        raise ApplicationError(message=_("Token is invalid, please try again by."))

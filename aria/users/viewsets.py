@@ -1,8 +1,8 @@
 from typing import List
-from django.forms import DateTimeField, ValidationError
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
+from prompt_toolkit import Application
 from rest_framework import filters, generics, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 
 from django.http import HttpRequest, HttpResponse
+from aria.core.exceptions import ApplicationError
 
 from aria.core.pagination import (
     LimitOffsetPagination,
@@ -301,7 +302,7 @@ class UserAccountVerificationAPI(APIView):
         try:
             user = User.objects.get(email__iexact=serializer.validated_data["email"])
         except User.DoesNotExist:
-            raise ValidationError("User does not exist.")
+            raise ApplicationError(_("User does not exist."))
 
         user.send_verification_email()
 

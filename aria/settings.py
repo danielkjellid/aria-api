@@ -59,6 +59,8 @@ LOGOUT_REDIRECT_URL = "/"
 # Language code for this installation.
 LANGUAGE_CODE = "nb-NO"
 
+LOCALE_PATHS = ((BASE_DIR / "locale"),)
+
 # Local time zone for this installation.
 TIME_ZONE = "Europe/Oslo"
 
@@ -104,6 +106,7 @@ TEMPLATES = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -289,6 +292,7 @@ REST_FRAMEWORK = {
     ),
     "DATETIME_FORMAT": "%d. %B %Y %H:%M",
     "DATETIME_INPUT_FORMATS": ["%d. %B %Y %H:%M"],
+    "EXCEPTION_HANDLER": "aria.core.exceptions.core_exception_handler",
 }
 
 ##########
