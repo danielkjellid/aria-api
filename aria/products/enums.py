@@ -58,6 +58,7 @@ class NewProductMaterials(models.TextChoices):
     COMPOSITE = "kompositt", "Kompositt"
     STAINLESS_STEEL = "rustfritt stål", "Rustfritt stål"
     BRUSHED_STEEL = "pusset stål", "Pusset stål"
+    METAL = "metall", "Metall"
     WOOD = "tre", "Tre"
     LAMINATE = "laminat", "Laminat"
     GLASS = "glass", "Glass"
