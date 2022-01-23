@@ -1,24 +1,18 @@
 from typing import Any, Optional
-from django.utils import timezone
+
+from django.contrib.auth import authenticate, get_user_model, password_validation
+from django.contrib.auth.models import Group
+from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
 from django.http import HttpRequest
-from django.contrib.auth import (
-    authenticate,
-    get_user_model,
-    password_validation,
-)
-from django.contrib.auth.tokens import default_token_generator
-
-from aria.core.services import model_update
-from aria.users.models import User
-from django.contrib.auth.models import Group
-from django.utils.http import (
-    urlsafe_base64_decode as uid_decoder,
-)
+from django.utils import timezone
 from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode as uid_decoder
 from django.utils.translation import gettext as _
 
 from aria.core.exceptions import ApplicationError
+from aria.core.services import model_update
+from aria.users.models import User
 
 # TODO:
 # - Add method for creating users

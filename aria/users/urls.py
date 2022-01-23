@@ -1,16 +1,16 @@
 from django.urls import path, re_path
 
 from aria.users.viewsets import (
-    UserUpdateAPI,
-    UserListAPI,
-    UserDetailAPI,
-    UserCreateAPI,
-    UserNoteListAPI,
-    UserAuditLogsListAPI,
     UserAccountVerificationAPI,
     UserAccountVerificationConfirmAPI,
+    UserAuditLogsListAPI,
+    UserCreateAPI,
+    UserDetailAPI,
+    UserListAPI,
+    UserNoteListAPI,
     UserPasswordResetAPI,
     UserPasswordResetConfirmAPI,
+    UserUpdateAPI,
 )
 
 urlpatterns = [

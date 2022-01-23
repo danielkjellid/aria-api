@@ -1,22 +1,19 @@
 import random
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.contenttypes.models import ContentType
-
+from django.core import signing
 from django.core.mail import send_mail
-from django.conf import settings
 from django.db import models
 from django.forms import ValidationError
-from django.core import signing
 from django.template.loader import render_to_string
+from django.utils import timezone
+from django.utils.encoding import force_bytes, force_text
 from django.utils.http import (
     urlsafe_base64_decode as uid_decoder,
     urlsafe_base64_encode as uid_encoder,
 )
-from django.utils.encoding import force_bytes, force_text
-
-
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 import phonenumbers

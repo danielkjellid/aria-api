@@ -1,7 +1,8 @@
 from typing import Union
-from django.db.models import QuerySet
+
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Model
+from django.db.models import Model, QuerySet
+
 from aria.notes.models import NoteEntry
 
 

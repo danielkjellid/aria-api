@@ -1,7 +1,9 @@
-from typing import Union, List
-from django.db.models import QuerySet, Model
-from aria.audit_logs.models import LogEntry
+from typing import List, Union
+
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Model, QuerySet
+
+from aria.audit_logs.models import LogEntry
 
 
 def logs_for_instance_list(*, instance: Model) -> Union[QuerySet, LogEntry]:

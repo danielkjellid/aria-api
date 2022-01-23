@@ -1,30 +1,29 @@
 from typing import List
+
+from django.http import HttpRequest, HttpResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
-from prompt_toolkit import Application
-from rest_framework import filters, generics, status
+from rest_framework import filters, generics, serializers, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import serializers
 
-from django.http import HttpRequest, HttpResponse
+from prompt_toolkit import Application
+
 from aria.core.exceptions import ApplicationError
-
-from aria.core.pagination import (
-    LimitOffsetPagination,
-    get_paginated_response,
-)
+from aria.core.pagination import LimitOffsetPagination, get_paginated_response
 from aria.core.permissions import HasUserOrGroupPermission
 from aria.core.serializers import inline_serializer
 from aria.users.models import User
-from aria.users.selectors import (
-    user_list,
+from aria.users.selectors import user_list
+from aria.users.services import (
+    user_create,
+    user_set_password,
+    user_update,
+    user_verify_account,
 )
-from aria.users.services import user_create, user_set_password, user_verify_account
-from aria.users.services import user_update
 
 
 class UserListAPI(APIView):

@@ -1,14 +1,15 @@
 from typing import List, Union
+
 from django.contrib.auth.models import Permission
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
+
+from aria.audit_logs.models import LogEntry
 from aria.audit_logs.selectors import logs_for_instance_list
 from aria.notes.models import NoteEntry
-from aria.audit_logs.models import LogEntry
 from aria.notes.selectors import notes_for_instance_list
-
-from aria.users.models import User
 from aria.users.filters import UserFilter
+from aria.users.models import User
 
 
 def get_user_permissions(user: User) -> List[str]:

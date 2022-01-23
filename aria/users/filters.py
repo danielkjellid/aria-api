@@ -1,4 +1,5 @@
 from django_filters import FilterSet
+
 from aria.users.models import User
 
 

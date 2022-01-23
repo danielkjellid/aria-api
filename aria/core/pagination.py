@@ -1,7 +1,8 @@
 from typing import OrderedDict
+
 from rest_framework.pagination import (
-    PageNumberPagination,
     LimitOffsetPagination as _LimitOffsetPagination,
+    PageNumberPagination,
 )
 from rest_framework.response import Response
 
