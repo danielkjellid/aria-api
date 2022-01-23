@@ -1,16 +1,10 @@
-from typing import List
-
 from django.http import HttpRequest, HttpResponse
-from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.debug import sensitive_post_parameters
-from rest_framework import filters, generics, serializers, status
+from rest_framework import serializers, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from prompt_toolkit import Application
 
 from aria.core.exceptions import ApplicationError
 from aria.core.pagination import LimitOffsetPagination, get_paginated_response
@@ -61,7 +55,7 @@ class UserListAPI(APIView):
             },
         )
 
-    def get(self, request: HttpRequest) -> list["User"]:
+    def get(self, request: HttpRequest) -> HttpResponse:
         # Make sure the filters are valid, if passed
         filters_serializer = self.FilterSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)

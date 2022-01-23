@@ -9,9 +9,8 @@ from django.db import models
 from django.forms import ValidationError
 from django.template.loader import render_to_string
 from django.utils import timezone
-from django.utils.encoding import force_bytes, force_text
+from django.utils.encoding import force_bytes
 from django.utils.http import (
-    urlsafe_base64_decode as uid_decoder,
     urlsafe_base64_encode as uid_encoder,
 )
 from django.utils.translation import gettext_lazy as _
