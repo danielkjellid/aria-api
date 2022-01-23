@@ -2,6 +2,13 @@ from typing import Any, Optional
 from django.utils import timezone
 from django.db import transaction
 from django.http import HttpRequest
+from django.contrib.auth import (
+    authenticate,
+    get_user_model,
+    password_validation,
+)
+from django.contrib.auth.tokens import default_token_generator
+
 from aria.core.services import model_update
 from aria.users.models import User
 from django.contrib.auth.models import Group
@@ -106,6 +113,10 @@ def user_update(*, user: User, data, log_change=True) -> User:
 
 
 def user_verify_account(*, uid: str, token: str) -> None:
+    """
+    Verify a user account, setting has_confirmed_email to True
+    if given uid and token match.
+    """
 
     try:
         decode_uid = force_text(uid_decoder(uid))
@@ -118,8 +129,33 @@ def user_verify_account(*, uid: str, token: str) -> None:
 
     is_token_valid = user.validate_verification_email_token(token=token)
 
-    if is_token_valid:
-        user.has_confirmed_email = True
-        user.save()
-    else:
-        raise ApplicationError(message=_("Token is invalid, please try again by."))
+    if not is_token_valid:
+        raise ApplicationError(message=_("Token is invalid, please try again."))
+
+    user.has_confirmed_email = True
+    user.save()
+
+
+def user_set_password(*, uid: str, token: str, new_password: str) -> None:
+    """
+    Seet new password for user, validating uid, token and password. Eventually
+    sets a new password for the user.
+    """
+
+    try:
+        decode_uid = force_text(uid_decoder(uid))
+        user = User.objects.get(id=decode_uid)
+    except User.DoesNotExist:
+        raise ApplicationError(message=_("Unable to find user with provided uid."))
+
+    is_token_valid = default_token_generator.check_token(user, token)
+
+    if not is_token_valid:
+        raise ApplicationError(message=_("Token is invalid, please try again."))
+
+    # Validate password, will raise ValidationError if password does not
+    # meet requirements
+    password_validation.validate_password(new_password, user)
+
+    user.set_password(new_password)
+    user.save()

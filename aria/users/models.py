@@ -234,6 +234,25 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
+    def send_password_reset_email(self, *, request) -> None:
+        from django.contrib.auth.forms import PasswordResetForm
+
+        form = PasswordResetForm({"email": self.email})
+
+        if not self.has_confirmed_email and not self.is_active:
+            return None
+
+        email_options = {
+            "use_https": request.is_secure(),
+            "from_email": settings.DEFAULT_FROM_EMAIL,
+            "request": request,
+            "email_template_name": "email/password_reset_email.html",
+            "html_email_template_name": "email/password_reset_email.html",
+        }
+
+        if form.is_valid():
+            form.save(**email_options)
+
     def generate_verification_email_token(self) -> str:
         """
         Generates a signed token, used to verify the user's email address.

@@ -23,19 +23,8 @@ from aria.users.models import User
 from aria.users.selectors import (
     user_list,
 )
-from aria.users.services import user_create, user_verify_account
-from aria.users.serializers import (
-    PasswordResetConfirmSerializer,
-    PasswordResetSerializer,
-    RequestUserSerializer,
-)
+from aria.users.services import user_create, user_set_password, user_verify_account
 from aria.users.services import user_update
-
-sensitive_post_parameters_m = method_decorator(
-    sensitive_post_parameters(
-        "password", "old_password", "new_password1", "new_password2"
-    )
-)
 
 
 class UserListAPI(APIView):
@@ -325,6 +314,9 @@ class UserAccountVerificationConfirmAPI(APIView):
         token = serializers.CharField()
 
     def post(self, request: HttpRequest, uid: str, token: str) -> HttpResponse:
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         user_verify_account(uid=uid, token=token)
 
         return Response(
@@ -333,43 +325,30 @@ class UserAccountVerificationConfirmAPI(APIView):
         )
 
 
-class RequestUserRetrieveAPIView(generics.RetrieveAPIView):
+class UserPasswordResetAPI(APIView):
     """
-    View for getting info about request user
-    """
-
-    permission_classes = (IsAuthenticated,)
-    serializer_class = RequestUserSerializer
-
-    def get(self, request):
-        user = get_object_or_404(User, pk=request.user.id)
-        serializer = self.serializer_class(user)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class PasswordResetView(generics.GenericAPIView):
-    """
-    View for reseting password.
-
-    Calls Django Auth PasswordResetForm save method.
-
-    Accepts the following POST parameters: email
-    Returns the success/fail message.
+    [PUBLIC] Endpoint for sending a password reset
+    email.
     """
 
-    serializer_class = PasswordResetSerializer
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
-    def post(self, request, *args, **kwargs):
-        """
-        Create a serializer with request.data
-        """
-        serializer = self.get_serializer(data=request.data)
+    class InputSerializer(serializers.Serializer):
+        email = serializers.EmailField()
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        serializer.save()
+        try:
+            user = User.objects.get(
+                email__iexact=serializer.validated_data["email"], is_active=True
+            )
+        except User.DoesNotExist:
+            raise ApplicationError(message=_("User does not exist."))
+
+        user.send_password_reset_email(request=request)
 
         return Response(
             {"detail": _("Password reset e-mail has been sent.")},
@@ -377,29 +356,24 @@ class PasswordResetView(generics.GenericAPIView):
         )
 
 
-class PasswordResetConfirmView(generics.GenericAPIView):
+class UserPasswordResetConfirmAPI(APIView):
     """
-    Password reset e-mail link is confirmed, therefore
-    this resets the user's password.
-
-    Accept the following POST parameters: token, uid, new_password1,
-    new_password2
-
-    Returns the success/fail message.
+    [PUBLIC] Endpoint for setting a new password.
     """
 
-    serializer_class = PasswordResetConfirmSerializer
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
-    @sensitive_post_parameters_m
-    def dispatch(self, *args, **kwargs):
-        return super(PasswordResetConfirmView, self).dispatch(*args, **kwargs)
+    class InputSerializer(serializers.Serializer):
+        new_password = serializers.CharField(max_length=128)
+        uid = serializers.CharField()
+        token = serializers.CharField()
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+    def post(self, request: HttpRequest, uid: str, token: str) -> HttpResponse:
+        serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+
+        user_set_password(**serializer.validated_data)
 
         return Response(
             {"detail": _("Password has been reset with the new password")},
