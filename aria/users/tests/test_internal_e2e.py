@@ -1,10 +1,8 @@
-from datetime import timedelta
 from model_bakery import baker
 import pytest
 import json
 
-from django.utils import dateformat, timezone
-from django.conf import settings
+from aria.test_utils import model_baker_datetime_formatting
 
 from aria.users.models import User
 
@@ -159,9 +157,7 @@ class TestInternalUsersEndpoints:
                 "avatar_color": user.avatar_color,
             },
             # Datetimes are wonky, model bakery is one hour behind local tz
-            "date_joined": (user.date_joined + timedelta(hours=1)).strftime(
-                settings.DATETIME_FORMAT
-            ),
+            "date_joined": model_baker_datetime_formatting(user.date_joined),
             "is_active": user.is_active,
             "full_address": user.full_address,
             "street_address": user.street_address,
@@ -206,9 +202,7 @@ class TestInternalUsersEndpoints:
                 "avatar_color": user.avatar_color,
             },
             # Datetimes are wonky, model bakery is one hour behind local tz
-            "date_joined": (user.date_joined + timedelta(hours=1)).strftime(
-                settings.DATETIME_FORMAT
-            ),
+            "date_joined": model_baker_datetime_formatting(user.date_joined),
             "is_active": user.is_active,
             "full_address": user.full_address,
             "street_address": user.street_address,

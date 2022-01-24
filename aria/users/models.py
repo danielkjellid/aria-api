@@ -91,10 +91,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         ),
     )
     acquisition_source = models.CharField(
-        _("acquisition source"),
-        blank=True,
-        max_length=255,
-        unique=False,
+        _("acquisition source"), blank=True, max_length=255, unique=False, null=True
     )
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
     is_active = models.BooleanField(
