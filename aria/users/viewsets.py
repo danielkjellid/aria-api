@@ -146,7 +146,7 @@ class UserDetailAPI(APIView):
             many=True,
             read_only=True,
             fields={
-                "user": serializers.CharField(),
+                "author": serializers.CharField(),
                 "change": serializers.JSONField(),
                 "date_of_change": serializers.DateTimeField(),
             },
@@ -191,7 +191,12 @@ class UserUpdateAPI(APIView):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        user_update(user=user, data=serializer.validated_data)
+        user_update(
+            user=user,
+            data=serializer.validated_data,
+            author=request.user,
+            log_change=True,
+        )
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 

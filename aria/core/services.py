@@ -5,7 +5,7 @@ from django.db.models import Model
 
 def model_update(
     *, instance: Model, fields: List[str], data: Dict[str, Any]
-) -> Tuple[Model, bool]:
+) -> Tuple[Model, bool, Dict[str, Any]]:
     """
     Generic update service meant to be reused in local update services
     For example:
@@ -30,7 +30,11 @@ def model_update(
         if getattr(instance, field) != data[field]:
             has_updated = True
             updated_fields.append(
-                {"field": field, "old": getattr(instance, field), "new": data[field]}
+                {
+                    "field": field,
+                    "old_value": getattr(instance, field),
+                    "new_value": data[field],
+                }
             )
             setattr(instance, field, data[field])
 

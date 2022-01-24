@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Union
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model, QuerySet

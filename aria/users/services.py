@@ -9,14 +9,11 @@ from django.utils import timezone
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode as uid_decoder
 from django.utils.translation import gettext as _
+from aria.audit_logs.services import log_entry_create
 
 from aria.core.exceptions import ApplicationError
 from aria.core.services import model_update
 from aria.users.models import User
-
-# TODO:
-# - Add method for creating users
-# - Upon creation, send confimation email
 
 
 def user_create(
@@ -36,7 +33,7 @@ def user_create(
     """
 
     if not email:
-        raise ValueError("Email cannot be none.")
+        raise ValueError("Error when creating user, email cannot be none.")
 
     existing_user = User.objects.get(email__iexact=email)
 
@@ -62,14 +59,13 @@ def user_create(
     # TODO: add user channel
 
     if send_verification_email:
-        # TODO: add send verification email method
-        pass
+        new_user.send_verification_email()
 
     return new_user
 
 
 @transaction.atomic
-def user_update(*, user: User, data, log_change=True) -> User:
+def user_update(*, user: User, data, author: User, log_change=True) -> User:
     """
     Updates an existing user instance.
     """
@@ -87,6 +83,7 @@ def user_update(*, user: User, data, log_change=True) -> User:
         "has_confirmed_email",
         "street_address",
         "zip_code",
+        "zip_place",
         "disabled_emails",
         "subscribed_to_newsletter",
         "allow_personalization",
@@ -101,7 +98,8 @@ def user_update(*, user: User, data, log_change=True) -> User:
         instance=user, fields=non_side_effect_fields, data=data
     )
 
-    # TODO: implement logging
+    if has_updated and author and log_change:
+        log_entry_create(author=author, instance=user, change_messages=updated_fields)
 
     return user
 
@@ -132,7 +130,7 @@ def user_verify_account(*, uid: str, token: str) -> None:
 
 def user_set_password(*, uid: str, token: str, new_password: str) -> None:
     """
-    Seet new password for user, validating uid, token and password. Eventually
+    Set new password for user, validating uid, token and password. Eventually
     sets a new password for the user.
     """
 
