@@ -35,7 +35,7 @@ def user_create(
     if not email:
         raise ValueError("Error when creating user, email cannot be none.")
 
-    existing_user = User.objects.get(email__iexact=email)
+    existing_user = User.objects.filter(email__iexact=email).exists()
 
     if existing_user:
         raise ApplicationError(message=_("User with email already exists."))

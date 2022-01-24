@@ -1,20 +1,30 @@
 from django.urls import path
 
-from aria.users.viewsets import (
-    UserAccountVerificationAPI,
-    UserAccountVerificationConfirmAPI,
+from aria.users.viewsets.internal import (
     UserAuditLogsListAPI,
-    UserCreateAPI,
     UserDetailAPI,
     UserListAPI,
     UserNoteListAPI,
-    UserPasswordResetAPI,
-    UserPasswordResetConfirmAPI,
     UserUpdateAPI,
 )
 
-urlpatterns = [
+from aria.users.viewsets.public import (
+    UserAccountVerificationAPI,
+    UserAccountVerificationConfirmAPI,
+    UserCreateAPI,
+    UserPasswordResetAPI,
+    UserPasswordResetConfirmAPI,
+)
+
+internal_patterns = [
     path("", UserListAPI.as_view(), name="user-list"),
+    path("<int:user_id>/", UserDetailAPI.as_view(), name="user-detail"),
+    path("<int:user_id>/update/", UserUpdateAPI.as_view(), name="user-update"),
+    path("<int:user_id>/notes/", UserNoteListAPI.as_view(), name="user-notes"),
+    path("<int:user_id>/logs/", UserAuditLogsListAPI.as_view(), name="user-logs"),
+]
+
+public_patterns = [
     path("create/", UserCreateAPI.as_view(), name="user-create"),
     path("verify/", UserAccountVerificationAPI.as_view(), name="user-verify"),
     path(
@@ -28,8 +38,6 @@ urlpatterns = [
         UserPasswordResetConfirmAPI.as_view(),
         name="user-reset-password-confirm",
     ),
-    path("<int:user_id>/", UserDetailAPI.as_view(), name="user-detail"),
-    path("<int:user_id>/update/", UserUpdateAPI.as_view(), name="user-update"),
-    path("<int:user_id>/notes/", UserNoteListAPI.as_view(), name="user-notes"),
-    path("<int:user_id>/logs/", UserAuditLogsListAPI.as_view(), name="user-logs"),
 ]
+
+urlpatterns = internal_patterns + public_patterns
