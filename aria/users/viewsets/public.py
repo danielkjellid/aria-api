@@ -45,7 +45,13 @@ class UserCreateAPI(APIView):
 
         user = user_create(**serializer.validated_data)
 
-        return Response(self.InputSerializer(user).data, status=status.HTTP_201_CREATED)
+        return Response(
+            {
+                "message": _("Account has been created."),
+                "data": self.InputSerializer(user).data,
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class UserAccountVerificationAPI(APIView):
@@ -71,7 +77,7 @@ class UserAccountVerificationAPI(APIView):
         user.send_verification_email()
 
         return Response(
-            {"detail": _("Email verification has been sent.")},
+            {"message": _("Email verification has been sent."), "data": {}},
             status=status.HTTP_200_OK,
         )
 
@@ -95,7 +101,7 @@ class UserAccountVerificationConfirmAPI(APIView):
         user_verify_account(uid=uid, token=token)
 
         return Response(
-            {"detail": _("Account email verified.")},
+            {"message": _("Account email verified."), "data": {}},
             status=status.HTTP_200_OK,
         )
 
@@ -126,7 +132,7 @@ class UserPasswordResetAPI(APIView):
         user.send_password_reset_email(request=request)
 
         return Response(
-            {"detail": _("Password reset e-mail has been sent.")},
+            {"message": _("Password reset e-mail has been sent."), "data": {}},
             status=status.HTTP_200_OK,
         )
 
@@ -151,6 +157,6 @@ class UserPasswordResetConfirmAPI(APIView):
         user_set_password(**serializer.validated_data)
 
         return Response(
-            {"detail": _("Password has been reset with the new password")},
+            {"message": _("Password has been reset with the new password"), "data": {}},
             status=status.HTTP_200_OK,
         )

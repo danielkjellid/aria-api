@@ -359,7 +359,7 @@ class TestInternalUsersEndpoints:
         response_json = json.loads(response.content)
 
         assert response.status_code == 200
-        assert response_json == payload_json
+        assert response_json["data"] == payload_json
 
     def test_authenticated_superuser_update(self, authenticated_superuser_client):
         """
@@ -390,7 +390,7 @@ class TestInternalUsersEndpoints:
         response_json = json.loads(response.content)
 
         assert response.status_code == 200
-        assert response_json == payload_json
+        assert response_json["data"] == payload_json
 
     def test_unauthenticated_user_partial_update(self, unauthenticated_client):
         """
@@ -467,7 +467,7 @@ class TestInternalUsersEndpoints:
         response_json = json.loads(response.content)
 
         assert response.status_code == 200
-        assert response_json == payload_json
+        assert response_json["data"] == payload_json
 
     def test_authenticated_superuser_partial_update(
         self, authenticated_superuser_client
@@ -487,4 +487,4 @@ class TestInternalUsersEndpoints:
         response_json = json.loads(response.content)
 
         assert response.status_code == 200
-        assert response_json == payload_json
+        assert response_json["data"] == payload_json

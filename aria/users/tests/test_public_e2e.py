@@ -1,6 +1,9 @@
 from model_bakery import baker
 import pytest
 import json
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.hashers import check_password
+
 
 from aria.users.models import User
 
@@ -20,9 +23,13 @@ class TestPublicUsersEndpoints:
     create_endpoint = f"{base_endpoint}/create/"
 
     def test_unauthenticated_user_create(self, unauthenticated_client):
+        """
+        Test creating a user from the endpoint.
+        """
+
         user = baker.prepare(User)
 
-        expected_json = {
+        payload_json = {
             "email": user.email,
             "first_name": user.first_name,
             "last_name": user.last_name,
@@ -39,15 +46,100 @@ class TestPublicUsersEndpoints:
         }
 
         response = unauthenticated_client.post(
-            self.create_endpoint, data=expected_json, format="json"
+            self.create_endpoint, data=payload_json, format="json"
         )
 
+        response_json = json.loads(response.content)
+
         # Password won't be returned if the created object, so remove it
-        expected_json.pop("password")
+        payload_json.pop("password")
 
         assert response.status_code == 201
-        assert json.loads(response.content) == expected_json
+        assert response_json["data"] == payload_json
 
-    ###################
-    # Create endpoint #
-    ###################
+    ######################################
+    # User account verification endpoint #
+    ######################################
+
+    verification_endpoint = f"{base_endpoint}/verify/"
+
+    def test_unauthenticated_user_verify_account(self, unauthenticated_client):
+        """
+        Test initiating the account verification process.
+        """
+
+        user = baker.make(User)
+
+        payload_json = {"email": user.email}
+        response = unauthenticated_client.post(
+            f"{self.verification_endpoint}", data=payload_json, format="json"
+        )
+
+        assert response.status_code == 200
+
+    ######################################
+    # User account verification endpoint #
+    ######################################
+
+    def test_unauthenticated_user_verify_account_confirm(self, unauthenticated_client):
+        """
+        Test actually verifying the account
+        """
+
+        user = baker.make(User)
+        user_uid = user.uid
+        user_token = user.generate_verification_email_token()
+
+        payload_json = {"uid": user_uid, "token": user_token}
+
+        url = f"{self.verification_endpoint}confirm/{user_uid}/{user_token}/"
+
+        response = unauthenticated_client.post(url, data=payload_json, format="json")
+
+        assert response.status_code == 200
+
+    ######################
+    # User rest password #
+    ######################
+
+    reset_password_endpoint = f"{base_endpoint}/password/reset/"
+
+    def test_unauthenticated_user_set_new_password(self, unauthenticated_client):
+        """
+        Test initiating reset password process.
+        """
+
+        user = baker.make(User)
+
+        payload_json = {"email": user.email}
+
+        response = unauthenticated_client.post(
+            self.reset_password_endpoint, data=payload_json, format="json"
+        )
+
+        assert response == 200
+
+    ##################################
+    # User set rest password confirm #
+    ##################################
+
+    def test_unauthenticated_user_set_new_password(self, unauthenticated_client):
+        """
+        Test validating created tokens and setting new password.
+        """
+
+        user = baker.make(User)
+        user_uid = user.uid
+        user_token = default_token_generator.make_token(user)
+
+        payload_json = {
+            "new_password": "supersecret",
+            "uid": user_uid,
+            "token": user_token,
+        }
+
+        url = f"{self.reset_password_endpoint}confirm/{user_uid}/{user_token}/"
+
+        response = unauthenticated_client.post(url, data=payload_json, format="json")
+
+        assert response.status_code == 200

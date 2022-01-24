@@ -200,4 +200,10 @@ class UserUpdateAPI(APIView):
             log_change=True,
         )
 
-        return Response(serializer.initial_data, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "message": _("User was updated successfully"),
+                "data": serializer.initial_data,
+            },
+            status=status.HTTP_200_OK,
+        )

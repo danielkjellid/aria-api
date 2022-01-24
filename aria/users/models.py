@@ -9,9 +9,10 @@ from django.db import models
 from django.forms import ValidationError
 from django.template.loader import render_to_string
 from django.utils import timezone
-from django.utils.encoding import force_bytes
+from django.utils.encoding import force_bytes, force_str
 from django.utils.http import (
     urlsafe_base64_encode as uid_encoder,
+    urlsafe_base64_decode as uid_decoder,
 )
 from django.utils.translation import gettext_lazy as _
 
@@ -191,6 +192,14 @@ class User(AbstractBaseUser, PermissionsMixin):
             # If we're unable to parse, return raw number.
             return self.phone_number
 
+    @property
+    def uid(self) -> str:
+        """
+        A users UID based on id.
+        """
+
+        return uid_encoder(force_bytes(self.id))
+
     #########
     # Notes #
     #########
@@ -250,6 +259,17 @@ class User(AbstractBaseUser, PermissionsMixin):
         if form.is_valid():
             form.save(**email_options)
 
+    def validate_uid(self, uid) -> bool:
+        """
+        Validates a given user uid.
+        """
+        decoded_uid = force_str(uid_decoder(uid))
+
+        if decoded_uid == self.id:
+            return True
+
+        return False
+
     def generate_verification_email_token(self) -> str:
         """
         Generates a signed token, used to verify the user's email address.
@@ -292,7 +312,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                 "protocol": "https",
                 "domain": "flis.no",
                 "user": self,
-                "uid": uid_encoder(force_bytes(self.id)),
+                "uid": self.uid,
                 "token": self.generate_verification_email_token(),
             },
         )

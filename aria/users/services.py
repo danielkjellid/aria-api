@@ -6,7 +6,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
 from django.http import HttpRequest
 from django.utils import timezone
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode as uid_decoder
 from django.utils.translation import gettext as _
 from aria.audit_logs.services import log_entry_create
@@ -113,7 +113,7 @@ def user_verify_account(*, uid: str, token: str) -> None:
     """
 
     try:
-        decode_uid = force_text(uid_decoder(uid))
+        decode_uid = force_str(uid_decoder(uid))
         user = User.objects.get(id=decode_uid)
     except User.DoesNotExist:
         raise ApplicationError(message=_("Unable to find user with provided uid."))
@@ -126,6 +126,8 @@ def user_verify_account(*, uid: str, token: str) -> None:
     if not is_token_valid:
         raise ApplicationError(message=_("Token is invalid, please try again."))
 
+    print("user", user.id)
+
     user.has_confirmed_email = True
     user.save()
 
@@ -137,7 +139,7 @@ def user_set_password(*, uid: str, token: str, new_password: str) -> None:
     """
 
     try:
-        decode_uid = force_text(uid_decoder(uid))
+        decode_uid = force_str(uid_decoder(uid))
         user = User.objects.get(id=decode_uid)
     except User.DoesNotExist:
         raise ApplicationError(message=_("Unable to find user with provided uid."))
