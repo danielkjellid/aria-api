@@ -1,10 +1,8 @@
 from django.urls import path
 
 from aria.users.viewsets.internal import (
-    UserAuditLogsListAPI,
     UserDetailAPI,
     UserListAPI,
-    UserNoteListAPI,
     UserUpdateAPI,
 )
 
@@ -20,8 +18,6 @@ internal_patterns = [
     path("", UserListAPI.as_view(), name="user-list"),
     path("<int:user_id>/", UserDetailAPI.as_view(), name="user-detail"),
     path("<int:user_id>/update/", UserUpdateAPI.as_view(), name="user-update"),
-    path("<int:user_id>/notes/", UserNoteListAPI.as_view(), name="user-notes"),
-    path("<int:user_id>/logs/", UserAuditLogsListAPI.as_view(), name="user-logs"),
 ]
 
 public_patterns = [

@@ -152,7 +152,7 @@ class UserDetailAPI(APIView):
         user = get_object_or_404(User, pk=user_id)
         serializer = self.OutputSerializer(user)
 
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class UserUpdateAPI(APIView):
@@ -200,70 +200,4 @@ class UserUpdateAPI(APIView):
             log_change=True,
         )
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class UserNoteListAPI(APIView):
-    """
-    Endpoint for getting notes related to a user instance.
-
-    Returns a list of notes bellonging to that user.
-    """
-
-    permission_classes = (IsAdminUser, HasUserOrGroupPermission)
-    required_permissions = {
-        "GET": ["has_notes_list"],
-    }
-
-    class Pagination(LimitOffsetPagination):
-        limit = 20
-
-    class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
-        note = serializers.CharField()
-        updated_at = serializers.DateTimeField()
-        author = inline_serializer(
-            source="user",
-            fields={
-                "full_name": serializers.CharField(),
-                "initial": serializers.CharField(),
-                "avatar_color": serializers.CharField(),
-            },
-        )
-
-    def get(self, request: HttpRequest, user_id: int) -> HttpResponse:
-        user = get_object_or_404(User, pk=user_id)
-        notes_of_user = user.get_notes()
-
-        data = self.OutputSerializer(notes_of_user, many=True).data
-
-        return Response(data, status=status.HTTP_200_OK)
-
-
-class UserAuditLogsListAPI(APIView):
-    """
-    Endpoint for getting audit logs related to a user instance.
-
-    Returns a list of logs on changes to that user.
-    """
-
-    permission_classes = (IsAdminUser, HasUserOrGroupPermission)
-    required_permissions = {
-        "GET": ["has_audit_logs_list"],
-    }
-
-    class Pagination(LimitOffsetPagination):
-        limit = 20
-
-    class OutputSerializer(serializers.Serializer):
-        user = serializers.CharField()
-        change = serializers.JSONField()
-        date_of_change = serializers.DateTimeField()
-
-    def get(self, request: HttpRequest, user_id: int) -> HttpResponse:
-        user = get_object_or_404(User, pk=user_id)
-        logs_of_user = user.get_audit_logs()
-
-        data = self.OutputSerializer(logs_of_user, many=True).data
-
-        return Response(data, status=status.HTTP_200_OK)
+        return Response(serializer.initial_data, status=status.HTTP_200_OK)

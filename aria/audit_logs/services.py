@@ -36,18 +36,15 @@ def log_entry_create(
         )
 
     for change_message in change_messages:
-        # Validate that required keys are present in the change_message dict.
-        assert change_message["field"], "Required key is missing from change_message."
-        assert change_message[
-            "old_value"
-        ], "Required key is missing from change_message."
-        assert change_message[
-            "new_value"
-        ], "Required key is missing from change_message."
 
-        field = change_message.get("field")
-        old_value = change_message.get("old_value")
-        new_value = change_message.get("new_value")
+        field = change_message.get("field", None)
+        old_value = change_message.get("old_value", None)
+        new_value = change_message.get("new_value", None)
+
+        if field is None or old_value is None or new_value is None:
+            raise ValueError(
+                "Error when creating logging instance, one of the required keys are none."
+            )
 
         # Validate that there has actually been a loggable change.
         if new_value == old_value:
@@ -61,7 +58,7 @@ def log_entry_create(
 
         content_type = ContentType.objects.get_for_model(instance)
         new_log_entry = LogEntry.objects.create(
-            user=author,
+            author=author,
             content_type=content_type,
             content_object=instance,
             object_id=instance.id,

@@ -41,7 +41,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=255,
         unique=False,
     )
-    birth_date = models.DateField(_("birth date"), null=True)
+    birth_date = models.DateField(_("birth date"), null=True, blank=True)
     avatar_color = models.CharField(
         _("avatar color"),
         max_length=8,
@@ -181,14 +181,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         Returns a formatted version of the phone number
         """
-        parsed_phone = phonenumbers.parse(
-            self.phone_number, "NO"
-        )  # TODO: Handle different country codes
-        formatted_phone = phonenumbers.format_number(
-            parsed_phone, phonenumbers.PhoneNumberFormat.INTERNATIONAL
-        )
+        try:
+            parsed_number = phonenumbers.parse(self.phone_number, "NO")
 
-        return formatted_phone
+            return phonenumbers.format_number(
+                parsed_number, phonenumbers.PhoneNumberFormat.NATIONAL
+            )
+        except Exception:
+            # If we're unable to parse, return raw number.
+            return self.phone_number
 
     #########
     # Notes #

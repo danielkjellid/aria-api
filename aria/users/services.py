@@ -65,7 +65,9 @@ def user_create(
 
 
 @transaction.atomic
-def user_update(*, user: User, data, author: User, log_change=True) -> User:
+def user_update(
+    *, user: User, data, author: Optional[User] = None, log_change=True
+) -> User:
     """
     Updates an existing user instance.
     """
@@ -98,7 +100,7 @@ def user_update(*, user: User, data, author: User, log_change=True) -> User:
         instance=user, fields=non_side_effect_fields, data=data
     )
 
-    if has_updated and author and log_change:
+    if has_updated and author is not None and log_change:
         log_entry_create(author=author, instance=user, change_messages=updated_fields)
 
     return user

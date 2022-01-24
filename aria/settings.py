@@ -75,6 +75,11 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
+DATE_FORMAT = "%d. %B %Y"
+
+DATETIME_FORMAT = "%d. %B %Y %H:%M"
+DATETIME_INPUT_FORMATS = ["%d. %B %Y %H:%M"]
+
 WSGI_APPLICATION = "aria.wsgi.application"
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
@@ -203,7 +208,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # NOTE: We only show this in days to users, so it should be set to a number of whole days
-PASSWORD_RESET_TIMEOUT = 14 * 24 * 60 * 60
+PASSWORD_RESET_TIMEOUT = 14 * 24 * 60 * 60  # 14 days
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
