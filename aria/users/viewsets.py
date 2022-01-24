@@ -122,6 +122,36 @@ class UserDetailAPI(APIView):
         allow_personalization = serializers.BooleanField()
         allow_third_party_personalization = serializers.BooleanField()
 
+        # Notes and logs
+        notes = inline_serializer(
+            source="get_notes",
+            many=True,
+            read_only=True,
+            fields={
+                "id": serializers.IntegerField(),
+                "note": serializers.CharField(),
+                "updated_at": serializers.DateTimeField(),
+                "author": inline_serializer(
+                    source="user",
+                    fields={
+                        "full_name": serializers.CharField(),
+                        "initial": serializers.CharField(),
+                        "avatar_color": serializers.CharField(),
+                    },
+                ),
+            },
+        )
+        logs = inline_serializer(
+            source="get_audit_logs",
+            many=True,
+            read_only=True,
+            fields={
+                "user": serializers.CharField(),
+                "change": serializers.JSONField(),
+                "date_of_change": serializers.DateTimeField(),
+            },
+        )
+
     def get(self, request: HttpRequest, user_id: int) -> HttpResponse:
         user = get_object_or_404(User, pk=user_id)
         serializer = self.OutputSerializer(user)
