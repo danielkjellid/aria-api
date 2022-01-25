@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-23 15:04+0100\n"
+"POT-Creation-Date: 2022-01-25 14:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,19 +18,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: aria/audit_logs/models.py:19 aria/notes/models.py:18
+#: aria/audit_logs/models.py:21 aria/notes/models.py:18
 msgid "content type"
 msgstr ""
 
-#: aria/audit_logs/models.py:28
+#: aria/audit_logs/models.py:30
 msgid "changed at"
 msgstr ""
 
-#: aria/audit_logs/models.py:35
+#: aria/audit_logs/models.py:37
 msgid "Audit log entry"
 msgstr ""
 
-#: aria/audit_logs/models.py:36
+#: aria/audit_logs/models.py:38
 msgid "Audit log entries"
 msgstr ""
 
@@ -517,164 +517,50 @@ msgstr ""
 msgid "suppliers"
 msgstr ""
 
-#: aria/users/managers.py:17
-msgid "The email must be set"
-msgstr ""
-
-#: aria/users/managers.py:36
-msgid "Superuser must have is_staff=True."
-msgstr ""
-
-#: aria/users/managers.py:38
-msgid "Superuser must have is_superuser=True."
-msgstr ""
-
-#: aria/users/models.py:35
-msgid "email address"
-msgstr ""
-
-#: aria/users/models.py:39
-msgid "first name"
-msgstr ""
-
-#: aria/users/models.py:44
-msgid "last name"
-msgstr ""
-
-#: aria/users/models.py:48
-msgid "birth date"
-msgstr ""
-
-#: aria/users/models.py:50
-msgid "avatar color"
-msgstr ""
-
-#: aria/users/models.py:57
-msgid "street name"
-msgstr ""
-
-#: aria/users/models.py:59
-msgid "zip code"
-msgstr ""
-
-#: aria/users/models.py:64
-msgid "postal place"
-msgstr ""
-
-#: aria/users/models.py:69
-msgid "disabled email"
-msgstr ""
-
-#: aria/users/models.py:72
-msgid ""
-"Decides if a user receives email from us. Typically used if we do not want a "
-"user to receive marketing (competetors)."
-msgstr ""
-
-#: aria/users/models.py:77
-msgid "subscribed to newsletter"
-msgstr ""
-
-#: aria/users/models.py:79
-msgid "Decides if a user receives marketing emails from us."
-msgstr ""
-
-#: aria/users/models.py:82
-msgid "allows personalization"
-msgstr ""
-
-#: aria/users/models.py:85
-msgid "Decides if a user accepts a personalized experience within the app."
-msgstr ""
-
-#: aria/users/models.py:89
-msgid "allows third party personalization"
-msgstr ""
-
-#: aria/users/models.py:92
-msgid ""
-"Decides if we share user cookies with external sources such as Facebook. "
-"This will make the user see adverts and other related content to the app."
-msgstr ""
-
-#: aria/users/models.py:97
-msgid "acquisition source"
-msgstr ""
-
-#: aria/users/models.py:102
-msgid "date joined"
-msgstr ""
-
-#: aria/users/models.py:104
-msgid "active"
-msgstr ""
-
-#: aria/users/models.py:107
-msgid ""
-"Designates whether this user should be treated as active. Unselect this "
-"instead of deleting accounts if you want to preserve the data."
-msgstr ""
-
-#: aria/users/models.py:112
-msgid "staff status"
-msgstr ""
-
-#: aria/users/models.py:114
-msgid "Designates whether the user can log into this admin site."
-msgstr ""
-
-#: aria/users/models.py:117
-msgid "superuser status"
-msgstr ""
-
-#: aria/users/models.py:120
-msgid "Designates whether the user is automatically granted all permissions."
-msgstr ""
-
-#: aria/users/models.py:130
-msgid "user"
-msgstr ""
-
-#: aria/users/models.py:131
-msgid "users"
-msgstr ""
-
-#: aria/users/models.py:270
+#: aria/users/models.py:290
 msgid "Email is already verified, unable to send verification email."
-msgstr "Kontoen er allerede verifisert, kan ikke sende veifiserigns e-post på nytt."
+msgstr "Kontoen er allerede verifisert, kunne ikke sende verifiserings e-post."
 
-#: aria/users/services.py:43
+#: aria/users/services.py:41
 msgid "User with email already exists."
-msgstr "Bruker med e-post finnes allerede."
+msgstr "Det finnes allerede en konto med den e-posten."
 
-#: aria/users/services.py:114
+#: aria/users/services.py:119 aria/users/services.py:145
 msgid "Unable to find user with provided uid."
-msgstr "Fant inn bruker med gitt uid."
+msgstr "Fant ikke brukeren med gitt uid."
 
-#: aria/users/services.py:117
+#: aria/users/services.py:122
 msgid "Account is already verified."
 msgstr "Kontoen er allerede verifisert."
 
-#: aria/users/services.py:125
-msgid "Token is invalid, please try again by."
-msgstr "Nøkkelen er ugyldig, vennligst prøv på nytt."
+#: aria/users/services.py:127 aria/users/services.py:150
+msgid "Token is invalid, please try again."
+msgstr "Nøkkelen er ugyldig, vennligst prøv igjen."
 
-#: aria/users/viewsets.py:305
+#: aria/users/viewsets/internal.py:205
+msgid "User was updated successfully"
+msgstr "Kontoen ble oppdatert."
+
+#: aria/users/viewsets/public.py:50
+msgid "Account has been created."
+msgstr "Kontoen har blitt opprettet."
+
+#: aria/users/viewsets/public.py:75 aria/users/viewsets/public.py:130
 msgid "User does not exist."
 msgstr "Kontoen eksisterer ikke."
 
-#: aria/users/viewsets.py:310
+#: aria/users/viewsets/public.py:80
 msgid "Email verification has been sent."
-msgstr "Verifiserings e-post har blitt sendt."
+msgstr "E-post om verifisering av konto har blitt sendt."
 
-#: aria/users/viewsets.py:331
+#: aria/users/viewsets/public.py:104
 msgid "Account email verified."
-msgstr "Kontoen er nå verifisert."
+msgstr "E-posten er nå verifisert."
 
-#: aria/users/viewsets.py:375
+#: aria/users/viewsets/public.py:135
 msgid "Password reset e-mail has been sent."
-msgstr ""
+msgstr "E-post om nullstilling av passord har blitt sendt."
 
-#: aria/users/viewsets.py:405
+#: aria/users/viewsets/public.py:160
 msgid "Password has been reset with the new password"
-msgstr ""
+msgstr "Passorder har blitt nullstilt."
