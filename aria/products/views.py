@@ -8,7 +8,6 @@ from aria.products.models import Product
 from aria.products.serializers import (
     ProductListByCategorySerializer,
     ProductListSerializer,
-    ProductSerializer,
 )
 
 
@@ -62,15 +61,3 @@ class ProductListByCategoryAPIView(generics.ListAPIView):
             .distinct("pk")
             .order_by("-id")
         )
-
-
-class ProductRetrieveAPIView(generics.RetrieveAPIView):
-    """
-    Viewset for getting a specific product instance based on slug
-    """
-
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-    serializer_class = ProductSerializer
-    lookup_field = "slug"
-    queryset = Product.objects.all()

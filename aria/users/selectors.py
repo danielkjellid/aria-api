@@ -37,7 +37,7 @@ def get_user_group_permissions(user: User) -> List[str]:
     return group_permissions
 
 
-def user_list(*, filters=None) -> Union[QuerySet, List[User]]:
+def user_list(*, filters=None) -> Union[QuerySet, User]:
     """
     Returns a queryset of users based on given filters.
     """

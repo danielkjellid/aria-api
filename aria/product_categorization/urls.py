@@ -1,11 +1,11 @@
 from django.urls import path
 
-from aria.product_categorization.viewsets import (
+from aria.product_categorization.views import (
     CategoriesNavigationListAPIView,
     CategoryListAPIView,
     CategoryRetrieveAPIView,
 )
-from aria.products.viewsets import ProductListByCategoryAPIView
+from aria.products.views import ProductListByCategoryAPIView
 
 urlpatterns = [
     # endpoint for geting list of all categories
