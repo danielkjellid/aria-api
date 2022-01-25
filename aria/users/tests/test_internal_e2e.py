@@ -20,42 +20,49 @@ class TestInternalUsersEndpoints:
     # Users list endpoint required both the permission has_users_list
     # and is_staff = True for the user.
 
-    def test_unauthenticated_user_list(self, unauthenticated_client):
+    def test_unauthenticated_user_list(
+        self, unauthenticated_client, django_assert_max_num_queries
+    ):
         """
         Test that unauthenticated users gets a 401 unauthorized on listing
         all users in the application.
         """
 
-        response = unauthenticated_client.get(self.base_endpoint)
+        with django_assert_max_num_queries(0):
+            response = unauthenticated_client.get(self.base_endpoint)
 
         assert response.status_code == 401
 
     def test_authenticated_unprivileged_user_list(
-        self, authenticated_unprivileged_client
+        self, authenticated_unprivileged_client, django_assert_max_num_queries
     ):
         """
         Test that authenticated, unprivileged, users gets a 403 forbidden on
         listing all users in the application.
         """
 
-        response = authenticated_unprivileged_client.get(self.base_endpoint)
+        with django_assert_max_num_queries(1):
+            response = authenticated_unprivileged_client.get(self.base_endpoint)
 
         assert response.status_code == 403
 
     @pytest.mark.parametrize("test_permissions", ["has_users_list"], indirect=True)
-    def test_authenticated_privileged_user_list(self, authenticated_privileged_client):
+    def test_authenticated_privileged_user_list(
+        self, authenticated_privileged_client, django_assert_max_num_queries
+    ):
         """
         Test that authenticated, privileged, users with staff = false gets 403
         forbidden on listing all users in the application.
         """
 
-        response = authenticated_privileged_client.get(self.base_endpoint)
+        with django_assert_max_num_queries(1):
+            response = authenticated_privileged_client.get(self.base_endpoint)
 
         assert response.status_code == 403
 
     @pytest.mark.parametrize("test_permissions", ["has_users_list"], indirect=True)
     def test_authenticated_privileged_staff_user_list(
-        self, authenticated_privileged_staff_client
+        self, authenticated_privileged_staff_client, django_assert_max_num_queries
     ):
         """
         Test that privileged staff users gets a valid response on listing all users in
@@ -63,19 +70,23 @@ class TestInternalUsersEndpoints:
         """
         baker.make(User, _quantity=3)
 
-        response = authenticated_privileged_staff_client.get(self.base_endpoint)
+        with django_assert_max_num_queries(4):
+            response = authenticated_privileged_staff_client.get(self.base_endpoint)
 
         assert response.status_code == 200
         assert len(json.loads(response.content)) == 4  # The three made + fixture
 
-    def test_authenticated_superuser_list(self, authenticated_superuser_client):
+    def test_authenticated_superuser_list(
+        self, authenticated_superuser_client, django_assert_max_num_queries
+    ):
         """
         Test that superusers gets a valid response on listing all users in
         the application.
         """
         baker.make(User, _quantity=3)
 
-        response = authenticated_superuser_client.get(self.base_endpoint)
+        with django_assert_max_num_queries(4):
+            response = authenticated_superuser_client.get(self.base_endpoint)
 
         assert response.status_code == 200
         assert len(json.loads(response.content)) == 4  # The three made + fixture
@@ -87,7 +98,9 @@ class TestInternalUsersEndpoints:
     # Users detail endpoint required both the permission has_users_list
     # and is_staff = True for the user.
 
-    def test_unauthenticated_user_retrieve(self, unauthenticated_client):
+    def test_unauthenticated_user_retrieve(
+        self, unauthenticated_client, django_assert_max_num_queries
+    ):
         """
         Test that unauthenticated users gets a 401 unauthorized on another
         user retrieval.
@@ -95,12 +108,13 @@ class TestInternalUsersEndpoints:
 
         user = baker.make(User)
 
-        response = unauthenticated_client.get(f"{self.base_endpoint}{user.id}/")
+        with django_assert_max_num_queries(0):
+            response = unauthenticated_client.get(f"{self.base_endpoint}{user.id}/")
 
         assert response.status_code == 401
 
     def test_authenticated_unprivileged_user_retrieve(
-        self, authenticated_unprivileged_client
+        self, authenticated_unprivileged_client, django_assert_max_num_queries
     ):
         """
         Test that authenticated, unprivileged, users gets a 403 forbidden on
@@ -109,15 +123,16 @@ class TestInternalUsersEndpoints:
 
         user = baker.make(User)
 
-        response = authenticated_unprivileged_client.get(
-            f"{self.base_endpoint}{user.id}/"
-        )
+        with django_assert_max_num_queries(1):
+            response = authenticated_unprivileged_client.get(
+                f"{self.base_endpoint}{user.id}/"
+            )
 
         assert response.status_code == 403
 
     @pytest.mark.parametrize("test_permissions", ["has_users_list"], indirect=True)
     def test_authenticated_privileged_user_retrieve(
-        self, authenticated_privileged_client
+        self, authenticated_privileged_client, django_assert_max_num_queries
     ):
         """
         Test that authenticated, privileged, users with staff = false gets 403 forbidden
@@ -126,15 +141,16 @@ class TestInternalUsersEndpoints:
 
         user = baker.make(User)
 
-        response = authenticated_privileged_client.get(
-            f"{self.base_endpoint}{user.id}/"
-        )
+        with django_assert_max_num_queries(1):
+            response = authenticated_privileged_client.get(
+                f"{self.base_endpoint}{user.id}/"
+            )
 
         assert response.status_code == 403
 
     @pytest.mark.parametrize("test_permissions", ["has_users_list"], indirect=True)
     def test_authenticated_privileged_staff_user_retrieve(
-        self, authenticated_privileged_staff_client
+        self, authenticated_privileged_staff_client, django_assert_max_num_queries
     ):
         """
         Test that privileged staff users gets a valid responseon another user
@@ -174,13 +190,17 @@ class TestInternalUsersEndpoints:
 
         url = f"{self.base_endpoint}{user.id}/"
 
-        response = authenticated_privileged_staff_client.get(url)
+        with django_assert_max_num_queries(6):
+            response = authenticated_privileged_staff_client.get(url)
+
         actual_json = json.loads(response.content)
 
         assert response.status_code == 200
         assert actual_json == expected_json
 
-    def test_authenticated_superuser_retrieve(self, authenticated_superuser_client):
+    def test_authenticated_superuser_retrieve(
+        self, authenticated_superuser_client, django_assert_max_num_queries
+    ):
         """
         Test that staff superusers users gets a valid response on another user
         retrieval.
@@ -219,7 +239,9 @@ class TestInternalUsersEndpoints:
 
         url = f"{self.base_endpoint}{user.id}/"
 
-        response = authenticated_superuser_client.get(url)
+        with django_assert_max_num_queries(6):
+            response = authenticated_superuser_client.get(url)
+
         actual_json = json.loads(response.content)
 
         assert response.status_code == 200
@@ -232,7 +254,9 @@ class TestInternalUsersEndpoints:
     # Users update endpoint required both the permission has_users_edit
     # and is_staff = True for the user.
 
-    def test_unauthenticated_user_update(self, unauthenticated_client):
+    def test_unauthenticated_user_update(
+        self, unauthenticated_client, django_assert_max_num_queries
+    ):
         """
         Test that unauthenticated users gets a 401 unauthorized on
         full update of another user instance.
@@ -254,14 +278,17 @@ class TestInternalUsersEndpoints:
             "allow_third_party_personalization": not user.allow_third_party_personalization,
         }
 
-        response = unauthenticated_client.post(
-            f"{self.base_endpoint}{user.id}/update/", data=payload_json, format="json"
-        )
+        with django_assert_max_num_queries(0):
+            response = unauthenticated_client.post(
+                f"{self.base_endpoint}{user.id}/update/",
+                data=payload_json,
+                format="json",
+            )
 
         assert response.status_code == 401
 
     def test_authenticated_unprivileged_user_update(
-        self, authenticated_unprivileged_client
+        self, authenticated_unprivileged_client, django_assert_max_num_queries
     ):
         """
         Test that authenticated, unprivileged, users gets a 403 forbidden
@@ -284,15 +311,18 @@ class TestInternalUsersEndpoints:
             "allow_third_party_personalization": not user.allow_third_party_personalization,
         }
 
-        response = authenticated_unprivileged_client.post(
-            f"{self.base_endpoint}{user.id}/update/", data=payload_json, format="json"
-        )
+        with django_assert_max_num_queries(1):
+            response = authenticated_unprivileged_client.post(
+                f"{self.base_endpoint}{user.id}/update/",
+                data=payload_json,
+                format="json",
+            )
 
         assert response.status_code == 403
 
     @pytest.mark.parametrize("test_permissions", ["has_user_edit"], indirect=True)
     def test_authenticated_privileged_user_update(
-        self, authenticated_privileged_client
+        self, authenticated_privileged_client, django_assert_max_num_queries
     ):
         """
         Test that authenticated, privileged, users with staff = false
@@ -315,15 +345,18 @@ class TestInternalUsersEndpoints:
             "allow_third_party_personalization": not user.allow_third_party_personalization,
         }
 
-        response = authenticated_privileged_client.post(
-            f"{self.base_endpoint}{user.id}/update/", data=payload_json, format="json"
-        )
+        with django_assert_max_num_queries(1):
+            response = authenticated_privileged_client.post(
+                f"{self.base_endpoint}{user.id}/update/",
+                data=payload_json,
+                format="json",
+            )
 
         assert response.status_code == 403
 
     @pytest.mark.parametrize("test_permissions", ["has_user_edit"], indirect=True)
     def test_authenticated_privileged_staff_user_update(
-        self, authenticated_privileged_staff_client
+        self, authenticated_privileged_staff_client, django_assert_max_num_queries
     ):
         """
         Test that privileged staff users gets a valid response on
@@ -346,16 +379,24 @@ class TestInternalUsersEndpoints:
             "allow_third_party_personalization": not user.allow_third_party_personalization,
         }
 
-        response = authenticated_privileged_staff_client.post(
-            f"{self.base_endpoint}{user.id}/update/", data=payload_json, format="json"
-        )
+        # The base query for getting users is 6 plus two for getting and checking
+        # permissions, one for update and one additional for bulk creating log
+        # entries.
+        with django_assert_max_num_queries(9):
+            response = authenticated_privileged_staff_client.post(
+                f"{self.base_endpoint}{user.id}/update/",
+                data=payload_json,
+                format="json",
+            )
 
         response_json = json.loads(response.content)
 
         assert response.status_code == 200
         assert response_json["data"] == payload_json
 
-    def test_authenticated_superuser_update(self, authenticated_superuser_client):
+    def test_authenticated_superuser_update(
+        self, authenticated_superuser_client, django_assert_max_num_queries
+    ):
         """
         Test that superusers gets a valid response on full update of
         another user instance.
@@ -377,16 +418,23 @@ class TestInternalUsersEndpoints:
             "allow_third_party_personalization": not user.allow_third_party_personalization,
         }
 
-        response = authenticated_superuser_client.post(
-            f"{self.base_endpoint}{user.id}/update/", data=payload_json, format="json"
-        )
+        # The base query for the users is 6 plus one additional for
+        # bulk creating log entries.
+        with django_assert_max_num_queries(7):
+            response = authenticated_superuser_client.post(
+                f"{self.base_endpoint}{user.id}/update/",
+                data=payload_json,
+                format="json",
+            )
 
         response_json = json.loads(response.content)
 
         assert response.status_code == 200
         assert response_json["data"] == payload_json
 
-    def test_unauthenticated_user_partial_update(self, unauthenticated_client):
+    def test_unauthenticated_user_partial_update(
+        self, unauthenticated_client, django_assert_max_num_queries
+    ):
         """
         Test that unauthenticated users gets a 401 unauthorized upon partial update.
         """
@@ -397,14 +445,17 @@ class TestInternalUsersEndpoints:
             "email": "newtestuser@example,com",
         }
 
-        response = unauthenticated_client.post(
-            f"{self.base_endpoint}{user.id}/update/", data=payload_json, format="json"
-        )
+        with django_assert_max_num_queries(0):
+            response = unauthenticated_client.post(
+                f"{self.base_endpoint}{user.id}/update/",
+                data=payload_json,
+                format="json",
+            )
 
         assert response.status_code == 401
 
     def test_authenticated_unprivileged_user_partial_update(
-        self, authenticated_unprivileged_client
+        self, authenticated_unprivileged_client, django_assert_max_num_queries
     ):
         """
         Test that authenticated, unprivileged, users gets a 403 forbidden.
@@ -416,15 +467,18 @@ class TestInternalUsersEndpoints:
             "email": "newtestuser@example,com",
         }
 
-        response = authenticated_unprivileged_client.post(
-            f"{self.base_endpoint}{user.id}/update/", data=payload_json, format="json"
-        )
+        with django_assert_max_num_queries(1):
+            response = authenticated_unprivileged_client.post(
+                f"{self.base_endpoint}{user.id}/update/",
+                data=payload_json,
+                format="json",
+            )
 
         assert response.status_code == 403
 
     @pytest.mark.parametrize("test_permissions", ["has_user_edit"], indirect=True)
     def test_authenticated_privileged_user_partial_update(
-        self, authenticated_privileged_client
+        self, authenticated_privileged_client, django_assert_max_num_queries
     ):
         """
         Test that authenticated, privileged, users with staff = false gets 403 forbidden.
@@ -436,15 +490,18 @@ class TestInternalUsersEndpoints:
             "email": "newtestuser@example,com",
         }
 
-        response = authenticated_privileged_client.post(
-            f"{self.base_endpoint}{user.id}/update/", data=payload_json, format="json"
-        )
+        with django_assert_max_num_queries(1):
+            response = authenticated_privileged_client.post(
+                f"{self.base_endpoint}{user.id}/update/",
+                data=payload_json,
+                format="json",
+            )
 
         assert response.status_code == 403
 
     @pytest.mark.parametrize("test_permissions", ["has_user_edit"], indirect=True)
     def test_authenticated_privileged_staff_user_partial_update(
-        self, authenticated_privileged_staff_client
+        self, authenticated_privileged_staff_client, django_assert_max_num_queries
     ):
         """
         Test that privileged staff users gets a valid response
@@ -454,9 +511,14 @@ class TestInternalUsersEndpoints:
 
         payload_json = {"email": "newtestuser@example.com"}
 
-        response = authenticated_privileged_staff_client.post(
-            f"{self.base_endpoint}{user.id}/update/", data=payload_json, format="json"
-        )
+        # 6 queries for getting and updating the user, 2 queries for
+        # getting and checking permissions and 1 query to log the change.
+        with django_assert_max_num_queries(9):
+            response = authenticated_privileged_staff_client.post(
+                f"{self.base_endpoint}{user.id}/update/",
+                data=payload_json,
+                format="json",
+            )
 
         response_json = json.loads(response.content)
 
@@ -464,7 +526,7 @@ class TestInternalUsersEndpoints:
         assert response_json["data"] == payload_json
 
     def test_authenticated_superuser_partial_update(
-        self, authenticated_superuser_client
+        self, authenticated_superuser_client, django_assert_max_num_queries
     ):
         """
         Test that superusers gets a valid response
@@ -474,11 +536,15 @@ class TestInternalUsersEndpoints:
 
         payload_json = {"email": "newtestuser@example.com"}
 
-        response = authenticated_superuser_client.post(
-            f"{self.base_endpoint}{user.id}/update/", data=payload_json, format="json"
-        )
+        # 6 queries for getting and updating and 1 query to log the change.
+        with django_assert_max_num_queries(7):
+            response = authenticated_superuser_client.post(
+                f"{self.base_endpoint}{user.id}/update/",
+                data=payload_json,
+                format="json",
+            )
 
-        response_json = json.loads(response.content)
+            response_json = json.loads(response.content)
 
         assert response.status_code == 200
         assert response_json["data"] == payload_json

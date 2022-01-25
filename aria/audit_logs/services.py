@@ -28,7 +28,7 @@ def log_entry_create(
     The update_model core service will format and changes accordingly.
     """
 
-    created_entries = []
+    entries_to_create = []
 
     if not author:
         raise ValueError(
@@ -57,7 +57,7 @@ def log_entry_create(
             continue
 
         content_type = ContentType.objects.get_for_model(instance)
-        new_log_entry = LogEntry.objects.create(
+        new_log_entry = LogEntry(
             author=author,
             content_type=content_type,
             content_object=instance,
@@ -66,6 +66,8 @@ def log_entry_create(
             date_of_change=timezone.now(),
         )
 
-        created_entries.append(new_log_entry)
+        entries_to_create.append(new_log_entry)
+
+    created_entries = LogEntry.objects.bulk_create(entries_to_create)
 
     return created_entries
