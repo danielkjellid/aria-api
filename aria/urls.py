@@ -10,7 +10,6 @@ api_patterns = [
 
 urlpatterns = [
     path("alpha/", admin.site.urls),
-    path("api/auth/", include("aria.core.urls")),
     path("api/", include("aria.kitchens.urls")),
     path("api/", include("aria.products.urls")),
     path("api/", include("aria.product_categorization.urls")),
