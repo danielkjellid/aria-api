@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-25 14:32+0100\n"
+"POT-Creation-Date: 2022-01-25 16:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,6 +33,20 @@ msgstr ""
 #: aria/audit_logs/models.py:38
 msgid "Audit log entries"
 msgstr ""
+
+#: aria/auth/viewsets.py:23
+msgid ""
+"Wrong username or password. Note that you have to separate between lowercase "
+"and uppercase characters."
+msgstr "Feil brukernavn eller passord. Merk at du må skille mellom store og små bokstaver."
+
+#: aria/auth/viewsets.py:51
+msgid "Successfully logged out."
+msgstr "Logget ut succesfullt."
+
+#: aria/auth/viewsets.py:58
+msgid "There was a problem logging you out, please try again."
+msgstr "Vi hadde problemer med å logge deg ut, vennligst prøv igjen."
 
 #: aria/core/models.py:33
 msgid "created time"
@@ -537,30 +551,30 @@ msgstr "Kontoen er allerede verifisert."
 msgid "Token is invalid, please try again."
 msgstr "Nøkkelen er ugyldig, vennligst prøv igjen."
 
-#: aria/users/viewsets/internal.py:205
+#: aria/users/viewsets/internal.py:203
 msgid "User was updated successfully"
 msgstr "Kontoen ble oppdatert."
 
-#: aria/users/viewsets/public.py:50
+#: aria/users/viewsets/public.py:46
 msgid "Account has been created."
 msgstr "Kontoen har blitt opprettet."
 
-#: aria/users/viewsets/public.py:75 aria/users/viewsets/public.py:130
+#: aria/users/viewsets/public.py:71 aria/users/viewsets/public.py:126
 msgid "User does not exist."
 msgstr "Kontoen eksisterer ikke."
 
-#: aria/users/viewsets/public.py:80
+#: aria/users/viewsets/public.py:76
 msgid "Email verification has been sent."
 msgstr "E-post om verifisering av konto har blitt sendt."
 
-#: aria/users/viewsets/public.py:104
+#: aria/users/viewsets/public.py:100
 msgid "Account email verified."
 msgstr "E-posten er nå verifisert."
 
-#: aria/users/viewsets/public.py:135
+#: aria/users/viewsets/public.py:131
 msgid "Password reset e-mail has been sent."
 msgstr "E-post om nullstilling av passord har blitt sendt."
 
-#: aria/users/viewsets/public.py:160
+#: aria/users/viewsets/public.py:156
 msgid "Password has been reset with the new password"
 msgstr "Passorder har blitt nullstilt."
