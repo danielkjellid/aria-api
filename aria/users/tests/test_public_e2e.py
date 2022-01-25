@@ -22,7 +22,9 @@ class TestPublicUsersEndpoints:
 
     create_endpoint = f"{base_endpoint}/create/"
 
-    def test_unauthenticated_user_create(self, unauthenticated_client):
+    def test_unauthenticated_user_create(
+        self, unauthenticated_client, django_assert_max_num_queries
+    ):
         """
         Test creating a user from the endpoint.
         """
@@ -45,9 +47,12 @@ class TestPublicUsersEndpoints:
             "password": user.password,
         }
 
-        response = unauthenticated_client.post(
-            self.create_endpoint, data=payload_json, format="json"
-        )
+        # 1 query for checking if the user already exists, and one for
+        # creating the new user.
+        with django_assert_max_num_queries(2):
+            response = unauthenticated_client.post(
+                self.create_endpoint, data=payload_json, format="json"
+            )
 
         response_json = json.loads(response.content)
 
@@ -63,7 +68,9 @@ class TestPublicUsersEndpoints:
 
     verification_endpoint = f"{base_endpoint}/verify/"
 
-    def test_unauthenticated_user_verify_account(self, unauthenticated_client):
+    def test_unauthenticated_user_verify_account(
+        self, unauthenticated_client, django_assert_max_num_queries
+    ):
         """
         Test initiating the account verification process.
         """
@@ -71,9 +78,11 @@ class TestPublicUsersEndpoints:
         user = baker.make(User)
 
         payload_json = {"email": user.email}
-        response = unauthenticated_client.post(
-            f"{self.verification_endpoint}", data=payload_json, format="json"
-        )
+
+        with django_assert_max_num_queries(1):
+            response = unauthenticated_client.post(
+                f"{self.verification_endpoint}", data=payload_json, format="json"
+            )
 
         assert response.status_code == 200
 
@@ -81,7 +90,9 @@ class TestPublicUsersEndpoints:
     # User account verification endpoint #
     ######################################
 
-    def test_unauthenticated_user_verify_account_confirm(self, unauthenticated_client):
+    def test_unauthenticated_user_verify_account_confirm(
+        self, unauthenticated_client, django_assert_max_num_queries
+    ):
         """
         Test actually verifying the account
         """
@@ -94,7 +105,11 @@ class TestPublicUsersEndpoints:
 
         url = f"{self.verification_endpoint}confirm/{user_uid}/{user_token}/"
 
-        response = unauthenticated_client.post(url, data=payload_json, format="json")
+        # 1 for getting the user and 1 for updating the email
+        with django_assert_max_num_queries(2):
+            response = unauthenticated_client.post(
+                url, data=payload_json, format="json"
+            )
 
         assert response.status_code == 200
 
@@ -104,7 +119,9 @@ class TestPublicUsersEndpoints:
 
     reset_password_endpoint = f"{base_endpoint}/password/reset/"
 
-    def test_unauthenticated_user_set_new_password(self, unauthenticated_client):
+    def test_unauthenticated_user_set_new_password(
+        self, unauthenticated_client, django_assert_max_num_queries
+    ):
         """
         Test initiating reset password process.
         """
@@ -113,17 +130,20 @@ class TestPublicUsersEndpoints:
 
         payload_json = {"email": user.email}
 
-        response = unauthenticated_client.post(
-            self.reset_password_endpoint, data=payload_json, format="json"
-        )
+        with django_assert_max_num_queries(2):
+            response = unauthenticated_client.post(
+                self.reset_password_endpoint, data=payload_json, format="json"
+            )
 
-        assert response == 200
+        assert response.status_code == 200
 
     ##################################
     # User set rest password confirm #
     ##################################
 
-    def test_unauthenticated_user_set_new_password(self, unauthenticated_client):
+    def test_unauthenticated_user_set_new_password_confirm(
+        self, unauthenticated_client, django_assert_max_num_queries
+    ):
         """
         Test validating created tokens and setting new password.
         """
@@ -140,6 +160,9 @@ class TestPublicUsersEndpoints:
 
         url = f"{self.reset_password_endpoint}confirm/{user_uid}/{user_token}/"
 
-        response = unauthenticated_client.post(url, data=payload_json, format="json")
+        with django_assert_max_num_queries(2):
+            response = unauthenticated_client.post(
+                url, data=payload_json, format="json"
+            )
 
         assert response.status_code == 200

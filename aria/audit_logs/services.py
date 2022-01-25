@@ -51,8 +51,8 @@ def log_entry_create(
             raise ValueError(
                 "Error when creating logging instance, old and new values are equal."
             )
-        # Filter out reverse relations to prevent type error, and early
-        # return.
+        # Filter out reverse relations to prevent type error, and continue
+        # to the next iteration.
         if isinstance(instance._meta.get_field(field), ManyToOneRel):
             continue
 
