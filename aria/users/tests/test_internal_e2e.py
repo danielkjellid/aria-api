@@ -3,7 +3,7 @@ import json
 import pytest
 from model_bakery import baker
 
-from aria.test_utils import model_baker_datetime_formatting
+from aria.core.test_utils import model_baker_datetime_formatting
 from aria.users.models import User
 
 pytestmark = pytest.mark.django_db
