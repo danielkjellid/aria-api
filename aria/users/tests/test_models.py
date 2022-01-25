@@ -1,0 +1,53 @@
+import pytest
+
+
+class TestUsersModels:
+    def test_create_user(self, django_user_model):
+        user = django_user_model.objects.create_user(
+            email="leonardo@davinci.com", password="supersecretpassword"
+        )
+
+        assert user.email == "leonardo@davinci.com"
+        assert user.is_active == True
+        assert user.is_staff == False
+        assert user.is_superuser == False
+
+        with pytest.raises(TypeError):
+            django_user_model.objects.create_user()
+            django_user_model.objects.create_user(email="")
+
+        with pytest.raises(ValueError):
+            django_user_model.objects.create_user(
+                email="", password="supersecretpassword"
+            )
+
+    def test_create_superuser(self, django_user_model):
+        superuser = django_user_model.objects.create_superuser(
+            email="leonardo@davinci.com", password="supersecretpassword"
+        )
+
+        assert superuser.email == "leonardo@davinci.com"
+        assert superuser.is_active == True
+        assert superuser.is_staff == True
+        assert superuser.is_superuser == True
+
+        with pytest.raises(TypeError):
+            django_user_model.objects.create_superuser()
+            django_user_model.objects.create_superuser(email="")
+
+        with pytest.raises(ValueError):
+            django_user_model.objects.create_superuser(
+                email="", password="supersecretpassword"
+            )
+            django_user_model.objects.create_superuser(
+                email="leonardo@davinci.com",
+                password="supersecretpassword",
+                is_staff=False,
+                is_superuser=False,
+            )
+            django_user_model.objects.create_superuser(
+                email="leonardo@davinci.com",
+                password="supersecretpassword",
+                is_staff=True,
+                is_superuser=False,
+            )
