@@ -59,6 +59,8 @@ LOGOUT_REDIRECT_URL = "/"
 # Language code for this installation.
 LANGUAGE_CODE = "nb-NO"
 
+LOCALE_PATHS = ((BASE_DIR / "locale"),)
+
 # Local time zone for this installation.
 TIME_ZONE = "Europe/Oslo"
 
@@ -72,6 +74,11 @@ USE_L10N = True
 
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
+
+DATE_FORMAT = "%d. %B %Y"
+
+DATETIME_FORMAT = "%d. %B %Y %H:%M"
+DATETIME_INPUT_FORMATS = ["%d. %B %Y %H:%M"]
 
 WSGI_APPLICATION = "aria.wsgi.application"
 
@@ -104,6 +111,7 @@ TEMPLATES = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -199,6 +207,9 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
+# NOTE: We only show this in days to users, so it should be set to a number of whole days
+PASSWORD_RESET_TIMEOUT = 14 * 24 * 60 * 60  # 14 days
+
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
@@ -231,7 +242,7 @@ DATABASES = {
 LOG_SQL = env.bool("LOG_SQL", default=False)
 
 if DEBUG:
-    QUERY_COUNT_WARNING_THRESHOLD = 3
+    QUERY_COUNT_WARNING_THRESHOLD = 10
     QUERY_DURATION_WARNING_THRESHOLD = 300  # in ms
     MIDDLEWARE = ["aria.core.middleware.QueryCountWarningMiddleware"] + MIDDLEWARE
 
@@ -286,6 +297,7 @@ REST_FRAMEWORK = {
     ),
     "DATETIME_FORMAT": "%d. %B %Y %H:%M",
     "DATETIME_INPUT_FORMATS": ["%d. %B %Y %H:%M"],
+    "EXCEPTION_HANDLER": "aria.core.exceptions.core_exception_handler",
 }
 
 ##########
