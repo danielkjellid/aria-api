@@ -3,6 +3,11 @@ import pytest
 
 class TestUsersModels:
     def test_create_user(self, django_user_model):
+        """
+        Test creation of users and check that all fields are
+        set correctly.
+        """
+
         user = django_user_model.objects.create_user(
             email="leonardo@davinci.com", password="supersecretpassword"
         )
@@ -22,6 +27,11 @@ class TestUsersModels:
             )
 
     def test_create_superuser(self, django_user_model):
+        """
+        Test creation of superusers and check that all fields are
+        set correctly.
+        """
+
         superuser = django_user_model.objects.create_superuser(
             email="leonardo@davinci.com", password="supersecretpassword"
         )

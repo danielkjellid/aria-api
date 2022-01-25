@@ -106,7 +106,7 @@ def user_update(
     return user
 
 
-def user_verify_account(*, uid: str, token: str) -> None:
+def user_verify_account(*, uid: str, token: str) -> User:
     """
     Verify a user account, setting has_confirmed_email to True
     if given uid and token match.
@@ -126,13 +126,13 @@ def user_verify_account(*, uid: str, token: str) -> None:
     if not is_token_valid:
         raise ApplicationError(message=_("Token is invalid, please try again."))
 
-    print("user", user.id)
-
     user.has_confirmed_email = True
     user.save()
 
+    return user
 
-def user_set_password(*, uid: str, token: str, new_password: str) -> None:
+
+def user_set_password(*, uid: str, token: str, new_password: str) -> User:
     """
     Set new password for user, validating uid, token and password. Eventually
     sets a new password for the user.
@@ -155,3 +155,5 @@ def user_set_password(*, uid: str, token: str, new_password: str) -> None:
 
     user.set_password(new_password)
     user.save()
+
+    return user

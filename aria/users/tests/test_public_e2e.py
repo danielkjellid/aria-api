@@ -2,7 +2,6 @@ from model_bakery import baker
 import pytest
 import json
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth.hashers import check_password
 
 
 from aria.users.models import User
