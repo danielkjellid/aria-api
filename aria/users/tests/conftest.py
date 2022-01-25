@@ -1,10 +1,9 @@
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import AnonymousUser, Permission
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import AnonymousUser
 from rest_framework.test import APIClient
-from rest_framework_simplejwt.tokens import RefreshToken
 
 import pytest
+from rest_framework_simplejwt.tokens import RefreshToken
 
 ###############
 # Permissions #

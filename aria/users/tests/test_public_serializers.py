@@ -1,10 +1,11 @@
 import pytest
 from model_bakery import baker
+
 from aria.users.models import User
 from aria.users.viewsets.public import (
-    UserCreateAPI,
     UserAccountVerificationAPI,
     UserAccountVerificationConfirmAPI,
+    UserCreateAPI,
     UserPasswordResetAPI,
     UserPasswordResetConfirmAPI,
 )

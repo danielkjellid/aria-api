@@ -1,8 +1,9 @@
-from model_bakery import baker
-import pytest
 import json
+
 from django.contrib.auth.tokens import default_token_generator
 
+import pytest
+from model_bakery import baker
 
 from aria.users.models import User
 

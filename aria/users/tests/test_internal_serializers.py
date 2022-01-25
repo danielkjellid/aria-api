@@ -1,8 +1,9 @@
 import pytest
 from model_bakery import baker
+
 from aria.test_utils import model_baker_datetime_formatting
 from aria.users.models import User
-from aria.users.viewsets.internal import UserListAPI, UserDetailAPI, UserUpdateAPI
+from aria.users.viewsets.internal import UserDetailAPI, UserListAPI, UserUpdateAPI
 
 pytestmark = pytest.mark.django_db
 

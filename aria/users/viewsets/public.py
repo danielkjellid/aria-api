@@ -7,11 +7,7 @@ from rest_framework.views import APIView
 
 from aria.core.exceptions import ApplicationError
 from aria.users.models import User
-from aria.users.services import (
-    user_create,
-    user_set_password,
-    user_verify_account,
-)
+from aria.users.services import user_create, user_set_password, user_verify_account
 
 
 class UserCreateAPI(APIView):

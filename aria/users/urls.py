@@ -1,11 +1,6 @@
 from django.urls import path
 
-from aria.users.viewsets.internal import (
-    UserDetailAPI,
-    UserListAPI,
-    UserUpdateAPI,
-)
-
+from aria.users.viewsets.internal import UserDetailAPI, UserListAPI, UserUpdateAPI
 from aria.users.viewsets.public import (
     UserAccountVerificationAPI,
     UserAccountVerificationConfirmAPI,

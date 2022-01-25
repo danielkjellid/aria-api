@@ -9,8 +9,8 @@ from django.utils import timezone
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode as uid_decoder
 from django.utils.translation import gettext as _
-from aria.audit_logs.services import log_entry_create
 
+from aria.audit_logs.services import log_entry_create
 from aria.core.exceptions import ApplicationError
 from aria.core.services import model_update
 from aria.users.models import User

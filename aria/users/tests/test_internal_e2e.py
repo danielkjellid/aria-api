@@ -1,9 +1,9 @@
-from model_bakery import baker
-import pytest
 import json
 
-from aria.test_utils import model_baker_datetime_formatting
+import pytest
+from model_bakery import baker
 
+from aria.test_utils import model_baker_datetime_formatting
 from aria.users.models import User
 
 pytestmark = pytest.mark.django_db

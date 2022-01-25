@@ -11,9 +11,7 @@ from aria.core.permissions import HasUserOrGroupPermission
 from aria.core.serializers import inline_serializer
 from aria.users.models import User
 from aria.users.selectors import user_list
-from aria.users.services import (
-    user_update,
-)
+from aria.users.services import user_update
 
 
 class UserListAPI(APIView):

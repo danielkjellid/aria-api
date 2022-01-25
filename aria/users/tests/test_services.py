@@ -1,16 +1,18 @@
-import pytest
-from aria.core.exceptions import ApplicationError
+from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth.hashers import check_password
+
+import pytest
 from model_bakery import baker
+
 from aria.audit_logs.selectors import logs_for_instance_list
+from aria.core.exceptions import ApplicationError
 from aria.users.models import User
 from aria.users.services import (
     user_create,
+    user_set_password,
     user_update,
     user_verify_account,
-    user_set_password,
 )
 
 pytestmark = pytest.mark.django_db
