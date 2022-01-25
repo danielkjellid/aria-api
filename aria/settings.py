@@ -147,6 +147,7 @@ THIRD_PARTY_APPS = [
 
 PROJECT_APPS = [
     "aria.core",
+    "aria.auth",
     "aria.audit_logs",
     "aria.users",
     "aria.kitchens",

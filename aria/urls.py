@@ -3,7 +3,10 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-api_patterns = [path("users/", include("aria.users.urls"))]
+api_patterns = [
+    path("auth/", include("aria.auth.urls")),
+    path("users/", include("aria.users.urls")),
+]
 
 urlpatterns = [
     path("alpha/", admin.site.urls),
