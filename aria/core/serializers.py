@@ -1,3 +1,4 @@
+from django.db.models.query import QuerySet
 from rest_framework import serializers
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -41,6 +42,27 @@ class BaseHeaderImageSerializer(serializers.Serializer):
             "image_2048x1150",
         )
         abstract = True
+
+
+def _create_serializer_class(name, fields):
+    return type(name, (serializers.Serializer,), fields)
+
+
+def inline_serializer(*, fields, data=None, **kwargs):
+    """
+    The inline serializer is to be used for nested serialization within
+    the viewset.
+    """
+
+    serializer_class = _create_serializer_class(name="", fields=fields)
+
+    if data is not None:
+        if isinstance(data, QuerySet):
+            return serializer_class(data=[d for d in data], **kwargs)
+
+        return serializer_class(data=data, **kwargs)
+
+    return serializer_class(**kwargs)
 
 
 class BaseListImageSerializer(serializers.Serializer):
