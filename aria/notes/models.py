@@ -32,6 +32,7 @@ class NoteEntry(models.Model):
         verbose_name = _("Note")
         verbose_name_plural = _("Notes")
         permissions = (
+            ("has_notes_list", "Can view notes"),
             ("has_notes_add", "Can add new notes"),
             ("has_note_edit", "Can edit a single note instance"),
             ("has_note_delete", "Can delete a single note instance"),

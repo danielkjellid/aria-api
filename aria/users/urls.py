@@ -1,37 +1,36 @@
-from django.urls import path, re_path
+from django.urls import path
 
-from aria.users.viewsets import (
-    AccountVerificationConfirmView,
-    AccountVerificationView,
-    PasswordResetConfirmView,
-    PasswordResetView,
-    RequestUserRetrieveAPIView,
-    UserCreateAPIView,
-    UserDetailAPIView,
-    UserNoteAPIView,
-    UsersListAPIView,
+from aria.users.viewsets.internal import UserDetailAPI, UserListAPI, UserUpdateAPI
+from aria.users.viewsets.public import (
+    UserAccountVerificationAPI,
+    UserAccountVerificationConfirmAPI,
+    UserCreateAPI,
+    UserPasswordResetAPI,
+    UserPasswordResetConfirmAPI,
 )
 
-urlpatterns = [
-    # endpoint for getting info about request user
-    path("user/", RequestUserRetrieveAPIView.as_view(), name="request_user"),
-    # endpoint for getting all users
-    path("users/", UsersListAPIView.as_view(), name="users_list"),
-    # endpoint for getting a single user instance
-    path("users/<int:pk>/", UserDetailAPIView.as_view(), name="user_detail"),
-    path("users/<int:pk>/notes/", UserNoteAPIView.as_view(), name="user_notes"),
-    # endpoint for creating a single user instance
-    path("users/create/", UserCreateAPIView.as_view(), name="user_create"),
-    path("users/password/reset/", PasswordResetView.as_view(), name="reset_password"),
-    re_path(
-        r"^users/password/reset/confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$",
-        PasswordResetConfirmView.as_view(),
-        name="password_reset_confirm",
+internal_patterns = [
+    path("", UserListAPI.as_view(), name="users-list"),
+    path("<int:user_id>/", UserDetailAPI.as_view(), name="users-detail"),
+    path("<int:user_id>/update/", UserUpdateAPI.as_view(), name="users-update"),
+]
+
+public_patterns = [
+    path("create/", UserCreateAPI.as_view(), name="users-create"),
+    path("verify/", UserAccountVerificationAPI.as_view(), name="users-verify"),
+    path(
+        "verify/confirm/<str:uid>/<str:token>/",
+        UserAccountVerificationConfirmAPI.as_view(),
+        name="users-verify-confirm",
     ),
-    path("users/verify/", AccountVerificationView.as_view(), name="verify_account"),
-    re_path(
-        r"^users/verify/confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$",
-        AccountVerificationConfirmView.as_view(),
-        name="account_verification_confirm",
+    path(
+        "password/reset/", UserPasswordResetAPI.as_view(), name="users-reset-password"
+    ),
+    path(
+        "password/reset/confirm/<str:uid>/<str:token>/",
+        UserPasswordResetConfirmAPI.as_view(),
+        name="users-reset-password-confirm",
     ),
 ]
+
+urlpatterns = internal_patterns + public_patterns
