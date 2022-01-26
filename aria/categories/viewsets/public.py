@@ -1,17 +1,24 @@
 from django.http import HttpRequest, HttpResponse
-import json
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework import serializers, status
 from rest_framework.response import Response
-from aria.categories.selectors import categories_navigation_active_list
+from aria.categories.selectors import (
+    categories_children_active_list,
+    categories_navigation_active_list,
+    categories_parent_active_list,
+)
 
 
-from aria.core.serializers import inline_serializer
+from aria.core.serializers import (
+    BaseHeaderImageSerializer,
+    BaseListImageSerializer,
+)
 from aria.categories.models import Category
 
 
-class CategoryNavigationListAPI(APIView):
+class CategoryListAPI(APIView):
     """
     [PUBLIC] Endpoint to fetch categories used for
     routing in the frontend navbar.
@@ -34,12 +41,7 @@ class CategoryNavigationListAPI(APIView):
 
         def get_children(self, parent):
 
-            # Check if cached children exist. If not cached, filter
-            # children to get active, as it gets all children by default.
-            if hasattr(parent, "_cached_children"):
-                children = parent.get_children()
-            else:
-                children = parent.get_children().active()
+            children = categories_children_active_list(parent=parent)
 
             return self.ChildSerializer(children, many=True).data
 
@@ -50,13 +52,73 @@ class CategoryNavigationListAPI(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class CategoryListAPI(APIView):
-    pass
+class CategoryParentListAPI(APIView):
+    """
+    [PUBLIC] Endpoint for getting a list of parent
+    categories.
+    """
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        name = serializers.CharField()
+        slug = serializers.SlugField()
+        ordering = serializers.IntegerField()
+        images = BaseHeaderImageSerializer(source="*", read_only=True)
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        parent_categories = categories_parent_active_list()
+        serializer = self.OutputSerializer(parent_categories, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class CategoryDetailAPI(APIView):
-    pass
+class CategoryChildrenListAPI(APIView):
+    """
+    [PUBLIC] Endpoint for getting a list of children
+    categories attached to a specific parent.
+    """
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        name = serializers.CharField()
+        slug = serializers.SlugField()
+        ordering = serializers.IntegerField()
+        description = serializers.CharField()
+        images = BaseListImageSerializer(source="*", read_only=True)
+
+    def get(self, request: HttpRequest, category_slug: str) -> HttpResponse:
+        parent = get_object_or_404(Category, slug=category_slug)
+        children_categories = categories_children_active_list(parent=parent)
+        serializer = self.OutputSerializer(children_categories, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CategoryProductsListAPI(APIView):
     pass
+
+
+class CategoryDetailAPI(APIView):
+    """
+    [PUBLIC] Endpoint for getting a details of a specific
+    category, parent or child.
+    """
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        name = serializers.CharField()
+
+    def get(self, request: HttpRequest, category_slug: str) -> HttpResponse:
+        category = get_object_or_404(Category, slug=category_slug)
+        serializer = self.OutputSerializer(category)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
