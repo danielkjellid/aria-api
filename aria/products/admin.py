@@ -75,9 +75,10 @@ class ProductAdmin(admin.ModelAdmin):
         "sites",
         "colors",
         "category",
+        "categories",
         "shapes",
     )
-    exclude = ("styles", "applications", "materials")
+    exclude = ("styles", "applications", "materials", "categories")
     ordering = ["-id"]
     inlines = [
         ProductSiteStateInline,

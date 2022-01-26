@@ -1,6 +1,7 @@
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 from django.db import models
+from django.forms import ValidationError
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
@@ -20,6 +21,8 @@ from aria.core.models import (
 from aria.product_categorization.models import SubCategory
 from aria.products import enums
 from aria.suppliers.models import Supplier
+from mptt.models import TreeManyToManyField
+from aria.categories.models import Category
 
 
 class Product(BaseModel, BaseThumbnailImageModel):
@@ -40,6 +43,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
     supplier = models.ForeignKey(
         Supplier, on_delete=models.PROTECT, related_name="products"
     )
+    categories = TreeManyToManyField(Category, related_name="products")
     category = models.ManyToManyField(SubCategory, related_name="products")
     status = models.IntegerField(
         _("Status"),

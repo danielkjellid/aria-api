@@ -1,5 +1,6 @@
-from django.db.models.signals import post_delete, pre_delete
+from django.db.models.signals import post_delete, pre_delete, m2m_changed
 from django.dispatch import receiver
+from aria.categories.models import Category
 
 from aria.core.utils import cleanup_files_from_deleted_instance
 from aria.products.models import (
@@ -10,6 +11,20 @@ from aria.products.models import (
     Variant,
 )
 from aria.products.services import delete_related_variants
+
+
+@receiver(m2m_changed, sender=Product.categories.through)
+def validate_category_being_added(sender, instance, *args, **kwargs):
+    action = kwargs.get("action", None)
+    categories_pk_set = kwargs.get("pk_set", None)
+
+    if action == "pre_add":
+        categories = Category.objects.filter(id__in=categories_pk_set)
+        for category in categories:
+            if category.is_primary:
+                raise Exception(
+                    f"You can not add a primary category to categories. Tried to add {category.name}."
+                )
 
 
 @receiver(post_delete, sender=Product)
