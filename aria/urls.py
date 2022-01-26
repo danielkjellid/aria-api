@@ -6,6 +6,9 @@ from django.urls import include, path
 api_patterns = [
     path("auth/", include("aria.auth.urls")),
     path("users/", include("aria.users.urls")),
+    path(
+        "categories/v2/", include("aria.categories.urls")
+    ),  # TODO: remove v2 from path when migration is done
 ]
 
 urlpatterns = [
