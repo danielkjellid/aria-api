@@ -140,6 +140,7 @@ THIRD_PARTY_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "django_s3_storage",
     "imagekit",
+    "mptt",
 ]
 
 PROJECT_APPS = [
@@ -151,6 +152,7 @@ PROJECT_APPS = [
     "aria.product_categorization",
     "aria.suppliers",
     "aria.notes",
+    "aria.categories",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS

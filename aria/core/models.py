@@ -116,6 +116,30 @@ class BaseHeaderImageModel(BaseImageModel):
     )
 
 
+class BaseListImageModel(BaseImageModel):
+    class Meta:
+        abstract = True
+
+    image500x305 = ImageSpecField(
+        source="image",
+        processors=[ResizeToFill(500, 305)],
+        format="JPEG",
+        options={"quality": 90},
+    )
+    image600x440 = ImageSpecField(
+        source="image",
+        processors=[ResizeToFill(600, 440)],
+        format="JPEG",
+        options={"quality": 90},
+    )
+    image850x520 = ImageSpecField(
+        source="image",
+        processors=[ResizeToFill(850, 520)],
+        format="JPEG",
+        options={"quality": 90},
+    )
+
+
 class BaseThumbnailImageModel(models.Model):
     class Meta:
         abstract = True
