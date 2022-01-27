@@ -1,12 +1,12 @@
 import pytest
 from model_bakery import baker
-from aria.users.models import User
-from aria.auth.viewsets import (
-    AuthTokenObtainAPI,
-    AuthLogoutAndBlacklistRefreshTokenForUserAPI,
-)
-
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from aria.auth.viewsets import (
+    AuthLogoutAndBlacklistRefreshTokenForUserAPI,
+    AuthTokenObtainAPI,
+)
+from aria.users.models import User
 
 
 class TestPublicAuthSerializers:

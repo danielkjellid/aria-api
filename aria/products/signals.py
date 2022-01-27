@@ -1,7 +1,7 @@
-from django.db.models.signals import post_delete, pre_delete, m2m_changed
+from django.db.models.signals import m2m_changed, post_delete, pre_delete
 from django.dispatch import receiver
-from aria.categories.models import Category
 
+from aria.categories.models import Category
 from aria.core.utils import cleanup_files_from_deleted_instance
 from aria.products.models import (
     Product,
