@@ -14,7 +14,16 @@ class ProductQuerySet(BaseQuerySet):
         Utility to avoid n+1 queries
         """
 
-        return self.prefetch_related("categories", "colors", "shapes")
+        return self.prefetch_related(
+            "categories",
+            "colors",
+            "shapes",
+            "images",
+            "shapes",
+            "options",
+            "options__variants",
+            "options__shapes",
+        )
 
     def by_category(self, category, ordered: bool = True):
         # Prepare queryset and get active decendants
