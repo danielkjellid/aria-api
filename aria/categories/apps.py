@@ -6,4 +6,4 @@ class CategoriesConfig(AppConfig):
     name = "aria.categories"
 
     def ready(self) -> None:
-        import aria.product_categorization.signals  # noqa: F401
+        import aria.categories.signals  # noqa: F401
