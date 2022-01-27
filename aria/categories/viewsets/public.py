@@ -114,11 +114,8 @@ class CategoryProductsListAPI(APIView):
     class Pagination(LimitOffsetPagination):
         limit = 24
 
-    class FilterSerializer(serializers.Serializer):
-        name = serializers.CharField()
-        search_keywords = serializers.CharField()
-        supplier_name = serializers.CharField()
-        materisl = serializers.CharField()
+    class SearchSerializer(serializers.Serializer):
+        search = serializers.CharField(required=False)
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
@@ -170,7 +167,7 @@ class CategoryProductsListAPI(APIView):
     def get(self, request: HttpRequest, category_slug: str) -> HttpResponse:
         category = get_object_or_404(Category, slug=category_slug)
 
-        filters_serializer = self.FilterSerializer(data=request.query_params)
+        filters_serializer = self.SearchSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
 
         products = product_list_by_category(

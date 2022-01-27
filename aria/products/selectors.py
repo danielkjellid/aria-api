@@ -3,7 +3,7 @@ from typing import List, Union
 from django.db.models import QuerySet
 from aria.products.enums import ProductStatus
 from aria.categories.models import Category
-from aria.products.filters import ProductFilter
+from aria.products.filters import ProductSearchFilter
 from aria.products.models import Product, Variant
 
 
@@ -25,4 +25,4 @@ def product_list_by_category(
 
     qs = category.get_products().filter(status=ProductStatus.AVAILABLE)
 
-    return ProductFilter(filters, qs).qs
+    return ProductSearchFilter(filters, qs).qs

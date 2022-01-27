@@ -1,15 +1,24 @@
+from django.db.models import Q
 from django_filters import FilterSet, filters
 
 from aria.products.models import Product
 
 
-class ProductFilter(FilterSet):
+class ProductSearchFilter(FilterSet):
     """
     A set of searchable fields for the product model.
     """
 
-    materials = filters.CharFilter(lookup_expr="icontains")
+    search = filters.CharFilter(method="query_products", label="Search")
 
     class Meta:
         model = Product
-        fields = ("name", "search_keywords", "supplier__name", "materials")
+        fields = ["search"]
+
+    def query_products(self, queryset, name, value):
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(search_keywords__icontains=value)
+            | Q(supplier__name__icontains=value)
+            | Q(materials__icontains=value)
+        )
