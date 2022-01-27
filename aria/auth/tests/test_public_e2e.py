@@ -1,14 +1,12 @@
 import json
-import pytest
 
+import pytest
 from model_bakery import baker
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from aria.users.models import User
 from aria.users.tests.conftest import unauthenticated_client
-
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.exceptions import TokenError
-
 
 unauthenticated_client = unauthenticated_client
 
