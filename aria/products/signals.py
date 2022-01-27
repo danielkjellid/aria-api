@@ -10,11 +10,10 @@ from aria.products.models import (
     ProductOption,
     Variant,
 )
-from aria.products.services import delete_related_variants
+from aria.products.services import product_option_delete_related_variants
 
 
-@receiver(m2m_changed, sender=Product.categories.through)
-def validate_category_being_added(sender, instance, *args, **kwargs):
+def _validate_category(**kwargs):
     action = kwargs.get("action", None)
     categories_pk_set = kwargs.get("pk_set", None)
 
@@ -25,6 +24,11 @@ def validate_category_being_added(sender, instance, *args, **kwargs):
                 raise Exception(
                     f"You can not add a primary category to categories. Tried to add {category.name}."
                 )
+
+
+@receiver(m2m_changed, sender=Product.categories.through)
+def validate_category_being_added(sender, instance, *args, **kwargs):
+    _validate_category(**kwargs)
 
 
 @receiver(post_delete, sender=Product)
@@ -39,4 +43,4 @@ def delete_product_files(sender, instance, *args, **kwargs):
 
 @receiver(pre_delete, sender=ProductOption)
 def delete_related_product_variants(sender, instance, *args, **kwargs):
-    delete_related_variants(instance=instance)
+    product_option_delete_related_variants(instance=instance)
