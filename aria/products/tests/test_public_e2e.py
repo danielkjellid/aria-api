@@ -18,7 +18,7 @@ class TestPublicProductsEndpoints:
     # Detail endpoint #
     ###################
 
-    def test_unauthenticated_user_retrieve(
+    def test_unauthenticated_user_products_retrieve(
         self, unauthenticated_client, django_assert_max_num_queries
     ):
         """

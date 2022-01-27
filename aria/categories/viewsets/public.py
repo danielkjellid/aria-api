@@ -33,6 +33,7 @@ class CategoryListAPI(APIView):
         id = serializers.IntegerField()
         name = serializers.CharField()
         slug = serializers.SlugField()
+        ordering = serializers.IntegerField()
         children = serializers.SerializerMethodField()
 
         class ChildSerializer(serializers.Serializer):

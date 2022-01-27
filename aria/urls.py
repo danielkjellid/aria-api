@@ -7,15 +7,13 @@ api_patterns = [
     path("auth/", include("aria.auth.urls")),
     path("products/", include("aria.products.urls")),
     path("users/", include("aria.users.urls")),
-    path(
-        "v2/categories/", include("aria.categories.urls")
-    ),  # TODO: remove v2 from path when migration is done
+    path("categories/", include("aria.categories.urls")),
 ]
 
 urlpatterns = [
     path("alpha/", admin.site.urls),
     path("api/", include("aria.kitchens.urls")),
-    path("api/", include("aria.product_categorization.urls")),
+    path("api/v1/", include("aria.product_categorization.urls")),
     path("api/", include("aria.notes.urls")),
     path("api-auth/", include("rest_framework.urls")),
     path("api/", include(api_patterns)),
