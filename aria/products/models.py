@@ -17,6 +17,7 @@ from aria.core.models import (
 )
 from aria.product_categorization.models import SubCategory
 from aria.products import enums
+from aria.products.managers import ProductManager, ProductQuerySet
 from aria.suppliers.models import Supplier
 from mptt.models import TreeManyToManyField
 from aria.categories.models import Category
@@ -146,7 +147,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
         _("Shipping cost"), decimal_places=2, max_digits=10, default=0.0
     )
 
-    objects = models.Manager()
+    objects = ProductManager.from_queryset(ProductQuerySet)()
 
     class Meta:
         verbose_name = _("Product")

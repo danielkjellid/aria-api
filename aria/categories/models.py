@@ -80,3 +80,11 @@ class Category(MPTTModel, BaseModel, BaseHeaderImageModel, BaseListImageModel):
     @property
     def is_new(self) -> bool:
         return self.promotion_type == PromotionType.NEW
+
+    def get_products(self):
+        """
+        Returns products from this category.
+        """
+        from aria.products.models import Product
+
+        return Product.objects.by_category(self).preload_for_list()
