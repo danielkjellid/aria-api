@@ -5,6 +5,7 @@ from aria.categories.viewsets.public import (
     CategoryDetailAPI,
     CategoryListAPI,
     CategoryParentListAPI,
+    CategoryProductsListAPI,
 )
 
 internal_patterns = []
@@ -23,6 +24,11 @@ public_patterns = [
         "<slug:category_slug>/children/",
         CategoryChildrenListAPI.as_view(),
         name="categories-parent-children-list",
+    ),
+    path(
+        "<slug:category_slug>/products/",
+        CategoryProductsListAPI.as_view(),
+        name="category-products-list",
     ),
 ]
 

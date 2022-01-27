@@ -14,6 +14,7 @@ from aria.categories.selectors import (
 from aria.core.serializers import (
     BaseHeaderImageSerializer,
     BaseListImageSerializer,
+    inline_serializer,
 )
 from aria.categories.models import Category
 
@@ -101,7 +102,67 @@ class CategoryChildrenListAPI(APIView):
 
 
 class CategoryProductsListAPI(APIView):
-    pass
+    """
+    [PUBLIC] Endpoint for getting a list of products in
+    a specific category.
+    """
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        name = serializers.CharField()
+        slug = serializers.SlugField()
+        unit = serializers.CharField(source="get_unit_display")
+        thumbnail = serializers.CharField(source="thumbnail.url")
+        display_price = serializers.BooleanField()
+        from_price = serializers.DecimalField(
+            source="get_lowest_option_price",
+            decimal_places=2,
+            coerce_to_string=True,
+            max_digits=8,
+        )
+        colors = inline_serializer(
+            many=True,
+            read_only=True,
+            fields={
+                "id": serializers.IntegerField(),
+                "name": serializers.CharField(),
+                "color_hex": serializers.CharField(),
+            },
+        )
+        shapes = inline_serializer(
+            many=True,
+            read_only=True,
+            fields={
+                "name": serializers.CharField(),
+                "image": serializers.CharField(source="image.url"),
+            },
+        )
+        materials = inline_serializer(
+            source="get_materials_display",
+            many=True,
+            read_only=True,
+            fields={"name": serializers.CharField()},
+        )
+        variants = inline_serializer(  # TODO: add propper source when ready
+            many=True,
+            read_only=True,
+            fields={
+                "id": serializers.IntegerField(),
+                "name": serializers.CharField(),
+                "thumbnail": serializers.CharField(source="thumbnail.url"),
+                "image": serializers.CharField(source="image.url"),
+            },
+        )
+
+    def get(self, request: HttpRequest, category_slug: str) -> HttpResponse:
+        category = get_object_or_404(Category, slug=category_slug)
+        products = category.get_products()
+        serializer = self.OutputSerializer(products, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CategoryDetailAPI(APIView):

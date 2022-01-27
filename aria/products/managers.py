@@ -10,7 +10,7 @@ class ProductManager(BaseManager):
 class ProductQuerySet(BaseQuerySet):
     def preload_for_list(self):
         """
-        Utility to avoid 0(n) queries
+        Utility to avoid n+1 queries
         """
 
         return self.prefetch_related("categories", "colors", "shapes")
@@ -19,7 +19,9 @@ class ProductQuerySet(BaseQuerySet):
         # Prepare queryset and get active decendants
         categories = category.get_descendants(include_self=True).active()
 
-        products = self.objects.filter(
+        print(categories)
+
+        products = self.filter(
             status=ProductStatus.AVAILABLE, categories__in=categories
         )
 
@@ -27,3 +29,5 @@ class ProductQuerySet(BaseQuerySet):
             products.annotate(
                 _ordering=categories.values_list("ordering")[:1]
             ).order_by(F("_ordering").asc(nulls_last=True), "name")
+
+        return products
