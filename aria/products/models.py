@@ -30,41 +30,41 @@ class Size(models.Model):
     """
 
     width = models.DecimalField(
-        _("width"),
+        "width",
         decimal_places=2,
         max_digits=6,
         blank=True,
         null=True,
-        help_text=_("width in centimeters"),
+        help_text="Width in centimeters",
     )
     height = models.DecimalField(
-        _("height"),
+        "height",
         decimal_places=2,
         max_digits=6,
         blank=True,
         null=True,
-        help_text=_("height in centimeters"),
+        help_text="Height in centimeters",
     )
     depth = models.DecimalField(
-        _("depth"),
+        "depth",
         decimal_places=2,
         max_digits=6,
         blank=True,
         null=True,
-        help_text=_("depth in centimeters"),
+        help_text="Depth in centimeters",
     )
     circumference = models.DecimalField(
-        _("circumference"),
+        "circumference",
         decimal_places=2,
         max_digits=6,
         blank=True,
         null=True,
-        help_text=_("circumference in centimeters"),
+        help_text="Circumference in centimeters",
     )
 
     class Meta:
-        verbose_name = _("Size")
-        verbose_name_plural = _("Sizes")
+        verbose_name = "Size"
+        verbose_name_plural = "Sizes"
         ordering = ["width", "height", "depth", "circumference"]
         constraints = [
             models.UniqueConstraint(
@@ -113,7 +113,7 @@ class Variant(BaseThumbnailImageModel):
     UPLOAD_PATH = variant_upload_path
 
     name = models.CharField(
-        _("Product variant name"),
+        "product variant name",
         max_length=255,
     )
     image = ImageSpecField(
@@ -123,16 +123,14 @@ class Variant(BaseThumbnailImageModel):
         options={"quality": 90},
     )
     is_standard = models.BooleanField(
-        _("standard"),
+        "standard",
         default=False,
-        help_text=_(
-            "designates if a variant should be treated as standard. This is to avoid multiple instances of the same variant. This field will also prevent cleanup deletion of these models."
-        ),
+        help_text="Designates if a variant should be treated as standard. This is to avoid multiple instances of the same variant. This field will also prevent cleanup deletion of these models.",
     )
 
     class Meta:
-        verbose_name = _("Variant")
-        verbose_name_plural = _("Variants")
+        verbose_name = "Variant"
+        verbose_name_plural = "Variants"
 
     def __str__(self):
         return self.name
@@ -144,15 +142,15 @@ class Color(models.Model):
     filtering frontend.
     """
 
-    name = models.CharField(_("Name"), max_length=100, unique=True)
-    color_hex = models.CharField(_("Color code"), max_length=7, unique=True)
+    name = models.CharField("name", max_length=100, unique=True)
+    color_hex = models.CharField("color code", max_length=7, unique=True)
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name = _("Color")
-        verbose_name_plural = _("Colors")
+        verbose_name = "Color"
+        verbose_name_plural = "Colors"
 
 
 class Shape(BaseImageModel):
@@ -166,14 +164,14 @@ class Shape(BaseImageModel):
 
     UPLOAD_PATH = shape_upload_path
 
-    name = models.CharField(_("Name"), max_length=30, unique=True)
+    name = models.CharField("name", max_length=30, unique=True)
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name = _("Shape")
-        verbose_name_plural = _("Shapes")
+        verbose_name = "Shape"
+        verbose_name_plural = "Shapes"
 
 
 class Product(BaseModel, BaseThumbnailImageModel):
@@ -190,52 +188,46 @@ class Product(BaseModel, BaseThumbnailImageModel):
 
     UPLOAD_PATH = product_directory
 
-    name = models.CharField(_("Product name"), max_length=255, unique=False)
+    name = models.CharField("product name", max_length=255, unique=False)
     supplier = models.ForeignKey(
         Supplier, on_delete=models.PROTECT, related_name="products"
     )
     categories = TreeManyToManyField(Category, related_name="products")
     category = models.ManyToManyField(SubCategory, related_name="products")
     status = models.IntegerField(
-        _("Status"),
+        "status",
         choices=enums.ProductStatus.choices,
         default=enums.ProductStatus.DRAFT,
     )
     slug = models.SlugField(
-        _("Slug"),
+        "slug",
         max_length=255,
-        help_text=_(
-            "A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.",
-        ),
+        help_text="A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.",
     )
     search_keywords = models.CharField(
-        _("Search keywords"),
+        "search keywords",
         max_length=255,
         unique=False,
         blank=True,
         null=True,
     )
     short_description = models.TextField(
-        _("Short Description"),
-        help_text=_(
-            "The short description will be displayed on the top part of the product, above the variant selection"
-        ),
+        "short description",
+        help_text="The short description will be displayed on the top part of the product, above the variant selection",
         null=True,
     )
-    description = models.TextField(_("Description"), null=True)
-    new_description = models.TextField(_("New description"))
+    description = models.TextField("description", null=True)
+    new_description = models.TextField("new description")
     unit = models.IntegerField(
-        _("Unit"),
+        "unit",
         choices=enums.ProductUnit.choices,
         default=enums.ProductUnit.SQUARE_METER,
     )
-    vat_rate = models.FloatField(_("VAT Rate"), default=0.25)
+    vat_rate = models.FloatField("VAT rate", default=0.25)
     available_in_special_sizes = models.BooleanField(
-        _("Available in special sizes"),
+        "available in special sizes",
         default=False,
-        help_text=_(
-            "Designates whether the product comes in sizes out of the ordinary"
-        ),
+        help_text="Designates whether the product comes in sizes out of the ordinary",
     )
     colors = models.ManyToManyField("products.Color", related_name="products")
     shapes = models.ManyToManyField(
@@ -244,46 +236,42 @@ class Product(BaseModel, BaseThumbnailImageModel):
     materials = ChoiceArrayField(
         models.CharField(choices=enums.ProductMaterials.choices, max_length=50),
         null=True,
-        help_text=_(
-            "Material product is made of. Want to add more options? Reach out to Daniel."
-        ),
+        help_text="Material product is made of. Want to add more options? Reach out to Daniel.",
     )
     rooms = ChoiceArrayField(
         models.CharField(choices=enums.ProductRooms.choices, max_length=50),
         null=True,
-        help_text=_("Rooms applicable to product."),
+        help_text="Rooms applicable to product.",
     )
     absorption = models.FloatField(null=True, blank=True)
     is_imported_from_external_source = models.BooleanField(default=False)
     display_price = models.BooleanField(
-        _("Display price to customer"),
+        "display price to customer",
         default=True,
-        help_text=_("Designates whether the product price is displayed"),
+        help_text="Designates whether the product price is displayed",
     )
     can_be_purchased_online = models.BooleanField(
-        _("Can be purchased online"),
+        "can be purchased online",
         default=False,
-        help_text=_("Designates whether the product can be purchased and shipped"),
+        help_text="Designates whether the product can be purchased and shipped",
     )
     can_be_picked_up = models.BooleanField(
-        _("Can be picked up"),
+        "can be picked up",
         default=False,
-        help_text=_(
-            "Designates whether the product can be purchased and picked up in store"
-        ),
+        help_text="Designates whether the product can be purchased and picked up in store",
     )
     supplier_purchase_price = models.DecimalField(
-        _("Supplier purchase price"), decimal_places=2, max_digits=10, default=0.00
+        "supplier purchase price", decimal_places=2, max_digits=10, default=0.00
     )
     supplier_shipping_cost = models.DecimalField(
-        _("Shipping cost"), decimal_places=2, max_digits=10, default=0.0
+        "shipping cost", decimal_places=2, max_digits=10, default=0.0
     )
 
     objects = ProductManager.from_queryset(ProductQuerySet)()
 
     class Meta:
-        verbose_name = _("Product")
-        verbose_name_plural = _("Products")
+        verbose_name = "Product"
+        verbose_name_plural = "Products"
         permissions = (
             ("has_products_list", "Can list products"),
             ("has_product_edit", "Can edit a single product instance"),
@@ -338,8 +326,8 @@ class ProductImage(BaseHeaderImageModel):
     )
 
     class Meta:
-        verbose_name = _("Product image")
-        verbose_name_plural = _("Product images")
+        verbose_name = "Product image"
+        verbose_name_plural = "Product images"
 
 
 class ProductFile(BaseFileModel):
@@ -359,11 +347,11 @@ class ProductFile(BaseFileModel):
         on_delete=models.CASCADE,
         related_name="files",
     )
-    name = models.CharField(_("Product file name"), max_length=255, unique=False)
+    name = models.CharField("product file name", max_length=255, unique=False)
 
     class Meta:
-        verbose_name = _("Product file")
-        verbose_name_plural = _("Product files")
+        verbose_name = "Product file"
+        verbose_name_plural = "Product files"
 
     def __str__(self):
         return self.name
@@ -394,14 +382,14 @@ class ProductOption(BaseModel):
     )
     gross_price = models.DecimalField(decimal_places=2, max_digits=8, default=0.00)
     status = models.IntegerField(
-        _("Status"),
+        "status",
         choices=enums.ProductStatus.choices,
         default=enums.ProductStatus.AVAILABLE,
     )
 
     class Meta:
-        verbose_name = _("Product option")
-        verbose_name_plural = _("Product options")
+        verbose_name = "Product option"
+        verbose_name_plural = "Product options"
         constraints = [
             models.UniqueConstraint(
                 fields=["product", "variant", "size"],
