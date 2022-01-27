@@ -1,6 +1,7 @@
-from mptt.querysets import TreeQuerySet
-from mptt.managers import TreeManager
 from django.db.models import Exists, IntegerField, OuterRef, Prefetch, Q, Value
+
+from mptt.managers import TreeManager
+from mptt.querysets import TreeQuerySet
 
 
 class CategoryManager(TreeManager):
@@ -22,7 +23,9 @@ class CategoryQueryset(TreeQuerySet):
                     mptt_right__gte=OuterRef("mptt_right"),
                     mptt_level__lte=OuterRef("mptt_level"),
                 )
-            ).values_list(Value(1, output_field=IntegerField()))
+                .exclude(is_active=True)
+                .values_list(Value(1, output_field=IntegerField()))
+            )
         )
 
     def primary(self):

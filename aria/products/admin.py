@@ -72,7 +72,7 @@ class ProductAdmin(admin.ModelAdmin):
         "categories",
         "shapes",
     )
-    exclude = ("styles", "applications", "materials", "categories")
+    # exclude = ("styles", "applications", "materials", "categories")
     ordering = ["-id"]
     inlines = [
         ProductImageInline,
