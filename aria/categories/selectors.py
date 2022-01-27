@@ -1,5 +1,7 @@
 from typing import Union
+
 from django.db.models import QuerySet
+
 from aria.categories.models import Category
 
 

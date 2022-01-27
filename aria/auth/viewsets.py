@@ -1,15 +1,13 @@
 from django.http import HttpRequest, HttpResponse
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.utils.translation import gettext_lazy as _
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.response import Response
-
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.permissions import AllowAny
-
-from rest_framework import serializers
+from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 class AuthTokenObtainAPI(TokenObtainPairView):

@@ -1,6 +1,7 @@
 from django.db.models import F
-from aria.products.enums import ProductStatus
+
 from aria.core.models import BaseManager, BaseQuerySet
+from aria.products.enums import ProductStatus
 
 
 class ProductManager(BaseManager):

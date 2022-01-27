@@ -1,8 +1,10 @@
+from django.db import models
+
 from mptt.models import MPTTModel, TreeForeignKey
+
 from aria.categories.enums import PromotionType
 from aria.categories.managers import CategoryManager, CategoryQueryset
 from aria.core.models import BaseHeaderImageModel, BaseListImageModel, BaseModel
-from django.db import models
 
 
 class Category(MPTTModel, BaseModel, BaseHeaderImageModel, BaseListImageModel):

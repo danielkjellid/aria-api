@@ -6,7 +6,9 @@ from django.utils.translation import gettext_lazy as _
 from imagekit.models import ImageSpecField
 from imagekit.models.fields import ProcessedImageField
 from imagekit.processors import ResizeToFill
+from mptt.models import TreeManyToManyField
 
+from aria.categories.models import Category
 from aria.core.fields import ChoiceArrayField
 from aria.core.models import (
     BaseFileModel,
@@ -19,8 +21,6 @@ from aria.product_categorization.models import SubCategory
 from aria.products import enums
 from aria.products.managers import ProductManager, ProductQuerySet
 from aria.suppliers.models import Supplier
-from mptt.models import TreeManyToManyField
-from aria.categories.models import Category
 
 
 class Product(BaseModel, BaseThumbnailImageModel):

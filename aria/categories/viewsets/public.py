@@ -1,22 +1,21 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
-from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
 from rest_framework import serializers, status
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from aria.categories.models import Category
 from aria.categories.selectors import (
     categories_children_active_list,
     categories_navigation_active_list,
     categories_parent_active_list,
 )
-
-
 from aria.core.serializers import (
     BaseHeaderImageSerializer,
     BaseListImageSerializer,
     inline_serializer,
 )
-from aria.categories.models import Category
 
 
 class CategoryListAPI(APIView):
