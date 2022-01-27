@@ -16,6 +16,8 @@ from aria.core.serializers import (
     BaseListImageSerializer,
     inline_serializer,
 )
+from aria.core.pagination import LimitOffsetPagination, get_paginated_response
+from aria.products.selectors import product_list_by_category
 
 
 class CategoryListAPI(APIView):
@@ -109,6 +111,15 @@ class CategoryProductsListAPI(APIView):
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
+    class Pagination(LimitOffsetPagination):
+        limit = 24
+
+    class FilterSerializer(serializers.Serializer):
+        name = serializers.CharField()
+        search_keywords = serializers.CharField()
+        supplier_name = serializers.CharField()
+        materisl = serializers.CharField()
+
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
         name = serializers.CharField()
@@ -158,10 +169,21 @@ class CategoryProductsListAPI(APIView):
 
     def get(self, request: HttpRequest, category_slug: str) -> HttpResponse:
         category = get_object_or_404(Category, slug=category_slug)
-        products = category.get_products()
-        serializer = self.OutputSerializer(products, many=True)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        filters_serializer = self.FilterSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        products = product_list_by_category(
+            category=category, filters=filters_serializer.validated_data
+        )
+
+        return get_paginated_response(
+            pagination_class=self.Pagination,
+            serializer_class=self.OutputSerializer,
+            queryset=products,
+            request=request,
+            view=self,
+        )
 
 
 class CategoryDetailAPI(APIView):

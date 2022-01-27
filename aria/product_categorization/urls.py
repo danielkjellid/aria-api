@@ -5,7 +5,6 @@ from aria.product_categorization.views import (
     CategoryListAPIView,
     CategoryRetrieveAPIView,
 )
-from aria.products.views import ProductListByCategoryAPIView
 
 urlpatterns = [
     # endpoint for geting list of all categories
@@ -19,9 +18,4 @@ urlpatterns = [
     # endpoint for getting a single category instance
     path("categories/<slug:slug>/", CategoryRetrieveAPIView.as_view(), name="category"),
     # endpoint for getting all products appended to a parent category
-    path(
-        "categories/<slug:category>/products/",
-        ProductListByCategoryAPIView.as_view(),
-        name="category-product-list",
-    ),
 ]
