@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-27 22:23+0100\n"
+"POT-Creation-Date: 2022-01-28 17:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -266,12 +266,12 @@ msgid ""
 msgstr ""
 
 #: aria/product_categorization/models.py:49
-#: aria/product_categorization/models.py:86 aria/suppliers/models.py:24
+#: aria/product_categorization/models.py:86
 msgid "Active"
 msgstr ""
 
 #: aria/product_categorization/models.py:51
-#: aria/product_categorization/models.py:88 aria/suppliers/models.py:26
+#: aria/product_categorization/models.py:88
 msgid "Designates whether the category should be treated as active."
 msgstr ""
 
@@ -289,38 +289,6 @@ msgstr ""
 
 #: aria/product_categorization/models.py:95
 msgid "Subcategories"
-msgstr ""
-
-#: aria/suppliers/models.py:6
-msgid "Supplier name"
-msgstr ""
-
-#: aria/suppliers/models.py:8
-msgid "Contact first name"
-msgstr ""
-
-#: aria/suppliers/models.py:11
-msgid "Contact last name"
-msgstr ""
-
-#: aria/suppliers/models.py:14
-msgid "Contact email address"
-msgstr ""
-
-#: aria/suppliers/models.py:20
-msgid "Supplier discount in percent. E.g. 0.2 = 20%"
-msgstr ""
-
-#: aria/suppliers/models.py:22
-msgid "Origin country"
-msgstr ""
-
-#: aria/suppliers/models.py:32
-msgid "supplier"
-msgstr ""
-
-#: aria/suppliers/models.py:33
-msgid "suppliers"
 msgstr ""
 
 #: aria/users/models.py:290
