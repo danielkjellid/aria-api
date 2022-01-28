@@ -5,7 +5,7 @@ description = ""
 authors = ["danielkjellid <daniel.kjellid@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "3.10.0"
+python = "3.10.2"
 appnope = "0.1.2"
 backcall = "0.2.0"
 boto3 = "1.14.20"
