@@ -3,7 +3,7 @@ from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes, force_text
+from django.utils.encoding import force_bytes, force_str
 from django.utils.http import (
     urlsafe_base64_decode as uid_decoder,
     urlsafe_base64_encode as uid_encoder,
@@ -258,7 +258,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
     def validate(self, attrs):
 
         try:
-            uid = force_text(uid_decoder(attrs["uid"]))
+            uid = force_str(uid_decoder(attrs["uid"]))
             self.user = User.on_site.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             raise serializers.ValidationError({"uid": ["Invalid value"]})
@@ -343,7 +343,7 @@ class AccountVerificationConfirmSerializer(serializers.Serializer):
     def validate(self, attrs):
 
         try:
-            uid = force_text(uid_decoder(attrs["uid"]))
+            uid = force_str(uid_decoder(attrs["uid"]))
             self.user = User.on_site.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             raise serializers.ValidationError({"uid": ["Invalid value"]})

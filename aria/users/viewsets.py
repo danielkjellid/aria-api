@@ -1,5 +1,5 @@
 from django.utils.decorators import method_decorator
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
 from rest_framework import filters, generics, status
 from rest_framework.generics import get_object_or_404
