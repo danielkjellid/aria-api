@@ -43,8 +43,6 @@ class ProductListBySubCategoryAPIView(generics.ListAPIView):
         "name",
         "supplier__name",
         "category__name",
-        "materials__name",
-        "styles__name",
         "search_keywords",
     )
 
