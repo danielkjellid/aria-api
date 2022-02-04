@@ -66,6 +66,11 @@ class Category(BaseModel, BaseHeaderImageModel):
 
 
 class SubCategory(BaseModel, BaseHeaderImageModel, BaseListImageModel):
+    @property
+    def subcategory_image_directory_path(self):
+        return f"media/categories/{slugify(self.parent)}/subcategories/{slugify(self.name)}"
+
+    UPLOAD_PATH = subcategory_image_directory_path
 
     parent = models.ForeignKey(
         Category,

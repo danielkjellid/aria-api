@@ -64,6 +64,7 @@ class CategorySerializer(serializers.Serializer):
     """
 
     name = serializers.CharField()
+    slug = serializers.SlugField()
     images = BaseHeaderImageSerializer(source="*", read_only=True)
 
 
