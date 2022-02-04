@@ -48,6 +48,8 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
 
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+
 HTTPS_ONLY = env.bool("HTTPS_ONLY", default=False)
 
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
