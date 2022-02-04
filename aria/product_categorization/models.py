@@ -4,7 +4,7 @@ from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
-from aria.core.models import BaseHeaderImageModel, BaseModel
+from aria.core.models import BaseHeaderImageModel, BaseListImageModel, BaseModel
 
 
 class Category(BaseModel, BaseHeaderImageModel):
@@ -65,7 +65,7 @@ class Category(BaseModel, BaseHeaderImageModel):
         return self.name
 
 
-class SubCategory(models.Model):
+class SubCategory(BaseModel, BaseHeaderImageModel, BaseListImageModel):
 
     parent = models.ForeignKey(
         Category,
@@ -73,6 +73,7 @@ class SubCategory(models.Model):
         related_name="children",
     )
     name = models.CharField(_("Category name"), max_length=255, unique=False)
+    description = models.TextField(blank=True)
     slug = models.SlugField(
         _("Slug"),
         max_length=50,
