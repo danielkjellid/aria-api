@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework import serializers
 
-from aria.core.serializers import BaseHeaderImageSerializer
+from aria.core.serializers import BaseHeaderImageSerializer, BaseListImageSerializer
 from aria.product_categorization.models import Category, SubCategory
 
 
@@ -58,17 +58,21 @@ class CategoryListSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.Serializer):
     """
     A serializer to display a specific category instance
     """
 
+    name = serializers.CharField()
+    slug = serializers.SlugField()
     images = BaseHeaderImageSerializer(source="*", read_only=True)
 
+
+class SubCategoryListSerializer(serializers.ModelSerializer):
+
+    images = BaseListImageSerializer(source="*", read_only=True)
+
     class Meta:
-        model = Category
-        fields = (
-            "name",
-            "images",
-        )
+        model = SubCategory
+        fields = ("id", "name", "slug", "description", "ordering", "images")
         read_only_fields = fields

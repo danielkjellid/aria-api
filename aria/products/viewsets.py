@@ -30,9 +30,9 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = ProductListSerializer
 
 
-class ProductListByCategoryAPIView(generics.ListAPIView):
+class ProductListBySubCategoryAPIView(generics.ListAPIView):
     """
-    This viewset takes the category parameter given by the url and find related products
+    This viewset takes the subcategory parameter given by the url and find related products
     """
 
     permission_classes = (AllowAny,)
@@ -43,8 +43,6 @@ class ProductListByCategoryAPIView(generics.ListAPIView):
         "name",
         "supplier__name",
         "category__name",
-        "materials__name",
-        "styles__name",
         "search_keywords",
     )
 
@@ -53,11 +51,11 @@ class ProductListByCategoryAPIView(generics.ListAPIView):
         Gets parameter in urls and filters the product model
         """
 
-        category = self.kwargs["category"]
+        subcategory = self.kwargs["subcategory"]
 
         return (
             Product.on_site.filter(
-                category__parent__slug=category, status=ProductStatus.AVAILABLE
+                category__slug=subcategory, status=ProductStatus.AVAILABLE
             )
             .distinct("pk")
             .order_by("-id")
