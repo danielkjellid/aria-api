@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "aria-api"
 version = "0.1.0"
-description = ""
+description = "API for the aria project."
 authors = ["danielkjellid <daniel.kjellid@gmail.com>"]
 
 [tool.poetry.dependencies]
