@@ -56,6 +56,7 @@ class ProductUnit(models.IntegerChoices):
 
 class NewProductMaterials(models.TextChoices):
     COMPOSITE = "kompositt", "Kompositt"
+    DADOQUARTZ = "dado kvarts", "DADOkvarts"
     STAINLESS_STEEL = "rustfritt stål", "Rustfritt stål"
     BRUSHED_STEEL = "pusset stål", "Pusset stål"
     METAL = "metall", "Metall"
