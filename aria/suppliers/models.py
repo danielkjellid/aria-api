@@ -1,10 +1,19 @@
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 from django.db import models
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
+from aria.core.models import BaseImageModel, BaseModel
 
-class Supplier(models.Model):
+
+class Supplier(BaseModel, BaseImageModel):
+    @property
+    def supplier_image_directory(self):
+        return f"media/suppliers/logo/{slugify(self.name)}"
+
+    UPLOAD_PATH = supplier_image_directory
+
     name = models.CharField(_("Supplier name"), max_length=255, unique=True)
     contact_first_name = models.CharField(
         _("Contact first name"), max_length=255, unique=False
@@ -28,6 +37,7 @@ class Supplier(models.Model):
         help_text=_("Designates whether the category should be treated as active."),
     )
     sites = models.ManyToManyField(Site, related_name="suppliers", blank=True)
+    website_link = models.CharField(max_length=255)
 
     objects = models.Manager()
     on_site = CurrentSiteManager()
