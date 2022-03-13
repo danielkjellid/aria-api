@@ -1,0 +1,2121 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "",
+    "version": ""
+  },
+  "paths": {
+    "/api/kitchens/": {
+      "get": {
+        "operationId": "listKitchens",
+        "description": "Viewset for listing available kitchens",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/KitchenList"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/kitchens/{slug}/": {
+      "get": {
+        "operationId": "retrieveKitchen",
+        "description": "Viewset for getting a specific kitchen instance based on slug",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "description": "A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Kitchen"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/v1/categories/": {
+      "get": {
+        "operationId": "listCategorys",
+        "description": "Viewset for listing all categories and its associated images, does not include children",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryList"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/v1/categories/navigation/": {
+      "get": {
+        "operationId": "listCategorys",
+        "description": "Vierset for listing categories and subcategories to be listed in the navbar",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryNavigationList"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/v1/categories/{slug}/": {
+      "get": {
+        "operationId": "retrieveCategory",
+        "description": "Viewset for listing a specific category instance",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "description": "A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/products/{product_slug}/": {
+      "get": {
+        "operationId": "retrieveProductDetail",
+        "description": "[PUBLIC] Endpoint for retrieving a specific product. Takes the\nproduct slug as a parameter.",
+        "parameters": [
+          {
+            "name": "product_slug",
+            "in": "path",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductDetail"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/users/": {
+      "get": {
+        "operationId": "listUserList",
+        "description": "Endpoint for listing all registered users.\n\nReturns a list of users.",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          {
+            "name": "first_name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "last_name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "phone_number",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserList"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/users/{user_id}/": {
+      "get": {
+        "operationId": "retrieveUserDetail",
+        "description": "Endpoint for listing a specific user. Takes the\nuser id as a parameter.\n\nReturns a single user instance.",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDetail"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/categories/": {
+      "get": {
+        "operationId": "listCategoryList",
+        "description": "[PUBLIC] Endpoint to fetch categories used for\nrouting in the frontend navbar.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryList"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/categories/parents/": {
+      "get": {
+        "operationId": "listCategoryParentList",
+        "description": "[PUBLIC] Endpoint for getting a list of parent\ncategories.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryParentList"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/categories/{category_slug}/": {
+      "get": {
+        "operationId": "retrieveCategoryDetail",
+        "description": "[PUBLIC] Endpoint for getting a details of a specific\ncategory, parent or child.",
+        "parameters": [
+          {
+            "name": "category_slug",
+            "in": "path",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryDetail"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/categories/{category_slug}/children/": {
+      "get": {
+        "operationId": "listCategoryChildrenList",
+        "description": "[PUBLIC] Endpoint for getting a list of children\ncategories attached to a specific parent.",
+        "parameters": [
+          {
+            "name": "category_slug",
+            "in": "path",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryChildrenList"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/categories/{category_slug}/products/": {
+      "get": {
+        "operationId": "listCategoryProductsList",
+        "description": "[PUBLIC] Endpoint for getting a list of products in\na specific category.",
+        "parameters": [
+          {
+            "name": "category_slug",
+            "in": "path",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryProductsList"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/auth/tokens/obtain/": {
+      "post": {
+        "operationId": "createInput",
+        "description": "[PUBLIC] Viewset for obtaining access and refresh tokens.",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Input"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Input"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Input"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/auth/tokens/refresh/": {
+      "post": {
+        "operationId": "createTokenRefresh",
+        "description": "Takes a refresh type JSON web token and returns an access type JSON web\ntoken if the refresh token is valid.",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRefresh"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRefresh"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRefresh"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenRefresh"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/auth/tokens/blacklist/": {
+      "post": {
+        "operationId": "createAuthLogoutAndBlacklistRefreshTokenForUser",
+        "description": "[PUBLIC] Viewset for blacklisting refresh tokens.",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthLogoutAndBlacklistRefreshTokenForUser"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthLogoutAndBlacklistRefreshTokenForUser"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthLogoutAndBlacklistRefreshTokenForUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthLogoutAndBlacklistRefreshTokenForUser"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/users/{user_id}/update/": {
+      "post": {
+        "operationId": "createUserUpdate",
+        "description": "Endpoint for updating a specific user. Takes the\nuser id as a parameter and field(s) as payload.\n\nReturns a updated field(s).",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdate"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdate"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserUpdate"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/users/create/": {
+      "post": {
+        "operationId": "createUserCreate",
+        "description": "[PUBLIC] Endpoint for creating a new user instance.\n\nReturns the created user.",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserCreate"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/users/verify/": {
+      "post": {
+        "operationId": "createUserAccountVerification",
+        "description": "[PUBLIC] Endpoint for sending a verification email to the user.",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAccountVerification"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAccountVerification"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAccountVerification"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAccountVerification"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/users/verify/confirm/{uid}/{token}/": {
+      "post": {
+        "operationId": "createUserAccountVerificationConfirm",
+        "description": "[PUBLIC] Endpoint for validating email tokens.",
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAccountVerificationConfirm"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAccountVerificationConfirm"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAccountVerificationConfirm"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAccountVerificationConfirm"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/users/password/reset/": {
+      "post": {
+        "operationId": "createUserPasswordReset",
+        "description": "[PUBLIC] Endpoint for sending a password reset\nemail.",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPasswordReset"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPasswordReset"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPasswordReset"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPasswordReset"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/users/password/reset/confirm/{uid}/{token}/": {
+      "post": {
+        "operationId": "createUserPasswordResetConfirm",
+        "description": "[PUBLIC] Endpoint for setting a new password.",
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPasswordResetConfirm"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPasswordResetConfirm"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPasswordResetConfirm"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPasswordResetConfirm"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/utils/notes/{id}/delete/": {
+      "delete": {
+        "operationId": "destroyNoteEntry",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "A unique integer value identifying this Note.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "KitchenList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "readOnly": true
+          },
+          "slug": {
+            "type": "string",
+            "readOnly": true,
+            "description": "A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.",
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "thumbnail_description": {
+            "type": "string",
+            "readOnly": true
+          },
+          "thumbnail_500x305": {
+            "type": "string",
+            "format": "binary",
+            "readOnly": true
+          },
+          "thumbnail_660x400": {
+            "type": "string",
+            "format": "binary",
+            "readOnly": true
+          },
+          "thumbnail_850x520": {
+            "type": "string",
+            "format": "binary",
+            "readOnly": true
+          }
+        }
+      },
+      "Kitchen": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "readOnly": true
+          },
+          "slug": {
+            "type": "string",
+            "readOnly": true,
+            "description": "A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.",
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "description": {
+            "type": "string",
+            "readOnly": true
+          },
+          "apply_filter": {
+            "type": "boolean",
+            "readOnly": true,
+            "description": "Apply filter to image if the image is light to maintain an acceptable contrast"
+          },
+          "extra_description": {
+            "type": "string",
+            "readOnly": true,
+            "nullable": true,
+            "description": "Will be displayed bellow pricing example"
+          },
+          "example_from_price": {
+            "type": "string",
+            "format": "decimal",
+            "multipleOf": 0.01,
+            "maximum": 1000000,
+            "minimum": -1000000
+          },
+          "can_be_painted": {
+            "type": "boolean",
+            "readOnly": true,
+            "description": "Designates whether the product can be painted in suppliers 2000 colors"
+          },
+          "silk_variants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "readOnly": true
+                },
+                "name": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "color_hex": {
+                  "type": "string",
+                  "readOnly": true
+                }
+              }
+            },
+            "readOnly": true
+          },
+          "decor_variants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "image": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "image"
+              ]
+            },
+            "readOnly": true
+          },
+          "plywood_variants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "image": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "image"
+              ]
+            },
+            "readOnly": true
+          },
+          "laminate_variants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "readOnly": true
+                },
+                "name": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "color_hex": {
+                  "type": "string",
+                  "readOnly": true
+                }
+              }
+            },
+            "readOnly": true
+          },
+          "exclusive_variants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "readOnly": true
+                },
+                "name": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "color_hex": {
+                  "type": "string",
+                  "readOnly": true
+                }
+              }
+            },
+            "readOnly": true
+          },
+          "trend_variants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "readOnly": true
+                },
+                "name": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "color_hex": {
+                  "type": "string",
+                  "readOnly": true
+                }
+              }
+            },
+            "readOnly": true
+          },
+          "images": {
+            "type": "object",
+            "properties": {
+              "apply_filter": {
+                "type": "boolean"
+              },
+              "image_512x512": {
+                "type": "string",
+                "readOnly": true
+              },
+              "image_640x275": {
+                "type": "string",
+                "readOnly": true
+              },
+              "image_1024x1024": {
+                "type": "string",
+                "readOnly": true
+              },
+              "image_1024x575": {
+                "type": "string",
+                "readOnly": true
+              },
+              "image_1536x860": {
+                "type": "string",
+                "readOnly": true
+              },
+              "image_2048x1150": {
+                "type": "string",
+                "readOnly": true
+              }
+            },
+            "required": [
+              "apply_filter"
+            ],
+            "readOnly": true
+          }
+        },
+        "required": [
+          "example_from_price"
+        ]
+      },
+      "CategoryList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string",
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "ordering": {
+            "type": "integer"
+          },
+          "children": {
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "ordering"
+        ]
+      },
+      "CategoryNavigationList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "readOnly": true
+          },
+          "slug": {
+            "type": "string",
+            "readOnly": true,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "children": {
+            "type": "string",
+            "readOnly": true
+          }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "readOnly": true
+          },
+          "images": {
+            "type": "object",
+            "properties": {
+              "apply_filter": {
+                "type": "boolean"
+              },
+              "image_512x512": {
+                "type": "string",
+                "readOnly": true
+              },
+              "image_640x275": {
+                "type": "string",
+                "readOnly": true
+              },
+              "image_1024x1024": {
+                "type": "string",
+                "readOnly": true
+              },
+              "image_1024x575": {
+                "type": "string",
+                "readOnly": true
+              },
+              "image_1536x860": {
+                "type": "string",
+                "readOnly": true
+              },
+              "image_2048x1150": {
+                "type": "string",
+                "readOnly": true
+              }
+            },
+            "required": [
+              "apply_filter"
+            ],
+            "readOnly": true
+          }
+        }
+      },
+      "ProductDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "apply_filter": {
+                  "type": "boolean"
+                },
+                "image_512x512": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "image_640x275": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "image_1024x1024": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "image_1024x575": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "image_1536x860": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "image_2048x1150": {
+                  "type": "string",
+                  "readOnly": true
+                }
+              },
+              "required": [
+                "apply_filter"
+              ]
+            },
+            "readOnly": true
+          },
+          "absorption": {
+            "type": "string"
+          },
+          "materials": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name"
+              ]
+            },
+            "readOnly": true
+          },
+          "rooms": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name"
+              ]
+            },
+            "readOnly": true
+          },
+          "supplier": {
+            "type": "string",
+            "readOnly": true
+          },
+          "origin_country": {
+            "type": "string",
+            "readOnly": true
+          },
+          "available_in_special_sizes": {
+            "type": "boolean"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "variant": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "thumbnail": {
+                      "type": "string"
+                    },
+                    "image": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "thumbnail",
+                    "image"
+                  ]
+                },
+                "size": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string",
+                      "readOnly": true
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "variant",
+                "size"
+              ]
+            },
+            "readOnly": true
+          },
+          "colors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "color_hex": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "color_hex"
+              ]
+            },
+            "readOnly": true
+          },
+          "shapes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "image": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "image"
+              ]
+            },
+            "readOnly": true
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "file": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "file"
+              ]
+            },
+            "readOnly": true
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "unit",
+          "name",
+          "description",
+          "absorption",
+          "available_in_special_sizes"
+        ]
+      },
+      "UserList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "is_active": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "date_joined": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "profile": {
+            "type": "object",
+            "properties": {
+              "full_name": {
+                "type": "string"
+              },
+              "initial": {
+                "type": "string"
+              },
+              "avatar_color": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "full_name",
+              "initial",
+              "avatar_color"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "is_active",
+          "date_joined",
+          "profile"
+        ]
+      },
+      "UserDetail": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "birth_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "has_confirmed_email": {
+            "type": "boolean"
+          },
+          "last_login": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "profile": {
+            "type": "object",
+            "properties": {
+              "full_name": {
+                "type": "string"
+              },
+              "initial": {
+                "type": "string"
+              },
+              "avatar_color": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "full_name",
+              "initial",
+              "avatar_color"
+            ],
+            "readOnly": true
+          },
+          "date_joined": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "full_address": {
+            "type": "string"
+          },
+          "street_address": {
+            "type": "string"
+          },
+          "zip_code": {
+            "type": "string"
+          },
+          "zip_place": {
+            "type": "string"
+          },
+          "acquisition_source": {
+            "type": "string"
+          },
+          "disabled_emails": {
+            "type": "boolean"
+          },
+          "subscribed_to_newsletter": {
+            "type": "boolean"
+          },
+          "allow_personalization": {
+            "type": "boolean"
+          },
+          "allow_third_party_personalization": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "author": {
+                  "type": "object",
+                  "properties": {
+                    "full_name": {
+                      "type": "string"
+                    },
+                    "initial": {
+                      "type": "string"
+                    },
+                    "avatar_color": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "full_name",
+                    "initial",
+                    "avatar_color"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "note",
+                "updated_at",
+                "author"
+              ]
+            },
+            "readOnly": true
+          },
+          "logs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "author": {
+                  "type": "string"
+                },
+                "change": {
+                  "type": "object"
+                },
+                "date_of_change": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "author",
+                "change",
+                "date_of_change"
+              ]
+            },
+            "readOnly": true
+          }
+        },
+        "required": [
+          "first_name",
+          "last_name",
+          "email",
+          "phone_number",
+          "birth_date",
+          "has_confirmed_email",
+          "last_login",
+          "id",
+          "date_joined",
+          "is_active",
+          "full_address",
+          "street_address",
+          "zip_code",
+          "zip_place",
+          "acquisition_source",
+          "disabled_emails",
+          "subscribed_to_newsletter",
+          "allow_personalization",
+          "allow_third_party_personalization"
+        ]
+      },
+      "CategoryParentList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string",
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "ordering": {
+            "type": "integer"
+          },
+          "images": {
+            "type": "object",
+            "properties": {
+              "apply_filter": {
+                "type": "boolean"
+              },
+              "image_512x512": {
+                "type": "string",
+                "readOnly": true
+              },
+              "image_640x275": {
+                "type": "string",
+                "readOnly": true
+              },
+              "image_1024x1024": {
+                "type": "string",
+                "readOnly": true
+              },
+              "image_1024x575": {
+                "type": "string",
+                "readOnly": true
+              },
+              "image_1536x860": {
+                "type": "string",
+                "readOnly": true
+              },
+              "image_2048x1150": {
+                "type": "string",
+                "readOnly": true
+              }
+            },
+            "required": [
+              "apply_filter"
+            ],
+            "readOnly": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "ordering"
+        ]
+      },
+      "CategoryDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "CategoryChildrenList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string",
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "ordering": {
+            "type": "integer"
+          },
+          "description": {
+            "type": "string"
+          },
+          "images": {
+            "type": "object",
+            "properties": {
+              "image500x305": {
+                "type": "string",
+                "readOnly": true
+              },
+              "image600x440": {
+                "type": "string",
+                "readOnly": true
+              },
+              "image850x520": {
+                "type": "string",
+                "readOnly": true
+              }
+            },
+            "readOnly": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "ordering",
+          "description"
+        ]
+      },
+      "CategoryProductsList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string",
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "thumbnail": {
+            "type": "string"
+          },
+          "display_price": {
+            "type": "boolean"
+          },
+          "from_price": {
+            "type": "string",
+            "format": "decimal",
+            "multipleOf": 0.01,
+            "maximum": 1000000,
+            "minimum": -1000000
+          },
+          "colors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "color_hex": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "color_hex"
+              ]
+            },
+            "readOnly": true
+          },
+          "shapes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "image": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "image"
+              ]
+            },
+            "readOnly": true
+          },
+          "materials": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name"
+              ]
+            },
+            "readOnly": true
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "thumbnail": {
+                  "type": "string"
+                },
+                "image": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "thumbnail",
+                "image"
+              ]
+            },
+            "readOnly": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "unit",
+          "thumbnail",
+          "display_price",
+          "from_price"
+        ]
+      },
+      "Input": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "TokenRefresh": {
+        "type": "object",
+        "properties": {
+          "refresh": {
+            "type": "string"
+          },
+          "access": {
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "refresh"
+        ]
+      },
+      "AuthLogoutAndBlacklistRefreshTokenForUser": {
+        "type": "object",
+        "properties": {
+          "refresh_token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "refresh_token"
+        ]
+      },
+      "UserUpdate": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "has_confirmed_email": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "street_address": {
+            "type": "string"
+          },
+          "zip_code": {
+            "type": "string"
+          },
+          "zip_place": {
+            "type": "string"
+          },
+          "disabled_emails": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "subscribed_to_newsletter": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "allow_personalization": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "allow_third_party_personalization": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "UserCreate": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "has_confirmed_email": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "street_address": {
+            "type": "string"
+          },
+          "zip_code": {
+            "type": "string"
+          },
+          "zip_place": {
+            "type": "string"
+          },
+          "disabled_emails": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "subscribed_to_newsletter": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "allow_personalization": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "allow_third_party_personalization": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true,
+            "minLength": 8
+          }
+        },
+        "required": [
+          "email",
+          "first_name",
+          "last_name",
+          "phone_number",
+          "has_confirmed_email",
+          "street_address",
+          "zip_code",
+          "zip_place",
+          "disabled_emails",
+          "subscribed_to_newsletter",
+          "allow_personalization",
+          "allow_third_party_personalization",
+          "password"
+        ]
+      },
+      "UserAccountVerification": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "UserAccountVerificationConfirm": {
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "uid",
+          "token"
+        ]
+      },
+      "UserPasswordReset": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "UserPasswordResetConfirm": {
+        "type": "object",
+        "properties": {
+          "new_password": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "uid": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "new_password",
+          "uid",
+          "token"
+        ]
+      }
+    }
+  }
+}
