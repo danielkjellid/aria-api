@@ -64,11 +64,10 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = (
         "status",
         "supplier__name",
-        "category",
+        "categories",
     )
     filter_horizontal = (
         "colors",
-        "category",
         "categories",
         "shapes",
     )

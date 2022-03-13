@@ -13,7 +13,6 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("product_categorization", "0001_initial"),
         ("suppliers", "0001_initial"),
     ]
 

@@ -9,7 +9,7 @@ from django.utils.text import slugify
 
 import requests
 
-from aria.product_categorization.models import SubCategory
+from aria.categories.models import Category
 from aria.products.enums import ProductStatus
 from aria.products.models import Product, ProductFile, ProductOption, Size, Variant
 from aria.suppliers.models import Supplier
@@ -276,7 +276,7 @@ class Command(BaseCommand):
         ]
 
         for slug in splitted_category_slugs:
-            cat = SubCategory.objects.get(slug=slug)
+            cat = Category.objects.get(slug=slug)
             product.category.add(cat)
 
     def _create_product_files(
