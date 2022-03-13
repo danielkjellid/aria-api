@@ -12,6 +12,7 @@ from aria.core.serializers import inline_serializer
 from aria.users.models import User
 from aria.users.selectors import user_list
 from aria.users.services import user_update
+from aria.core.schemas import APIViewSchema
 
 
 class UserListAPI(APIView):
@@ -25,6 +26,7 @@ class UserListAPI(APIView):
     required_permissions = {
         "GET": ["has_users_list"],
     }
+    schema = APIViewSchema()
 
     class Pagination(LimitOffsetPagination):
         limit = 18
@@ -49,6 +51,8 @@ class UserListAPI(APIView):
             },
         )
 
+    @APIViewSchema.serializer(OutputSerializer())
+    @APIViewSchema.query_parameters(FilterSerializer())
     def get(self, request: HttpRequest) -> HttpResponse:
         # Make sure the filters are valid, if passed
         filters_serializer = self.FilterSerializer(data=request.query_params)
@@ -78,6 +82,7 @@ class UserDetailAPI(APIView):
     required_permissions = {
         "GET": ["has_users_list"],
     }
+    schema = APIViewSchema()
 
     class OutputSerializer(serializers.Serializer):
         # User data
@@ -146,6 +151,7 @@ class UserDetailAPI(APIView):
             },
         )
 
+    @APIViewSchema.serializer(OutputSerializer())
     def get(self, request: HttpRequest, user_id: int) -> HttpResponse:
         user = get_object_or_404(User, pk=user_id)
         serializer = self.OutputSerializer(user)
@@ -165,6 +171,7 @@ class UserUpdateAPI(APIView):
     required_permissions = {
         "POST": ["has_user_edit"],
     }
+    schema = APIViewSchema()
 
     class InputSerializer(serializers.Serializer):
         email = serializers.EmailField(required=False)
@@ -186,6 +193,7 @@ class UserUpdateAPI(APIView):
             allow_null=True, required=False
         )
 
+    @APIViewSchema.serializer(InputSerializer())
     def post(self, request: HttpRequest, user_id: int) -> HttpResponse:
         user = get_object_or_404(User, pk=user_id)
         serializer = self.InputSerializer(data=request.data)
