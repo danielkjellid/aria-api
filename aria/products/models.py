@@ -18,7 +18,6 @@ from aria.core.models import (
     BaseModel,
     BaseThumbnailImageModel,
 )
-from aria.product_categorization.models import SubCategory
 from aria.products import enums
 from aria.products.managers import ProductManager, ProductQuerySet
 from aria.suppliers.models import Supplier
@@ -193,7 +192,6 @@ class Product(BaseModel, BaseThumbnailImageModel):
         Supplier, on_delete=models.PROTECT, related_name="products"
     )
     categories = TreeManyToManyField(Category, related_name="products")
-    category = models.ManyToManyField(SubCategory, related_name="products")
     status = models.IntegerField(
         "status",
         choices=enums.ProductStatus.choices,
