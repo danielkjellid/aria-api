@@ -9,6 +9,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from aria.core.schemas import APIViewSchema
+
 
 class AuthTokenObtainAPI(TokenObtainPairView):
     """
@@ -32,10 +34,12 @@ class AuthLogoutAndBlacklistRefreshTokenForUserAPI(APIView):
 
     permission_classes = (AllowAny,)
     authentication_classes = ()
+    schema = APIViewSchema()
 
     class InputSerializer(serializers.Serializer):
         refresh_token = serializers.CharField()
 
+    @APIViewSchema.serializer(InputSerializer())
     def post(self, request: HttpRequest) -> HttpResponse:
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

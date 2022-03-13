@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from aria.core.exceptions import ApplicationError
+from aria.core.schemas import APIViewSchema
 from aria.users.models import User
 from aria.users.services import user_create, user_set_password, user_verify_account
 
@@ -19,6 +20,7 @@ class UserCreateAPI(APIView):
 
     permission_classes = (AllowAny,)
     authentication_classes = ()
+    schema = APIViewSchema()
 
     class InputSerializer(serializers.Serializer):
         email = serializers.EmailField()
@@ -35,6 +37,7 @@ class UserCreateAPI(APIView):
         allow_third_party_personalization = serializers.BooleanField(allow_null=True)
         password = serializers.CharField(min_length=8, write_only=True)
 
+    @APIViewSchema.serializer(InputSerializer())
     def post(self, request: HttpRequest) -> HttpResponse:
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -57,10 +60,12 @@ class UserAccountVerificationAPI(APIView):
 
     permission_classes = (AllowAny,)
     authentication_classes = ()
+    schema = APIViewSchema()
 
     class InputSerializer(serializers.Serializer):
         email = serializers.EmailField()
 
+    @APIViewSchema.serializer(InputSerializer())
     def post(self, request: HttpRequest) -> HttpResponse:
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -85,11 +90,13 @@ class UserAccountVerificationConfirmAPI(APIView):
 
     permission_classes = (AllowAny,)
     authentication_classes = ()
+    schema = APIViewSchema()
 
     class InputSerializer(serializers.Serializer):
         uid = serializers.CharField()
         token = serializers.CharField()
 
+    @APIViewSchema.serializer(InputSerializer())
     def post(self, request: HttpRequest, uid: str, token: str) -> HttpResponse:
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -110,10 +117,12 @@ class UserPasswordResetAPI(APIView):
 
     permission_classes = (AllowAny,)
     authentication_classes = ()
+    schema = APIViewSchema()
 
     class InputSerializer(serializers.Serializer):
         email = serializers.EmailField()
 
+    @APIViewSchema.serializer(InputSerializer())
     def post(self, request: HttpRequest) -> HttpResponse:
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -140,12 +149,14 @@ class UserPasswordResetConfirmAPI(APIView):
 
     permission_classes = (AllowAny,)
     authentication_classes = ()
+    schema = APIViewSchema()
 
     class InputSerializer(serializers.Serializer):
         new_password = serializers.CharField(max_length=128)
         uid = serializers.CharField()
         token = serializers.CharField()
 
+    @APIViewSchema.serializer(InputSerializer())
     def post(self, request: HttpRequest, uid: str, token: str) -> HttpResponse:
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

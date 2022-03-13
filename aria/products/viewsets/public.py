@@ -7,10 +7,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from aria.core.pagination import LimitOffsetPagination, get_paginated_response
-from aria.core.exceptions import ApplicationError
 from aria.core.serializers import BaseHeaderImageSerializer, inline_serializer
-from aria.users.models import User
+from aria.core.schemas import APIViewSchema
 
 from aria.products.models import Product
 
@@ -23,6 +21,7 @@ class ProductDetailAPI(APIView):
 
     permission_classes = (AllowAny,)
     authentication_classes = ()
+    schema = APIViewSchema()
 
     class OutputSerializer(serializers.Serializer):
         # Product meta
@@ -103,6 +102,7 @@ class ProductDetailAPI(APIView):
             },
         )
 
+    @APIViewSchema.serializer(OutputSerializer())
     def get(self, request: HttpRequest, product_slug: str) -> HttpResponse:
         product = get_object_or_404(Product, slug=product_slug)
         serializer = self.OutputSerializer(product)

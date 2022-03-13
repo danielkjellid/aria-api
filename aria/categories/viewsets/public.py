@@ -1,3 +1,5 @@
+from abc import ABC
+
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers, status
@@ -16,6 +18,7 @@ from aria.core.serializers import (
     BaseListImageSerializer,
     inline_serializer,
 )
+from aria.core.schemas import APIViewSchema
 from aria.core.pagination import LimitOffsetPagination, get_paginated_response
 from aria.products.selectors import product_list_by_category
 
@@ -28,6 +31,7 @@ class CategoryListAPI(APIView):
 
     permission_classes = (AllowAny,)
     authentication_classes = ()
+    schema = APIViewSchema()
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
@@ -48,6 +52,7 @@ class CategoryListAPI(APIView):
 
             return self.ChildSerializer(children, many=True).data
 
+    @APIViewSchema.serializer(OutputSerializer())
     def get(self, request: HttpRequest) -> HttpResponse:
         categories = categories_navigation_active_list()
         serializer = self.OutputSerializer(categories, many=True)
@@ -63,6 +68,7 @@ class CategoryParentListAPI(APIView):
 
     permission_classes = (AllowAny,)
     authentication_classes = ()
+    schema = APIViewSchema()
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
@@ -71,6 +77,7 @@ class CategoryParentListAPI(APIView):
         ordering = serializers.IntegerField()
         images = BaseHeaderImageSerializer(source="*", read_only=True)
 
+    @APIViewSchema.serializer(OutputSerializer())
     def get(self, request: HttpRequest) -> HttpResponse:
         parent_categories = categories_parent_active_list()
         serializer = self.OutputSerializer(parent_categories, many=True)
@@ -86,6 +93,7 @@ class CategoryChildrenListAPI(APIView):
 
     permission_classes = (AllowAny,)
     authentication_classes = ()
+    schema = APIViewSchema()
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
@@ -95,6 +103,7 @@ class CategoryChildrenListAPI(APIView):
         description = serializers.CharField()
         images = BaseListImageSerializer(source="*", read_only=True)
 
+    @APIViewSchema.serializer(OutputSerializer())
     def get(self, request: HttpRequest, category_slug: str) -> HttpResponse:
         parent = get_object_or_404(Category, slug=category_slug)
         children_categories = categories_children_active_list(parent=parent)
@@ -111,6 +120,7 @@ class CategoryProductsListAPI(APIView):
 
     permission_classes = (AllowAny,)
     authentication_classes = ()
+    schema = APIViewSchema()
 
     class Pagination(LimitOffsetPagination):
         limit = 24
@@ -165,6 +175,8 @@ class CategoryProductsListAPI(APIView):
             },
         )
 
+    @APIViewSchema.serializer(OutputSerializer())
+    @APIViewSchema.query_parameters(SearchSerializer())
     def get(self, request: HttpRequest, category_slug: str) -> HttpResponse:
         category = get_object_or_404(Category, slug=category_slug)
 
@@ -192,11 +204,13 @@ class CategoryDetailAPI(APIView):
 
     permission_classes = (AllowAny,)
     authentication_classes = ()
+    schema = APIViewSchema()
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
         name = serializers.CharField()
 
+    @APIViewSchema.serializer(OutputSerializer())
     def get(self, request: HttpRequest, category_slug: str) -> HttpResponse:
         category = get_object_or_404(Category, slug=category_slug)
         serializer = self.OutputSerializer(category)
