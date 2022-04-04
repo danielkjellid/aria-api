@@ -44,16 +44,6 @@ class Command(BaseCommand):
             with transaction.atomic():
                 self.stdout.write(f"Cleaning {db_settings['NAME']} database...")
     
-                #########
-                # Sites #
-                #########
-    
-                self.stdout.write("Cleaning sites...")
-                
-                Site.objects.update(name="Aria")
-                
-                self.stdout.write("Sites cleaned.")
-    
                 #############
                 # User data #
                 #############
