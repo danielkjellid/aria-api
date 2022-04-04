@@ -29,6 +29,7 @@ schema.json
 
 # Distribution / packaging
 .Python
+.idea/
 build/
 develop-eggs/
 dist/
@@ -119,6 +120,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
+.envrc
 env/
 venv/
 ENV/
@@ -146,5 +148,8 @@ dmypy.json
 
 # pytype static type analyzer
 .pytype/
+
+# db dump
+*.dump
 
 # End of https://www.toptal.com/developers/gitignore/api/django

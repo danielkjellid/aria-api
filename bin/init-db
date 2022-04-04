@@ -1,0 +1,300 @@
+#!/usr/bin/env python3
+import functools
+import subprocess
+import os
+import argparse
+import sys
+import pathlib
+import time
+from typing import Optional
+from utils.config import PROJECT_ROOT, postgres_env
+from utils.executables import run_cli_command, run_management_command, run_postgres_command
+from utils.managers import action_runner
+from utils.colors import red
+from utils.helpers import check_exit_code, print_with_time
+
+HEROKU_CLI_INSTALL_ERROR_MESSAGE = f"""
+{red("Please install the heroku CLI")}
+It does not look you have a functional installation of the Heroku CLI.
+Heroku CLI is used to download the database dump, so it needs to be on
+the PATH and authenticated.
+
+A dump file can also be provided instead. See --help for details.
+"""
+
+HEROKU_CLI_CAPTURE_ERROR_MESSAGE = f"""
+{red("Unable to capture database backup")}
+Please make sure the Heroku CLI is authenticated. Heroku CLI is used
+to download the database dump. You might need to run heroku login.
+
+A dump file can also be provided instead. See --help for details.
+"""
+
+HEROKU_CLI_DOWNLOAD_ERROR_MESSAGE = f"""
+{red("Unable to download database dump")}
+Please make sure the Heroku CLI is authenticated. Heroku CLI is used
+to download the database dump. You might need to run heroku auth:login.
+
+A dump file can also be provided instead. See --help for details.
+"""
+
+has_heroku_cli = functools.partial(check_exit_code, "heroku", "version")
+authenticated_heroku_cli = functools.partial(check_exit_code, "heroku", "whoami")
+
+
+def database_exists(
+        name: str,
+        *,
+        user: Optional[str],
+        host: Optional[str],
+        port: Optional[int],
+        password: Optional[str]
+) -> bool:
+    try:
+        run_postgres_command(
+            "psql",
+            "-d",
+            name,
+            "-c",
+            "\\q",
+            user=user,
+            host=host,
+            port=port,
+            password=password,
+        )
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+
+def _sanity_checks() -> None:
+
+    if not os.environ.get("DJANGO_SETTINGS_MODULE"):
+        sys.exit(
+            'Error: The "DJANGO_SETTINGS_MODULE" environment variable is not set\n'
+            "This must be configured before you can update the database"
+        )
+
+
+def _kill_active_db_sessions(*, db_name: str, user: Optional[str], host: Optional[str], port: Optional[int], password: Optional[str]) -> None:
+    """
+    Make postgres kill active sessions using the database.
+    """
+
+    terminate_sessions_sql = (
+        f"SELECT pg_terminate_backend(pg_stat_activity.pid) "
+        f"FROM pg_stat_activity "
+        f"WHERE pg_stat_activity.datname = '{db_name}' AND pid <> pg_backend_pid()"
+    )
+
+    run_postgres_command(
+        "psql",
+        "-d",
+        "postgres",
+        "-qAt",
+        "-c",
+        terminate_sessions_sql,
+        host=host,
+        port=port,
+        user=user,
+        password=password,
+    )
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Install or update the local database")
+
+    parser.add_argument("--host", help="Host to connect to PostgreSQL on")
+    parser.add_argument("--port", type=int, help="Port to connect to PostgreSQL on")
+    parser.add_argument("--user", help="User to connect to PostgreSQL with")
+    parser.add_argument("--password", help="Password to connect to PostgreSQL with")
+
+    parser.add_argument("--env", help="Download from specific env")
+    parser.add_argument(
+        "--skip-capture",
+        action="store_true",
+        help="Skip capturing latest version of the db - might download an old version",
+    )
+    parser.add_argument(
+        "--keep-dump",
+        action="store_true",
+        help="Keep the downloaded database dump after restoring the database",
+    )
+    parser.add_argument(
+        "--no-swap-db",
+        dest="swap_db",
+        default=True,
+        action="store_false",
+        help="Drop the database immediately instead of restoring to a separate database",
+    )
+    parser.add_argument(
+        "file",
+        nargs="?",
+        type=pathlib.Path,
+        help="Restore from this file, rather than downloading",
+    )
+
+    args = parser.parse_args()
+
+    dump_filename = "aria.dump"
+    dump_path = args.file if args.file else PROJECT_ROOT / dump_filename
+
+    env = args.env if args.env else "aria-api-prod"
+
+    # Check that we are in a good state before starting to download.
+    # _sanity_checks()
+
+    if not args.file:
+        if not has_heroku_cli():
+            sys.exit(HEROKU_CLI_INSTALL_ERROR_MESSAGE)
+
+        if not authenticated_heroku_cli():
+            sys.exit(HEROKU_CLI_DOWNLOAD_ERROR_MESSAGE)
+
+        if not args.skip_capture:
+            with action_runner(description="Capturing latest version", error_message=HEROKU_CLI_CAPTURE_ERROR_MESSAGE):
+                run_cli_command("heroku", "pg:backups:capture", "-a", env)
+
+        with action_runner(description="Downloading latest database dump", error_message=HEROKU_CLI_DOWNLOAD_ERROR_MESSAGE):
+            run_cli_command("heroku", "pg:backups:download", "-a", env, "-o", dump_path)
+
+    elif not dump_path.exists():
+        sys.exit(f"Error: {dump_path} path was not found.")
+
+    db_name = "aria"
+
+    # Temporary db names, one with dump data and one where the current db will be renamed to
+    # during swapping. Swapping is done to not corrup dev db if restore fails, then we can
+    # just delete the temp one and start over.
+    if args.swap_db:
+        db_name = f"aria_{int(time.time())}"
+
+        with action_runner(description=f"Creating temporary database: {db_name}"):
+            run_postgres_command(
+                "createdb",
+                db_name,
+                user=args.user,
+                host=args.host,
+                port=args.port,
+                password=args.password
+            )
+
+    # Restore the dump to the specific database
+    with action_runner(description=f"Restoring dump locally to {db_name}"):
+        run_postgres_command(
+            "pg_restore",
+            "--clean",
+            "--if-exists",
+            "--dbname",
+            db_name,
+            "--no-owner",
+            "--no-privileges",
+            "--no-acl",
+            PROJECT_ROOT / dump_filename,
+            user=args.user,
+            port=args.port,
+            host=args.host,
+            password=args.password,
+        )
+
+    # Run migrations against the restored database. This is required as we might
+    # have made changes since the dump was made that will break the cleanup script.
+    try:
+        with action_runner(description="Migrating database", exit_on_failure=False):
+            run_management_command(
+                "migrate",
+                db_name=db_name,
+                env_vars=postgres_env(
+                    host=args.host,
+                    port=args.port,
+                    user=args.user,
+                    password=args.password,
+                )
+            )
+    except subprocess.CalledProcessError:
+        print_with_time(red("Failed to apply migrations, continuing without"))
+
+    with action_runner(description="Cleaning database"):
+        run_management_command(
+            "scrub_db_dump",
+            "--confirm",
+            db_name=db_name,
+            env_vars=postgres_env(
+                host=args.host,
+                port=args.port,
+                user=args.user,
+                password=args.password,
+            ),
+        )
+
+    if args.swap_db:
+        with action_runner(description="Swapping databases"):
+            old_db = None
+            if database_exists(
+                "aria",
+                host=args.host,
+                port=args.port,
+                user=args.user,
+                password=args.password,
+            ):
+                old_db = f"aria_update_db_tmp_{int(time.time())}"
+
+                _kill_active_db_sessions(
+                    db_name="aria",
+                    host=args.host,
+                    port=args.port,
+                    user=args.user,
+                    password=args.password,
+                )
+
+                run_postgres_command(
+                    "psql",
+                    "-d",
+                    "postgres",
+                    "-qAt",
+                    "-c",
+                    f"ALTER DATABASE aria RENAME to {old_db}",
+                    host=args.host,
+                    port=args.port,
+                    user=args.user,
+                    password=args.password,
+                )
+
+            _kill_active_db_sessions(
+                db_name=db_name,
+                host=args.host,
+                port=args.port,
+                user=args.user,
+                password=args.password,
+            )
+
+            run_postgres_command(
+                "psql",
+                "-d",
+                "postgres",
+                "-qAt",
+                "-c",
+                f"ALTER DATABASE {db_name} RENAME to aria",
+                host=args.host,
+                port=args.port,
+                user=args.user,
+                password=args.password,
+            )
+
+            if old_db:
+                run_postgres_command(
+                    "dropdb",
+                    old_db,
+                    host=args.host,
+                    port=args.port,
+                    user=args.user,
+                    password=args.password,
+                )
+
+    if not (args.file or args.keep_dump):
+        with action_runner(description="Removing database dump"):
+            run_cli_command("rm", dump_path)
+
+
+if __name__ == "__main__":
+    main()
