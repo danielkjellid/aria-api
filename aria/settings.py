@@ -21,6 +21,10 @@ if "ENV_PATH" in env:
 
 env.read_env(".env")
 
+# Only true in the production environment. Mostly used to guard against running
+# dangerous management commands in production.
+PRODUCTION = env.bool("PRODUCTION", default=False)
+
 ENVIRONMENT = env.str("ENVIRONMENT", default="dev")
 
 BASE_DIR = (pathlib.Path(__file__).parent / "..").resolve()

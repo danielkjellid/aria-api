@@ -2,6 +2,7 @@ import subprocess
 from datetime import datetime
 from .colors import gray
 
+
 def check_exit_code(*args: str, expected_result: int = 0) -> bool:
     try:
         return (
