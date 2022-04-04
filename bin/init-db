@@ -9,7 +9,7 @@ import time
 from typing import Optional
 from utils.config import PROJECT_ROOT, postgres_env
 from utils.executables import run_cli_command, run_management_command, run_postgres_command
-from utils.wrappers import action_runner
+from utils.managers import action_runner
 from utils.colors import red
 from utils.helpers import check_exit_code, print_with_time
 
@@ -214,18 +214,18 @@ def main() -> None:
     except subprocess.CalledProcessError:
         print_with_time(red("Failed to apply migrations, continuing without"))
 
-    # with action_runner(description="Cleaning database"):
-    #     run_management_command(
-    #         "scrub_db_dump",
-    #         "--confirm",
-    #         db_name=db_name,
-    #         env_vars=postgres_env(
-    #             host=args.host,
-    #             port=args.port,
-    #             user=args.user,
-    #             password=args.password,
-    #         ),
-    #     )
+    with action_runner(description="Cleaning database"):
+        run_management_command(
+            "scrub_db_dump",
+            "--confirm",
+            db_name=db_name,
+            env_vars=postgres_env(
+                host=args.host,
+                port=args.port,
+                user=args.user,
+                password=args.password,
+            ),
+        )
 
     if args.swap_db:
         with action_runner(description="Swapping databases"):

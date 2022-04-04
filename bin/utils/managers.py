@@ -2,7 +2,7 @@ import subprocess
 from typing import Optional, Iterator
 import sys
 import contextlib
-from .colors import magenta, red
+from .colors import red, gray
 from .helpers import print_with_time
 
 
@@ -24,7 +24,7 @@ def action_runner(
     A context manager that handles subprocess errors.
     """
 
-    print_with_time(magenta(f"{description} ... "), end="", flush=True)
+    print_with_time(gray(f"{description}... "), end="", flush=True)
 
     try:
         yield
@@ -50,14 +50,20 @@ def action_runner(
 
         if not exit_on_failure:
             raise
+        
         if error_message:
             sys.exit(error_message)
+            
         sys.exit(1)
+        
     except Cancel as e:
         print("❌")
         print(red(e.description))
+        
         if e.help:
             print(e.help)
+            
         if not exit_on_failure:
             raise
+        
         sys.exit(1)
