@@ -267,7 +267,7 @@ tests = ["coverage", "mock-django"]
 
 [[package]]
 name = "django-s3-storage"
-version = "0.13.6"
+version = "0.13.3"
 description = "Django Amazon S3 file storage."
 category = "main"
 optional = false
@@ -831,7 +831,7 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "1.1"
 python-versions = "3.10.2"
-content-hash = "b10a4136156182859611a338cccee20d98eac538cbc58c202d9a55c1198cfad5"
+content-hash = "31606745733e112d5a9f078fdd96eb1a934c60463497abeb395fdf287d9c8ba3"
 
 [metadata.files]
 appnope = [
@@ -923,8 +923,7 @@ django-mptt = [
     {file = "django_mptt-0.13.4-py3-none-any.whl", hash = "sha256:75745b621ae31d97957ed924155a750dfa8cacd9543799ada2d713fd6bc3f5c7"},
 ]
 django-s3-storage = [
-    {file = "django-s3-storage-0.13.6.tar.gz", hash = "sha256:5fe3783837f8216abd65a2fdccae15e3a4914c148bf9834a0ae2f6247da49d05"},
-    {file = "django_s3_storage-0.13.6-py3-none-any.whl", hash = "sha256:63b3f662a896d894f2507131118f9d9723072e2cee91db453250722cff6ce82d"},
+    {file = "django-s3-storage-0.13.3.tar.gz", hash = "sha256:94fa108b272366f883355b108e6b67fc4f9e0e786523d44ac77c75505a511453"},
 ]
 djangorestframework = [
     {file = "djangorestframework-3.13.1-py3-none-any.whl", hash = "sha256:24c4bf58ed7e85d1fe4ba250ab2da926d263cd57d64b03e8dcef0ac683f8b1aa"},
