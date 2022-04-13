@@ -13,6 +13,7 @@ from aria.users.models import User
 from aria.users.selectors import user_list
 from aria.users.services import user_update
 from aria.core.schemas import APIViewSchema
+from aria.core.decorators import internal_endpoint, required_method_permissions
 
 
 class UserListAPI(APIView):

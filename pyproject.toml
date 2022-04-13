@@ -61,13 +61,40 @@ Django = "^3.2.9"
 sentry-sdk = "^1.5.0"
 uritemplate = "^4.1.1"
 django-mptt = "^0.13.4"
+pytest = "^7.1.1"
+pytest-django = "^4.5.2"
+pytest-env = "^0.6.2"
+pytest-cov = "^3.0.0"
+pytest-socket = "^0.5.1"
+pytest-mock = "^3.7.0"
+pytest-lazy-fixture = "^0.6.3"
+pytest-remove-stale-bytecode = "^5.0.1"
+pytest-xdist = "^2.5.0"
+model-bakery = "^1.5.0"
+django-filter = "^21.1"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
-black = "^21.11b1"
 flake8-black = "^0.2.3"
 isort = "^5.10.1"
 flake8-isort = "^4.1.1"
+black = "^22.3.0"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["aria"]
+python_files = "test_*.py"
+# Reuse the database between tests
+addopts = [
+    "--reuse-db",
+    "--allow-hosts=localhost,::1,127.0.0.1",
+]
+# Include captured log messages in system-out in CI report file
+junit_logging = "system-out"
+# --- pytest-django settings
+DJANGO_SETTINGS_MODULE = "aria.settings"
+# --- pytest-env settings
+env = ["ENV_PATH=.env.test"]
 
 [tool.black]
 target-version = ['py39']
