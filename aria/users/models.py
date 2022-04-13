@@ -2,6 +2,8 @@ import random
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.sites.managers import CurrentSiteManager
+from django.contrib.sites.models import Site
 from django.contrib.contenttypes.models import ContentType
 from django.core import signing
 from django.core.mail import send_mail
@@ -101,15 +103,18 @@ class User(AbstractBaseUser, PermissionsMixin):
             "Designates whether the user is automatically granted all permissions."
         ),
     )
+    site = models.ForeignKey(Site, on_delete=models.SET_NULL, null=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+    on_site = CurrentSiteManager()
 
     class Meta:
         verbose_name = "user"
         verbose_name_plural = "users"
+        unique_together = (("email", "site"), )
         permissions = (
             ("has_users_list", "Can list users"),
             ("has_user_edit", "Can edit a single user instance"),
