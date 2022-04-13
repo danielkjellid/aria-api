@@ -1,14 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from aria.users.forms import UserChangeForm, UserCreationForm
 from aria.users.models import User
 
 
 @admin.register(User)
 class UserAdmin(UserAdmin):
-    add_form = UserCreationForm
-    form = UserChangeForm
     model = User
     list_display = ("first_name", "last_name", "email", "is_staff", "is_active")
     list_filter = ("is_staff", "is_active", "has_confirmed_email")
@@ -49,7 +46,6 @@ class UserAdmin(UserAdmin):
                     "allow_personalization",
                     "allow_third_party_personalization",
                     "acquisition_source",
-                    "site",
                 )
             },
         ),
