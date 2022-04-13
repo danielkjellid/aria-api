@@ -1,15 +1,7 @@
+from django.db.models.query import QuerySet
 from rest_framework import serializers
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
-
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-
-    username_field = "username"
-
-    default_error_messages = {
-        "no_active_account": "Feil brukernavn eller passord. Merk at du må skille mellom store og små bokstaver."
-    }
 
 
 class BaseHeaderImageSerializer(serializers.Serializer):
@@ -41,6 +33,42 @@ class BaseHeaderImageSerializer(serializers.Serializer):
             "image_2048x1150",
         )
         abstract = True
+
+
+class BaseListImageSerializer(serializers.Serializer):
+    """
+    A serializer that serializes list images. Values
+    are inherited by BaseListImageModel in core.models.
+    """
+
+    image500x305 = serializers.CharField(source="image500x305.url", read_only=True)
+    image600x440 = serializers.CharField(source="image600x440.url", read_only=True)
+    image850x520 = serializers.CharField(source="image850x520.url", read_only=True)
+
+    class Meta:
+        fields = "image500x305" "image600x440" "image850x520"
+        abstract = True
+
+
+def _create_serializer_class(name, fields):
+    return type(name, (serializers.Serializer,), fields)
+
+
+def inline_serializer(*, fields, data=None, **kwargs):
+    """
+    The inline serializer is to be used for nested serialization within
+    the viewset.
+    """
+
+    serializer_class = _create_serializer_class(name="", fields=fields)
+
+    if data is not None:
+        if isinstance(data, QuerySet):
+            return serializer_class(data=[d for d in data], **kwargs)
+
+        return serializer_class(data=data, **kwargs)
+
+    return serializer_class(**kwargs)
 
 
 class BaseListImageSerializer(serializers.Serializer):
