@@ -12,7 +12,9 @@ from aria.users.models import User
 
 
 class LogEntry(models.Model):
-    user = models.ForeignKey(User, related_name="log_entries", on_delete=models.CASCADE)
+    author = models.ForeignKey(
+        User, related_name="log_entries", on_delete=models.CASCADE
+    )
     content_type = models.ForeignKey(
         ContentType,
         models.SET_NULL,
@@ -34,54 +36,10 @@ class LogEntry(models.Model):
     class Meta:
         verbose_name = _("Audit log entry")
         verbose_name_plural = _("Audit log entries")
-
-    # method for creating an change message
-    def create_log_entry(request, obj, old_instance):
-
-        # get the new version of the instance by querying the object
-        new_instance = obj.objects.get(pk=old_instance.pk)
-
-        # get content type for object
-        ct = ContentType.objects.get_for_model(new_instance)
-
-        # loop for checking fields on the old instance and compare it to the new one
-        for field in obj._meta.get_fields():
-
-            # filter out reverse relations to prevent typerror
-            if isinstance(field, models.ManyToOneRel):
-                continue
-
-            # get the value of old and new fields
-            old_value = getattr(old_instance, field.name)
-            new_value = getattr(new_instance, field.name)
-
-            # check if old does not match new
-            if old_value != new_value:
-                # print('After check')
-
-                # format changemessage as JSON
-                change_message = {
-                    "field": field.name,
-                    "old_value": old_value,
-                    "new_value": new_value,
-                }
-
-                # use constructor created in manager to create a new model instance
-                LogEntry.objects.log_update(
-                    user=request,
-                    content_type=ct,
-                    content_object=new_instance,
-                    object_id=new_instance.pk,
-                    change=change_message,
-                    date_of_change=timezone.now(),
-                )
-
-    def get_logs(instance):
-
-        ct = ContentType.objects.get_for_model(instance)
-
-        return LogEntry.objects.filter(content_type=ct, object_id=instance.pk).order_by(
-            "-date_of_change"
+        permissions = (
+            ("has_audit_logs_list", "Can view audit logs"),
+            ("has_audit_logs_edit", "Can edit a single log instance"),
+            ("has_audit_logs_delete", "Can delete a single log instance"),
         )
 
     # property to parse and return the changed JSON
