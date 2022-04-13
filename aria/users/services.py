@@ -10,7 +10,6 @@ from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode as uid_decoder
 from django.utils.translation import gettext as _
 
-from aria.audit_logs.services import log_entry_create
 from aria.core.exceptions import ApplicationError
 from aria.core.services import model_update
 from aria.users.models import User
@@ -99,9 +98,10 @@ def user_update(
     user, has_updated, updated_fields = model_update(
         instance=user, fields=non_side_effect_fields, data=data
     )
-
-    if has_updated and author is not None and log_change:
-        log_entry_create(author=author, instance=user, change_messages=updated_fields)
+    
+    # TODO: Add when adudit_logs are refactored
+    # if has_updated and author is not None and log_change:
+    #     log_entry_create(author=author, instance=user, change_messages=updated_fields)
 
     return user
 
