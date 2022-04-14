@@ -18,6 +18,20 @@ python-versions = ">=3.7"
 tests = ["pytest", "pytest-asyncio", "mypy (>=0.800)"]
 
 [[package]]
+name = "asttokens"
+version = "2.0.5"
+description = "Annotate AST trees with source code positions"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = "*"
+
+[package.extras]
+test = ["astroid", "pytest"]
+
+[[package]]
 name = "atomicwrites"
 version = "1.4.0"
 description = "Atomic file writes."
@@ -376,6 +390,14 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 testing = ["pre-commit"]
 
 [[package]]
+name = "executing"
+version = "0.8.3"
+description = "Get the currently executing AST node of a frame, and other information"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "flake8"
 version = "4.0.1"
 description = "the modular source code checker: pep8 pyflakes and co"
@@ -449,11 +471,11 @@ python-versions = "*"
 
 [[package]]
 name = "ipython"
-version = "7.28.0"
+version = "8.2.0"
 description = "IPython: Productive Interactive Computing"
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 
 [package.dependencies]
 appnope = {version = "*", markers = "sys_platform == \"darwin\""}
@@ -465,19 +487,22 @@ matplotlib-inline = "*"
 pexpect = {version = ">4.3", markers = "sys_platform != \"win32\""}
 pickleshare = "*"
 prompt-toolkit = ">=2.0.0,<3.0.0 || >3.0.0,<3.0.1 || >3.0.1,<3.1.0"
-pygments = "*"
-traitlets = ">=4.2"
+pygments = ">=2.4.0"
+stack-data = "*"
+traitlets = ">=5"
 
 [package.extras]
-all = ["Sphinx (>=1.3)", "ipykernel", "ipyparallel", "ipywidgets", "nbconvert", "nbformat", "nose (>=0.10.1)", "notebook", "numpy (>=1.17)", "pygments", "qtconsole", "requests", "testpath"]
+all = ["black", "Sphinx (>=1.3)", "ipykernel", "nbconvert", "nbformat", "ipywidgets", "notebook", "ipyparallel", "qtconsole", "pytest (<7.1)", "pytest-asyncio", "testpath", "curio", "matplotlib (!=3.2.0)", "numpy (>=1.19)", "pandas", "trio"]
+black = ["black"]
 doc = ["Sphinx (>=1.3)"]
 kernel = ["ipykernel"]
 nbconvert = ["nbconvert"]
 nbformat = ["nbformat"]
-notebook = ["notebook", "ipywidgets"]
+notebook = ["ipywidgets", "notebook"]
 parallel = ["ipyparallel"]
 qtconsole = ["qtconsole"]
-test = ["nose (>=0.10.1)", "requests", "testpath", "pygments", "nbformat", "ipykernel", "numpy (>=1.17)"]
+test = ["pytest (<7.1)", "pytest-asyncio", "testpath"]
+test_extra = ["pytest (<7.1)", "pytest-asyncio", "testpath", "curio", "matplotlib (!=3.2.0)", "nbformat", "numpy (>=1.19)", "pandas", "trio"]
 
 [[package]]
 name = "isort"
@@ -707,6 +732,17 @@ description = "Run a subprocess in a pseudo terminal"
 category = "main"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "pure-eval"
+version = "0.2.2"
+description = "Safely evaluate AST nodes without side effects"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+tests = ["pytest"]
 
 [[package]]
 name = "py"
@@ -999,6 +1035,22 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
+name = "stack-data"
+version = "0.2.0"
+description = "Extract data from python stack frames and tracebacks for informative displays"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+asttokens = "*"
+executing = "*"
+pure-eval = "*"
+
+[package.extras]
+tests = ["pytest", "typeguard", "pygments", "littleutils", "cython"]
+
+[[package]]
 name = "structlog"
 version = "21.5.0"
 description = "Structured Logging for Python"
@@ -1102,7 +1154,7 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "1.1"
 python-versions = "3.10.2"
-content-hash = "6ec6fc35e52fc0d21ed11313b7339bb2ce184e466d1de018d49f353bdac676e9"
+content-hash = "1d68a759456fae7b4424e4501cf0e1acd3772a6babcc2a5c01093177b50e65f0"
 
 [metadata.files]
 appnope = [
@@ -1112,6 +1164,10 @@ appnope = [
 asgiref = [
     {file = "asgiref-3.5.0-py3-none-any.whl", hash = "sha256:88d59c13d634dcffe0510be048210188edd79aeccb6a6c9028cdad6f31d730a9"},
     {file = "asgiref-3.5.0.tar.gz", hash = "sha256:2f8abc20f7248433085eda803936d98992f1343ddb022065779f37c5da0181d0"},
+]
+asttokens = [
+    {file = "asttokens-2.0.5-py2.py3-none-any.whl", hash = "sha256:0844691e88552595a6f4a4281a9f7f79b8dd45ca4ccea82e5e05b4bbdb76705c"},
+    {file = "asttokens-2.0.5.tar.gz", hash = "sha256:9a54c114f02c7a9480d56550932546a3f1fe71d8a02f1bc7ccd0ee3ee35cf4d5"},
 ]
 atomicwrites = [
     {file = "atomicwrites-1.4.0-py2.py3-none-any.whl", hash = "sha256:6d1784dea7c0c8d4a5172b6c620f40b6e4cbfdf96d783691f2e1302a7b88e197"},
@@ -1268,6 +1324,10 @@ execnet = [
     {file = "execnet-1.9.0-py2.py3-none-any.whl", hash = "sha256:a295f7cc774947aac58dde7fdc85f4aa00c42adf5d8f5468fc630c1acf30a142"},
     {file = "execnet-1.9.0.tar.gz", hash = "sha256:8f694f3ba9cc92cab508b152dcfe322153975c29bda272e2fd7f3f00f36e47c5"},
 ]
+executing = [
+    {file = "executing-0.8.3-py2.py3-none-any.whl", hash = "sha256:d1eef132db1b83649a3905ca6dd8897f71ac6f8cac79a7e58a1a09cf137546c9"},
+    {file = "executing-0.8.3.tar.gz", hash = "sha256:c6554e21c6b060590a6d3be4b82fb78f8f0194d809de5ea7df1c093763311501"},
+]
 flake8 = [
     {file = "flake8-4.0.1-py2.py3-none-any.whl", hash = "sha256:479b1304f72536a55948cb40a32dce8bb0ffe3501e26eaf292c7e60eb5e0428d"},
     {file = "flake8-4.0.1.tar.gz", hash = "sha256:806e034dda44114815e23c16ef92f95c91e4c71100ff52813adf7132a6ad870d"},
@@ -1293,8 +1353,8 @@ iniconfig = [
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
 ]
 ipython = [
-    {file = "ipython-7.28.0-py3-none-any.whl", hash = "sha256:f16148f9163e1e526f1008d7c8d966d9c15600ca20d1a754287cf96d00ba6f1d"},
-    {file = "ipython-7.28.0.tar.gz", hash = "sha256:2097be5c814d1b974aea57673176a924c4c8c9583890e7a5f082f547b9975b11"},
+    {file = "ipython-8.2.0-py3-none-any.whl", hash = "sha256:1b672bfd7a48d87ab203d9af8727a3b0174a4566b4091e9447c22fb63ea32857"},
+    {file = "ipython-8.2.0.tar.gz", hash = "sha256:70e5eb132cac594a34b5f799bd252589009905f05104728aea6a403ec2519dc1"},
 ]
 isort = [
     {file = "isort-5.10.1-py3-none-any.whl", hash = "sha256:6f62d78e2f89b4500b080fe3a81690850cd254227f27f75c3a0c491a1f351ba7"},
@@ -1503,6 +1563,10 @@ ptyprocess = [
     {file = "ptyprocess-0.7.0-py2.py3-none-any.whl", hash = "sha256:4b41f3967fce3af57cc7e94b888626c18bf37a083e3651ca8feeb66d492fef35"},
     {file = "ptyprocess-0.7.0.tar.gz", hash = "sha256:5c5d0a3b48ceee0b48485e0c26037c0acd7d29765ca3fbb5cb3831d347423220"},
 ]
+pure-eval = [
+    {file = "pure_eval-0.2.2-py3-none-any.whl", hash = "sha256:01eaab343580944bc56080ebe0a674b39ec44a945e6d09ba7db3cb8cec289350"},
+    {file = "pure_eval-0.2.2.tar.gz", hash = "sha256:2b45320af6dfaa1750f543d714b6d1c520a1688dec6fd24d339063ce0aaa9ac3"},
+]
 py = [
     {file = "py-1.11.0-py2.py3-none-any.whl", hash = "sha256:607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378"},
     {file = "py-1.11.0.tar.gz", hash = "sha256:51c75c4126074b472f746a24399ad32f6053d1b34b68d2fa41e558e6f4a98719"},
@@ -1593,6 +1657,10 @@ six = [
 sqlparse = [
     {file = "sqlparse-0.3.1-py2.py3-none-any.whl", hash = "sha256:022fb9c87b524d1f7862b3037e541f68597a730a8843245c349fc93e1643dc4e"},
     {file = "sqlparse-0.3.1.tar.gz", hash = "sha256:e162203737712307dfe78860cc56c8da8a852ab2ee33750e33aeadf38d12c548"},
+]
+stack-data = [
+    {file = "stack_data-0.2.0-py3-none-any.whl", hash = "sha256:999762f9c3132308789affa03e9271bbbe947bf78311851f4d485d8402ed858e"},
+    {file = "stack_data-0.2.0.tar.gz", hash = "sha256:45692d41bd633a9503a5195552df22b583caf16f0b27c4e58c98d88c8b648e12"},
 ]
 structlog = [
     {file = "structlog-21.5.0-py3-none-any.whl", hash = "sha256:fd7922e195262b337da85c2a91c84be94ccab1f8fd1957bd6986f6904e3761c8"},
