@@ -9,6 +9,43 @@ from aria.core.exceptions import ApplicationError
 from aria.core.schemas import APIViewSchema
 from aria.users.models import User
 from aria.users.services import user_create, user_set_password, user_verify_account
+from typing import Any
+from pydantic import BaseModel
+
+from ninja import Router, Schema
+
+public_endpoint = Router()
+
+
+class ResponseType(Schema):
+    message: str
+
+
+class UserCreateInput(Schema):
+    email: str
+    first_name: str
+    last_name: str
+    phone_number: str
+    has_confirmed_email: bool
+    street_address: str
+    zip_code: str
+    zip_place: str
+    disabled_emails: bool
+    subscribed_to_newsletter: bool
+    allow_personalization: bool
+    allow_third_party_personalization: bool
+    password: str
+    
+    
+
+
+
+@public_endpoint.post('test/', response=ResponseType)
+def user_create_api(request, payload: UserCreateInput):
+    user_create(**payload.dict())
+    return 200, {
+            "message": _("Account has been created."),
+            }
 
 
 class UserCreateAPI(APIView):

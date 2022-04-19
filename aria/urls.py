@@ -3,6 +3,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from aria.api import api
+
 api_patterns = [
     path("auth/", include("aria.auth.urls")),
     path("categories/", include("aria.categories.urls")),
@@ -18,6 +20,7 @@ urlpatterns = [
     path("api/suppliers/", include("aria.suppliers.urls")),
     path("api-auth/", include("rest_framework.urls")),
     path("api/", include(api_patterns)),
+    path("test/", api.urls)
 ]
 
 
