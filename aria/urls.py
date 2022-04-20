@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from aria.api import api
+from aria.api.endpoints import endpoints
 
 api_patterns = [
     path("auth/", include("aria.auth.urls")),
@@ -20,7 +20,7 @@ urlpatterns = [
     path("api/suppliers/", include("aria.suppliers.urls")),
     path("api-auth/", include("rest_framework.urls")),
     path("api/", include(api_patterns)),
-    path("test/", api.urls)
+    path("test/", endpoints.urls)
 ]
 
 

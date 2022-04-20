@@ -14,6 +14,10 @@ from aria.users.models import User
 from aria.users.selectors import user_list
 from aria.users.services import user_update
 
+from ninja import Router
+
+router = Router()
+
 
 class UserListAPI(APIView):
     """

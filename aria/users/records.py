@@ -1,0 +1,45 @@
+from ninja import Schema
+from pydantic import validator
+from django.core.validators import validate_email
+from django.contrib.auth.password_validation import validate_password
+
+
+class UserCreateOutput(Schema):
+    id: int
+    email: str
+    first_name: str
+    last_name: str
+
+
+class UserCreateInput(Schema):
+    email: str
+    first_name: str
+    last_name: str
+    phone_number: str
+    has_confirmed_email: bool
+    street_address: str
+    zip_code: str
+    zip_place: str
+    subscribed_to_newsletter: bool
+    allow_personalization: bool
+    allow_third_party_personalization: bool
+    password: str
+
+    @validator("email")
+    def validate_email(cls, email: str):
+        try:
+            validate_email(email)
+            return email
+        except Exception:
+            raise
+
+    @validator("password")
+    def validate_password(cls, password: str):
+        try:
+            validate_password(password)
+            return password
+        except Exception:
+            raise
+
+
+

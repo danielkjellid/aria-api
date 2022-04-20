@@ -149,6 +149,7 @@ THIRD_PARTY_APPS = [
     "django_s3_storage",
     "imagekit",
     "mptt",
+    "ninja",
 ]
 
 PROJECT_APPS = [
