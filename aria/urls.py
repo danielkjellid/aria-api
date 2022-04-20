@@ -20,7 +20,7 @@ urlpatterns = [
     path("api/suppliers/", include("aria.suppliers.urls")),
     path("api-auth/", include("rest_framework.urls")),
     path("api/", include(api_patterns)),
-    path("test/", endpoints.urls)
+    path("test/", endpoints.urls),
 ]
 
 

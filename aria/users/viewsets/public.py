@@ -20,12 +20,12 @@ router = Router()
 
 @api(
     router,
-    'create/',
+    "create/",
     method="POST",
     response={201: GenericResponse},
     summary="Creates a user",
     description="Creates a user and dispatch a confirm account email",
-    url_name="users-create"
+    url_name="users-create",
 )
 def user_create_api(request, payload: UserCreateInput):
     """
@@ -37,8 +37,7 @@ def user_create_api(request, payload: UserCreateInput):
     user = user_create(**payload.dict())
 
     return 201, GenericResponse(
-        message=_("Account has been created."),
-        data=UserCreateOutput.from_orm(user)
+        message=_("Account has been created."), data=UserCreateOutput.from_orm(user)
     )
 
 
@@ -102,7 +101,7 @@ class UserAccountVerificationAPI(APIView):
         try:
             user = User.objects.get(email__iexact=serializer.validated_data["email"])
         except User.DoesNotExist:
-            raise ApplicationError(_("User does not exist."))
+            raise ApplicationError(_("User does not exist."), status_code=404)
 
         user.send_verification_email()
 
@@ -161,7 +160,7 @@ class UserPasswordResetAPI(APIView):
                 email__iexact=serializer.validated_data["email"], is_active=True
             )
         except User.DoesNotExist:
-            raise ApplicationError(message=_("User does not exist."))
+            raise ApplicationError(message=_("User does not exist."), status_code=404)
 
         user.send_password_reset_email(request=request)
 
