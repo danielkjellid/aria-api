@@ -21,8 +21,6 @@ jobs:
             check: flake8 aria
           - name: "Python lint: isort"
             check: isort -c aria --check-only --diff
-          - name: "Python lint: pylint"
-            check: pylint aria  --output-format=parseable --reports=no
     name: ${{ matrix.name }}
     steps:
       - uses: actions/checkout@v3
