@@ -58,8 +58,6 @@ HTTPS_ONLY = env.bool("HTTPS_ONLY", default=False)
 
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
 
-SECURE_PROXY_SSL_HEADER = env.tuple("SECURE_PROXY_SSL_HEADER")
-
 APPEND_SLASH = env.bool("APPEND_SLASH", default=True)
 
 LOGIN_REDIRECT_URL = "/"
@@ -168,9 +166,9 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 ####################################
 
 AWS_REGION = "eu-north-1"
-AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY")
-AWS_S3_BUCKET_NAME = env.str("AWS_S3_BUCKET_NAME")
+AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID", default="")
+AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY", default="")
+AWS_S3_BUCKET_NAME = env.str("AWS_S3_BUCKET_NAME", default="")
 
 AWS_S3_ADDRESSING_STYLE = "auto"
 AWS_S3_BUCKET_AUTH = False
@@ -267,11 +265,11 @@ SIMPLE_JWT = {
 
 EMAIL_HOST = "smtp.sendgrid.net"
 EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = env.str("SENDGRID_API_KEY")
+EMAIL_HOST_PASSWORD = env.str("SENDGRID_API_KEY", default="")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL")
+DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default="")
 
 ##################
 # REST framework #
