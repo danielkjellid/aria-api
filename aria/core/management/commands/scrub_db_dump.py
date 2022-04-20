@@ -1,9 +1,10 @@
-from django.core.management.base import BaseCommand, CommandParser
-from aria.core.decorators import not_in_production
 from django.conf import settings
+from django.contrib.sites.models import Site
+from django.core.management.base import BaseCommand, CommandParser
 from django.db import connection, transaction
 from django.utils.crypto import get_random_string
-from django.contrib.sites.models import Site
+
+from aria.core.decorators import not_in_production
 from aria.users.models import User
 
 

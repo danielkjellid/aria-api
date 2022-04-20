@@ -1,5 +1,5 @@
-from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import serializers
+from rest_framework.schemas.openapi import AutoSchema
 
 
 class APIViewSchema(AutoSchema):
