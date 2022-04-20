@@ -6,7 +6,6 @@ on:
 
 env:
   DJANGO_SETTINGS_MODULE: aria.settings
-  SECURE_PROXY_SSL_HEADER: HTTP_X_FORWARDED_PROTO,http
 
 jobs:
   python-lint:
@@ -83,7 +82,6 @@ jobs:
         run: poetry run pytest
         env:
           DATABASE_URL: postgresql://aria:aria@localhost:${{ job.services.postgres.ports[5432] }}/aria
-          SECURE_PROXY_SSL_HEADER: HTTP_X_FORWARDED_PROTO,http
           # PostgreSQL configuration, used by psql
           PGHOST: localhost
           PGUSER: aria
