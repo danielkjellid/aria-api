@@ -1,5 +1,6 @@
 from django.http import HttpRequest, HttpResponse
 from django.utils.translation import gettext as _
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -10,7 +11,7 @@ from aria.core.schemas import APIViewSchema
 from aria.api.decorators import api
 from aria.api.responses import GenericResponse
 from aria.users.models import User
-from aria.users.records import UserCreateInput, UserCreateOutput
+from aria.users.records import UserCreateInput, UserCreateOutput, UserAccountVerificationInput
 from aria.users.services import user_create, user_set_password, user_verify_account
 
 from ninja import Router, Schema
@@ -24,10 +25,10 @@ router = Router()
     method="POST",
     response={201: GenericResponse},
     summary="Creates a user",
-    description="Creates a user and dispatch a confirm account email",
+    description="Creates a single user instance",
     url_name="users-create",
 )
-def user_create_api(request, payload: UserCreateInput):
+def user_create_api(request, payload: UserCreateInput) -> tuple[int, GenericResponse]:
     """
     [PUBLIC] Endpoint for creating a new user instance.
 
@@ -41,74 +42,31 @@ def user_create_api(request, payload: UserCreateInput):
     )
 
 
-class UserCreateAPI(APIView):
-    """
-    [PUBLIC] Endpoint for creating a new user instance.
-
-    Returns the created user.
-    """
-
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-    schema = APIViewSchema()
-
-    class InputSerializer(serializers.Serializer):
-        email = serializers.EmailField()
-        first_name = serializers.CharField()
-        last_name = serializers.CharField()
-        phone_number = serializers.CharField()
-        street_address = serializers.CharField()
-        zip_code = serializers.CharField()
-        zip_place = serializers.CharField()
-        subscribed_to_newsletter = serializers.BooleanField(allow_null=True)
-        allow_personalization = serializers.BooleanField(allow_null=True)
-        allow_third_party_personalization = serializers.BooleanField(allow_null=True)
-        password = serializers.CharField(min_length=8, write_only=True)
-
-    @APIViewSchema.serializer(InputSerializer())
-    def post(self, request: HttpRequest) -> HttpResponse:
-        serializer = self.InputSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        user = user_create(**serializer.validated_data)
-
-        return Response(
-            {
-                "message": _("Account has been created."),
-                "data": self.InputSerializer(user).data,
-            },
-            status=status.HTTP_201_CREATED,
-        )
-
-
-class UserAccountVerificationAPI(APIView):
+@api(
+    router,
+    'verify/',
+    method="POST",
+    response={200: GenericResponse},
+    summary="Sends verification email",
+    description="Sends verification email to a specific email (user) for them to verify the account",
+    url_name="users-verify"
+)
+def user_account_verification_api(request, payload: UserAccountVerificationInput) -> tuple[int, GenericResponse]:
     """
     [PUBLIC] Endpoint for sending a verification email to the user.
     """
 
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-    schema = APIViewSchema()
+    try:
+        user = User.objects.get(email__iexact=payload.email)
+    except User.DoesNotExist:
+        raise ApplicationError(_("User does not exist."), status_code=404)
 
-    class InputSerializer(serializers.Serializer):
-        email = serializers.EmailField()
+    user.send_verification_email()
 
-    @APIViewSchema.serializer(InputSerializer())
-    def post(self, request: HttpRequest) -> HttpResponse:
-        serializer = self.InputSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+    return 200, GenericResponse(
+        message=_("Email verification has been sent."), data={}
+    )
 
-        try:
-            user = User.objects.get(email__iexact=serializer.validated_data["email"])
-        except User.DoesNotExist:
-            raise ApplicationError(_("User does not exist."), status_code=404)
-
-        user.send_verification_email()
-
-        return Response(
-            {"message": _("Email verification has been sent."), "data": {}},
-            status=status.HTTP_200_OK,
-        )
 
 
 class UserAccountVerificationConfirmAPI(APIView):

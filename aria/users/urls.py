@@ -2,9 +2,7 @@ from django.urls import path
 
 from aria.users.viewsets.internal import UserDetailAPI, UserListAPI, UserUpdateAPI
 from aria.users.viewsets.public import (
-    UserAccountVerificationAPI,
     UserAccountVerificationConfirmAPI,
-    UserCreateAPI,
     UserPasswordResetAPI,
     UserPasswordResetConfirmAPI,
 )
@@ -16,8 +14,6 @@ internal_patterns = [
 ]
 
 public_patterns = [
-    path("create/", UserCreateAPI.as_view(), name="users-create"),
-    path("verify/", UserAccountVerificationAPI.as_view(), name="users-verify"),
     path(
         "verify/confirm/<str:uid>/<str:token>/",
         UserAccountVerificationConfirmAPI.as_view(),

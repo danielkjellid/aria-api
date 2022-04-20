@@ -42,4 +42,5 @@ class UserCreateInput(Schema):
             raise
 
 
-
+class UserAccountVerificationInput(Schema):
+    email: str
