@@ -1,10 +1,11 @@
 import os
-from aria.products.models import Product
-from aria.categories.models import Category
-from aria.product_categorization.models import Category as ProductCategory
-from django.core.files.base import ContentFile
 
+from django.core.files.base import ContentFile
 from django.db import transaction
+
+from aria.categories.models import Category
+from aria.products.models import Product
+from aria.product_categorization.models import Category as ProductCategory
 
 
 def copy_categories():

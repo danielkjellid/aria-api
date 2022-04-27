@@ -1,9 +1,11 @@
+from django.db import models
+from django.utils.text import slugify
+
 from mptt.models import MPTTModel, TreeForeignKey
+
 from aria.categories.enums import PromotionType
 from aria.categories.managers import CategoryManager, CategoryQueryset
 from aria.core.models import BaseHeaderImageModel, BaseListImageModel, BaseModel
-from django.db import models
-from django.utils.text import slugify
 
 
 class Category(MPTTModel, BaseModel, BaseHeaderImageModel, BaseListImageModel):
@@ -89,3 +91,11 @@ class Category(MPTTModel, BaseModel, BaseHeaderImageModel, BaseListImageModel):
     @property
     def is_new(self) -> bool:
         return self.promotion_type == PromotionType.NEW
+
+    def get_products(self):
+        """
+        Returns products from this category.
+        """
+        from aria.products.models import Product
+
+        return Product.objects.by_category(self).preload_for_list()
