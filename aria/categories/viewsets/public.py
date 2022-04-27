@@ -209,6 +209,7 @@ class CategoryDetailAPI(APIView):
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
         name = serializers.CharField()
+        images = BaseHeaderImageSerializer(source="*", read_only=True)
 
     @APIViewSchema.serializer(OutputSerializer())
     def get(self, request: HttpRequest, category_slug: str) -> HttpResponse:
