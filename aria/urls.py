@@ -7,7 +7,7 @@ api_patterns = [
     path("auth/", include("aria.auth.urls")),
     path("products/", include("aria.products.urls")),
     path("users/", include("aria.users.urls")),
-    # path("categories/", include("aria.categories.urls")),
+    path("categories/", include("aria.categories.urls")),
 ]
 
 urlpatterns = [
