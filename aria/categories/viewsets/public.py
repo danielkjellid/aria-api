@@ -210,6 +210,7 @@ class CategoryDetailAPI(APIView):
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
         name = serializers.CharField()
+        slug = serializers.SlugField()
         images = BaseHeaderImageSerializer(source="*", read_only=True)
 
     @APIViewSchema.serializer(OutputSerializer())
