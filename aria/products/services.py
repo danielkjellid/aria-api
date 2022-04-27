@@ -1,8 +1,6 @@
-from itertools import product
 from django.core.files import File
 from django.utils.text import slugify
 
-from aria.products.enums import ProductStatus
 from aria.products.models import ProductOption, Variant
 
 

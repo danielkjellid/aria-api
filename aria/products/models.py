@@ -2,6 +2,8 @@ from typing import List, Union
 from decimal import Decimal
 from django.db import models
 from django.db.models import Min
+from django.contrib.sites.managers import CurrentSiteManager
+from django.contrib.sites.models import Site
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
@@ -242,28 +244,29 @@ class Product(BaseModel, BaseThumbnailImageModel):
         help_text="Rooms applicable to product.",
     )
     absorption = models.FloatField(null=True, blank=True)
+    sites = models.ManyToManyField(Site, related_name="products", blank=True)
     is_imported_from_external_source = models.BooleanField(default=False)
-    display_price = models.BooleanField(
-        "display price to customer",
-        default=True,
-        help_text="Designates whether the product price is displayed",
-    )
-    can_be_purchased_online = models.BooleanField(
-        "can be purchased online",
-        default=False,
-        help_text="Designates whether the product can be purchased and shipped",
-    )
-    can_be_picked_up = models.BooleanField(
-        "can be picked up",
-        default=False,
-        help_text="Designates whether the product can be purchased and picked up in store",
-    )
-    supplier_purchase_price = models.DecimalField(
-        "supplier purchase price", decimal_places=2, max_digits=10, default=0.00
-    )
-    supplier_shipping_cost = models.DecimalField(
-        "shipping cost", decimal_places=2, max_digits=10, default=0.0
-    )
+    # display_price = models.BooleanField(
+    #     "display price to customer",
+    #     default=True,
+    #     help_text="Designates whether the product price is displayed",
+    # )
+    # can_be_purchased_online = models.BooleanField(
+    #     "can be purchased online",
+    #     default=False,
+    #     help_text="Designates whether the product can be purchased and shipped",
+    # )
+    # can_be_picked_up = models.BooleanField(
+    #     "can be picked up",
+    #     default=False,
+    #     help_text="Designates whether the product can be purchased and picked up in store",
+    # )
+    # supplier_purchase_price = models.DecimalField(
+    #     "supplier purchase price", decimal_places=2, max_digits=10, default=0.00
+    # )
+    # supplier_shipping_cost = models.DecimalField(
+    #     "shipping cost", decimal_places=2, max_digits=10, default=0.0
+    # )
 
     objects = ProductManager.from_queryset(ProductQuerySet)()
 
@@ -353,6 +356,47 @@ class ProductFile(BaseFileModel):
 
     def __str__(self):
         return self.name
+
+
+class ProductSiteState(BaseModel):
+    """
+    We support multiple sites from the same frontend. This
+    model allow for different settings based on site.
+    """
+
+    site = models.ForeignKey(Site, on_delete=models.PROTECT, related_name="states")
+    product = models.ForeignKey(
+        "products.Product", on_delete=models.CASCADE, related_name="site_states"
+    )
+    gross_price = models.FloatField(_("Gross price"))
+    display_price = models.BooleanField(
+        _("Display price to customer"),
+        default=True,
+        help_text=_("Designates whether the product price is displayed"),
+    )
+    can_be_purchased_online = models.BooleanField(
+        _("Can be purchased online"),
+        default=False,
+        help_text=_("Designates whether the product can be purchased and shipped"),
+    )
+    can_be_picked_up = models.BooleanField(
+        _("Can be picked up"),
+        default=False,
+        help_text=_(
+            "Designates whether the product can be purchased and picked up in store"
+        ),
+    )
+    supplier_purchase_price = models.FloatField(
+        _("Supplier purchase price"), default=0.0
+    )
+    supplier_shipping_cost = models.FloatField(_("Shipping cost"), default=0.0)
+
+    objects = models.Manager()
+    on_site = CurrentSiteManager()
+
+    class Meta:
+        verbose_name = _("Product site state")
+        verbose_name_plural = _("Product site states")
 
 
 class ProductOption(BaseModel):

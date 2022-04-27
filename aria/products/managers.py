@@ -29,8 +29,6 @@ class ProductQuerySet(BaseQuerySet):
         # Prepare queryset and get active decendants
         categories = category.get_descendants(include_self=True).active()
 
-        print(categories)
-
         products = self.filter(
             status=ProductStatus.AVAILABLE, categories__in=categories
         )
