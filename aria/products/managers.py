@@ -21,8 +21,6 @@ class ProductQuerySet(BaseQuerySet):
             "images",
             "shapes",
             "options",
-            "options__variants",
-            "options__shapes",
         )
 
     def by_category(self, category, ordered: bool = True):

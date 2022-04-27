@@ -303,6 +303,10 @@ class Product(BaseModel, BaseThumbnailImageModel):
     def get_lowest_option_price(self) -> Decimal:
         return self.options.all().aggregate(Min("gross_price"))["gross_price__min"]
 
+    def get_display_price(self) -> bool:
+        current_site = Site.objects.get_current()
+        return self.site_states.get(site=current_site).display_price
+
     def get_variants(self) -> Union[models.QuerySet, Variant]:
         return Variant.objects.filter(product_options__product=self).distinct("pk")
 
