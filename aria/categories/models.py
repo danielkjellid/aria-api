@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import slugify
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -11,6 +12,14 @@ class Category(MPTTModel, BaseModel, BaseHeaderImageModel, BaseListImageModel):
     """
     A category of which a product bellongs to.
     """
+
+    @property
+    def category_image_directory_path(self):
+        if self.parent is not None:
+            return f"media/categories/{slugify(self.parent)}/subcategories/{slugify(self.name)}"
+        return f"media/categories/{slugify(self.name)}"
+
+    UPLOAD_PATH = category_image_directory_path
 
     name = models.CharField(max_length=100, unique=False)
     slug = models.SlugField(
