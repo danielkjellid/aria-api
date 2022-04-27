@@ -150,15 +150,16 @@ THIRD_PARTY_APPS = [
 ]
 
 PROJECT_APPS = [
-    "aria.core",
     "aria.audit_logs",
-    "aria.users",
-    "aria.kitchens",
-    "aria.products",
-    "aria.product_categorization",
-    "aria.suppliers",
-    "aria.notes",
+    "aria.auth",
     "aria.categories",
+    "aria.core",
+    "aria.kitchens",
+    "aria.notes",
+    "aria.product_categorization",
+    "aria.products",
+    "aria.suppliers",
+    "aria.users",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS

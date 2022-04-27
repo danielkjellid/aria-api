@@ -57,9 +57,6 @@ class BaseImageModel(models.Model):
 
 
 class BaseHeaderImageModel(BaseImageModel):
-    class Meta:
-        abstract = True
-
     """
     Generic model for storing and uploading all version needed for an header image.
     To add this to a model, create a subclass with the UPLOAD_FILE_PATH
@@ -68,6 +65,9 @@ class BaseHeaderImageModel(BaseImageModel):
     Convention is media/category/supplier/item_name/file_name. All provided
     path variables should be slugified.
     """
+
+    class Meta:
+        abstract = True
 
     UPLOAD_PATH: str
 

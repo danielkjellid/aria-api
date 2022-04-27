@@ -13,7 +13,7 @@ class Category(MPTTModel, BaseModel, BaseHeaderImageModel, BaseListImageModel):
 
     @property
     def category_image_directory_path(self):
-        if self.parent:
+        if self.parent is not None:
             return f"media/categories/{slugify(self.parent)}/subcategories/{slugify(self.name)}"
         return f"media/categories/{slugify(self.name)}"
 
