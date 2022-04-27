@@ -71,8 +71,8 @@ def _sanity_checks() -> None:
 
     if not os.environ.get("DJANGO_SETTINGS_MODULE"):
         sys.exit(
-            'Error: The "DJANGO_SETTINGS_MODULE" environment variable is not set\n'
-            "This must be configured before you can update the database"
+            """Error: The "DJANGO_SETTINGS_MODULE" environment variable is not set\n,
+            This must be configured before you can update the database"""
         )
 
 
@@ -109,7 +109,7 @@ def main() -> None:
     parser.add_argument("--user", help="User to connect to PostgreSQL with")
     parser.add_argument("--password", help="Password to connect to PostgreSQL with")
 
-    parser.add_argument("--env", help="Download from specific env")
+    parser.add_argument("--env", help="Download from specific heroku env")
     parser.add_argument(
         "--skip-capture",
         action="store_true",
@@ -142,7 +142,7 @@ def main() -> None:
     env = args.env if args.env else "aria-api-prod"
 
     # Check that we are in a good state before starting to download.
-    # _sanity_checks()
+    _sanity_checks()
 
     if not args.file:
         if not has_heroku_cli():

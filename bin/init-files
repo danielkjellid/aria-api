@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+import functools
+import argparse
+import os
+import sys
+
+from utils.colors import red
+from utils.helpers import check_exit_code, print_with_time
+from utils.config import PROJECT_ROOT
+from utils.managers import action_runner
+from utils.executables import run_cli_command
+
+AWS_CLI_INSTALL_ERROR_MESSAGE = f"""
+{red("Please install the AWS CLI")}
+It does not look lik you have a functional installation of AWS CLI.
+AWS CLI is used to download the static files, so it needs to be on
+the path and authenticated.
+"""
+
+AWS_CLI_DOWNLOAD_ERROR_MESSAGE = f"""
+{red("Unable to download static files")}
+Please make sure AWS CLI is authenticated. AWS CLI is used to download
+the static files. You might need to run aws configure.
+
+Also make sure to have set both AWS_ACCESS_KEY and AWS_SECRET_ACCESS_KEY
+in your .envrc. These values can be obtained by an admin.
+"""
+
+has_aws_cli = functools.partial(check_exit_code, "aws", "--version")
+authenticated_aws_cli = functools.partial(check_exit_code, "aws", "sts", "get-caller-identity")
+
+
+def _sanity_checks() -> None:
+    if not os.environ.get("AWS_S3_BUCKET_NAME"):
+        sys.exit(
+            """Error: The AWS_S3_BUCKET_NAME environment variable is not set\n
+            This must be configured before you can download static files"""
+        )
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Download static files from AWS")
+
+    parser.add_argument("--only", help="Only download a certain (aws) path")
+    parser.add_argument("--dest", help="Destination folder, defaults to /media/")
+    parser.add_argument("--media-only", dest="media_only", action="store_true", help="Only download the media folder, not all static files")
+    parser.add_argument("--confirm", dest="confirm", action="store_true", help="Initiates download of files")
+
+    args = parser.parse_args()
+
+    # Check that we are in a good state before starting to download.
+    _sanity_checks()
+
+    bucket_name = os.environ.get("AWS_S3_BUCKET_NAME")
+    path = args.only if args.only else ""
+    destination = args.dest if args.dest else str(PROJECT_ROOT / "public/media")
+
+    if args.media_only:
+        path = "media/"
+
+    if not has_aws_cli():
+        sys.exit(AWS_CLI_INSTALL_ERROR_MESSAGE)
+
+    if not authenticated_aws_cli():
+        sys.exit(AWS_CLI_DOWNLOAD_ERROR_MESSAGE)
+
+    if not os.path.exists(PROJECT_ROOT / "public/media"):
+        print_with_time("Direcotry media does not exist in project, skipping removal before download")
+    else:
+        with action_runner(description="Deleting media directory before download"):
+            run_cli_command("rm", "-r", PROJECT_ROOT / "public/media")
+
+    if not args.confirm:
+        with action_runner(description="[DRY RUN] Downloading static files"):
+            run_cli_command("aws", "s3", "sync", f"s3://{bucket_name}/{path}", destination, "--dryrun")
+    else:
+        with action_runner(description="Downloading static files, this might take a while"):
+            run_cli_command("aws", "s3", "sync", f"s3://{bucket_name}/{path}", destination)
+
+
+if __name__ == "__main__":
+    main()
