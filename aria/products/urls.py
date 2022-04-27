@@ -1,12 +1,11 @@
 from django.urls import path
 
-from aria.products.viewsets import ProductListCreateAPIView, ProductRetrieveAPIView
+from aria.products.viewsets.public import ProductDetailAPI
 
-urlpatterns = [
-    # endpoint for getting all products
-    path("products/", ProductListCreateAPIView.as_view(), name="products-list"),
-    # endpoint for getting a single product instance
-    path(
-        "products/<slug:slug>/", ProductRetrieveAPIView.as_view(), name="product-detail"
-    ),
+internal_patterns = []
+
+public_patterns = [
+    path("<slug:product_slug>/", ProductDetailAPI.as_view(), name="products-detail"),
 ]
+
+urlpatterns = internal_patterns + public_patterns
