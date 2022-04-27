@@ -2,7 +2,6 @@ from decimal import Decimal
 from tempfile import NamedTemporaryFile
 from typing import Tuple
 
-from django.contrib.sites.models import Site
 from django.core.files import File
 from django.core.management.base import BaseCommand, CommandParser
 from django.db import transaction
@@ -10,16 +9,9 @@ from django.utils.text import slugify
 
 import requests
 
-from aria.product_categorization.models import SubCategory
+from aria.categories.models import Category
 from aria.products.enums import ProductStatus
-from aria.products.models import (
-    Product,
-    ProductFile,
-    ProductOption,
-    ProductSiteState,
-    Size,
-    Variant,
-)
+from aria.products.models import Product, ProductFile, ProductOption, Size, Variant
 from aria.suppliers.models import Supplier
 
 
@@ -73,7 +65,6 @@ class Command(BaseCommand):
 
         # Common variables for all products in job
         supplier = Supplier.objects.get(id=supplier_id)
-        site = Site.objects.get(pk=1)
 
         try:
             # Wrap entire process in transaction block, that way, if there
@@ -109,22 +100,12 @@ class Command(BaseCommand):
                         supplier=supplier, add_absorption=add_absorption, **data
                     )
 
-                    # Add product to m2m site rel.
-                    self.stdout.write("Adding active site to product...")
-                    created_product.sites.add(site)
-                    created_product.save()
-                    self.stdout.write("Active site added.")
-
                     if categories is not None:
                         self.stdout.write("Adding categories to product...")
                         self._create_product_category_rels(
                             categories=categories, product=created_product
                         )
                         self.stdout.write("All categories added.")
-
-                    # Create site state for m2m rel.
-                    self.stdout.write("Creating site state...")
-                    self._create_product_site_rel(site=site, product=created_product)
 
                     # Create files instances
                     if files is not None:
@@ -290,28 +271,13 @@ class Command(BaseCommand):
     def _create_product_category_rels(
         self, categories: "list[str]", product: "Product"
     ) -> None:
-        splitted_category_slugs = [category.strip() for category in categories.split(",")]
+        splitted_category_slugs = [
+            category.strip() for category in categories.split(",")
+        ]
 
         for slug in splitted_category_slugs:
-            cat = SubCategory.objects.get(slug=slug)
+            cat = Category.objects.get(slug=slug)
             product.category.add(cat)
-
-    def _create_product_site_rel(self, site: "Site", product: "Product") -> None:
-        """
-        Create product site state for m2m rel.
-        """
-
-        ProductSiteState.objects.create(
-            site=site,
-            product=product,
-            gross_price=0.0,
-            display_price=False,
-            can_be_purchased_online=False,
-            can_be_picked_up=False,
-            supplier_purchase_price=0.0,
-            supplier_shipping_cost=0.0,
-        )
-        self.stdout.write("Site state created.")
 
     def _create_product_files(
         self, files: "list", product: "Product", confirm: "bool"
@@ -364,8 +330,12 @@ class Command(BaseCommand):
                     gotten_variant = Variant.objects.get(name=name.title())
                     self.stdout.write(f"Existing variant {gotten_variant.name} added.")
                 except Variant.MultipleObjectsReturned:
-                    gotten_variant = Variant.objects.get(name=name.title(), is_standard=True)
-                    self.stdout.write(f"Existing standard variant {gotten_variant.name} added.")
+                    gotten_variant = Variant.objects.get(
+                        name=name.title(), is_standard=True
+                    )
+                    self.stdout.write(
+                        f"Existing standard variant {gotten_variant.name} added."
+                    )
 
                 variants_to_link.append(gotten_variant)
             else:
@@ -417,7 +387,7 @@ class Command(BaseCommand):
                         variant=variant,
                         size=size,
                         gross_price=price if price else 0.00,
-                        status=ProductStatus.AVAILABLE
+                        status=ProductStatus.AVAILABLE,
                     )
 
         if len(sizes) > 0 and len(variants) <= 0:
@@ -427,7 +397,7 @@ class Command(BaseCommand):
                     variant=None,
                     size=size,
                     gross_price=price if price else 0.00,
-                    status=ProductStatus.AVAILABLE
+                    status=ProductStatus.AVAILABLE,
                 )
 
         if len(variants) > 0 and len(sizes) <= 0:
@@ -437,7 +407,7 @@ class Command(BaseCommand):
                     variant=variant,
                     size=None,
                     gross_price=price if price else 0.00,
-                    status=ProductStatus.AVAILABLE
+                    status=ProductStatus.AVAILABLE,
                 )
 
         self.stdout.write("Sizes and variants linked and added to product.")
