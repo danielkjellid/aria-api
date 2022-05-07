@@ -1,5 +1,6 @@
 import pytest
 from model_bakery import baker
+
 from aria.categories.models import Category
 
 pytestmark = pytest.mark.django_db

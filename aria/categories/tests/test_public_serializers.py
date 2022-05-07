@@ -1,13 +1,14 @@
 import json
+
 import pytest
 from model_bakery import baker
 
 from aria.categories.models import Category
 from aria.categories.viewsets.public import (
-    CategoryListAPI,
-    CategoryDetailAPI,
-    CategoryParentListAPI,
     CategoryChildrenListAPI,
+    CategoryDetailAPI,
+    CategoryListAPI,
+    CategoryParentListAPI,
     CategoryProductsListAPI,
 )
 from aria.products.models import Product

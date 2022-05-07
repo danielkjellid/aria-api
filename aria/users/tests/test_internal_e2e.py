@@ -1,8 +1,11 @@
 import json
 from datetime import datetime
+
+from django.contrib.sites.models import Site
+
 import pytest
 from model_bakery import baker
-from django.contrib.sites.models import Site
+
 from aria.users.models import User
 
 pytestmark = pytest.mark.django_db

@@ -1,7 +1,8 @@
 import pytest
 from model_bakery import baker
+
 from aria.products.enums import ProductStatus, ProductUnit
-from aria.products.models import Color, Product, Size, Variant, Shape, ProductOption
+from aria.products.models import Color, Product, ProductOption, Shape, Size, Variant
 from aria.suppliers.models import Supplier
 
 pytestmark = pytest.mark.django_db

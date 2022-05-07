@@ -1,4 +1,5 @@
 import json
+
 import pytest
 from model_bakery import baker
 
@@ -10,7 +11,6 @@ from aria.categories.selectors import (
 )
 from aria.products.models import Product, ProductSiteState
 from aria.products.selectors import product_list_by_category
-
 from aria.users.tests.conftest import unauthenticated_client
 
 pytestmark = pytest.mark.django_db

@@ -1,8 +1,9 @@
 import json
+
 import pytest
 from model_bakery import baker
-from aria.products.models import Product
 
+from aria.products.models import Product
 from aria.users.tests.conftest import unauthenticated_client
 
 pytestmark = pytest.mark.django_db

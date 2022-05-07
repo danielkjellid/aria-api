@@ -1,9 +1,10 @@
-from typing import List, Union
 from decimal import Decimal
-from django.db import models
-from django.db.models import Min
+from typing import List, Union
+
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
+from django.db import models
+from django.db.models import Min
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 

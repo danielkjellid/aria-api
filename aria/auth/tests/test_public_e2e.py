@@ -1,8 +1,8 @@
 import json
 
-import pytest
-
 from django.contrib.sites.models import Site
+
+import pytest
 from model_bakery import baker
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken

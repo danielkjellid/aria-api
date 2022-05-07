@@ -13,13 +13,13 @@ from aria.categories.selectors import (
     categories_navigation_active_list,
     categories_parent_active_list,
 )
+from aria.core.pagination import LimitOffsetPagination, get_paginated_response
+from aria.core.schemas import APIViewSchema
 from aria.core.serializers import (
     BaseHeaderImageSerializer,
     BaseListImageSerializer,
     inline_serializer,
 )
-from aria.core.schemas import APIViewSchema
-from aria.core.pagination import LimitOffsetPagination, get_paginated_response
 from aria.products.selectors import product_list_by_category
 
 
