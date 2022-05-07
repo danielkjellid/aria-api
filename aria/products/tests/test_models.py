@@ -26,11 +26,6 @@ class TestProductsModels:
             "unit": ProductUnit.PCS,
             "available_in_special_sizes": True,
             "absorption": 0.00,
-            "display_price": True,
-            "can_be_purchased_online": False,
-            "can_be_picked_up": False,
-            "supplier_purchase_price": 0.00,
-            "supplier_shipping_cost": 0.00,
         }
 
         product = Product.objects.create(**options)
@@ -47,11 +42,6 @@ class TestProductsModels:
         assert product.available_in_special_sizes == True
         assert product.absorption == 0.00
         assert product.is_imported_from_external_source == False  # False is default
-        assert product.display_price == True
-        assert product.can_be_purchased_online == False
-        assert product.can_be_picked_up == False
-        assert product.supplier_purchase_price == 0.00
-        assert product.supplier_shipping_cost == 0.00
 
     def test_size_model_create(self):
         """

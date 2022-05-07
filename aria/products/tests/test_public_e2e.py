@@ -12,7 +12,7 @@ unauthenticated_client = unauthenticated_client
 
 class TestPublicProductsEndpoints:
 
-    base_endpoint = "/api/products/"
+    base_endpoint = "/api/products"
 
     ###################
     # Detail endpoint #
@@ -58,7 +58,7 @@ class TestPublicProductsEndpoints:
         # Sum            7
         with django_assert_max_num_queries(7):
             response = unauthenticated_client.get(
-                f"{self.base_endpoint}{product.slug}/"
+                f"{self.base_endpoint}/product/{product.slug}/"
             )
 
         actual_response = json.loads(response.content)
