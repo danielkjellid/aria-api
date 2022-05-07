@@ -156,7 +156,6 @@ PROJECT_APPS = [
     "aria.core",
     "aria.kitchens",
     "aria.notes",
-    "aria.product_categorization",
     "aria.products",
     "aria.suppliers",
     "aria.users",
