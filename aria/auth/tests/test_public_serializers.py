@@ -25,7 +25,7 @@ class TestPublicAuthSerializers:
         user.set_password("supersecret")
         user.save()
 
-        payload_json = {"email": user.email, "password": "supersecret"}
+        payload_json = {"username": user.email, "password": "supersecret"}
         serializer = AuthTokenObtainAPI.InputSerializer(payload_json)
 
         assert serializer.data

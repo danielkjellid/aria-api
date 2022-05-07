@@ -3,7 +3,6 @@ from typing import Any, Dict, List, Union
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import ManyToOneRel, Model
 from django.utils import timezone
-from django.utils.translation import gettext as _
 
 from aria.audit_logs.models import LogEntry
 from aria.users.models import User

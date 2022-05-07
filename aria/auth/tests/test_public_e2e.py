@@ -1,5 +1,7 @@
 import json
 
+from django.contrib.sites.models import Site
+
 import pytest
 from model_bakery import baker
 from rest_framework_simplejwt.exceptions import TokenError
@@ -18,22 +20,28 @@ class TestPublicAuthEndpoints:
     base_endpoint = "/api/auth"
 
     def test_unauthenticated_token_obtain(
-        self, unauthenticated_client, django_assert_max_num_queries
+        self, unauthenticated_client, django_assert_max_num_queries, settings
     ):
         """
         Test obtaining a token pair from the obtain endpoint.
         """
 
+        # User must have a site, and that site must be active for us to
+        # be able to authenticate.
+        site = Site.objects.create(domain="test.example.com", name="Test")
+        settings.SITE_ID = site.id
+
         user = baker.make(User)
         user.set_password("supersecret")
+        user.site = site
         user.save()
 
-        payload_json = {"email": user.email, "password": "supersecret"}
+        payload_json = {"username": user.email, "password": "supersecret"}
 
         url = f"{self.base_endpoint}/tokens/obtain/"
 
-        # Get user (1) and create token (1)
-        with django_assert_max_num_queries(2):
+        # Get user (1) and create token (1), check site (2)
+        with django_assert_max_num_queries(4):
             response = unauthenticated_client.post(
                 url, data=payload_json, format="json"
             )
@@ -47,7 +55,7 @@ class TestPublicAuthEndpoints:
         assert returned_access
 
         # Assert that refresh_token returned is not blacklisted
-        assert token.check_blacklist() == None
+        assert token.check_blacklist() is None
 
     def test_unauthenticated_token_refresh(
         self, unauthenticated_client, django_assert_max_num_queries

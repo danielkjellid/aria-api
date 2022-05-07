@@ -1,4 +1,4 @@
-from django.db.models import Exists, IntegerField, OuterRef, Prefetch, Q, Value
+from django.db.models import Exists, IntegerField, OuterRef, Prefetch, Value
 
 from mptt.managers import TreeManager
 from mptt.querysets import TreeQuerySet
@@ -50,7 +50,9 @@ class CategoryQueryset(TreeQuerySet):
         Returns all categories with their children.
         """
 
-        return self.filter(mptt_level__in=[0, 1]).order_by("ordering", "children__ordering")
+        return self.filter(mptt_level__in=[0, 1]).order_by(
+            "ordering", "children__ordering"
+        )
 
     def with_active_children(self):
         """

@@ -2,9 +2,9 @@ import random
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
-from django.contrib.contenttypes.models import ContentType
 from django.core import signing
 from django.core.mail import send_mail
 from django.db import models
@@ -114,7 +114,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = "user"
         verbose_name_plural = "users"
-        unique_together = (("email", "site"), )
+        unique_together = (("email", "site"),)
         permissions = (
             ("has_users_list", "Can list users"),
             ("has_user_edit", "Can edit a single user instance"),

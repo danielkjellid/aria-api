@@ -99,7 +99,7 @@ def user_update(
     user, has_updated, updated_fields = model_update(
         instance=user, fields=non_side_effect_fields, data=data
     )
-    
+
     if has_updated and author is not None and log_change:
         log_entry_create(author=author, instance=user, change_messages=updated_fields)
 

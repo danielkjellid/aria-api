@@ -1,9 +1,10 @@
-from typing import List, Union
 from decimal import Decimal
-from django.db import models
-from django.db.models import Min
+from typing import List, Union
+
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
+from django.db import models
+from django.db.models import Min
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
@@ -305,7 +306,10 @@ class Product(BaseModel, BaseThumbnailImageModel):
 
     def get_display_price(self) -> bool:
         current_site = Site.objects.get_current()
-        return self.site_states.get(site=current_site).display_price
+        try:
+            return self.site_states.get(site=current_site).display_price
+        except ProductSiteState.DoesNotExist:
+            return False
 
     def get_variants(self) -> Union[models.QuerySet, Variant]:
         return Variant.objects.filter(product_options__product=self).distinct("pk")

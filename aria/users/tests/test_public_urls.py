@@ -34,7 +34,7 @@ class TestPublicUsersUrls:
         url = reverse("users-reset-password")
         assert url == "/api/users/password/reset/"
 
-    def test_url_users_verify_confirm(self):
+    def test_url_users_password_confirm(self):
         """
         Test reverse match of UserAccountVerificationConfirmAPI endpoint.
         """
