@@ -22,10 +22,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='product',
-            name='category',
-        ),
-        migrations.RemoveField(
-            model_name='product',
             name='new_materials',
         ),
         migrations.RemoveField(
