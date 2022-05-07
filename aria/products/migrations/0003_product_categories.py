@@ -7,7 +7,7 @@ import mptt.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('categories', '0003_auto_20220126_1700'),
+        ('categories', '0002_alter_category_parent'),
         ('products', '0002_alter_product_new_materials'),
     ]
 
