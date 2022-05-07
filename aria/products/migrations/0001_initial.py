@@ -14,6 +14,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
+        ('product_categorization', '0001_initial'),
         ('sites', '0002_alter_domain_unique'),
         ('suppliers', '0001_initial'),
     ]
@@ -206,6 +207,11 @@ class Migration(migrations.Migration):
             model_name='productfile',
             name='product',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='files', to='products.product'),
+        ),
+        migrations.AddField(
+            model_name='product',
+            name='category',
+            field=models.ManyToManyField(related_name='products', to='product_categorization.SubCategory'),
         ),
         migrations.AddField(
             model_name='product',
