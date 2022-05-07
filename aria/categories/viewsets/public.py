@@ -134,7 +134,9 @@ class CategoryProductsListAPI(APIView):
         slug = serializers.SlugField()
         unit = serializers.CharField(source="get_unit_display")
         thumbnail = serializers.CharField(source="thumbnail.url")
-        display_price = serializers.BooleanField(source="get_display_price") # TODO: not good, does more queries than needed
+        display_price = serializers.BooleanField(
+            source="get_display_price"
+        )  # TODO: not good, does more queries than needed
         from_price = serializers.DecimalField(
             source="get_lowest_option_price",
             decimal_places=2,
