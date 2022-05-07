@@ -40,9 +40,9 @@ class TestProductsModels:
         assert product.new_description == "Even more testing"
         assert product.unit == ProductUnit.PCS
         assert product.vat_rate == 0.25  # 0.25 is default
-        assert product.available_in_special_sizes == True
+        assert product.available_in_special_sizes is True
         assert product.absorption == 0.00
-        assert product.is_imported_from_external_source == False  # False is default
+        assert product.is_imported_from_external_source is False  # False is default
 
     def test_size_model_create(self):
         """
@@ -66,16 +66,16 @@ class TestProductsModels:
         assert product_1.width == 10
         assert product_1.height == 10
         assert product_1.depth == 10
-        assert product_1.circumference == None
+        assert product_1.circumference is None
 
         assert product_2.width == 20
         assert product_2.height == 20
-        assert product_2.depth == None
-        assert product_2.circumference == None
+        assert product_2.depth is None
+        assert product_2.circumference is None
 
-        assert product_3.width == None
-        assert product_3.height == None
-        assert product_3.depth == None
+        assert product_3.width is None
+        assert product_3.height is None
+        assert product_3.depth is None
         assert product_3.circumference == 30
 
     def test_variant_model_create(self):
@@ -88,7 +88,7 @@ class TestProductsModels:
         variant = Variant.objects.create(**options)
 
         assert variant.name == "Some Variant"
-        assert variant.is_standard == False
+        assert variant.is_standard is False
 
     def test_color_model_create(self):
         """

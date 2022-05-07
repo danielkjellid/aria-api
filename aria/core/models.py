@@ -152,8 +152,7 @@ class BaseThumbnailImageModel(models.Model):
         options={"quality": 90},
         blank=True,
         null=False,
-        default="media/front/default_380x575.jpeg",
-        help_text=(f"Image must be above 380x575px"),
+        help_text="Image must be above 380x575px",
     )
 
 

@@ -1,7 +1,6 @@
 import pytest
 from model_bakery import baker
 
-from aria.products.enums import ProductStatus
 from aria.products.models import Product, ProductOption, Variant
 from aria.products.services import (
     product_option_delete_related_variants,
