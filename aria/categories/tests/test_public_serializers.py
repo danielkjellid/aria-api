@@ -179,7 +179,7 @@ class TestPublicCategoriesSerializers:
                 "name": product.name,
                 "slug": product.slug,
                 "unit": product.get_unit_display(),
-                "thumbnail": product.thumbnail.url,
+                "thumbnail": product.thumbnail.url if product.thumbnail else None,
                 "display_price": product.get_display_price(),
                 "from_price": product.get_lowest_option_price(),
                 "colors": [],
