@@ -1,8 +1,6 @@
 import json
 import tempfile
 
-from django.core.files.uploadedfile import SimpleUploadedFile
-
 import pytest
 from model_bakery import baker
 
