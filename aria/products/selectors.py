@@ -1,8 +1,9 @@
 from typing import List, Union
 
 from django.db.models import QuerySet
-from aria.products.enums import ProductStatus
+
 from aria.categories.models import Category
+from aria.products.enums import ProductStatus
 from aria.products.filters import ProductSearchFilter
 from aria.products.models import Product, Variant
 

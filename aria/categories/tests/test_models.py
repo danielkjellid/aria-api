@@ -1,5 +1,6 @@
 import pytest
 from model_bakery import baker
+
 from aria.categories.models import Category
 
 pytestmark = pytest.mark.django_db
@@ -25,10 +26,10 @@ class TestCategoriesModels:
         assert category.slug == "parent"
         assert category.description == "Some basic description"
         assert category.ordering == 0  # Default
-        assert category.is_active == True
+        assert category.is_active is True
 
         # Assert that category is a "parent"
-        assert category.is_primary == True
+        assert category.is_primary is True
 
     def test_child_category_create(self):
         """
@@ -54,7 +55,7 @@ class TestCategoriesModels:
         assert category.slug == "child"
         assert category.description == "Some basic description"
         assert category.ordering == 0  # Default
-        assert category.is_active == True
+        assert category.is_active is True
 
         # Assert that category is not a "parent"
         assert category.parent is not None

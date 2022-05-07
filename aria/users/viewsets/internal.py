@@ -8,11 +8,11 @@ from rest_framework.views import APIView
 
 from aria.core.pagination import LimitOffsetPagination, get_paginated_response
 from aria.core.permissions import HasUserOrGroupPermission
+from aria.core.schemas import APIViewSchema
 from aria.core.serializers import inline_serializer
 from aria.users.models import User
 from aria.users.selectors import user_list
 from aria.users.services import user_update
-from aria.core.schemas import APIViewSchema
 
 
 class UserListAPI(APIView):

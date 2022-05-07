@@ -8,4 +8,4 @@ class TestPublicProductsUrls:
         """
 
         url = reverse("products-detail", args=["product_slug"])
-        assert url == "/api/products/product_slug/"
+        assert url == "/api/products/product/product_slug/"

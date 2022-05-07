@@ -1,6 +1,7 @@
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.models import Site
 
 import pytest
 from model_bakery import baker
@@ -38,9 +39,9 @@ class TestUsersServices:
             )
 
         assert new_user.email == "test@example.com"
-        assert new_user.subscribed_to_newsletter == False
-        assert new_user.is_staff == False
-        assert new_user.is_superuser == False
+        assert new_user.subscribed_to_newsletter is False
+        assert new_user.is_staff is False
+        assert new_user.is_superuser is False
         assert new_user.groups.filter(id=group.id).exists()
 
         with pytest.raises(ValueError):
@@ -68,7 +69,8 @@ class TestUsersServices:
         """
 
         author = baker.make(User)
-        user = baker.make(User)
+        site = baker.make(Site)
+        user = baker.make(User, **{"site": site})
 
         # Save "old" fields to assert later
         old_user_email = user.email
@@ -77,9 +79,9 @@ class TestUsersServices:
 
         updates = {"email": "updatedemail@example.com"}
 
-        # Get user (1), update user (1), create log (1) and since
+        # Get user (1) + site (3), update user (1), create log (1) and since
         # transaction is atomic, it creates and releases savepoint (2)
-        with django_assert_max_num_queries(5):
+        with django_assert_max_num_queries(8):
             updated_user = user_update(
                 user=user, data=updates, author=author, log_change=True
             )
@@ -114,7 +116,7 @@ class TestUsersServices:
         with django_assert_max_num_queries(2):
             updated_user = user_verify_account(uid=uid, token=token)
 
-        assert updated_user.has_confirmed_email == True
+        assert updated_user.has_confirmed_email is True
         assert updated_user.has_confirmed_email != old_email_confirmed_value
 
     def test_user_set_password_sets_new_password(self, django_assert_max_num_queries):
@@ -133,4 +135,4 @@ class TestUsersServices:
             )
 
         assert updated_user.password != "supersecret"
-        assert check_password("supersecret", updated_user.password) == True
+        assert check_password("supersecret", updated_user.password) is True

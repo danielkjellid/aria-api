@@ -1,5 +1,3 @@
-from abc import ABC
-
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers, status
@@ -13,13 +11,13 @@ from aria.categories.selectors import (
     categories_navigation_active_list,
     categories_parent_active_list,
 )
+from aria.core.pagination import LimitOffsetPagination, get_paginated_response
+from aria.core.schemas import APIViewSchema
 from aria.core.serializers import (
     BaseHeaderImageSerializer,
     BaseListImageSerializer,
     inline_serializer,
 )
-from aria.core.schemas import APIViewSchema
-from aria.core.pagination import LimitOffsetPagination, get_paginated_response
 from aria.products.selectors import product_list_by_category
 
 
@@ -134,7 +132,9 @@ class CategoryProductsListAPI(APIView):
         slug = serializers.SlugField()
         unit = serializers.CharField(source="get_unit_display")
         thumbnail = serializers.CharField(source="thumbnail.url")
-        display_price = serializers.BooleanField(source="get_display_price") # TODO: not good, does more queries than needed
+        display_price = serializers.BooleanField(
+            source="get_display_price"
+        )  # TODO: not good, does more queries than needed
         from_price = serializers.DecimalField(
             source="get_lowest_option_price",
             decimal_places=2,

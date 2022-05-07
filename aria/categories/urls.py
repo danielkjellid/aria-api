@@ -18,7 +18,9 @@ public_patterns = [
     ),
     path("parents/", CategoryParentListAPI.as_view(), name="categories-parents-list"),
     path(
-        "category/<slug:category_slug>/", CategoryDetailAPI.as_view(), name="categories-detail"
+        "category/<slug:category_slug>/",
+        CategoryDetailAPI.as_view(),
+        name="categories-detail",
     ),
     path(
         "category/<slug:category_slug>/children/",

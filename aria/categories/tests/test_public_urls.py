@@ -16,7 +16,7 @@ class TestPublicCategoriesUrls:
         """
 
         url = reverse("categories-detail", args=["category_slug"])
-        assert url == "/api/categories/category_slug/"
+        assert url == "/api/categories/category/category_slug/"
 
     def test_url_category_parent_list(self):
         """
@@ -32,7 +32,7 @@ class TestPublicCategoriesUrls:
         """
 
         url = reverse("categories-parent-children-list", args=["category_slug"])
-        assert url == "/api/categories/category_slug/children/"
+        assert url == "/api/categories/category/category_slug/children/"
 
     def test_url_category_products_list(self):
         """
@@ -40,4 +40,4 @@ class TestPublicCategoriesUrls:
         """
 
         url = reverse("category-products-list", args=["category_slug"])
-        assert url == "/api/categories/category_slug/products/"
+        assert url == "/api/categories/category/category_slug/products/"

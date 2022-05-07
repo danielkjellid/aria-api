@@ -13,9 +13,9 @@ class TestUsersModels:
         )
 
         assert user.email == "leonardo@davinci.com"
-        assert user.is_active == True
-        assert user.is_staff == False
-        assert user.is_superuser == False
+        assert user.is_active is True
+        assert user.is_staff is False
+        assert user.is_superuser is False
 
         with pytest.raises(TypeError):
             django_user_model.objects.create_user()
@@ -37,9 +37,9 @@ class TestUsersModels:
         )
 
         assert superuser.email == "leonardo@davinci.com"
-        assert superuser.is_active == True
-        assert superuser.is_staff == True
-        assert superuser.is_superuser == True
+        assert superuser.is_active is True
+        assert superuser.is_staff is True
+        assert superuser.is_superuser is True
 
         with pytest.raises(TypeError):
             django_user_model.objects.create_superuser()

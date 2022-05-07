@@ -18,6 +18,7 @@ class AuthTokenObtainAPI(TokenObtainPairView):
     """
 
     class InputSerializer(TokenObtainPairSerializer):
+        username_field = "username"
         default_error_messages = {
             "no_active_account": _(
                 "Wrong username or password. Note that you have to separate between lowercase and uppercase characters."

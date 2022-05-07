@@ -128,7 +128,8 @@ class TestPublicUsersEndpoints:
 
         payload_json = {"email": user.email}
 
-        with django_assert_max_num_queries(2):
+        # 1 query for getting, 1 for updating and 1 for getting site.
+        with django_assert_max_num_queries(3):
             response = unauthenticated_client.post(
                 self.reset_password_endpoint, data=payload_json, format="json"
             )

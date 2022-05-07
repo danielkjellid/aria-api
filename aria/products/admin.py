@@ -24,6 +24,7 @@ class ProductFileInline(admin.StackedInline):
 class ProductOptionsInline(admin.StackedInline):
     model = ProductOption
 
+
 class ProductSiteStateInline(admin.StackedInline):
     model = ProductSiteState
 

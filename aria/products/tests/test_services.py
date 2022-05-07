@@ -1,11 +1,10 @@
 import pytest
 from model_bakery import baker
-from aria.products.enums import ProductStatus
 
-from aria.products.models import Product, Variant, ProductOption
+from aria.products.models import Product, ProductOption, Variant
 from aria.products.services import (
-    variant_create,
     product_option_delete_related_variants,
+    variant_create,
 )
 
 pytestmark = pytest.mark.django_db
