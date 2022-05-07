@@ -1,7 +1,8 @@
 import json
-
+import tempfile
 import pytest
 from model_bakery import baker
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from aria.categories.models import Category
 from aria.categories.viewsets.public import (
@@ -171,6 +172,7 @@ class TestPublicCategoriesSerializers:
 
         for product in products:
             product.categories.add(subcategory)
+            product.thumbnail = tempfile.NamedTemporaryFile(suffix=".jpg").name
             product.save()
 
         expected_output = [
@@ -179,7 +181,7 @@ class TestPublicCategoriesSerializers:
                 "name": product.name,
                 "slug": product.slug,
                 "unit": product.get_unit_display(),
-                "thumbnail": product.thumbnail.url if product.thumbnail else None,
+                "thumbnail": product.thumbnail.url,
                 "display_price": product.get_display_price(),
                 "from_price": product.get_lowest_option_price(),
                 "colors": [],
