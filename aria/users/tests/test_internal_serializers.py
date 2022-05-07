@@ -1,6 +1,6 @@
 import pytest
 from model_bakery import baker
-
+from datetime import datetime
 from aria.core.test_utils import model_baker_datetime_formatting
 from aria.users.models import User
 from aria.users.viewsets.internal import UserDetailAPI, UserListAPI, UserUpdateAPI
@@ -66,12 +66,14 @@ class TestInternalUsersSerializers:
         """
 
         user = baker.make(User)
+        user.date_joined = datetime.fromisoformat("1970-01-01 21:00:00")
+        user.save()
 
         expected_output = {
             "id": user.id,
             "email": user.email,
             "is_active": user.is_active,
-            "date_joined": model_baker_datetime_formatting(user.date_joined),
+            "date_joined": "01. January 1970 21:00",
             "profile": {
                 "full_name": user.full_name,
                 "initial": user.initial,
@@ -90,6 +92,8 @@ class TestInternalUsersSerializers:
         """
 
         user = baker.make(User)
+        user.date_joined = datetime.fromisoformat("1970-01-01 21:00:00")
+        user.save()
 
         expected_output = {
             "first_name": user.first_name,
@@ -105,7 +109,7 @@ class TestInternalUsersSerializers:
                 "initial": user.initial,
                 "avatar_color": user.avatar_color,
             },
-            "date_joined": model_baker_datetime_formatting(user.date_joined),
+            "date_joined": "01. January 1970 21:00",
             "is_active": user.is_active,
             "full_address": user.full_address,
             "street_address": user.street_address,

@@ -1,9 +1,8 @@
 import json
-
+from datetime import datetime
 import pytest
 from model_bakery import baker
-
-from aria.core.test_utils import model_baker_datetime_formatting
+from django.contrib.sites.models import Site
 from aria.users.models import User
 
 pytestmark = pytest.mark.django_db
@@ -150,13 +149,17 @@ class TestInternalUsersEndpoints:
 
     @pytest.mark.parametrize("test_permissions", ["has_users_list"], indirect=True)
     def test_authenticated_privileged_staff_user_retrieve(
-        self, authenticated_privileged_staff_client, django_assert_max_num_queries
+        self,
+        authenticated_privileged_staff_client,
+        django_assert_max_num_queries,
     ):
         """
         Test that privileged staff users gets a valid responseon another user
         retrieval.
         """
         user = baker.make(User)
+        user.date_joined = datetime.fromisoformat("1970-01-01 21:00:00")
+        user.save()
 
         expected_json = {
             "first_name": user.first_name,
@@ -172,8 +175,7 @@ class TestInternalUsersEndpoints:
                 "initial": user.initial,
                 "avatar_color": user.avatar_color,
             },
-            # Datetimes are wonky, model bakery is one hour behind local tz
-            "date_joined": model_baker_datetime_formatting(user.date_joined),
+            "date_joined": "01. January 1970 21:00",
             "is_active": user.is_active,
             "full_address": user.full_address,
             "street_address": user.street_address,
@@ -205,7 +207,10 @@ class TestInternalUsersEndpoints:
         Test that staff superusers users gets a valid response on another user
         retrieval.
         """
+
         user = baker.make(User)
+        user.date_joined = datetime.fromisoformat("1970-01-01 21:00:00")
+        user.save()
 
         expected_json = {
             "first_name": user.first_name,
@@ -221,8 +226,7 @@ class TestInternalUsersEndpoints:
                 "initial": user.initial,
                 "avatar_color": user.avatar_color,
             },
-            # Datetimes are wonky, model bakery is one hour behind local tz
-            "date_joined": model_baker_datetime_formatting(user.date_joined),
+            "date_joined": "01. January 1970 21:00",
             "is_active": user.is_active,
             "full_address": user.full_address,
             "street_address": user.street_address,
@@ -363,7 +367,8 @@ class TestInternalUsersEndpoints:
         full update of another user instance.
         """
 
-        user = baker.make(User)
+        site = baker.make(Site)
+        user = baker.make(User, **{"site": site})
 
         payload_json = {
             "email": "newtestuser@example.com",
@@ -381,8 +386,8 @@ class TestInternalUsersEndpoints:
 
         # The base query for getting users is 6 plus two for getting and checking
         # permissions, one for update and one additional for bulk creating log
-        # entries.
-        with django_assert_max_num_queries(9):
+        # entries. The last two is site lookup.
+        with django_assert_max_num_queries(11):
             response = authenticated_privileged_staff_client.post(
                 f"{self.base_endpoint}{user.id}/update/",
                 data=payload_json,
@@ -402,7 +407,8 @@ class TestInternalUsersEndpoints:
         another user instance.
         """
 
-        user = baker.make(User)
+        site = baker.make(Site)
+        user = baker.make(User, **{"site": site})
 
         payload_json = {
             "email": "newtestuser@example.com",
@@ -419,8 +425,8 @@ class TestInternalUsersEndpoints:
         }
 
         # The base query for the users is 6 plus one additional for
-        # bulk creating log entries.
-        with django_assert_max_num_queries(7):
+        # bulk creating log entries + 2 queries for checking site.
+        with django_assert_max_num_queries(9):
             response = authenticated_superuser_client.post(
                 f"{self.base_endpoint}{user.id}/update/",
                 data=payload_json,
@@ -439,7 +445,8 @@ class TestInternalUsersEndpoints:
         Test that unauthenticated users gets a 401 unauthorized upon partial update.
         """
 
-        user = baker.make(User)
+        site = baker.make(Site)
+        user = baker.make(User, **{"site": site})
 
         payload_json = {
             "email": "newtestuser@example,com",
@@ -507,13 +514,15 @@ class TestInternalUsersEndpoints:
         Test that privileged staff users gets a valid response
         """
 
-        user = baker.make(User)
+        site = baker.make(Site)
+        user = baker.make(User, **{"site": site})
 
         payload_json = {"email": "newtestuser@example.com"}
 
         # 6 queries for getting and updating the user, 2 queries for
-        # getting and checking permissions and 1 query to log the change.
-        with django_assert_max_num_queries(9):
+        # getting and checking permissions and 1 query to log the change,
+        # and 2 queries for checking site.
+        with django_assert_max_num_queries(11):
             response = authenticated_privileged_staff_client.post(
                 f"{self.base_endpoint}{user.id}/update/",
                 data=payload_json,
@@ -532,12 +541,14 @@ class TestInternalUsersEndpoints:
         Test that superusers gets a valid response
         """
 
-        user = baker.make(User)
+        site = baker.make(Site)
+        user = baker.make(User, **{"site": site})
 
         payload_json = {"email": "newtestuser@example.com"}
 
-        # 6 queries for getting and updating and 1 query to log the change.
-        with django_assert_max_num_queries(7):
+        # 6 queries for getting and updating, 1 query to log the change
+        # and 2 queries for checking site.
+        with django_assert_max_num_queries(9):
             response = authenticated_superuser_client.post(
                 f"{self.base_endpoint}{user.id}/update/",
                 data=payload_json,

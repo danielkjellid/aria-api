@@ -80,6 +80,11 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
+DATE_FORMAT = "%d. %B %Y"
+
+DATETIME_FORMAT = "%d. %B %Y %H:%M"
+DATETIME_INPUT_FORMATS = ["%d. %B %Y %H:%M"]
+
 WSGI_APPLICATION = "aria.wsgi.application"
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

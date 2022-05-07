@@ -1,6 +1,7 @@
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.models import Site
 
 import pytest
 from model_bakery import baker
@@ -68,7 +69,8 @@ class TestUsersServices:
         """
 
         author = baker.make(User)
-        user = baker.make(User)
+        site = baker.make(Site)
+        user = baker.make(User, **{"site": site})
 
         # Save "old" fields to assert later
         old_user_email = user.email
@@ -77,9 +79,9 @@ class TestUsersServices:
 
         updates = {"email": "updatedemail@example.com"}
 
-        # Get user (1), update user (1), create log (1) and since
+        # Get user (1) + site (3), update user (1), create log (1) and since
         # transaction is atomic, it creates and releases savepoint (2)
-        with django_assert_max_num_queries(5):
+        with django_assert_max_num_queries(8):
             updated_user = user_update(
                 user=user, data=updates, author=author, log_change=True
             )
