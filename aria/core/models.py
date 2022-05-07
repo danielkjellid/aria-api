@@ -52,7 +52,6 @@ class BaseImageModel(models.Model):
         upload_to=get_static_asset_upload_path,
         blank=True,
         null=False,
-        default="media/front/default_2048x1150.jpeg",
     )
 
 
