@@ -1,10 +1,6 @@
 from django.contrib import admin
 
-from aria.kitchens.models import (
-    Decor,
-    Kitchen,
-    Plywood,
-)
+from aria.kitchens.models import Decor, Kitchen, Plywood
 
 
 @admin.register(Kitchen)

@@ -55,7 +55,7 @@ class TestPublicAuthEndpoints:
         assert returned_access
 
         # Assert that refresh_token returned is not blacklisted
-        assert token.check_blacklist() == None
+        assert token.check_blacklist() is None
 
     def test_unauthenticated_token_refresh(
         self, unauthenticated_client, django_assert_max_num_queries

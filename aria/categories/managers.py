@@ -1,4 +1,4 @@
-from django.db.models import Exists, IntegerField, OuterRef, Prefetch, Q, Value
+from django.db.models import Exists, IntegerField, OuterRef, Prefetch, Value
 
 from mptt.managers import TreeManager
 from mptt.querysets import TreeQuerySet

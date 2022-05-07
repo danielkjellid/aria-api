@@ -1,5 +1,3 @@
-from abc import ABC
-
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers, status

@@ -3,7 +3,6 @@ from datetime import datetime
 import pytest
 from model_bakery import baker
 
-from aria.core.test_utils import model_baker_datetime_formatting
 from aria.users.models import User
 from aria.users.viewsets.internal import UserDetailAPI, UserListAPI, UserUpdateAPI
 

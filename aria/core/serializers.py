@@ -1,8 +1,6 @@
 from django.db.models.query import QuerySet
 from rest_framework import serializers
 
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
 
 class BaseHeaderImageSerializer(serializers.Serializer):
     """
@@ -69,18 +67,3 @@ def inline_serializer(*, fields, data=None, **kwargs):
         return serializer_class(data=data, **kwargs)
 
     return serializer_class(**kwargs)
-
-
-class BaseListImageSerializer(serializers.Serializer):
-    """
-    A serializer that serializes list images. Values
-    are inherited by BaseListImageModel in core.models.
-    """
-
-    image500x305 = serializers.CharField(source="image500x305.url", read_only=True)
-    image600x440 = serializers.CharField(source="image600x440.url", read_only=True)
-    image850x520 = serializers.CharField(source="image850x520.url", read_only=True)
-
-    class Meta:
-        fields = "image500x305" "image600x440" "image850x520"
-        abstract = True

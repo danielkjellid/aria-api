@@ -1,6 +1,5 @@
 from django.conf import settings
-from django.contrib.sites.models import Site
-from django.core.management.base import BaseCommand, CommandParser
+from django.core.management.base import BaseCommand
 from django.db import connection, transaction
 from django.utils.crypto import get_random_string
 
@@ -58,7 +57,7 @@ class Command(BaseCommand):
 
                 # Set the password for all users once encrypted
                 raw_sql = """
-                    UPDATE users_user SET 
+                    UPDATE users_user SET
                         password = %s,
                         phone_number = case when phone_number <> '' then cast(md5(phone_number||%s) as varchar(20)) else '' end,
                         birth_date = date_trunc('year', birth_date),

@@ -39,9 +39,9 @@ class TestUsersServices:
             )
 
         assert new_user.email == "test@example.com"
-        assert new_user.subscribed_to_newsletter == False
-        assert new_user.is_staff == False
-        assert new_user.is_superuser == False
+        assert new_user.subscribed_to_newsletter is False
+        assert new_user.is_staff is False
+        assert new_user.is_superuser is False
         assert new_user.groups.filter(id=group.id).exists()
 
         with pytest.raises(ValueError):
@@ -116,7 +116,7 @@ class TestUsersServices:
         with django_assert_max_num_queries(2):
             updated_user = user_verify_account(uid=uid, token=token)
 
-        assert updated_user.has_confirmed_email == True
+        assert updated_user.has_confirmed_email is True
         assert updated_user.has_confirmed_email != old_email_confirmed_value
 
     def test_user_set_password_sets_new_password(self, django_assert_max_num_queries):
@@ -135,4 +135,4 @@ class TestUsersServices:
             )
 
         assert updated_user.password != "supersecret"
-        assert check_password("supersecret", updated_user.password) == True
+        assert check_password("supersecret", updated_user.password) is True
