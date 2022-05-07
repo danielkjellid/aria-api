@@ -1,8 +1,10 @@
 import json
 import tempfile
+
+from django.core.files.uploadedfile import SimpleUploadedFile
+
 import pytest
 from model_bakery import baker
-from django.core.files.uploadedfile import SimpleUploadedFile
 
 from aria.categories.models import Category
 from aria.categories.viewsets.public import (
