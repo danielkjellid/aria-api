@@ -8,7 +8,7 @@ from aria.categories.selectors import (
     categories_navigation_active_list,
     categories_parent_active_list,
 )
-from aria.products.models import Product
+from aria.products.models import Product, ProductSiteState
 from aria.products.selectors import product_list_by_category
 
 from aria.users.tests.conftest import unauthenticated_client
@@ -20,7 +20,7 @@ unauthenticated_client = unauthenticated_client
 
 class TestPublicCategoriesEndpoints:
 
-    base_endpoint = "/api/categories/"
+    base_endpoint = "/api/categories"
 
     #################
     # List endpoint #
@@ -51,7 +51,7 @@ class TestPublicCategoriesEndpoints:
         ]
 
         with django_assert_max_num_queries(1):
-            response = unauthenticated_client.get(self.base_endpoint)
+            response = unauthenticated_client.get(f"{self.base_endpoint}/")
 
         actual_response = json.loads(response.content)
 
@@ -87,7 +87,7 @@ class TestPublicCategoriesEndpoints:
         ]
 
         with django_assert_max_num_queries(1):
-            response = unauthenticated_client.get(f"{self.base_endpoint}parents/")
+            response = unauthenticated_client.get(f"{self.base_endpoint}/parents/")
 
         actual_response = json.loads(response.content)
 
@@ -107,7 +107,7 @@ class TestPublicCategoriesEndpoints:
         """
 
         category = baker.make(Category)
-        subcategory = baker.make(Category, _quantity=5, **{"parent": category})
+        baker.make(Category, _quantity=5, **{"parent": category})
 
         categories = categories_children_active_list(parent=category)
 
@@ -129,7 +129,7 @@ class TestPublicCategoriesEndpoints:
 
         with django_assert_max_num_queries(2):
             response = unauthenticated_client.get(
-                f"{self.base_endpoint}{category.slug}/children/"
+                f"{self.base_endpoint}/category/{category.slug}/children/"
             )
 
         actual_response = json.loads(response.content)
@@ -177,7 +177,7 @@ class TestPublicCategoriesEndpoints:
 
         with django_assert_max_num_queries(3):
             response = unauthenticated_client.get(
-                f"{self.base_endpoint}{category.slug}/products/"
+                f"{self.base_endpoint}/category/{category.slug}/products/"
             )
 
         actual_response = json.loads(response.content)
@@ -202,11 +202,21 @@ class TestPublicCategoriesEndpoints:
         expected_response = {
             "id": category.id,
             "name": category.name,
+            "slug": category.slug,
+            "images": {
+                "apply_filter": category.apply_filter,
+                "image_1024x1024": category.image_1024x1024.url,
+                "image_1024x575": category.image_1024x575.url,
+                "image_1536x860": category.image_1536x860.url,
+                "image_2048x1150": category.image_2048x1150.url,
+                "image_512x512": category.image_512x512.url,
+                "image_640x275": category.image_640x275.url,
+            },
         }
 
         with django_assert_max_num_queries(1):
             response = unauthenticated_client.get(
-                f"{self.base_endpoint}{category.slug}/"
+                f"{self.base_endpoint}/category/{category.slug}/"
             )
 
         actual_response = json.loads(response.content)

@@ -1,4 +1,4 @@
-from typing import OrderedDict
+import json
 import pytest
 from model_bakery import baker
 
@@ -80,7 +80,20 @@ class TestPublicCategoriesSerializers:
 
         category = baker.make(Category)
 
-        expected_output = {"id": category.id, "name": category.name}
+        expected_output = {
+            "id": category.id,
+            "name": category.name,
+            "slug": category.slug,
+            "images": {
+                "apply_filter": category.apply_filter,
+                "image_1024x1024": category.image_1024x1024.url,
+                "image_1024x575": category.image_1024x575.url,
+                "image_1536x860": category.image_1536x860.url,
+                "image_2048x1150": category.image_2048x1150.url,
+                "image_512x512": category.image_512x512.url,
+                "image_640x275": category.image_640x275.url,
+            },
+        }
 
         serializer = CategoryDetailAPI.OutputSerializer(category)
 
@@ -100,17 +113,15 @@ class TestPublicCategoriesSerializers:
             "name": category.name,
             "slug": category.slug,
             "ordering": category.ordering,
-            "images": OrderedDict(
-                [
-                    ("apply_filter", category.apply_filter),
-                    ("image_512x512", category.image_512x512.url),
-                    ("image_640x275", category.image_640x275.url),
-                    ("image_1024x1024", category.image_1024x1024.url),
-                    ("image_1024x575", category.image_1024x575.url),
-                    ("image_1536x860", category.image_1536x860.url),
-                    ("image_2048x1150", category.image_2048x1150.url),
-                ]
-            ),
+            "images": {
+                "apply_filter": category.apply_filter,
+                "image_1024x1024": category.image_1024x1024.url,
+                "image_1024x575": category.image_1024x575.url,
+                "image_1536x860": category.image_1536x860.url,
+                "image_2048x1150": category.image_2048x1150.url,
+                "image_512x512": category.image_512x512.url,
+                "image_640x275": category.image_640x275.url,
+            },
         }
 
         serializer = CategoryParentListAPI.OutputSerializer(category)
@@ -133,13 +144,11 @@ class TestPublicCategoriesSerializers:
                 "slug": child.slug,
                 "ordering": child.ordering,
                 "description": child.description,
-                "images": OrderedDict(
-                    [
-                        ("image500x305", child.image500x305.url),
-                        ("image600x440", child.image600x440.url),
-                        ("image850x520", child.image850x520.url),
-                    ]
-                ),
+                "images": {
+                    "image500x305": child.image500x305.url,
+                    "image600x440": child.image600x440.url,
+                    "image850x520": child.image850x520.url,
+                },
             }
             for child in children
         ]
@@ -170,11 +179,12 @@ class TestPublicCategoriesSerializers:
                 "slug": product.slug,
                 "unit": product.get_unit_display(),
                 "thumbnail": product.thumbnail.url,
-                "display_price": product.display_price,
+                "display_price": product.get_display_price(),
                 "from_price": product.get_lowest_option_price(),
                 "colors": [],
                 "shapes": [],
                 "materials": [],
+                "variants": [],
             }
             for product in products
         ]
@@ -182,4 +192,4 @@ class TestPublicCategoriesSerializers:
         serializer = CategoryProductsListAPI.OutputSerializer(products, many=True)
 
         assert serializer.data
-        assert serializer.data == expected_output
+        assert json.dumps(serializer.data) == json.dumps(expected_output)
