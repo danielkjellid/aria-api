@@ -81,6 +81,7 @@ jobs:
       - name: Run tests
         run: poetry run pytest
         env:
+          ENVIRONMENT: prod
           DATABASE_URL: postgresql://aria:aria@localhost:${{ job.services.postgres.ports[5432] }}/aria
           # PostgreSQL configuration, used by psql
           PGHOST: localhost
