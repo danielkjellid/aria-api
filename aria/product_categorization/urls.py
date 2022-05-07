@@ -7,9 +7,9 @@ from aria.product_categorization.viewsets import (
     SubCategoryListAPIView,
     SubCategoryRetrieveAPIView,
 )
-from aria.products.viewsets import (
-    ProductListBySubCategoryAPIView,
-)
+# from aria.products.viewsets import (
+#     ProductListBySubCategoryAPIView,
+# )
 
 urlpatterns = [
     # endpoint for geting list of all categories
@@ -33,9 +33,9 @@ urlpatterns = [
         SubCategoryRetrieveAPIView.as_view(),
         name="subcategory",
     ),
-    path(
-        "categories/<slug:subcategory>/products/",
-        ProductListBySubCategoryAPIView.as_view(),
-        name="product-subcategory-list",
-    ),
+    # path(
+    #     "categories/<slug:subcategory>/products/",
+    #     ProductListBySubCategoryAPIView.as_view(),
+    #     name="product-subcategory-list",
+    # ),
 ]

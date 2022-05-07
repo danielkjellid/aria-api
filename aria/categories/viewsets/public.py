@@ -134,7 +134,7 @@ class CategoryProductsListAPI(APIView):
         slug = serializers.SlugField()
         unit = serializers.CharField(source="get_unit_display")
         thumbnail = serializers.CharField(source="thumbnail.url")
-        display_price = serializers.BooleanField()
+        display_price = serializers.BooleanField(source="get_display_price") # TODO: not good, does more queries than needed
         from_price = serializers.DecimalField(
             source="get_lowest_option_price",
             decimal_places=2,
@@ -164,7 +164,8 @@ class CategoryProductsListAPI(APIView):
             read_only=True,
             fields={"name": serializers.CharField()},
         )
-        variants = inline_serializer(  # TODO: add propper source when ready
+        variants = inline_serializer(
+            source="get_variants",
             many=True,
             read_only=True,
             fields={
@@ -209,6 +210,8 @@ class CategoryDetailAPI(APIView):
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
         name = serializers.CharField()
+        slug = serializers.SlugField()
+        images = BaseHeaderImageSerializer(source="*", read_only=True)
 
     @APIViewSchema.serializer(OutputSerializer())
     def get(self, request: HttpRequest, category_slug: str) -> HttpResponse:

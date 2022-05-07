@@ -18,15 +18,15 @@ public_patterns = [
     ),
     path("parents/", CategoryParentListAPI.as_view(), name="categories-parents-list"),
     path(
-        "<slug:category_slug>/", CategoryDetailAPI.as_view(), name="categories-detail"
+        "category/<slug:category_slug>/", CategoryDetailAPI.as_view(), name="categories-detail"
     ),
     path(
-        "<slug:category_slug>/children/",
+        "category/<slug:category_slug>/children/",
         CategoryChildrenListAPI.as_view(),
         name="categories-parent-children-list",
     ),
     path(
-        "<slug:category_slug>/products/",
+        "category/<slug:category_slug>/products/",
         CategoryProductsListAPI.as_view(),
         name="category-products-list",
     ),
