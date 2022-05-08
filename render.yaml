@@ -1,13 +1,21 @@
 databases:
-  - name: aria
-    databaseName: aria-db-prod
-    user: aria
+  - name: aria-db-prod
     region: frankfurt
+    plan: standard
+    databaseName: aria
+    user: aria
+    postgresMajorVersion: 14
+  - name: aria-db-staging
+    region: frankfurt
+    plan: free
+    databaseName: aria
+    user: aria
     postgresMajorVersion: 14
 
 services:
   - type: web
     region: frankfurt
+    plan: starer-plus
     name: aria-api-prod
     env: python
     buildCommand: "./bin/build"
@@ -15,9 +23,25 @@ services:
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: aria
+          name: aria-db-prod
           property: connectionString
       - key: ENVIRONMENT
         value: production
+      - key: WEB_CONCURRENCY
+        value: 4
+  - type: web
+    region: frankfurt
+    plan: free
+    name: aria-api-staging
+    env: python
+    buildCommand: "./bin/build"
+    startCommand: "gunicorn aria.wsgi:application"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aria-db-staging
+          property: connectionString
+      - key: ENVIRONMENT
+        value: staging
       - key: WEB_CONCURRENCY
         value: 4
