@@ -1,5 +1,5 @@
 import pathlib
-from typing import Optional
+from typing import Optional, Dict
 
 PROJECT_ROOT = pathlib.Path(__file__).parent.parent.parent
 
@@ -9,7 +9,7 @@ def postgres_env(
     port: Optional[int],
     user: Optional[str],
     password: Optional[str],
-) -> dict[str, str]:
+) -> Dict[str, str]:
 
     env = {}
 

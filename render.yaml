@@ -5,6 +5,7 @@ databases:
 
 services:
   - type: web
+    region: frankfurt
     name: "aria-api"
     env: python
     buildCommand: "./bin/build"

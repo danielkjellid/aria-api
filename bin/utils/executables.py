@@ -1,6 +1,6 @@
 import subprocess
 import pathlib
-from typing import Optional, Union
+from typing import Optional, Union, Dict
 import os
 import sys
 from .config import PROJECT_ROOT
@@ -8,7 +8,7 @@ from .config import PROJECT_ROOT
 
 def run_cli_command(
     *args: Union[str, pathlib.Path],
-    env: Optional[dict[str, str]] = None,
+    env: Optional[Dict[str, str]] = None,
     capture: bool = True,
     inp: Optional[str] = None,
 ) -> str:
@@ -62,7 +62,7 @@ def run_management_command(
     command: str,
     *command_args: Union[str, pathlib.Path],
     db_name: str,
-    env_vars: dict[str, str] = {},
+    env_vars: Dict[str, str] = {},
 ):
     if db_name:
         env_vars["POSTGRES_DB"] = db_name
