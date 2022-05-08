@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+from utils.executables import run_cli_command
+from utils.managers import action_runner
+
+
+def main() -> None:
+    # Install required dependencies accoring to pyproject.toml.
+    with action_runner(description="Installing poetry dependencies"):
+        run_cli_command("poetry", "install")
+
+    # Collect static files.
+    with action_runner(description="Collecting static files"):
+        run_cli_command("python", "manage.py", "collectstatic", "--no-input")
+
+    # Migrate database to latest state.
+    with action_runner(description="Migrating database"):
+        run_cli_command("python", "manage.py", "migrate")
+
+
+if __name__ == "__main__":
+    main()
