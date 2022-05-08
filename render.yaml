@@ -2,6 +2,7 @@ databases:
   - name: aria
     databaseName: aria
     user: aria
+    region: frankfurt
 
 services:
   - type: web
