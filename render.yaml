@@ -1,6 +1,6 @@
 databases:
   - name: aria
-    databaseName: aria
+    databaseName: "aria-db"
     user: aria
     region: frankfurt
     postgresMajorVersion: 14
