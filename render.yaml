@@ -15,7 +15,7 @@ databases:
 services:
   - type: web
     region: frankfurt
-    plan: starer plus
+    plan: "starer plus"
     name: aria-api-prod
     env: python
     buildCommand: "./bin/build"
