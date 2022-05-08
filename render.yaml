@@ -1,6 +1,6 @@
 databases:
   - name: aria
-    databaseName: "aria-db"
+    databaseName: "aria-db-prod"
     user: aria
     region: frankfurt
     postgresMajorVersion: 14
@@ -8,7 +8,7 @@ databases:
 services:
   - type: web
     region: frankfurt
-    name: "aria-api"
+    name: "aria-api-prod"
     env: python
     buildCommand: "./bin/build"
     startCommand: "gunicorn aria.wsgi:application"
@@ -17,5 +17,7 @@ services:
         fromDatabase:
           name: aria
           property: connectionString
+      - key: ENVIRONMENT
+        value: production
       - key: WEB_CONCURRENCY
         value: 4
