@@ -3,6 +3,7 @@ databases:
     databaseName: aria
     user: aria
     region: frankfurt
+    postgresMajorVersion: 14
 
 services:
   - type: web
