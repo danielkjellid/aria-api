@@ -1,0 +1,18 @@
+databases:
+  - name: aria
+    databaseName: aria
+    user: aria
+
+services:
+  - type: web
+    name: "aria-api"
+    env: python
+    buildCommand: "./bin/build"
+    startCommand: "gunicorn aria.wsgi:application"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aria
+          property: connectionString
+      - key: WEB_CONCURRENCY
+        value: 4
