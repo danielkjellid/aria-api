@@ -34,7 +34,7 @@ class CategoryQueryset(TreeQuerySet):
         on active here, so only use backend.
         """
 
-        return self.filter(mptt_level=0).order_by("ordering")
+        return self.filter(mptt_level=0)
 
     def secondary(self):
         """
@@ -43,23 +43,21 @@ class CategoryQueryset(TreeQuerySet):
         only use backend.
         """
 
-        return self.filter(mptt_level=1).order_by("ordering")
+        return self.filter(mptt_level=1)
 
     def primary_and_secondary(self):
         """
         Returns all categories with their children.
         """
 
-        return self.filter(mptt_level__in=[0, 1]).order_by(
-            "ordering", "children__ordering"
-        )
+        return self.filter(mptt_level__in=[0, 1])
 
     def with_active_children(self):
         """
         Prefetch one level of active children
         """
 
-        active_categories = self.model.objects.active().order_by("ordering")
+        active_categories = self.model.objects.active()
 
         prefetch_children = Prefetch(
             "children", queryset=active_categories, to_attr="active_children"
