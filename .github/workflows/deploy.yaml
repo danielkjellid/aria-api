@@ -2,10 +2,14 @@
 name: Deploy
 
 on:
-  push:
+  workflow_run:
     branches:
-    - main
-    - build-step
+      - main
+      - build-step
+    workflows:
+      - ci-done
+    types:
+      - completed
 
 jobs:
   deploy:
