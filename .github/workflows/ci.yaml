@@ -1,8 +1,6 @@
----
 name: CI
 
-on:
-  push:
+on: push
 
 env:
   DJANGO_SETTINGS_MODULE: aria.settings
