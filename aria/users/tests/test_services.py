@@ -136,3 +136,4 @@ class TestUsersServices:
 
         assert updated_user.password != "supersecret"
         assert check_password("supersecret", updated_user.password) is True
+        assert 1 == 2
