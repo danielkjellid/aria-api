@@ -14,15 +14,15 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
-      - name: Wait on CI
-        uses: lewagon/wait-on-check-action@v1.1.1
-        with:
-          ref: ${{ github.ref }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-          running-workflow-name: "Deploy"
-          check-regexp: "(CI done|Python tests)"
-          allowed-conclusions: success
+#      - name: Wait on CI
+#        uses: lewagon/wait-on-check-action@v1.1.1
+#        with:
+#          ref: ${{ github.ref }}
+#          repo-token: ${{ secrets.GITHUB_TOKEN }}
+#          wait-interval: 10
+#          running-workflow-name: "Deploy"
+#          check-regexp: "(CI done|Python tests)"
+#          allowed-conclusions: success
       - name: Deploy to staging
         env:
           RENDER_DEPLOY_ENDPOINT: ${{ secrets.RENDER_DEPLOY_ENDPOINT }}
