@@ -2,9 +2,11 @@
 name: Deploy
 
 on:
-  push:
-    branches:
-    - build-step
+  workflow_run:
+    workflows:
+      - CI
+    types:
+      - completed
 
 jobs:
   deploy:
