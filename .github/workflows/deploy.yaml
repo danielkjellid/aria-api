@@ -18,9 +18,8 @@ jobs:
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 20
+          wait-interval: 10
           running-workflow-name: "deploy"
-          check-regexp: "(CI done|Python tests)"
           allowed-conclusions: success
       - name: Deploy to staging
         env:
