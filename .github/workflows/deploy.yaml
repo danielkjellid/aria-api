@@ -7,14 +7,13 @@ on:
       - main
       - build-step
     workflows:
-      - ci-done
+      - "CI done"
     types:
       - completed
 
 jobs:
   deploy:
     name: Staging
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
