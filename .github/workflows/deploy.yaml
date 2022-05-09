@@ -1,14 +1,17 @@
 ---
-name: Build
+name: Deploy
 
 on:
-  push:
+  workflow_run:
     branches:
-    - main
-    - build-step
+      - main
+    workflows:
+      - CI
+    types:
+      - completed
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
