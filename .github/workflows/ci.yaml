@@ -88,3 +88,13 @@ jobs:
           PGPASSWORD: aria
           PGDATABASE: aria
           PGPORT: ${{ job.services.postgres.ports[5432] }}
+
+  ci-done:
+    # Gather job which delpoy workflow can wait on.
+    name: CI done
+    needs:
+    - python-lint
+    - python-tests
+    runs-on: ubuntu-20.04
+    steps:
+      - run: echo "CI done!"
