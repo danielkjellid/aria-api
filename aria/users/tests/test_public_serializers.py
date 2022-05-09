@@ -3,9 +3,7 @@ from model_bakery import baker
 
 from aria.users.models import User
 from aria.users.viewsets.public import (
-    UserAccountVerificationAPI,
     UserAccountVerificationConfirmAPI,
-    UserCreateAPI,
     UserPasswordResetAPI,
     UserPasswordResetConfirmAPI,
 )
@@ -16,31 +14,6 @@ class TestPublicUsersSerializers:
     #####################
     # Input serializers #
     #####################
-
-    @pytest.mark.django_db
-    def test_input_serializer_users_create(self):
-        """
-        Test input serializer validity of the UserCreateAPI endpoint.
-        """
-
-        user = baker.make(User)
-        serializer = UserCreateAPI.InputSerializer(data=user.__dict__)
-
-        assert serializer.is_valid()
-        assert serializer.data
-        assert serializer.errors == {}
-
-    def test_input_serializer_users_account_verification(self):
-        """
-        Test input serializer validity of the UserAccountVerificationAPI endpoint.
-        """
-
-        payload_json = {"email": "somerandomemail@example.com"}
-        serializer = UserAccountVerificationAPI.InputSerializer(data=payload_json)
-
-        assert serializer.is_valid()
-        assert serializer.data
-        assert serializer.errors == {}
 
     def test_input_serializer_users_account_verification_confirm(self):
         """

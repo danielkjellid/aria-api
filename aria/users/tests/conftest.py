@@ -1,9 +1,12 @@
 from django.contrib.auth.models import AnonymousUser, Permission
 from django.contrib.contenttypes.models import ContentType
 from rest_framework.test import APIClient
+from ninja.testing import TestClient
+from django.test import Client
 
 import pytest
 from rest_framework_simplejwt.tokens import RefreshToken
+from aria.api.endpoints import endpoints
 
 ###############
 # Permissions #
@@ -86,6 +89,11 @@ def superuser(create_user_with_permissions):
 ###############
 # API Clients #
 ###############
+
+
+@pytest.fixture
+def anonymous_client():
+    return Client()
 
 
 @pytest.fixture

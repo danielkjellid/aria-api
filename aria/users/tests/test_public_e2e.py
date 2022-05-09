@@ -14,75 +14,7 @@ class TestPublicUsersEndpoints:
 
     base_endpoint = "/api/users"
 
-    ###################
-    # Create endpoint #
-    ###################
-
-    # Users create endpoint is publically available.
-
-    create_endpoint = f"{base_endpoint}/create/"
-
-    def test_unauthenticated_user_create(
-        self, unauthenticated_client, django_assert_max_num_queries
-    ):
-        """
-        Test creating a user from the endpoint.
-        """
-
-        user = baker.prepare(User)
-
-        payload_json = {
-            "email": user.email,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "phone_number": user.phone_number,
-            "street_address": user.street_address,
-            "zip_code": user.zip_code,
-            "zip_place": user.zip_place,
-            "subscribed_to_newsletter": user.subscribed_to_newsletter,
-            "allow_personalization": user.allow_personalization,
-            "allow_third_party_personalization": user.allow_third_party_personalization,
-            "password": user.password,
-        }
-
-        # 1 query for checking if the user already exists, and one for
-        # creating the new user.
-        with django_assert_max_num_queries(2):
-            response = unauthenticated_client.post(
-                self.create_endpoint, data=payload_json, format="json"
-            )
-
-        response_json = json.loads(response.content)
-
-        # Password won't be returned if the created object, so remove it
-        payload_json.pop("password")
-
-        assert response.status_code == 201
-        assert response_json["data"] == payload_json
-
-    ######################################
-    # User account verification endpoint #
-    ######################################
-
     verification_endpoint = f"{base_endpoint}/verify/"
-
-    def test_unauthenticated_user_verify_account(
-        self, unauthenticated_client, django_assert_max_num_queries
-    ):
-        """
-        Test initiating the account verification process.
-        """
-
-        user = baker.make(User)
-
-        payload_json = {"email": user.email}
-
-        with django_assert_max_num_queries(1):
-            response = unauthenticated_client.post(
-                f"{self.verification_endpoint}", data=payload_json, format="json"
-            )
-
-        assert response.status_code == 200
 
     ######################################
     # User account verification endpoint #

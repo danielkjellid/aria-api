@@ -8,14 +8,14 @@ SUPPORTED_HTTP_METHODS = ["GET", "POST", "DELETE", "PATCH", "PUT"]
 
 
 def api(
-        router: Router,
-        path,
-        *,
-        method: SUPPORTED_HTTP_METHODS,
-        response: Any,
-        summary: Optional[str] = None,
-        description: Optional[str] = None,
-        url_name: Optional[str] = None,
+    router: Router,
+    path,
+    *,
+    method: SUPPORTED_HTTP_METHODS,
+    response: Any,
+    summary: Optional[str] = None,
+    description: Optional[str] = None,
+    url_name: Optional[str] = None,
 ) -> Callable[[Callable[..., Any]], Callable[..., GenericResponse]]:
     """
     Defines an API view. This is basically just a wrapper around Django
@@ -50,6 +50,7 @@ def api(
          Same as Django's name parameter in path. Used to reverse match urls
          in for example tests.
     """
+
     def decorator(func):
         # Get appropriate decorator based on router and method. This
         # is the same as doing @router.method(...) in the viewset.
@@ -60,7 +61,7 @@ def api(
             response=response,
             summary=summary,
             description=description,
-            url_name=url_name
+            url_name=url_name,
         )
         @functools.wraps(func)
         def inner(*args, **kwargs):
@@ -68,6 +69,7 @@ def api(
                 return func(*args, **kwargs)
             except ApplicationError:
                 raise
+
         return inner
 
     return decorator
