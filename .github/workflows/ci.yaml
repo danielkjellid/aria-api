@@ -87,6 +87,17 @@ jobs:
           PGDATABASE: aria
           PGPORT: ${{ job.services.postgres.ports[5432] }}
 
+  python-missing-init:
+    name: Missing __init__.py files
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check for missing __init__.py files
+        uses: ljodal/python-actions/check-for-missing-init@feature/check-for-missing-init
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          paths: aria
+
   ci-done:
     # Gather job which delpoy workflow can wait on.
     name: CI done
