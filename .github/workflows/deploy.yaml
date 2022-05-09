@@ -5,6 +5,7 @@ on:
   workflow_run:
     branches:
       - main
+      - build-step
     workflows:
       - CI
     types:
