@@ -2,26 +2,27 @@
 name: Deploy
 
 on:
-  workflow_run:
-    workflows: ['CI']
-    types:
-      - completed
+  push:
+    branches:
+    - main
+    - build-step
 
 jobs:
   deploy:
     name: Staging
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
       - name: Wait for CI
         uses: lewagon/wait-on-check-action@v1.1.1
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
-          running-workflow-name: "deploy"
-          allowed-conclusions: success
+#          running-workflow-name: "deploy"
+#          allowed-conclusions: success
+          check-name: "CI done"
       - name: Deploy to staging
+        uses: actions/checkout@v3
         env:
           RENDER_DEPLOY_ENDPOINT: ${{ secrets.RENDER_DEPLOY_ENDPOINT }}
         run: |
