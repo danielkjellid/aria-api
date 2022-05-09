@@ -89,9 +89,9 @@ jobs:
           PGDATABASE: aria
           PGPORT: ${{ job.services.postgres.ports[5432] }}
 
-  test:
+  ci-done:
     # Gather job which delpoy workflow can wait on.
-    name: Test
+    name: CI done
     needs:
     - python-lint
     - python-tests
