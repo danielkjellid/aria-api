@@ -245,19 +245,20 @@ Django = ">=2.2"
 
 [[package]]
 name = "django-imagekit"
-version = "4.0.2"
+version = "4.1.0"
 description = "Automated image processing for Django models."
 category = "main"
 optional = false
 python-versions = "*"
 
 [package.dependencies]
-django-appconf = ">=0.5"
+django-appconf = {version = "*", markers = "python_version > \"3\""}
 pilkit = ">=0.2.0"
 six = "*"
 
 [package.extras]
 async = ["django-celery (>=3.0)"]
+async_dramatiq = ["django-dramatiq (>=0.4.0)"]
 async_rq = ["django-rq (>=0.6.0)"]
 
 [[package]]
@@ -1116,7 +1117,7 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "1.1"
 python-versions = "3.10.2"
-content-hash = "cee5b1f3f91ccf682a2cd68d9c963a7f5c161dd665583fc552be6600a4108a64"
+content-hash = "74e3e08e6b546edf81561472b7bf9afe95321e358b54caadb10e8235a6087c19"
 
 [metadata.files]
 appnope = [
@@ -1264,8 +1265,8 @@ django-filter = [
     {file = "django_filter-21.1-py3-none-any.whl", hash = "sha256:f4a6737a30104c98d2e2a5fb93043f36dd7978e0c7ddc92f5998e85433ea5063"},
 ]
 django-imagekit = [
-    {file = "django-imagekit-4.0.2.tar.gz", hash = "sha256:6ec0afb77cdf52cd453c9fc2c10ef350d111edfd6ce53c5977aa8a0e22cee00c"},
-    {file = "django_imagekit-4.0.2-py2.py3-none-any.whl", hash = "sha256:304c3379f6a5cac387e47ace11195a603ad3cb01e3e951b45489824d25b00359"},
+    {file = "django-imagekit-4.1.0.tar.gz", hash = "sha256:e559aeaae43a33b34f87631a9fa5696455e4451ffa738a42635fde442fedac5c"},
+    {file = "django_imagekit-4.1.0-py2.py3-none-any.whl", hash = "sha256:87e36f8dc1d8745647881f4366ef4965225f048042dacebbee0dcb87425defef"},
 ]
 django-js-asset = [
     {file = "django_js_asset-2.0.0-py3-none-any.whl", hash = "sha256:86f9f300d682537ddaf0487dc2ab356581b8f50c069bdba91d334a46e449f923"},
