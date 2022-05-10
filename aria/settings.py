@@ -2,7 +2,6 @@ import pathlib
 import warnings
 from datetime import timedelta
 
-import django_heroku
 import environ
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -326,11 +325,3 @@ else:
 
 if DJANGO_EXTENSIONS_INSTALLED:
     INSTALLED_APPS += ["django_extensions"]
-
-
-django_heroku.settings(locals(), staticfiles=False)
-
-# django_heroku sets sslmode to required by default
-# this overrides it in the dev env.
-if ENVIRONMENT == "dev":
-    locals()["DATABASES"]["default"]["OPTIONS"]["sslmode"] = "disable"
