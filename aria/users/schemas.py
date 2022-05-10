@@ -25,22 +25,6 @@ class UserCreateInput(Schema):
     allow_third_party_personalization: bool
     password: str
 
-    @validator("email")
-    def validate_email(cls, email: str):
-        try:
-            validate_email(email)
-            return email
-        except Exception:
-            raise
-
-    @validator("password")
-    def validate_password(cls, password: str):
-        try:
-            validate_password(password)
-            return password
-        except Exception:
-            raise
-
 
 class UserAccountVerificationInput(Schema):
     email: str

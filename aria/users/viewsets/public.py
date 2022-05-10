@@ -4,32 +4,19 @@ from aria.core.exceptions import ApplicationError
 from aria.api.decorators import api
 from aria.api.responses import GenericResponse
 from aria.users.models import User
+from aria.users.schemas import (
+    UserCreateInput,
+    UserCreateOutput,
+    UserAccountVerificationInput,
+    UserAccountVerificationConfirmInput,
+    UserPasswordResetInput,
+    UserPasswordResetConfirmInput,
+)
 from aria.users.services import user_create, user_set_password, user_verify_account
 
-from ninja import Router, Schema
+from ninja import Router
 
 router = Router(tags="users")
-
-
-class UserCreateInput(Schema):
-    email: str
-    first_name: str
-    last_name: str
-    phone_number: str
-    street_address: str
-    zip_code: str
-    zip_place: str
-    subscribed_to_newsletter: bool
-    allow_personalization: bool
-    allow_third_party_personalization: bool
-    password: str
-
-
-class UserCreateOutput(Schema):
-    id: int
-    email: str
-    first_name: str
-    last_name: str
 
 
 @api(
@@ -52,10 +39,6 @@ def user_create_api(request, payload: UserCreateInput) -> tuple[int, GenericResp
     return 201, GenericResponse(
         message=_("Account has been created."), data=UserCreateOutput.from_orm(user)
     )
-
-
-class UserAccountVerificationInput(Schema):
-    email: str
 
 
 @api(
@@ -83,11 +66,6 @@ def user_account_verification_api(
     return 200, GenericResponse(message=_("Email verification has been sent."), data={})
 
 
-class UserAccountVerificationConfirmInput(Schema):
-    uid: str
-    token: str
-
-
 @api(
     router,
     "verify/confirm/",
@@ -105,10 +83,6 @@ def user_account_verification_confirm_api(
 
     user_verify_account(uid=payload.uid, token=payload.token)
     return 200, GenericResponse(message=_("Account email verified."), data={})
-
-
-class UserPasswordResetInput(Schema):
-    email: str
 
 
 @api(
@@ -135,12 +109,6 @@ def user_password_reset_api(request, payload: UserPasswordResetInput):
     return 200, GenericResponse(
         message=_("Password reset e-mail has been sent."), data={}
     )
-
-
-class UserPasswordResetConfirmInput(Schema):
-    new_password: str
-    uid: str
-    token: str
 
 
 @api(

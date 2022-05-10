@@ -62,6 +62,24 @@ class TestUsersServices:
                 send_verification_email=False,
             )
 
+        with pytest.raises(ApplicationError):
+            # Test email does does not pass validation.
+            user_create(
+                email="willnotpass",
+                password="supersecret",
+                subscribed_to_newsletter=False,
+                send_verification_email=False,
+            )
+
+        with pytest.raises(ApplicationError):
+            # Test password does does not pass validation.
+            user_create(
+                email="someone@example.com",
+                password="1234",
+                subscribed_to_newsletter=False,
+                send_verification_email=False,
+            )
+
     def test_user_update_updates_user(self, django_assert_max_num_queries):
         """
         Test that the user_update service updates a user and creates
