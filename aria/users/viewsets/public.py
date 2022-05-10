@@ -17,12 +17,13 @@ from aria.users.schemas import (
     UserAccountVerificationInput,
     UserAccountVerificationConfirmInput,
     UserPasswordResetInput,
+    UserPasswordResetConfirmInput,
 )
 from aria.users.services import user_create, user_set_password, user_verify_account
 
 from ninja import Router, Schema
 
-router = Router()
+router = Router(tags="users")
 
 
 @api(
@@ -32,7 +33,6 @@ router = Router()
     response={201: GenericResponse},
     summary="Creates a user",
     description="Creates a single user instance",
-    url_name="users-create",
 )
 def user_create_api(request, payload: UserCreateInput) -> tuple[int, GenericResponse]:
     """
@@ -55,7 +55,6 @@ def user_create_api(request, payload: UserCreateInput) -> tuple[int, GenericResp
     response={200: GenericResponse},
     summary="Sends verification email",
     description="Sends verification email to a specific email (user) for them to verify the account",
-    url_name="users-verify",
 )
 def user_account_verification_api(
     request, payload: UserAccountVerificationInput
@@ -81,7 +80,6 @@ def user_account_verification_api(
     response={200: GenericResponse},
     summary="Validate email tokens to confirm account",
     description="Takes uid and token present in verification email, validates them, and updates email to confirmed.",
-    url_name="users-verify-confirm",
 )
 def user_account_verification_confirm_api(
     request, payload: UserAccountVerificationConfirmInput
@@ -101,9 +99,13 @@ def user_account_verification_confirm_api(
     response={200: GenericResponse},
     summary="Send a reset password email",
     description="Sends a password reset email to provided email, if user exist.",
-    url_name="users-password-reset",
 )
 def user_password_reset_api(request, payload: UserPasswordResetInput):
+    """
+    [PUBLIC] Endpoint for sending a password reset
+    email.
+    """
+
     try:
         user = User.objects.get(email__iexact=payload.email, is_active=True)
     except User.DoesNotExist:
@@ -116,61 +118,22 @@ def user_password_reset_api(request, payload: UserPasswordResetInput):
     )
 
 
-class UserPasswordResetAPI(APIView):
-    """
-    [PUBLIC] Endpoint for sending a password reset
-    email.
-    """
-
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-    schema = APIViewSchema()
-
-    class InputSerializer(serializers.Serializer):
-        email = serializers.EmailField()
-
-    @APIViewSchema.serializer(InputSerializer())
-    def post(self, request: HttpRequest) -> HttpResponse:
-        serializer = self.InputSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        try:
-            user = User.objects.get(
-                email__iexact=serializer.validated_data["email"], is_active=True
-            )
-        except User.DoesNotExist:
-            raise ApplicationError(message=_("User does not exist."), status_code=404)
-
-        user.send_password_reset_email(request=request)
-
-        return Response(
-            {"message": _("Password reset e-mail has been sent."), "data": {}},
-            status=status.HTTP_200_OK,
-        )
-
-
-class UserPasswordResetConfirmAPI(APIView):
+@api(
+    router,
+    "password/reset/confirm/",
+    method="POST",
+    response={200: GenericResponse},
+    summary="Send a reset password email",
+    description="Sends a password reset email to provided email, if user exist.",
+)
+def user_password_reset_confirm_api(request, payload: UserPasswordResetConfirmInput):
     """
     [PUBLIC] Endpoint for setting a new password.
     """
+    user_set_password(
+        uid=payload.uid, token=payload.token, new_password=payload.new_password
+    )
 
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-    schema = APIViewSchema()
-
-    class InputSerializer(serializers.Serializer):
-        new_password = serializers.CharField(max_length=128)
-        uid = serializers.CharField()
-        token = serializers.CharField()
-
-    @APIViewSchema.serializer(InputSerializer())
-    def post(self, request: HttpRequest, uid: str, token: str) -> HttpResponse:
-        serializer = self.InputSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        user_set_password(**serializer.validated_data)
-
-        return Response(
-            {"message": _("Password has been reset with the new password"), "data": {}},
-            status=status.HTTP_200_OK,
-        )
+    return 200, GenericResponse(
+        message=_("Password has been reset with the new password"), data={}
+    )

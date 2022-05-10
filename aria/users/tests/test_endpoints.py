@@ -3,6 +3,8 @@ import json
 import pytest
 from model_bakery import baker
 from aria.users.models import User
+from django.contrib.auth.tokens import default_token_generator
+
 from aria.core.exceptions import ApplicationError
 from pydantic.error_wrappers import ValidationError as PydanticValidationError
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -78,8 +80,8 @@ class TestPublicUsersEndpoints:
         # Assert that we return a valid response.
         assert response.status_code == 200
 
-        # Test that the logic in endpoint raises exception if
-        # user with email is not found.
+        # Test that the logic in returns appropriate status
+        # code if user with email is not found.
         with django_assert_max_num_queries(1):
             failed_response = anonymous_client.post(
                 f"{self.BASE_ENDPOINT}/verify/",
@@ -120,6 +122,73 @@ class TestPublicUsersEndpoints:
         assert service_mock.call_args_list[0].kwargs == {
             "uid": user_uid,
             "token": user_token,
+        }
+
+    def test_anonymous_request_user_password_reset(
+        self, anonymous_client, django_assert_max_num_queries
+    ):
+        """
+        Test initiating reset password process.
+        """
+
+        user = baker.make(User)
+
+        payload_json = {"email": user.email}
+
+        # 1 query for getting, 1 for updating and 1 for getting site.
+        with django_assert_max_num_queries(3):
+            response = anonymous_client.post(
+                f"{self.BASE_ENDPOINT}/password/reset/",
+                data=payload_json,
+                content_type="application/json",
+            )
+
+        assert response.status_code == 200
+
+        # Test that the logic in returns appropriate status
+        # code if user with email is not found.
+        with django_assert_max_num_queries(1):
+            failed_response = anonymous_client.post(
+                f"{self.BASE_ENDPOINT}/password/reset/",
+                data={"email": "doesnotexist@example.com"},
+                content_type="application/json",
+            )
+
+        # Assert that appropraite response is returned.
+        assert failed_response.status_code == 404
+
+    def test_anonymous_request_user_password_reset_confirm(
+        self, anonymous_client, django_assert_max_num_queries, mocker
+    ):
+        """
+        Test validating created tokens and setting new password.
+        """
+
+        user = baker.make(User)
+        user_uid = user.uid
+        user_token = default_token_generator.make_token(user)
+
+        payload_json = {
+            "new_password": "supersecret",
+            "uid": user_uid,
+            "token": user_token,
+        }
+
+        service_mock = mocker.patch("aria.users.viewsets.public.user_set_password")
+
+        with django_assert_max_num_queries(2):
+            response = anonymous_client.post(
+                f"{self.BASE_ENDPOINT}/password/reset/confirm/",
+                data=payload_json,
+                content_type="application/json",
+            )
+
+        assert response.status_code == 200
+        assert service_mock.call_count == 1
+        assert service_mock.call_args_list[0].kwargs == {
+            "uid": user_uid,
+            "token": user_token,
+            "new_password": "supersecret",
         }
 
 

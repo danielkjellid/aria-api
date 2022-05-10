@@ -53,3 +53,9 @@ class UserAccountVerificationConfirmInput(Schema):
 
 class UserPasswordResetInput(Schema):
     email: str
+
+
+class UserPasswordResetConfirmInput(Schema):
+    new_password: str
+    uid: str
+    token: str

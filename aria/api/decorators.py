@@ -56,12 +56,16 @@ def api(
         # is the same as doing @router.method(...) in the viewset.
         router_decorator = getattr(router, method.lower())
 
+        router_tag = _get_and_validate_router_tag(router)
+        formatted_path = path.replace("/", "-").rstrip("-")
+        default_url_name = f"{router_tag}-{formatted_path}"
+
         @router_decorator(
             path,
             response=response,
             summary=summary,
             description=description,
-            url_name=url_name,
+            url_name=url_name if url_name else default_url_name,
         )
         @functools.wraps(func)
         def inner(*args, **kwargs):
@@ -73,3 +77,24 @@ def api(
         return inner
 
     return decorator
+
+
+def _get_and_validate_router_tag(router: Router):
+    """
+    Check that there is only a single tag provided.
+    """
+
+    router_tag = router.tags
+
+    if router_tag is None:
+        raise NotImplementedError(
+            'Router object must have a defined tag: Router(tags="...")'
+        )
+
+    if isinstance(router_tag, list):
+        if len(router_tag) > 1:
+            raise ValueError("Router object must only have one tag!")
+
+        router_tag = router_tag[0]
+
+    return router_tag
