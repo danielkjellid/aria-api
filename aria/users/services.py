@@ -1,5 +1,7 @@
 from typing import Any, Optional
-
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import password_validation
 from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
@@ -14,6 +16,32 @@ from aria.audit_logs.services import log_entry_create
 from aria.core.exceptions import ApplicationError
 from aria.core.services import model_update
 from aria.users.models import User
+
+
+def _validate_email_and_password(email: str, password: str) -> tuple[str, str]:
+    """
+    Validate email and password for create operation
+    """
+
+    if not email:
+        raise ValueError("Error when creating user, email cannot be none.")
+
+    existing_user = User.objects.filter(email__iexact=email).exists()
+
+    if existing_user:
+        raise ApplicationError(message=_("User with email already exists."))
+
+    try:
+        validate_email(email)
+    except DjangoValidationError as exc:
+        raise ApplicationError(message=str(exc))
+
+    try:
+        validate_password(password)
+    except DjangoValidationError as exc:
+        raise ApplicationError(message=str(exc))
+
+    return email, password
 
 
 def user_create(
@@ -32,13 +60,7 @@ def user_create(
     Creates a new user instance.
     """
 
-    if not email:
-        raise ValueError("Error when creating user, email cannot be none.")
-
-    existing_user = User.objects.filter(email__iexact=email).exists()
-
-    if existing_user:
-        raise ApplicationError(message=_("User with email already exists."))
+    email, password = _validate_email_and_password(email=email, password=password)
 
     # Create the new user
     new_user = User(

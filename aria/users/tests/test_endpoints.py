@@ -1,13 +1,8 @@
-import json
-
 import pytest
+
 from model_bakery import baker
 from aria.users.models import User
 from django.contrib.auth.tokens import default_token_generator
-
-from aria.core.exceptions import ApplicationError
-from pydantic.error_wrappers import ValidationError as PydanticValidationError
-from django.core.exceptions import ValidationError as DjangoValidationError
 
 pytestmark = pytest.mark.django_db
 
