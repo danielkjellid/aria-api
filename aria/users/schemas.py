@@ -1,15 +1,4 @@
 from ninja import Schema
-from pydantic import validator
-from django.core.validators import validate_email
-from django.contrib.auth.password_validation import validate_password
-from aria.core.exceptions import ApplicationError
-
-
-class UserCreateOutput(Schema):
-    id: int
-    email: str
-    first_name: str
-    last_name: str
 
 
 class UserCreateInput(Schema):

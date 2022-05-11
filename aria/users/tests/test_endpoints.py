@@ -9,7 +9,7 @@ pytestmark = pytest.mark.django_db
 
 class TestPublicUsersEndpoints:
 
-    BASE_ENDPOINT = "/test/users"
+    BASE_ENDPOINT = "/api/users"
 
     def test_anonymous_request_user_create(
         self, anonymous_client, django_assert_max_num_queries, mocker
@@ -100,7 +100,7 @@ class TestPublicUsersEndpoints:
 
         payload_json = {"uid": user_uid, "token": user_token}
 
-        service_mock = mocker.patch("aria.users.viewsets.public.user_create")
+        service_mock = mocker.patch("aria.users.viewsets.public.user_verify_account")
 
         # 1 for getting the user and 1 for updating the email
         with django_assert_max_num_queries(2):

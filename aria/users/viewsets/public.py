@@ -6,7 +6,6 @@ from aria.api.responses import GenericResponse
 from aria.users.models import User
 from aria.users.schemas import (
     UserCreateInput,
-    UserCreateOutput,
     UserAccountVerificationInput,
     UserAccountVerificationConfirmInput,
     UserPasswordResetInput,
@@ -34,10 +33,10 @@ def user_create_api(request, payload: UserCreateInput) -> tuple[int, GenericResp
     Returns the created user.
     """
 
-    user = user_create(**payload.dict())
-
+    user_create(**payload.dict())
     return 201, GenericResponse(
-        message=_("Account has been created."), data=UserCreateOutput.from_orm(user)
+        message=_("Account has been created."),
+        data={},
     )
 
 
