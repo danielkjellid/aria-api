@@ -153,6 +153,8 @@ THIRD_PARTY_APPS = [
 ]
 
 PROJECT_APPS = [
+    "aria.api",
+    "aria.api_auth",
     "aria.audit_logs",
     "aria.auth",
     "aria.categories",
@@ -248,6 +250,13 @@ DATABASES = {
 ##############
 # Simple JWT #
 ##############
+
+# New JWT code:
+JWT_ISSUER = "api.flis.no"
+JWT_SIGNING_KEY = SECRET_KEY
+JWT_ALGORITHM = "HS256"
+JWT_ACCESS_TOKEN_LIFETIME = timedelta(minutes=5)
+JWT_REFRESH_TOKEN_LIFETIME = timedelta(days=14)
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),

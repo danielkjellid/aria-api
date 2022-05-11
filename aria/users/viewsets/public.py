@@ -12,7 +12,6 @@ from aria.users.schemas import (
     UserPasswordResetConfirmInput,
 )
 from aria.users.services import user_create, user_set_password, user_verify_account
-
 from ninja import Router
 
 router = Router(tags="users")
@@ -129,3 +128,9 @@ def user_password_reset_confirm_api(request, payload: UserPasswordResetConfirmIn
     return 200, GenericResponse(
         message=_("Password has been reset with the new password"), data={}
     )
+
+
+@api(router, "test/", method="GET", response={200: GenericResponse})
+def test(request):
+    print(request.meta)
+    return 200, GenericResponse(message="hey", data={})
