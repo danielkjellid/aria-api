@@ -28,7 +28,7 @@ def _refresh_token_create_and_encode(payload: dict[str, Union[str, int]]) -> str
     # Update payload with token type and expiry.
     payload["token_type"] = "refresh"
     payload["exp"] = refresh_to_expire_at
-    payload["jti"] = (uuid4().hex,)
+    payload["jti"] = uuid4().hex
 
     encoded_refresh_token = jwt.encode(
         payload, SIGNING_KEY, algorithm=SIGNING_ALGORITHM
@@ -54,7 +54,7 @@ def _access_token_create_and_encode(payload: dict[str, Union[str, int]]) -> str:
 
     payload["token_type"] = "access"
     payload["exp"] = access_to_expire_at
-    payload["jti"] = (uuid4().hex,)
+    payload["jti"] = uuid4().hex
 
     encoded_access_token = jwt.encode(payload, SIGNING_KEY, algorithm=SIGNING_ALGORITHM)
 
@@ -66,6 +66,7 @@ def token_pair_obtain_for_user(user: User) -> JWTPair:
     Create a token par of both refresh and access tokens for a
     spcific user.
     """
+
     payload = {
         "token_type": None,
         "exp": None,
@@ -88,7 +89,8 @@ def token_pair_obtain_for_unauthenticated_user(email: str, password: str) -> JWT
     Authenticate user credentails and create tokens if
     credentials are valid.
     """
-
+    print(email)
+    print(password)
     user = authenticate(username=email, password=password)
 
     if user is None:
@@ -112,8 +114,14 @@ def token_pair_obtain_new_from_refresh_token(token: str) -> JWTPair:
 
     if not token_is_valid:
         raise ApplicationError(_("Refresh token provided is invalid."), status_code=401)
+    print(token_payload)
+    try:
+        user = User.objects.get(id=token_payload.user_id)
+    except User.DoesNotExist:
+        raise ApplicationError(
+            _("Issued user in refresh token does not exist."), status_code=401
+        )
 
-    user = User.objects.get(id=token_payload.user_id)
     return token_pair_obtain_for_user(user)
 
 

@@ -21,7 +21,15 @@ def _token_decode(token: str) -> TokenPayload:
         decoded_token = jwt.decode(
             token, SIGNING_KEY, algorithms=[SIGNING_ALGORITHM], issuer=ISSUER
         )
-        return TokenPayload(**decoded_token)
+
+        return TokenPayload(
+            token_type=decoded_token["token_type"],
+            exp=decoded_token["exp"],
+            iat=decoded_token["iat"],
+            jti=decoded_token["jti"],
+            iss=decoded_token["iss"],
+            user_id=decoded_token["user_id"],
+        )
     except Exception:
         raise
 
