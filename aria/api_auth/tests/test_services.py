@@ -172,7 +172,7 @@ class TestApiAuthServices:
             )
 
     def test_token_pair_obtain_new_from_refresh_token_invalid_token(
-        self, django_assert_max_num_queries, mocker
+        self, django_assert_max_num_queries, mocker, refresh_token_payload
     ):
         """
         Test how the token_pair_obtain_new_from_refresh_token service
@@ -181,14 +181,7 @@ class TestApiAuthServices:
 
         user = baker.make("users.User")
 
-        refresh_payload = {
-            "token_type": "refresh",
-            "exp": timezone.now() + timedelta(days=14),
-            "iat": timezone.now(),
-            "jti": uuid4().hex,
-            "iss": "api.flis.no",
-            "user_id": user.id,
-        }
+        refresh_payload = refresh_token_payload(user_id=user.id)
 
         invalid_token = jwt.encode(
             refresh_payload, "notvalidsigningkey", algorithm="HS256"
@@ -224,7 +217,7 @@ class TestApiAuthServices:
         )  # Should throw exception before this
 
     def test_token_pair_obtain_new_from_refresh_token_invalid_user(
-        self, django_assert_max_num_queries, mocker, settings
+        self, django_assert_max_num_queries, mocker, settings, refresh_token_payload
     ):
         """
         Test how token_pair_obtain_new_from_refresh_token responds
@@ -232,14 +225,7 @@ class TestApiAuthServices:
         to the user.
         """
 
-        refresh_payload = {
-            "token_type": "refresh",
-            "exp": timezone.now() + timedelta(days=14),
-            "iat": timezone.now(),
-            "jti": uuid4().hex,
-            "iss": "api.flis.no",
-            "user_id": 999,  # Does not exist.
-        }
+        refresh_payload = refresh_token_payload(user_id=999)
 
         valid_token_invalid_user = jwt.encode(
             refresh_payload, settings.JWT_SIGNING_KEY, algorithm="HS256"
@@ -279,7 +265,7 @@ class TestApiAuthServices:
         )  # Should throw exception before this
 
     def test_token_pair_obtain_new_from_refresh_token_valid_token(
-        self, django_assert_max_num_queries, mocker
+        self, django_assert_max_num_queries, mocker, refresh_token_payload
     ):
         """
         Test that the token_pair_obtain_new_from_refresh_token returns
@@ -288,14 +274,7 @@ class TestApiAuthServices:
 
         user = baker.make("users.User")
 
-        refresh_payload = {
-            "token_type": "refresh",
-            "exp": timezone.now() + timedelta(days=14),
-            "iat": timezone.now(),
-            "jti": uuid4().hex,
-            "iss": "api.flis.no",
-            "user_id": user.id,
-        }
+        refresh_payload = refresh_token_payload(user_id=user.id)
 
         valid_token = _refresh_token_create_and_encode(refresh_payload)
         decoded_valid_token = _token_decode(valid_token)
@@ -330,7 +309,7 @@ class TestApiAuthServices:
         assert new_tokens.access_token is not None
 
     def test_refresh_token_blacklist_invalid_token(
-        self, django_assert_max_num_queries, mocker
+        self, django_assert_max_num_queries, mocker, refresh_token_payload
     ):
         """
         Test that the refresh_token_blacklist service raises an
@@ -339,14 +318,7 @@ class TestApiAuthServices:
 
         user = baker.make("users.User")
 
-        refresh_payload = {
-            "token_type": "refresh",
-            "exp": timezone.now() + timedelta(days=14),
-            "iat": timezone.now(),
-            "jti": uuid4().hex,
-            "iss": "api.flis.no",
-            "user_id": user.id,
-        }
+        refresh_payload = refresh_token_payload(user_id=user.id)
 
         invalid_token = jwt.encode(
             refresh_payload, "notvalidsigningkey", algorithm="HS256"
@@ -382,7 +354,7 @@ class TestApiAuthServices:
         assert BlacklistedToken.objects.all().count() == 0
 
     def test_refresh_token_blacklist_valid_token(
-        self, django_assert_max_num_queries, mocker
+        self, django_assert_max_num_queries, mocker, refresh_token_payload
     ):
         """
         Test that the refresh_token_blacklist blacklists refresh
@@ -391,14 +363,7 @@ class TestApiAuthServices:
 
         user = baker.make("users.User")
 
-        refresh_payload = {
-            "token_type": "refresh",
-            "exp": timezone.now() + timedelta(days=14),
-            "iat": timezone.now(),
-            "jti": uuid4().hex,
-            "iss": "api.flis.no",
-            "user_id": user.id,
-        }
+        refresh_payload = refresh_token_payload(user_id=user.id)
 
         valid_token = _refresh_token_create_and_encode(refresh_payload)
         decoded_valid_token = _token_decode(valid_token)
