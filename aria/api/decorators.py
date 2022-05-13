@@ -1,8 +1,10 @@
 import functools
-from aria.core.exceptions import ApplicationError
+from typing import Any, Callable, Optional, Union
+
 from ninja import Router
+
 from aria.api.responses import GenericResponse
-from typing import Callable, Any, Optional, Union
+from aria.core.exceptions import ApplicationError
 
 SUPPORTED_HTTP_METHODS = ["GET", "POST", "DELETE", "PATCH", "PUT"]
 

@@ -1,18 +1,19 @@
 from django.utils.translation import gettext as _
 
-from aria.core.exceptions import ApplicationError
+from ninja import Router
+
 from aria.api.decorators import api
 from aria.api.responses import GenericResponse
+from aria.core.exceptions import ApplicationError
 from aria.users.models import User
 from aria.users.schemas import (
-    UserCreateInput,
-    UserAccountVerificationInput,
     UserAccountVerificationConfirmInput,
-    UserPasswordResetInput,
+    UserAccountVerificationInput,
+    UserCreateInput,
     UserPasswordResetConfirmInput,
+    UserPasswordResetInput,
 )
 from aria.users.services import user_create, user_set_password, user_verify_account
-from ninja import Router
 
 router = Router(tags="users")
 
@@ -128,9 +129,3 @@ def user_password_reset_confirm_api(request, payload: UserPasswordResetConfirmIn
     return 200, GenericResponse(
         message=_("Password has been reset with the new password"), data={}
     )
-
-
-@api(router, "test/", method="GET", response={200: GenericResponse})
-def test(request):
-    print(request.meta)
-    return 200, GenericResponse(message="hey", data={})

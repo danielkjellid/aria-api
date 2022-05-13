@@ -1,16 +1,19 @@
-from django.utils.translation import gettext as _
-from uuid import uuid4
-import jwt
-from django.conf import settings
-from django.utils import timezone
-from aria.users.models import User
-from aria.api_auth.records import JWTPair
 from typing import Union
-from aria.api_auth.models import OutstandingToken, BlacklistedToken
+from uuid import uuid4
+
+from django.conf import settings
 from django.contrib.auth import authenticate
-from aria.core.exceptions import ApplicationError
+from django.utils import timezone
+from django.utils.translation import gettext as _
+
+import jwt
+
 from aria.api_auth.exceptions import TokenError
+from aria.api_auth.models import BlacklistedToken, OutstandingToken
+from aria.api_auth.records import JWTPair
 from aria.api_auth.selectors import refresh_token_is_valid
+from aria.core.exceptions import ApplicationError
+from aria.users.models import User
 
 ISSUER = settings.JWT_ISSUER
 SIGNING_KEY = settings.JWT_SIGNING_KEY

@@ -1,4 +1,5 @@
 from ninja import Schema
+
 from aria.api_auth.records import JWTPair
 
 

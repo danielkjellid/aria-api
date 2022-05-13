@@ -1,26 +1,28 @@
-import pytest
-from django.utils import timezone
-from model_bakery import baker
-from aria.users.models import User
-from aria.api_auth.services import (
-    _refresh_token_create_and_encode,
-    _access_token_create_and_encode,
-    token_pair_obtain_for_user,
-    token_pair_obtain_for_unauthenticated_user,
-    token_pair_obtain_new_from_refresh_token,
-    refresh_token_blacklist,
-)
-from aria.api_auth.selectors import _token_decode
-from aria.api_auth.models import OutstandingToken, BlacklistedToken
-from aria.core.exceptions import ApplicationError
-from aria.api_auth.exceptions import TokenError
-from aria.api_auth.records import TokenPayload
-from aria.api_auth.utils import datetime_to_epoch
-from django.contrib.sites.models import Site
-from django.utils import timezone
 from datetime import timedelta
 from uuid import uuid4
+
+from django.contrib.sites.models import Site
+from django.utils import timezone
+
 import jwt
+import pytest
+from model_bakery import baker
+
+from aria.api_auth.exceptions import TokenError
+from aria.api_auth.models import BlacklistedToken, OutstandingToken
+from aria.api_auth.records import TokenPayload
+from aria.api_auth.selectors import _token_decode
+from aria.api_auth.services import (
+    _access_token_create_and_encode,
+    _refresh_token_create_and_encode,
+    refresh_token_blacklist,
+    token_pair_obtain_for_unauthenticated_user,
+    token_pair_obtain_for_user,
+    token_pair_obtain_new_from_refresh_token,
+)
+from aria.api_auth.utils import datetime_to_epoch
+from aria.core.exceptions import ApplicationError
+from aria.users.models import User
 
 pytestmark = pytest.mark.django_db
 

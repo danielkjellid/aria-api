@@ -1,10 +1,11 @@
-from django.utils.translation import gettext as _
-import jwt
 from django.conf import settings
-from aria.api_auth.records import TokenPayload
-from aria.api_auth.models import OutstandingToken
+from django.utils.translation import gettext as _
+
+import jwt
+
 from aria.api_auth.exceptions import TokenError
-from aria.api_auth.utils import datetime_from_epoch, aware_utcnow
+from aria.api_auth.models import OutstandingToken
+from aria.api_auth.records import TokenPayload
 
 ISSUER = settings.JWT_ISSUER
 SIGNING_KEY = settings.JWT_SIGNING_KEY

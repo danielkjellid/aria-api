@@ -1,12 +1,13 @@
 from ninja import NinjaAPI
-from aria.users.viewsets import (
-    public_endpoints as public_users_endpoints,
-    internal_endpoints as internal_users_endpoints,
-)
-from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
-from aria.core.exceptions import ApplicationError
+
 from aria.api.responses import ExceptionResponse
+from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
 from aria.api_auth.exceptions import TokenError
+from aria.core.exceptions import ApplicationError
+from aria.users.viewsets import (
+    internal_endpoints as internal_users_endpoints,
+    public_endpoints as public_users_endpoints,
+)
 
 endpoints = NinjaAPI()
 

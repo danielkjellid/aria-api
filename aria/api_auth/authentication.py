@@ -1,8 +1,10 @@
+from typing import Any, Optional
+
+from django.conf import settings
+from django.http import HttpRequest
+
 import jwt
 from ninja.security import HttpBearer
-from django.http import HttpRequest
-from typing import Optional, Any
-from django.conf import settings
 
 
 class JWTAuthBearer(HttpBearer):

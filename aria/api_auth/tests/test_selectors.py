@@ -1,18 +1,20 @@
+from datetime import timedelta
+
+from django.utils import timezone
+
 import jwt
 import pytest
 from model_bakery import baker
+
+from aria.api_auth.exceptions import TokenError
+from aria.api_auth.models import BlacklistedToken, OutstandingToken
 from aria.api_auth.selectors import (
     _token_decode,
-    refresh_token_is_valid,
     access_token_is_valid,
+    refresh_token_is_valid,
 )
 from aria.api_auth.services import _refresh_token_create_and_encode
-from aria.api_auth.exceptions import TokenError
 from aria.api_auth.utils import datetime_to_epoch
-from django.utils import timezone
-from datetime import timedelta
-from aria.api_auth.models import BlacklistedToken, OutstandingToken
-
 
 pytestmark = pytest.mark.django_db
 

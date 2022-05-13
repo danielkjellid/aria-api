@@ -1,11 +1,12 @@
 from django.contrib.auth.models import AnonymousUser, Permission
 from django.contrib.contenttypes.models import ContentType
-from rest_framework.test import APIClient
-from ninja.testing import TestClient
 from django.test import Client
+from rest_framework.test import APIClient
 
 import pytest
+from ninja.testing import TestClient
 from rest_framework_simplejwt.tokens import RefreshToken
+
 from aria.api.endpoints import endpoints
 
 ###############

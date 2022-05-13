@@ -1,20 +1,21 @@
 from django.utils.translation import gettext as _
 
+from ninja import Router
+
 from aria.api.decorators import api
 from aria.api.responses import GenericResponse
 from aria.api_auth.schemas import (
+    TokenBlacklistInput,
     TokensObtainInput,
     TokensObtainOutput,
     TokensRefreshInput,
     TokensRefreshOutput,
-    TokenBlacklistInput,
 )
 from aria.api_auth.services import (
+    refresh_token_blacklist,
     token_pair_obtain_for_unauthenticated_user,
     token_pair_obtain_new_from_refresh_token,
-    refresh_token_blacklist,
 )
-from ninja import Router
 
 router = Router(tags="auth")
 

@@ -1,9 +1,11 @@
-import pytest
 from datetime import datetime, timedelta
-from django.utils import timezone
 from uuid import uuid4
-import jwt
+
 from django.conf import settings
+from django.utils import timezone
+
+import jwt
+import pytest
 
 
 @pytest.fixture

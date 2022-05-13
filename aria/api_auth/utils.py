@@ -1,7 +1,8 @@
 from calendar import timegm
 from datetime import datetime
+
 from django.conf import settings
-from django.utils.timezone import is_naive, utc, make_aware
+from django.utils.timezone import is_naive, make_aware, utc
 
 
 def make_utc(dt: datetime) -> datetime:

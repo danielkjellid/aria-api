@@ -9,4 +9,3 @@ class GenericResponse(Schema):
 class ExceptionResponse(Schema):
     message: str
     extra: dict[str, str] = {}
-

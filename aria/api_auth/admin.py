@@ -1,5 +1,6 @@
 from django.contrib import admin
-from aria.api_auth.models import OutstandingToken, BlacklistedToken
+
+from aria.api_auth.models import BlacklistedToken, OutstandingToken
 
 
 @admin.register(OutstandingToken)
