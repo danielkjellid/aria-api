@@ -114,7 +114,7 @@ def token_pair_obtain_new_from_refresh_token(token: str) -> JWTPair:
 
     if not token_is_valid:
         raise ApplicationError(_("Refresh token provided is invalid."), status_code=401)
-    print(token_payload)
+
     try:
         user = User.objects.get(id=token_payload.user_id)
     except User.DoesNotExist:
@@ -136,7 +136,12 @@ def refresh_token_blacklist(token: str) -> None:
     if not token_is_valid:
         raise ApplicationError(_("Refresh token provided is invalid."), status_code=401)
 
-    token_instance = OutstandingToken.objects.get(
-        jti=token_payload.jti, user_id=token_payload.user_id
-    )
-    BlacklistedToken.objects.create(token=token_instance)
+    try:
+        token_instance = OutstandingToken.objects.get(
+            jti=token_payload.jti, user_id=token_payload.user_id
+        )
+        BlacklistedToken.objects.create(token=token_instance)
+    except OutstandingToken.DoesNotExist:
+        raise ApplicationError(
+            _("Refresh token provided does not exist."), status_code=401
+        )

@@ -6,6 +6,7 @@ from aria.users.viewsets import (
 from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
 from aria.core.exceptions import ApplicationError
 from aria.api.responses import ExceptionResponse
+from aria.api_auth.exceptions import TokenError
 
 endpoints = NinjaAPI()
 
@@ -20,4 +21,12 @@ def application_error(request, exc: ApplicationError):
         request,
         ExceptionResponse(message=exc.message, extra=exc.extra),
         status=exc.status_code,
+    )
+
+
+# Custom exception handler for Token errors.
+@endpoints.exception_handler(TokenError)
+def token_error(request, exc: TokenError):
+    return endpoints.create_response(
+        request, ExceptionResponse(message=exc.message), status=401
     )

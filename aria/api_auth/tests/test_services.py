@@ -11,7 +11,7 @@ from aria.api_auth.services import (
     refresh_token_blacklist,
 )
 from aria.api_auth.selectors import _token_decode
-from aria.api_auth.models import OutstandingToken
+from aria.api_auth.models import OutstandingToken, BlacklistedToken
 from aria.core.exceptions import ApplicationError
 from aria.api_auth.records import TokenPayload
 from aria.api_auth.utils import datetime_to_epoch
@@ -71,7 +71,7 @@ class TestApiAuthServices:
         needed default and encodes a token.
         """
 
-        user = baker.prepare("users.User")
+        user = baker.make("users.User")
 
         payload = {
             "token_type": None,
@@ -105,7 +105,7 @@ class TestApiAuthServices:
         as well that it does not exceed max allowed queries.
         """
 
-        user = baker.prepare("users.User")
+        user = baker.make("users.User")
 
         refresh_token_create_and_encode_mock = mocker.patch(
             "aria.api_auth.services._refresh_token_create_and_encode",
@@ -148,9 +148,9 @@ class TestApiAuthServices:
 
         # Service calls token_pair_obtain_for_user, which again
         # calls _refresh_token_create_and_encode which creates a
-        # db entry + 1 for looking up user and + for looking up
+        # db entry + 1 for looking up user and + 1 for looking up
         # site.
-        with django_assert_max_num_queries(2):
+        with django_assert_max_num_queries(3):
             token_pair = token_pair_obtain_for_unauthenticated_user(
                 email="user@example.com", password="supersecretpassword"
             )
@@ -170,9 +170,13 @@ class TestApiAuthServices:
                 email="doesnotexist@example.com", password="supersecret"
             )
 
-    def test_token_pair_obtain_new_from_refresh_token(
-        self, django_assert_max_num_queries, mocker, settings
+    def test_token_pair_obtain_new_from_refresh_token_invalid_token(
+        self, django_assert_max_num_queries, mocker
     ):
+        """
+        Test how the token_pair_obtain_new_from_refresh_token service
+        reacts to getting an invalid token.
+        """
 
         user = baker.make("users.User")
 
@@ -184,6 +188,10 @@ class TestApiAuthServices:
             "iss": "api.flis.no",
             "user_id": user.id,
         }
+
+        invalid_token = jwt.encode(
+            refresh_payload, "notvalidsigningkey", algorithm="HS256"
+        )
 
         refresh_token_is_valid_mock = mocker.patch(
             "aria.api_auth.services.refresh_token_is_valid",
@@ -203,13 +211,8 @@ class TestApiAuthServices:
             "aria.api_auth.services.token_pair_obtain_for_user"
         )
 
-        invalid_token = jwt.encode(
-            refresh_payload, "notvalidsigningkey", algorithm="HS256"
-        )
-
         # Check that an invalid token is not validated.
         with pytest.raises(ApplicationError):
-            # There should be no DB calls for validation refresh token.
             with django_assert_max_num_queries(0):
                 token_pair_obtain_new_from_refresh_token(invalid_token)
 
@@ -219,18 +222,53 @@ class TestApiAuthServices:
             token_pair_obtain_for_user_mock.call_count == 0
         )  # Should throw exception before this
 
-        refresh_payload["user_id"] = 999
+    def test_token_pair_obtain_new_from_refresh_token_invalid_user(
+        self, django_assert_max_num_queries, mocker, settings
+    ):
+        """
+        Test how token_pair_obtain_new_from_refresh_token responds
+        to getting a valid token, but with a jti that does not bellong
+        to the user.
+        """
+
+        refresh_payload = {
+            "token_type": "refresh",
+            "exp": timezone.now() + timedelta(days=14),
+            "iat": timezone.now(),
+            "jti": uuid4().hex,
+            "iss": "api.flis.no",
+            "user_id": 999,  # Does not exist.
+        }
+
         valid_token_invalid_user = jwt.encode(
             refresh_payload, settings.JWT_SIGNING_KEY, algorithm="HS256"
+        )
+        decoded_valid_token_invalid_user = _token_decode(valid_token_invalid_user)
+
+        refresh_token_is_valid_mock = mocker.patch(
+            "aria.api_auth.services.refresh_token_is_valid",
+            return_value=(
+                None,
+                TokenPayload(
+                    token_type=decoded_valid_token_invalid_user.token_type,
+                    exp=decoded_valid_token_invalid_user.exp,
+                    iat=decoded_valid_token_invalid_user.iat,
+                    jti=decoded_valid_token_invalid_user.jti,
+                    iss=decoded_valid_token_invalid_user.iss,
+                    user_id=decoded_valid_token_invalid_user.user_id,
+                ),
+            ),
+        )
+        token_pair_obtain_for_user_mock = mocker.patch(
+            "aria.api_auth.services.token_pair_obtain_for_user"
         )
 
         # Check that service throws exception if the user does not exist.
         with pytest.raises(ApplicationError):
-            # TODO: comment
             with django_assert_max_num_queries(0):
                 token_pair_obtain_new_from_refresh_token(valid_token_invalid_user)
 
-        assert refresh_token_is_valid_mock.call_count == 2
+        assert refresh_token_is_valid_mock.call_count == 1
         assert (
             refresh_token_is_valid_mock.call_args_list[0].args[0]
             == valid_token_invalid_user
@@ -239,16 +277,164 @@ class TestApiAuthServices:
             token_pair_obtain_for_user_mock.call_count == 0
         )  # Should throw exception before this
 
-        refresh_payload["user_id"] = user.id
+    def test_token_pair_obtain_new_from_refresh_token_valid_token(
+        self, django_assert_max_num_queries, mocker
+    ):
+        """
+        Test that the token_pair_obtain_new_from_refresh_token returns
+        a new valid token pair when provided a valid refresh token.
+        """
+
+        user = baker.make("users.User")
+
+        refresh_payload = {
+            "token_type": "refresh",
+            "exp": timezone.now() + timedelta(days=14),
+            "iat": timezone.now(),
+            "jti": uuid4().hex,
+            "iss": "api.flis.no",
+            "user_id": user.id,
+        }
+
         valid_token = _refresh_token_create_and_encode(refresh_payload)
+        decoded_valid_token = _token_decode(valid_token)
 
-        with django_assert_max_num_queries(0):
-            token_pair_obtain_new_from_refresh_token(valid_token)
+        refresh_token_is_valid_mock = mocker.patch(
+            "aria.api_auth.services.refresh_token_is_valid",
+            return_value=(
+                True,
+                TokenPayload(
+                    token_type=decoded_valid_token.token_type,
+                    exp=decoded_valid_token.exp,
+                    iat=decoded_valid_token.iat,
+                    jti=decoded_valid_token.jti,
+                    iss=decoded_valid_token.iss,
+                    user_id=decoded_valid_token.user_id,
+                ),
+            ),
+        )
+        token_pair_obtain_for_user_mock = mocker.patch(
+            "aria.api_auth.services.token_pair_obtain_for_user"
+        )
 
-        assert refresh_token_is_valid_mock.call_count == 3
+        # 1 for getting the user object from token user_id.
+        with django_assert_max_num_queries(1):
+            new_tokens = token_pair_obtain_new_from_refresh_token(valid_token)
+
+        assert refresh_token_is_valid_mock.call_count == 1
         assert refresh_token_is_valid_mock.call_args_list[0].args[0] == valid_token
-        assert token_pair_obtain_for_user_mock == 1
+        assert token_pair_obtain_for_user_mock.call_count == 1
         assert token_pair_obtain_for_user_mock.call_args_list[0].args[0] == user
+        assert new_tokens.refresh_token is not None
+        assert new_tokens.access_token is not None
 
-    def test_refresh_token_blacklist(self, django_assert_max_num_queries, mocker):
-        pass
+    def test_refresh_token_blacklist_invalid_token(
+        self, django_assert_max_num_queries, mocker
+    ):
+        """
+        Test that the refresh_token_blacklist service raises an
+        exception appropriately.
+        """
+
+        user = baker.make("users.User")
+
+        refresh_payload = {
+            "token_type": "refresh",
+            "exp": timezone.now() + timedelta(days=14),
+            "iat": timezone.now(),
+            "jti": uuid4().hex,
+            "iss": "api.flis.no",
+            "user_id": user.id,
+        }
+
+        invalid_token = jwt.encode(
+            refresh_payload, "notvalidsigningkey", algorithm="HS256"
+        )
+
+        refresh_token_is_valid_mock = mocker.patch(
+            "aria.api_auth.services.refresh_token_is_valid",
+            return_value=(
+                False,
+                TokenPayload(
+                    token_type="refresh",
+                    exp=datetime_to_epoch((timezone.now() + timedelta(days=14))),
+                    iat=datetime_to_epoch(timezone.now()),
+                    jti=uuid4().hex,
+                    iss="api.flis.no",
+                    user_id=user.id,
+                ),
+            ),
+        )
+
+        # Sanity check that we're in a good state with 0 blacklisted
+        # tokens before checking again after the service has run.
+        assert BlacklistedToken.objects.all().count() == 0
+
+        # Check that an invalid token is not validated.
+        with pytest.raises(ApplicationError):
+            with django_assert_max_num_queries(0):
+                refresh_token_blacklist(invalid_token)
+
+        assert refresh_token_is_valid_mock.call_count == 1
+        assert refresh_token_is_valid_mock.call_args_list[0].args[0] == invalid_token
+        # Assert that there is still 0 blacklisted tokens.
+        assert BlacklistedToken.objects.all().count() == 0
+
+    def test_refresh_token_blacklist_valid_token(
+        self, django_assert_max_num_queries, mocker
+    ):
+        """
+        Test that the refresh_token_blacklist blacklists refresh
+        token on valid token provided.
+        """
+
+        user = baker.make("users.User")
+
+        refresh_payload = {
+            "token_type": "refresh",
+            "exp": timezone.now() + timedelta(days=14),
+            "iat": timezone.now(),
+            "jti": uuid4().hex,
+            "iss": "api.flis.no",
+            "user_id": user.id,
+        }
+
+        valid_token = _refresh_token_create_and_encode(refresh_payload)
+        decoded_valid_token = _token_decode(valid_token)
+
+        refresh_token_is_valid_mock = mocker.patch(
+            "aria.api_auth.services.refresh_token_is_valid",
+            return_value=(
+                True,
+                TokenPayload(
+                    token_type=decoded_valid_token.token_type,
+                    exp=decoded_valid_token.exp,
+                    iat=decoded_valid_token.iat,
+                    jti=decoded_valid_token.jti,
+                    iss=decoded_valid_token.iss,
+                    user_id=decoded_valid_token.user_id,
+                ),
+            ),
+        )
+
+        # Sanity check that we're in a good state with 0 blacklisted
+        # tokens before checking again after the service has run.
+        assert BlacklistedToken.objects.all().count() == 0
+
+        # 1 for getting the user object from token user_id.
+        with django_assert_max_num_queries(2):
+            refresh_token_blacklist(valid_token)
+
+        assert refresh_token_is_valid_mock.call_count == 1
+        assert refresh_token_is_valid_mock.call_args_list[0].args[0] == valid_token
+        # Check that we created an instance blacklisting the token,
+        # and that the token we blacklisted is the one passed in to
+        # the serivce.
+        assert BlacklistedToken.objects.all().count() == 1
+        assert (
+            BlacklistedToken.objects.filter(
+                token__jti=decoded_valid_token.jti,
+                token__user_id=decoded_valid_token.user_id,
+            ).count()
+            == 1
+        )
