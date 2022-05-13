@@ -13,6 +13,7 @@ from aria.api_auth.services import (
 from aria.api_auth.selectors import _token_decode
 from aria.api_auth.models import OutstandingToken, BlacklistedToken
 from aria.core.exceptions import ApplicationError
+from aria.api_auth.exceptions import TokenError
 from aria.api_auth.records import TokenPayload
 from aria.api_auth.utils import datetime_to_epoch
 from django.contrib.sites.models import Site
@@ -212,7 +213,7 @@ class TestApiAuthServices:
         )
 
         # Check that an invalid token is not validated.
-        with pytest.raises(ApplicationError):
+        with pytest.raises(TokenError):
             with django_assert_max_num_queries(0):
                 token_pair_obtain_new_from_refresh_token(invalid_token)
 
@@ -264,7 +265,7 @@ class TestApiAuthServices:
         )
 
         # Check that service throws exception if the user does not exist.
-        with pytest.raises(ApplicationError):
+        with pytest.raises(TokenError):
             with django_assert_max_num_queries(0):
                 token_pair_obtain_new_from_refresh_token(valid_token_invalid_user)
 
@@ -371,7 +372,7 @@ class TestApiAuthServices:
         assert BlacklistedToken.objects.all().count() == 0
 
         # Check that an invalid token is not validated.
-        with pytest.raises(ApplicationError):
+        with pytest.raises(TokenError):
             with django_assert_max_num_queries(0):
                 refresh_token_blacklist(invalid_token)
 

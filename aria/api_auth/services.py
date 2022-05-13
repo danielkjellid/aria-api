@@ -9,6 +9,7 @@ from typing import Union
 from aria.api_auth.models import OutstandingToken, BlacklistedToken
 from django.contrib.auth import authenticate
 from aria.core.exceptions import ApplicationError
+from aria.api_auth.exceptions import TokenError
 from aria.api_auth.selectors import refresh_token_is_valid
 
 ISSUER = settings.JWT_ISSUER
@@ -113,14 +114,12 @@ def token_pair_obtain_new_from_refresh_token(token: str) -> JWTPair:
     token_is_valid, token_payload = refresh_token_is_valid(token)
 
     if not token_is_valid:
-        raise ApplicationError(_("Refresh token provided is invalid."), status_code=401)
+        raise TokenError(_("Refresh token provided is invalid."))
 
     try:
         user = User.objects.get(id=token_payload.user_id)
-    except User.DoesNotExist:
-        raise ApplicationError(
-            _("Issued user in refresh token does not exist."), status_code=401
-        )
+    except User.DoesNotExist as exc:
+        raise TokenError(_("Issued user in refresh token does not exist.")) from exc
 
     return token_pair_obtain_for_user(user)
 
@@ -134,14 +133,12 @@ def refresh_token_blacklist(token: str) -> None:
     token_is_valid, token_payload = refresh_token_is_valid(token)
 
     if not token_is_valid:
-        raise ApplicationError(_("Refresh token provided is invalid."), status_code=401)
+        raise TokenError(_("Refresh token provided is invalid."))
 
     try:
         token_instance = OutstandingToken.objects.get(
             jti=token_payload.jti, user_id=token_payload.user_id
         )
         BlacklistedToken.objects.create(token=token_instance)
-    except OutstandingToken.DoesNotExist:
-        raise ApplicationError(
-            _("Refresh token provided does not exist."), status_code=401
-        )
+    except OutstandingToken.DoesNotExist as exc:
+        raise TokenError(_("Refresh token provided does not exist.")) from exc
