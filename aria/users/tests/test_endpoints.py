@@ -19,7 +19,6 @@ class TestPublicUsersEndpoints:
         Test creating a user from the endpoint.
         """
 
-        # Test that bad data failes (returns a 400).
         user = baker.prepare(User)
 
         payload_json = {

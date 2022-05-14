@@ -87,9 +87,11 @@ class TestApiAuthSelectors:
 
         token = encode_token(refresh_payload)
 
-        # Decoding expired tokens will throw a token error.
-        with pytest.raises(TokenError):
-            refresh_token_is_valid(token)
+        with django_assert_max_num_queries(0):
+            is_valid, decoded_token = refresh_token_is_valid(token)
+
+        assert is_valid is False
+        assert decoded_token is None
 
     def test_refresh_token_is_valid_invalid_user(
         self, django_assert_max_num_queries, refresh_token_payload, encode_token
@@ -172,6 +174,8 @@ class TestApiAuthSelectors:
 
         token = encode_token(access_payload)
 
-        # Decoding expired tokens will throw a token error.
-        with pytest.raises(TokenError):
-            access_token_is_valid(token)
+        with django_assert_max_num_queries(0):
+            is_valid, decoded_token = refresh_token_is_valid(token)
+
+        assert is_valid is False
+        assert decoded_token is None

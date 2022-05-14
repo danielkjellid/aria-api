@@ -93,8 +93,7 @@ def token_pair_obtain_for_unauthenticated_user(email: str, password: str) -> JWT
     Authenticate user credentails and create tokens if
     credentials are valid.
     """
-    print(email)
-    print(password)
+
     user = authenticate(username=email, password=password)
 
     if user is None:

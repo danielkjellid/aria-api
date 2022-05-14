@@ -4,7 +4,7 @@ from django.utils.translation import gettext as _
 import jwt
 
 from aria.api_auth.exceptions import TokenError
-from aria.api_auth.models import OutstandingToken
+from aria.api_auth.models import OutstandingToken, BlacklistedToken
 from aria.api_auth.records import TokenPayload
 
 ISSUER = settings.JWT_ISSUER
@@ -31,6 +31,10 @@ def _token_decode(token: str) -> TokenPayload:
             iss=decoded_token["iss"],
             user_id=decoded_token["user_id"],
         )
+    # Checking token expiry may lead to an exception, we want to explcitly
+    # handle it by returning False instead in our is_valid selectors.
+    except jwt.ExpiredSignatureError as jwt_exc:
+        raise jwt_exc
     except Exception as exc:
         raise TokenError(_(f"Unable to decode provided token: {exc}")) from exc
 
@@ -57,25 +61,25 @@ def refresh_token_is_valid(token: str) -> tuple[bool, TokenPayload | None]:
         if token_type != "refresh":
             return False, None  # Unexpected token type.
 
-        # Fetch tokens with jti and user id. In theory, this should always
-        # be a single instance, but it's easier to filter and check exists,
-        # as well as saving queries by selecting related.
-        token_bellongs_to_user = OutstandingToken.objects.filter(
-            jti=token_jti, user_id=token_user_id
-        ).select_related("blacklisted_token")
+        # Check that token belongs to user and is not already blacklisted.
+        try:
+            # Fetch tokens with jti and user id.
+            token_bellongs_to_user = OutstandingToken.objects.get(
+                jti=token_jti, user_id=token_user_id
+            )
 
-        # Check that jti matches token issued to user id.
-        if not token_bellongs_to_user.exists():
+            # Check that token isn't already blacklisted.
+            if hasattr(token_bellongs_to_user, "blacklisted_token"):
+                return False, None  # Token is already blacklisted
+
+        except OutstandingToken.DoesNotExist:
             return False, None  # Provided Token does not belong to issued user.
-
-        # Chekc that token isn't already blacklisted.
-        if token_bellongs_to_user[0].blacklisted_token is not None:
-            return False, None  # Token is already blacklisted
 
         # If we've sucessfully decoded token and passed all the checks above,
         # the token is valid.
         return True, decoded_token
-
+    except jwt.ExpiredSignatureError:
+        return False, None  # Token has expire
     except TokenError as exc:
         raise exc
 
@@ -98,6 +102,7 @@ def access_token_is_valid(token: str) -> tuple[bool, TokenPayload | None]:
         # If we've sucessfully decoded token and passed all the checks above,
         # the token is valid.
         return True, decoded_token
-
+    except jwt.ExpiredSignatureError:
+        return False, None  # Token has expire
     except TokenError as exc:
         raise exc

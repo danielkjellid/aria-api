@@ -11,7 +11,7 @@ from aria.users.viewsets import (
 
 endpoints = NinjaAPI()
 
-endpoints.add_router("/auth/", public_auth_endpoints, tags=["[PUBLIC] Auth"])
+endpoints.add_router("/ninja/auth/", public_auth_endpoints, tags=["[PUBLIC] Auth"])
 endpoints.add_router("/users/", public_users_endpoints, tags=["[PUBLIC] Users"])
 
 

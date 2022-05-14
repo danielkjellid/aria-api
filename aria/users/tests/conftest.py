@@ -1,13 +1,10 @@
 from django.contrib.auth.models import AnonymousUser, Permission
 from django.contrib.contenttypes.models import ContentType
-from django.test import Client
+from django.contrib.sites.models import Site
 from rest_framework.test import APIClient
 
 import pytest
-from ninja.testing import TestClient
 from rest_framework_simplejwt.tokens import RefreshToken
-
-from aria.api.endpoints import endpoints
 
 ###############
 # Permissions #
@@ -19,13 +16,15 @@ def test_permissions(request):
     return [request.param]
 
 
-#########
-# Users #
-#########
+@pytest.fixture
+def site(settings):
+    site, _ = Site.objects.get_or_create(domain="test.example.com", name="Test site")
+    settings.SITE_ID = site.id
+    return site
 
 
 @pytest.fixture
-def create_user_with_permissions(django_user_model):
+def create_user_with_permissions(django_user_model, site):
     """
     Returns a factory creating users given permissions.
     """
@@ -47,6 +46,7 @@ def create_user_with_permissions(django_user_model):
             parsed_perms.append(parsed_perm)
 
         user.user_permissions.set(parsed_perms)
+        user.site = site
         user.save()
 
         return user
@@ -90,11 +90,6 @@ def superuser(create_user_with_permissions):
 ###############
 # API Clients #
 ###############
-
-
-@pytest.fixture
-def anonymous_client():
-    return Client()
 
 
 @pytest.fixture

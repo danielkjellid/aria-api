@@ -7,6 +7,8 @@ from django.utils import timezone
 import jwt
 import pytest
 
+from aria.api_auth.records import JWTPair
+
 
 @pytest.fixture
 def token_payload():
@@ -71,3 +73,33 @@ def encode_token():
         return encoded_token
 
     return _encode_token
+
+
+@pytest.fixture
+def decode_token():
+    """
+    Encode raw token payload input without any validation.
+    """
+
+    def _decode_token(token: str):
+        decoded_token = jwt.decode(
+            token, settings.JWT_SIGNING_KEY, algorithms=[settings.JWT_ALGORITHM]
+        )
+        return decoded_token
+
+    return _decode_token
+
+
+@pytest.fixture
+def token_pair(refresh_token_payload, access_token_payload, encode_token):
+    """
+    A simple object with created valid tokens.
+    """
+
+    def _create_token_pair(user_id: int):
+        refresh_token = encode_token(refresh_token_payload(user_id=user_id))
+        access_token = encode_token(access_token_payload(user_id=user_id))
+
+        return JWTPair(access_token=access_token, refresh_token=refresh_token)
+
+    return _create_token_pair

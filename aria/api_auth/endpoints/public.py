@@ -48,7 +48,7 @@ def auth_obtain_token_pair(request, payload: TokensObtainInput):
     description="Obtain a new token pair based on valid refresh token.",
 )
 def auth_refresh_token_pair(request, payload: TokensRefreshInput):
-    tokens = token_pair_obtain_new_from_refresh_token(TokensRefreshInput.refresh_token)
+    tokens = token_pair_obtain_new_from_refresh_token(payload.refresh_token)
 
     return 200, GenericResponse(
         message=_("Tokens sucessfully refreshed."),
