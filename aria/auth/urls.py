@@ -10,7 +10,7 @@ from aria.auth.viewsets import (
 internal_patterns = []
 
 public_patterns = [
-    # path("tokens/obtain/", AuthTokenObtainAPI.as_view(), name="auth-tokens-obtain"),
+    path("tokens/obtain/", AuthTokenObtainAPI.as_view(), name="auth-tokens-obtain"),
     path("tokens/refresh/", TokenRefreshView.as_view(), name="auth-tokens-refresh"),
     path(
         "tokens/blacklist/",

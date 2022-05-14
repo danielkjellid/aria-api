@@ -1,23 +1,40 @@
 from typing import Any, Optional
 
-from django.conf import settings
 from django.http import HttpRequest
 
-import jwt
 from ninja.security import HttpBearer
+from aria.users.models import User
+from aria.core.exceptions import ApplicationError
+from aria.api_auth.selectors import access_token_is_valid
 
 
-class JWTAuthBearer(HttpBearer):
+class JWTAuthRequired(HttpBearer):
     def authenticate(self, request: HttpRequest, token: str) -> Optional[Any]:
         try:
-            payload = jwt.decode(
-                token, settings.JWT_SIGNING_KEY, algorithms=[settings.JWT_ALGORITHM]
-            )
-            user_id = payload.get("user_id", None)
+            # Decode provided token.
+            is_token_valid, decoded_access_token = access_token_is_valid(token)
 
-            if user_id is None:
-                return None
-        except jwt.PyJWTError as exc:
-            return None
+            # Obviously return false if access token is invalid.
+            if not is_token_valid:
+                return False
 
-        return user_id
+            # Sanity check that user_id in decoded token actually exist.
+            try:
+                user = User.objects.get(id=decoded_access_token.user_id)
+            except User.DoesNotExist:
+                raise ApplicationError(
+                    "No user with provided id exist", status_code=404
+                )
+
+            # Also check that the user is active before returning a valid
+            # response.
+            if not user.is_active:
+                raise ApplicationError(
+                    "User with provided id is inactive", status_code=403
+                )
+
+            # If all checks passes, return endpoint.
+            return user  # 200 OK
+        # Any exception we want it to return False i.e 401
+        except Exception:
+            return False

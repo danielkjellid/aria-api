@@ -1,8 +1,6 @@
 import functools
-from typing import Any, Callable, Optional, Union
-
+from typing import Any, Callable, Optional
 from ninja import Router
-
 from aria.api.responses import GenericResponse
 from aria.core.exceptions import ApplicationError
 
