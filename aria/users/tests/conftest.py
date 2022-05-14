@@ -32,7 +32,7 @@ def create_user_with_permissions(django_user_model, site):
     def _make_user(perms, email="testuser@example.com", **defaults):
         user = django_user_model.objects.update_or_create(
             email=email,
-            password="password",
+            password="supersecretpassword",
             **defaults,
         )[0]
 

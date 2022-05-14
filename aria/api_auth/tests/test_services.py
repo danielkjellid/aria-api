@@ -1,12 +1,9 @@
 from datetime import timedelta
 from uuid import uuid4
 
-from django.contrib.sites.models import Site
 from django.utils import timezone
 
-import jwt
 import pytest
-from model_bakery import baker
 
 from aria.api_auth.exceptions import TokenError
 from aria.api_auth.models import BlacklistedToken, OutstandingToken
@@ -22,20 +19,21 @@ from aria.api_auth.services import (
 )
 from aria.api_auth.utils import datetime_to_epoch
 from aria.core.exceptions import ApplicationError
-from aria.users.models import User
 
 pytestmark = pytest.mark.django_db
 
 
-class TestApiAuthServices:
-    def test__refresh_token_create_and_encode(self, django_assert_max_num_queries):
+class TestAPIAuthServices:
+    def test__refresh_token_create_and_encode(
+        self, django_assert_max_num_queries, unprivileged_user
+    ):
         """
         Test that the _refresh_token_create_and_encode service replaces
         needed default, encodes a token, and creates an entry in the
         OutstandingToken table.
         """
 
-        user = baker.make("users.User")
+        user = unprivileged_user
 
         payload = {
             "token_type": None,
@@ -68,13 +66,15 @@ class TestApiAuthServices:
         assert token.exists()
         assert len(token) == 1
 
-    def test__access_token_create_and_encode(self, django_assert_max_num_queries):
+    def test__access_token_create_and_encode(
+        self, django_assert_max_num_queries, unprivileged_user
+    ):
         """
         Test that the _access_token_create_and_encode service replaces
         needed default and encodes a token.
         """
 
-        user = baker.make("users.User")
+        user = unprivileged_user
 
         payload = {
             "token_type": None,
@@ -101,14 +101,16 @@ class TestApiAuthServices:
         assert decoded_token.user_id == user.id
         assert decoded_token.iss == "api.flis.no"
 
-    def test_token_pair_obtain_for_user(self, django_assert_max_num_queries, mocker):
+    def test_token_pair_obtain_for_user(
+        self, django_assert_max_num_queries, mocker, unprivileged_user
+    ):
         """
         Test that token_pair_obtain_for_user calls the needed
         services to produce a valid access and refresh token
         as well that it does not exceed max allowed queries.
         """
 
-        user = baker.make("users.User")
+        user = unprivileged_user
 
         refresh_token_create_and_encode_mock = mocker.patch(
             "aria.api_auth.services._refresh_token_create_and_encode",
@@ -133,16 +135,10 @@ class TestApiAuthServices:
         assert token_pair.access_token is not None
 
     def test_token_pair_obtain_for_unauthenticated_user(
-        self, django_assert_max_num_queries, mocker, settings
+        self, django_assert_max_num_queries, mocker, unprivileged_user
     ):
-        # User must have a site, and that site must be active for us to
-        # be able to authenticate.
-        site = Site.objects.create(domain="test.example.com", name="Test")
-        settings.SITE_ID = site.id
-
-        user = baker.make(User, **{"email": "user@example.com"})
+        user = unprivileged_user
         user.set_password("supersecretpassword")
-        user.site = site
         user.save()
 
         token_pair_obtain_for_user_mock = mocker.patch(
@@ -155,7 +151,7 @@ class TestApiAuthServices:
         # site.
         with django_assert_max_num_queries(3):
             token_pair = token_pair_obtain_for_unauthenticated_user(
-                email="user@example.com", password="supersecretpassword"
+                email="testuser@example.com", password="supersecretpassword"
             )
 
         # Assert that service creating tokens is called with correct
@@ -174,20 +170,23 @@ class TestApiAuthServices:
             )
 
     def test_token_pair_obtain_new_from_refresh_token_invalid_token(
-        self, django_assert_max_num_queries, mocker, refresh_token_payload
+        self,
+        django_assert_max_num_queries,
+        mocker,
+        refresh_token_payload,
+        unprivileged_user,
+        encode_token,
     ):
         """
         Test how the token_pair_obtain_new_from_refresh_token service
         reacts to getting an invalid token.
         """
 
-        user = baker.make("users.User")
+        user = unprivileged_user
 
         refresh_payload = refresh_token_payload(user_id=user.id)
 
-        invalid_token = jwt.encode(
-            refresh_payload, "notvalidsigningkey", algorithm="HS256"
-        )
+        invalid_token = encode_token(refresh_payload)
 
         refresh_token_is_valid_mock = mocker.patch(
             "aria.api_auth.services.refresh_token_is_valid",
@@ -219,7 +218,12 @@ class TestApiAuthServices:
         )  # Should throw exception before this
 
     def test_token_pair_obtain_new_from_refresh_token_invalid_user(
-        self, django_assert_max_num_queries, mocker, settings, refresh_token_payload
+        self,
+        django_assert_max_num_queries,
+        mocker,
+        settings,
+        refresh_token_payload,
+        encode_token,
     ):
         """
         Test how token_pair_obtain_new_from_refresh_token responds
@@ -229,9 +233,7 @@ class TestApiAuthServices:
 
         refresh_payload = refresh_token_payload(user_id=999)
 
-        valid_token_invalid_user = jwt.encode(
-            refresh_payload, settings.JWT_SIGNING_KEY, algorithm="HS256"
-        )
+        valid_token_invalid_user = encode_token(refresh_payload)
         decoded_valid_token_invalid_user = _token_decode(valid_token_invalid_user)
 
         refresh_token_is_valid_mock = mocker.patch(
@@ -267,14 +269,18 @@ class TestApiAuthServices:
         )  # Should throw exception before this
 
     def test_token_pair_obtain_new_from_refresh_token_valid_token(
-        self, django_assert_max_num_queries, mocker, refresh_token_payload
+        self,
+        django_assert_max_num_queries,
+        mocker,
+        refresh_token_payload,
+        unprivileged_user,
     ):
         """
         Test that the token_pair_obtain_new_from_refresh_token returns
         a new valid token pair when provided a valid refresh token.
         """
 
-        user = baker.make("users.User")
+        user = unprivileged_user
 
         refresh_payload = refresh_token_payload(user_id=user.id)
 
@@ -311,20 +317,23 @@ class TestApiAuthServices:
         assert new_tokens.access_token is not None
 
     def test_refresh_token_blacklist_invalid_token(
-        self, django_assert_max_num_queries, mocker, refresh_token_payload
+        self,
+        django_assert_max_num_queries,
+        mocker,
+        refresh_token_payload,
+        unprivileged_user,
+        encode_token,
     ):
         """
         Test that the refresh_token_blacklist service raises an
         exception appropriately.
         """
 
-        user = baker.make("users.User")
+        user = unprivileged_user
 
         refresh_payload = refresh_token_payload(user_id=user.id)
 
-        invalid_token = jwt.encode(
-            refresh_payload, "notvalidsigningkey", algorithm="HS256"
-        )
+        invalid_token = encode_token
 
         refresh_token_is_valid_mock = mocker.patch(
             "aria.api_auth.services.refresh_token_is_valid",
@@ -356,14 +365,18 @@ class TestApiAuthServices:
         assert BlacklistedToken.objects.all().count() == 0
 
     def test_refresh_token_blacklist_valid_token(
-        self, django_assert_max_num_queries, mocker, refresh_token_payload
+        self,
+        django_assert_max_num_queries,
+        mocker,
+        refresh_token_payload,
+        unprivileged_user,
     ):
         """
         Test that the refresh_token_blacklist blacklists refresh
         token on valid token provided.
         """
 
-        user = baker.make("users.User")
+        user = unprivileged_user
 
         refresh_payload = refresh_token_payload(user_id=user.id)
 

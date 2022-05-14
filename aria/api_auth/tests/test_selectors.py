@@ -19,14 +19,14 @@ from aria.api_auth.utils import datetime_to_epoch
 pytestmark = pytest.mark.django_db
 
 
-class TestApiAuthSelectors:
-    def test__token_decode(self, refresh_token_payload):
+class TestAPIAuthSelectors:
+    def test__token_decode(self, refresh_token_payload, unprivileged_user):
         """
         Test that we're able to decode provided tokens, if it
         has a valid signature.
         """
 
-        user = baker.make("users.User")
+        user = unprivileged_user
         refresh_payload = refresh_token_payload(user_id=user.id)
 
         invalid_token = jwt.encode(
@@ -51,9 +51,31 @@ class TestApiAuthSelectors:
         assert decoded_token.user_id == user.id
 
     def test_refresh_token_is_valid(
-        self, django_assert_max_num_queries, refresh_token_payload
+        self, django_assert_max_num_queries, refresh_token_payload, unprivileged_user
     ):
-        pass
+        """
+        Test that the refresh_token_is_valid returns true and decoded token when
+        the token provided is valid.
+        """
+
+        user = unprivileged_user
+        refresh_payload = refresh_token_payload(user_id=user.id)
+
+        valid_refresh_token = _refresh_token_create_and_encode(refresh_payload)
+
+        # Uses 2 queries: getting the token from db (1), checking if it's
+        # blacklisted (1).
+        with django_assert_max_num_queries(2):
+            is_valid, decoded_token = refresh_token_is_valid(valid_refresh_token)
+
+        assert is_valid is True
+        assert decoded_token is not None
+        assert decoded_token.token_type == refresh_payload["token_type"]
+        assert decoded_token.exp == datetime_to_epoch(refresh_payload["exp"])
+        assert decoded_token.iat == datetime_to_epoch(refresh_payload["iat"])
+        assert decoded_token.jti == refresh_payload["jti"]
+        assert decoded_token.iss == refresh_payload["iss"]
+        assert decoded_token.user_id == user.id
 
     def test_refresh_token_is_valid_invalid_token_type(
         self, django_assert_max_num_queries, access_token_payload, encode_token
@@ -94,14 +116,18 @@ class TestApiAuthSelectors:
         assert decoded_token is None
 
     def test_refresh_token_is_valid_invalid_user(
-        self, django_assert_max_num_queries, refresh_token_payload, encode_token
+        self,
+        django_assert_max_num_queries,
+        refresh_token_payload,
+        encode_token,
+        unprivileged_user,
     ):
         """
         Test that the refresh_token_is_valid returns false when the
         token provided does not belong to the user.
         """
 
-        user = baker.make("users.User")
+        user = unprivileged_user
 
         # Create a valid token, and entry in the db with user id.
         refresh_payload = refresh_token_payload(user_id=user.id)
@@ -120,14 +146,14 @@ class TestApiAuthSelectors:
         assert decoded_token is None
 
     def test_refresh_token_is_valid_blacklisted(
-        self, django_assert_max_num_queries, refresh_token_payload
+        self, django_assert_max_num_queries, refresh_token_payload, unprivileged_user
     ):
         """
         Test that the refresh_token_is_valid returns false when the
         token provided is already blacklisted.
         """
 
-        user = baker.make("users.User")
+        user = unprivileged_user
         refresh_payload = refresh_token_payload(user_id=user.id)
 
         token = _refresh_token_create_and_encode(refresh_payload)

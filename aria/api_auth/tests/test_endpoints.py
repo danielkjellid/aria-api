@@ -1,13 +1,13 @@
 import pytest
 from aria.api_auth.services import _refresh_token_create_and_encode
 import json
-from aria.api_auth.models import OutstandingToken, BlacklistedToken
+from aria.api_auth.models import BlacklistedToken
 import jwt
 
 pytestmark = pytest.mark.django_db
 
 
-class TestPublicAuthEndpoints:
+class TestAPIAuthPublicEndpoints:
 
     BASE_ENDPOINT = (
         "/api/ninja/auth"  # TODO: Remove /ninja/ when drf migration is done.
@@ -19,6 +19,10 @@ class TestPublicAuthEndpoints:
         django_assert_max_num_queries,
         unprivileged_user,
     ):
+        """
+        Test obtaining tokens from endpoint.
+        """
+
         user = unprivileged_user
         user.set_password("supersecret1234")
         user.save()
@@ -58,6 +62,10 @@ class TestPublicAuthEndpoints:
         encode_token,
         unprivileged_user,
     ):
+        """
+        Test obtaining a new token pair by using a valid refresh token.
+        """
+
         user = unprivileged_user
 
         refresh_payload = refresh_token_payload(user_id=user.id + 1)
@@ -99,6 +107,10 @@ class TestPublicAuthEndpoints:
         unprivileged_user,
         decode_token,
     ):
+        """
+        Test blackliting a provided valid token.
+        """
+
         user = unprivileged_user
 
         refresh_payload = refresh_token_payload(user_id=user.id)
