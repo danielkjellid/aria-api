@@ -8,7 +8,11 @@ from rest_framework.views import APIView
 
 from ninja import Router
 
-from aria.core.pagination import LimitOffsetPagination, get_paginated_response
+from aria.core.pagination import (
+    LimitOffsetPagination,
+    get_paginated_response,
+    PageNumberSetPagination,
+)
 from aria.core.permissions import HasUserOrGroupPermission
 from aria.core.schemas import APIViewSchema
 from aria.core.serializers import inline_serializer
@@ -32,8 +36,8 @@ class UserListAPI(APIView):
     }
     schema = APIViewSchema()
 
-    class Pagination(LimitOffsetPagination):
-        limit = 18
+    class Pagination(PageNumberSetPagination):
+        page_size = 2
 
     class FilterSerializer(serializers.Serializer):
         email = serializers.EmailField(required=False)

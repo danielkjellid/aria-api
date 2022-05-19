@@ -24,13 +24,10 @@ router = Router(tags="users")
     method="POST",
     response={201: GenericResponse},
     summary="Creates a user",
-    description="Creates a single user instance",
 )
 def user_create_api(request, payload: UserCreateInput) -> tuple[int, GenericResponse]:
     """
-    [PUBLIC] Endpoint for creating a new user instance.
-
-    Returns the created user.
+    Creates a single user instance.
     """
 
     user_create(**payload.dict())
@@ -46,13 +43,12 @@ def user_create_api(request, payload: UserCreateInput) -> tuple[int, GenericResp
     method="POST",
     response={200: GenericResponse},
     summary="Sends verification email",
-    description="Sends verification email to a specific email (user) for them to verify the account",
 )
 def user_account_verification_api(
     request, payload: UserAccountVerificationInput
 ) -> tuple[int, GenericResponse]:
     """
-    [PUBLIC] Endpoint for sending a verification email to the user.
+    Sends verification email to a specific email (user) for them to verify the account.
     """
 
     try:
@@ -71,13 +67,12 @@ def user_account_verification_api(
     method="POST",
     response={200: GenericResponse},
     summary="Validate email tokens to confirm account",
-    description="Takes uid and token present in verification email, validates them, and updates email to confirmed.",
 )
 def user_account_verification_confirm_api(
     request, payload: UserAccountVerificationConfirmInput
 ) -> tuple[int, GenericResponse]:
     """
-    [PUBLIC] Endpoint for validating email tokens.
+    Takes uid and token present in verification email, validates them, and updates email to confirmed.
     """
 
     user_verify_account(uid=payload.uid, token=payload.token)
@@ -90,12 +85,10 @@ def user_account_verification_confirm_api(
     method="POST",
     response={200: GenericResponse},
     summary="Send a reset password email",
-    description="Sends a password reset email to provided email, if user exist.",
 )
 def user_password_reset_api(request, payload: UserPasswordResetInput):
     """
-    [PUBLIC] Endpoint for sending a password reset
-    email.
+    Sends a password reset email to provided email, if user exist.
     """
 
     try:
@@ -116,12 +109,12 @@ def user_password_reset_api(request, payload: UserPasswordResetInput):
     method="POST",
     response={200: GenericResponse},
     summary="Send a reset password email",
-    description="Sends a password reset email to provided email, if user exist.",
 )
 def user_password_reset_confirm_api(request, payload: UserPasswordResetConfirmInput):
     """
-    [PUBLIC] Endpoint for setting a new password.
+    Sets a password if provided uid and token is valid.
     """
+
     user_set_password(
         uid=payload.uid, token=payload.token, new_password=payload.new_password
     )

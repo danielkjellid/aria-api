@@ -38,26 +38,34 @@ def permission_required(permissions: str | list[str] | set[str], *, all_required
         @functools.wraps(func)
         def inner(*args, **kwargs):
             *_, info = args
-            user = info.auth if info.auth else info.user
-            print(permissions)
-            if not user:
-                raise PermissionDenied("User from context is unknown.")
 
-            if not user.is_authenticated:
-                raise PermissionDenied("User is unauthenticated.")
+            try:
+                user = info.auth
 
-            if all_required:
-                if not user.has_perms(permissions):
-                    raise PermissionDenied(
-                        "User does not have all the required permissions."
-                    )
-            else:
-                if not user.has_perm(permissions):
-                    raise PermissionDenied(
-                        "User does not have any of the required permissions."
-                    )
+                if not user:
+                    raise PermissionDenied("User from context is unknown.")
 
-            return func(*args, **kwargs)
+                if not user.is_authenticated:
+                    raise PermissionDenied("User is unauthenticated.")
+
+                if all_required:
+                    if not user.has_perms(permissions):
+                        raise PermissionDenied(
+                            "User does not have all the required permissions."
+                        )
+                else:
+                    if not user.has_perm(permissions):
+                        raise PermissionDenied(
+                            "User does not have any of the required permissions."
+                        )
+
+                return func(*args, **kwargs)
+            except AttributeError:
+                raise AttributeError(
+                    "Auth attribute on WSGIRequest does not exist. "
+                    "Ensure that authentication for the endpointt is enabled "
+                    "before using the permission_required decorator"
+                )
 
         return inner
 
