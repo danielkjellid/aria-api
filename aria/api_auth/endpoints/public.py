@@ -4,11 +4,13 @@ from ninja import Router
 
 from aria.api.decorators import api
 from aria.api.responses import GenericResponse
-from aria.api_auth.schemas import (
+from aria.api_auth.schemas.inputs import (
     TokenBlacklistInput,
     TokensObtainInput,
-    TokensObtainOutput,
     TokensRefreshInput,
+)
+from aria.api_auth.schemas.outputs import (
+    TokensObtainOutput,
     TokensRefreshOutput,
 )
 from aria.api_auth.services import (
