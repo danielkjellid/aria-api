@@ -73,6 +73,11 @@ def api(
             formatted_path = path.replace("/", "-").rstrip("-")
             default_url_name = f"{router_tag}-{formatted_path}"
 
+            # If the name ends with a "-", it means that we're dealing
+            # with an index, in that case, add a trailing index to it.
+            if default_url_name.endswith("-"):
+                default_url_name = f"{default_url_name}index"
+
         @router_decorator(
             path,
             response=response,

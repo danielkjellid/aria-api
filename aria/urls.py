@@ -9,7 +9,6 @@ api_patterns = [
     path("auth/", include("aria.auth.urls")),
     path("categories/", include("aria.categories.urls")),
     path("products/", include("aria.products.urls")),
-    path("users/", include("aria.users.urls")),
 ]
 
 urlpatterns = [

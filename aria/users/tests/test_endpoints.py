@@ -426,6 +426,7 @@ class TestProtectedUsersEndpoints:
             "allow_third_party_personalization": not user.allow_third_party_personalization,
         }
 
+        # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
         with django_assert_max_num_queries(3):
             response = n_authenticated_unprivileged_client.post(
                 f"{self.BASE_ENDPOINT}/{user.id}/update/",
@@ -514,7 +515,8 @@ class TestProtectedUsersEndpoints:
 
         payload_json = {"email": "somenewemail@example.com"}
 
-        with django_assert_max_num_queries(0):
+        # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
+        with django_assert_max_num_queries(3):
             response = n_authenticated_unprivileged_client.post(
                 f"{self.BASE_ENDPOINT}/{user.id}/update/",
                 data=payload_json,
