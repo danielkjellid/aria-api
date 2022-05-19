@@ -1,5 +1,5 @@
 from ninja import Router, Schema, Query
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 
 from aria.api.decorators import api
 from aria.api.responses import ExceptionResponse, GenericResponse
@@ -28,7 +28,7 @@ router = Router(tags="users")
     summary="Lists all users",
 )
 @paginate(page_size=18, order_by="id")
-# @permission_required("users.has_users_list")
+@permission_required("users.has_users_list")
 def user_list_api(request, filters: UserListFilters = Query(...)):
     """
     Retrieve a list of all users in the application.
@@ -49,7 +49,7 @@ def user_list_api(request, filters: UserListFilters = Query(...)):
     },
     summary="Retrieve a single user",
 )
-# @permission_required("users.has_users_list")
+@permission_required("users.has_users_list")
 def user_detail_api(request, user_id: int):
     """
     Retrieve a single user based on user id.
@@ -66,7 +66,7 @@ def user_detail_api(request, user_id: int):
     response={200: GenericResponse, 403: ExceptionResponse, 404: ExceptionResponse},
     summary="Update a single user",
 )
-# @permission_required("users.has_user_edit")
+@permission_required("users.has_user_edit")
 def user_update_api(request, user_id: int, payload: UserUpdateInput):
     """
     Update a specific user based on user id.
@@ -74,6 +74,11 @@ def user_update_api(request, user_id: int, payload: UserUpdateInput):
 
     user = get_object_or_404(User, pk=user_id)
 
-    user_update(user=user, data=payload.dict(), author=request.auth, log_change=True)
+    # Remove None values from dict, as all fields in input schema is optional.
+    cleaned_payload = {
+        key: val for key, val in payload.dict().items() if val is not None
+    }
+
+    user_update(user=user, data=cleaned_payload, author=request.auth, log_change=True)
 
     return 200, GenericResponse(message=_("User was updated successfully"), data={})

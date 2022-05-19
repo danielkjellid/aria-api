@@ -20,7 +20,7 @@ endpoints.add_router(
     "/users/", public_users_endpoints, tags=["[PUBLIC] Users"], auth=None
 )
 endpoints.add_router(
-    "/users/", private_users_endpoints, tags=["[PRIVATE] Users"], auth=None
+    "/users/", private_users_endpoints, tags=["[PRIVATE] Users"], auth=JWTAuthRequired()
 )
 
 
@@ -45,7 +45,7 @@ def token_error(request, exc: TokenError):
 @endpoints.exception_handler(PermissionDenied)
 def permission_denied_error(request, exc: PermissionDenied):
     return endpoints.create_response(
-        request, ExceptionResponse(message=exc), status=403
+        request, ExceptionResponse(message=str(exc)), status=403
     )
 
 

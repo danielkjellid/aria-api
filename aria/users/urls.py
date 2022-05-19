@@ -4,7 +4,7 @@ from aria.users.endpoints.internal import UserDetailAPI, UserUpdateAPI
 
 internal_patterns = [
     # path("<int:user_id>/", UserDetailAPI.as_view(), name="users-detail"),
-    path("<int:user_id>/update/", UserUpdateAPI.as_view(), name="users-update"),
+    # path("<int:user_id>/update/", UserUpdateAPI.as_view(), name="users-update"),
 ]
 
 public_patterns = []

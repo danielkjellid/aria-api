@@ -10,32 +10,32 @@ def anonymous_client():
 
 
 @pytest.fixture
-def authenticated_unprivileged_client(unprivileged_user):
+def n_authenticated_unprivileged_client(unprivileged_user):
     tokens = token_pair_obtain_for_user(unprivileged_user)
-    client = Client(HTTP_AUTHORIZATION=f"JWT {tokens.access_token}")
+    client = Client(HTTP_AUTHORIZATION=f"Bearer {tokens.access_token}")
 
     return client
 
 
 @pytest.fixture
-def authenticated_privileged_client(privileged_user):
+def n_authenticated_privileged_client(privileged_user):
     tokens = token_pair_obtain_for_user(privileged_user)
-    client = Client(HTTP_AUTHORIZATION=f"JWT {tokens.access_token}")
+    client = Client(HTTP_AUTHORIZATION=f"Bearer {tokens.access_token}")
 
     return client
 
 
 @pytest.fixture
-def authenticated_privileged_staff_client(privileged_staff_user):
+def n_authenticated_privileged_staff_client(privileged_staff_user):
     tokens = token_pair_obtain_for_user(privileged_staff_user)
-    client = Client(HTTP_AUTHORIZATION=f"JWT {tokens.access_token}")
+    client = Client(HTTP_AUTHORIZATION=f"Bearer {tokens.access_token}")
 
     return client
 
 
 @pytest.fixture
-def authenticated_superuser_client(superuser):
+def n_authenticated_superuser_client(superuser):
     tokens = token_pair_obtain_for_user(superuser)
-    client = Client(HTTP_AUTHORIZATION=f"JWT {tokens.access_token}")
+    client = Client(HTTP_AUTHORIZATION=f"Bearer {tokens.access_token}")
 
     return client

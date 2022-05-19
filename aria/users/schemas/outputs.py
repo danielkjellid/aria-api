@@ -20,11 +20,11 @@ class UserDetailOutput(Schema):
     last_name: str
     email: str
     phone_number: str
-    birth_date: date
+    birth_date: date = None
     has_confirmed_email: bool
 
     # Account data
-    last_login: datetime
+    last_login: datetime = None
     id: int
     profile: UserProfileRecord
     date_joined: datetime
