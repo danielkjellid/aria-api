@@ -5,7 +5,7 @@ from aria.notes.models import NoteEntry
 
 class NoteEntryAdmin(admin.ModelAdmin):
     list_display = [
-        "user",
+        "author",
         "content_type",
         "object_id",
         "content_object",

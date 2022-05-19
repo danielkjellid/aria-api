@@ -20,7 +20,7 @@ endpoints.add_router(
     "/users/", public_users_endpoints, tags=["[PUBLIC] Users"], auth=None
 )
 endpoints.add_router(
-    "/users/", private_users_endpoints, tags=["[PRIVATE] Users"], auth=JWTAuthRequired()
+    "/users/", private_users_endpoints, tags=["[PRIVATE] Users"], auth=None
 )
 
 

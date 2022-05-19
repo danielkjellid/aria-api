@@ -6,7 +6,7 @@ from aria.api.decorators import api
 from aria.api.responses import GenericResponse
 from aria.core.exceptions import ApplicationError
 from aria.users.models import User
-from aria.users.schemas import (
+from aria.users.schemas.inputs import (
     UserAccountVerificationConfirmInput,
     UserAccountVerificationInput,
     UserCreateInput,

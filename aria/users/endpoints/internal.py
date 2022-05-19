@@ -23,61 +23,6 @@ from aria.users.services import user_update
 router = Router()
 
 
-class UserListAPI(APIView):
-    """
-    Endpoint for listing all registered users.
-
-    Returns a list of users.
-    """
-
-    permission_classes = (IsAdminUser, HasUserOrGroupPermission)
-    required_permissions = {
-        "GET": ["has_users_list"],
-    }
-    schema = APIViewSchema()
-
-    class Pagination(PageNumberSetPagination):
-        page_size = 2
-
-    class FilterSerializer(serializers.Serializer):
-        email = serializers.EmailField(required=False)
-        first_name = serializers.CharField(required=False)
-        last_name = serializers.CharField(required=False)
-        phone_number = serializers.CharField(required=False)
-
-    class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
-        email = serializers.EmailField()
-        is_active = serializers.BooleanField(allow_null=True)
-        date_joined = serializers.DateTimeField()
-        profile = inline_serializer(
-            source="*",
-            fields={
-                "full_name": serializers.CharField(),
-                "initial": serializers.CharField(),
-                "avatar_color": serializers.CharField(),
-            },
-        )
-
-    @APIViewSchema.serializer(OutputSerializer())
-    @APIViewSchema.query_parameters(FilterSerializer())
-    def get(self, request: HttpRequest) -> HttpResponse:
-        # Make sure the filters are valid, if passed
-        filters_serializer = self.FilterSerializer(data=request.query_params)
-        filters_serializer.is_valid(raise_exception=True)
-
-        # Get all users in the app
-        users = user_list(filters=filters_serializer.validated_data).order_by("id")
-
-        return get_paginated_response(
-            pagination_class=self.Pagination,
-            serializer_class=self.OutputSerializer,
-            queryset=users,
-            request=request,
-            view=self,
-        )
-
-
 class UserDetailAPI(APIView):
     """
     Endpoint for listing a specific user. Takes the
