@@ -11,7 +11,6 @@ from ninja.signature.details import is_collection_type
 from ninja.types import DictStrAny
 
 from aria.api.pagination import PageNumberSetPagination
-from aria.api.schemas.responses import GenericResponse
 from aria.core.exceptions import ApplicationError
 
 SUPPORTED_HTTP_METHODS = ["GET", "POST", "DELETE", "PATCH", "PUT"]
@@ -27,7 +26,7 @@ def api(
     description: Optional[str] = None,
     url_name: Optional[str] = None,
     **kwargs: Any,
-) -> Callable[[Callable[..., Any]], Callable[..., GenericResponse]]:
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """
     Defines an API view. This is basically just a wrapper around Django
     Ninjas @router.method decorator, to throw a custom exception for all
