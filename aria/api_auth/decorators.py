@@ -1,28 +1,5 @@
 import functools
-
-from django.conf import settings
 from django.core.exceptions import PermissionDenied
-
-
-class NotAllowedInProductionException(Exception):
-    pass
-
-
-def not_in_production(func):
-    """
-    Decorator that raises exception if run in production.
-    Typically used for management commands that changes production data.
-    """
-
-    def inner(*args, **kwargs):
-        if settings.PRODUCTION or settings.ENVIRONMENT == "production":
-            raise NotAllowedInProductionException(
-                "This operation is not allowed in production!"
-            )
-
-        return func(*args, **kwargs)
-
-    return inner
 
 
 def permission_required(permissions: str | list[str] | set[str], *, all_required=True):

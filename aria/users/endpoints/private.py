@@ -6,7 +6,7 @@ from ninja import Query, Router
 from aria.api.decorators import api, paginate
 from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse, GenericResponse
-from aria.core.decorators import permission_required
+from aria.api_auth.decorators import permission_required
 from aria.users.models import User
 from aria.users.schemas.filters import UserListFilters
 from aria.users.schemas.inputs import UserUpdateInput
