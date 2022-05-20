@@ -1,5 +1,3 @@
-from django.utils.translation import gettext as _
-
 from ninja import Router
 
 from aria.api.decorators import api

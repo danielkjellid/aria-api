@@ -1,4 +1,3 @@
-from django.utils.translation import gettext as _
 from rest_framework.generics import get_object_or_404
 
 from ninja import Query, Router
