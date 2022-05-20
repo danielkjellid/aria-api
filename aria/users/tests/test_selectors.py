@@ -8,6 +8,11 @@ pytestmark = pytest.mark.django_db
 
 class TestUsersSelectors:
     def test_user_list(self, django_assert_max_num_queries):
+        """
+        Test that the user_list selector returns appropriate results
+        when filters are provided.
+        """
+
         user_1 = baker.make(
             "users.User",
             **{

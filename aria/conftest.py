@@ -11,6 +11,7 @@ def anonymous_client():
     return Client()
 
 
+# TODO: Remove n_ prefix when drf is gone.
 @pytest.fixture
 def n_authenticated_unprivileged_client(unprivileged_user):
     tokens = token_pair_obtain_for_user(unprivileged_user)

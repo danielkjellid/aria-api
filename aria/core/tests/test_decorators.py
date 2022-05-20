@@ -3,7 +3,7 @@ import pytest
 from aria.core.decorators import NotAllowedInProductionException, not_in_production
 
 
-class TestCoreDecorator:
+class TestCoreDecorators:
     def test_not_in_production_decorator(self, settings):
 
         settings.PRODUCTION = False

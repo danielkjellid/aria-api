@@ -70,7 +70,7 @@ def refresh_token_is_valid(token: str) -> tuple[bool, TokenPayload | None]:
 
             # Check that token isn't already blacklisted.
             if hasattr(token_bellongs_to_user, "blacklisted_token"):
-                return False, None  # Token is already blacklisted
+                return False, None  # Token is already blacklisted.
 
         except OutstandingToken.DoesNotExist:
             return False, None  # Provided Token does not belong to issued user.
