@@ -466,7 +466,7 @@ class TestProtectedUsersEndpoints:
         # 1 for getting user to update, 1 savepoint for atomic transaction,
         # 1 for getting site, 2 for getting user + site, 1 for updating user,
         # 1 for bulk creating log entries, 1 for getting site, and 1 for
-        #         # releasing savepoint.
+        # releasing savepoint.
         with django_assert_max_num_queries(12):
             response = n_authenticated_privileged_client.post(
                 f"{self.BASE_ENDPOINT}/{user.id}/update/",
