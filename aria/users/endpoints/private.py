@@ -44,7 +44,7 @@ def user_list_api(
     router,
     "{user_id}/",
     method="GET",
-    response={200: APIResponse, codes_40x: ExceptionResponse},
+    response={200: UserDetailOutput, codes_40x: ExceptionResponse},
     summary="Retrieve a single user",
 )
 @permission_required("users.has_users_list")
@@ -54,20 +54,18 @@ def user_detail_api(request, user_id: int) -> tuple[int, User]:
     """
 
     user = get_object_or_404(User, pk=user_id)
-    return 200, APIResponse(data=UserDetailOutput().from_orm(user))
+    return 200, user
 
 
 @api(
     router,
     "{user_id}/update/",
     method="POST",
-    response={200: APIResponse, codes_40x: ExceptionResponse},
+    response={200: None, codes_40x: ExceptionResponse},
     summary="Update a single user",
 )
 @permission_required("users.has_user_edit")
-def user_update_api(
-    request, user_id: int, payload: UserUpdateInput
-) -> tuple[int, APIResponse]:
+def user_update_api(request, user_id: int, payload: UserUpdateInput) -> int:
     """
     Update a specific user based on user id.
     """
@@ -81,4 +79,4 @@ def user_update_api(
 
     user_update(user=user, data=cleaned_payload, author=request.auth, log_change=True)
 
-    return 200, APIResponse(message=_("User was updated successfully"))
+    return 200

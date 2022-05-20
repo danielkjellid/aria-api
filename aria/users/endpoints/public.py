@@ -23,28 +23,28 @@ router = Router(tags="users")
     router,
     "create/",
     method="POST",
-    response={201: APIResponse},
+    response={201: None},
     summary="Creates a user",
 )
-def user_create_api(request, payload: UserCreateInput) -> tuple[int, APIResponse]:
+def user_create_api(request, payload: UserCreateInput) -> int:
     """
     Creates a single user instance.
     """
 
     user_create(**payload.dict())
-    return 201, APIResponse(message=_("Account has been created."))
+    return 201
 
 
 @api(
     router,
     "verify/",
     method="POST",
-    response={200: APIResponse, codes_40x: ExceptionResponse},
+    response={200: None, codes_40x: ExceptionResponse},
     summary="Sends verification email",
 )
 def user_account_verification_api(
     request, payload: UserAccountVerificationInput
-) -> tuple[int, APIResponse]:
+) -> int:
     """
     Sends verification email to a specific email (user) for them to verify the account.
     """
@@ -56,35 +56,35 @@ def user_account_verification_api(
 
     user.send_verification_email()
 
-    return 200, APIResponse(message=_("Email verification has been sent."))
+    return 200
 
 
 @api(
     router,
     "verify/confirm/",
     method="POST",
-    response={200: APIResponse, codes_40x: ExceptionResponse},
+    response={200: None, codes_40x: ExceptionResponse},
     summary="Validate email tokens to confirm account",
 )
 def user_account_verification_confirm_api(
     request, payload: UserAccountVerificationConfirmInput
-) -> tuple[int, APIResponse]:
+) -> int:
     """
     Takes uid and token present in verification email, validates them, and updates email to confirmed.
     """
 
     user_verify_account(uid=payload.uid, token=payload.token)
-    return 200, APIResponse(message=_("Account email verified."))
+    return 200
 
 
 @api(
     router,
     "password/reset/",
     method="POST",
-    response={200: APIResponse, codes_40x: ExceptionResponse},
+    response={200: None, codes_40x: ExceptionResponse},
     summary="Send a reset password email",
 )
-def user_password_reset_api(request, payload: UserPasswordResetInput):
+def user_password_reset_api(request, payload: UserPasswordResetInput) -> int:
     """
     Sends a password reset email to provided email, if user exist.
     """
@@ -96,17 +96,19 @@ def user_password_reset_api(request, payload: UserPasswordResetInput):
 
     user.send_password_reset_email(request=request)
 
-    return 200, APIResponse(message=_("Password reset e-mail has been sent."))
+    return 200
 
 
 @api(
     router,
     "password/reset/confirm/",
     method="POST",
-    response={200: APIResponse, codes_40x: ExceptionResponse},
+    response={200: None, codes_40x: ExceptionResponse},
     summary="Send a reset password email",
 )
-def user_password_reset_confirm_api(request, payload: UserPasswordResetConfirmInput):
+def user_password_reset_confirm_api(
+    request, payload: UserPasswordResetConfirmInput
+) -> int:
     """
     Sets a password if provided uid and token is valid.
     """
@@ -115,4 +117,4 @@ def user_password_reset_confirm_api(request, payload: UserPasswordResetConfirmIn
         uid=payload.uid, token=payload.token, new_password=payload.new_password
     )
 
-    return 200, APIResponse(message=_("Password has been reset with the new password"))
+    return 200

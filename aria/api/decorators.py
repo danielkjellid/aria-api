@@ -27,7 +27,7 @@ def api(
     description: Optional[str] = None,
     url_name: Optional[str] = None,
     **kwargs: Any,
-) -> Callable[[Callable[..., Any]], Callable[..., APIResponse]]:
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """
     Defines an API view. This is basically just a wrapper around Django
     Ninjas @router.method decorator, to throw a custom exception for all

@@ -12,11 +12,10 @@ router = Router(tags="suppliers")
     router,
     "/",
     method="GET",
-    response={200: APIResponse},
+    response={200: list[SupplierListOutput]},
     summary="Lists all active suppliers",
 )
-def supplier_list_api(request) -> tuple[int, APIResponse]:
+def supplier_list_api(request) -> tuple[int, list[SupplierListOutput]]:
     suppliers = list(Supplier.objects.filter(is_active=True))
-    qs_to_schema = parse_obj_as(list[SupplierListOutput], suppliers)
 
-    return 200, APIResponse(data=qs_to_schema)
+    return 200, suppliers
