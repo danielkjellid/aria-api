@@ -4,7 +4,7 @@ from ninja import Router
 
 from aria.api.decorators import api
 from aria.api.responses import codes_40x
-from aria.api.schemas.responses import ExceptionResponse, GenericResponse
+from aria.api.schemas.responses import ExceptionResponse, APIResponse
 from aria.api_auth.schemas.inputs import (
     TokenBlacklistInput,
     TokensObtainInput,
@@ -24,7 +24,7 @@ router = Router(tags="auth")
     router,
     "tokens/obtain/",
     method="POST",
-    response={200: GenericResponse, codes_40x: ExceptionResponse},
+    response={200: APIResponse, codes_40x: ExceptionResponse},
     summary="Obtain access and refresh token pair",
     description="Authenticate user credentials and return access and refresh tokens.",
 )
@@ -33,7 +33,7 @@ def auth_obtain_token_pair(request, payload: TokensObtainInput):
         email=payload.email, password=payload.password
     )
 
-    return 200, GenericResponse(
+    return 200, APIResponse(
         message=_("Sucessfully logged in."),
         data=TokensObtainOutput(**tokens.dict()),
     )
@@ -43,14 +43,14 @@ def auth_obtain_token_pair(request, payload: TokensObtainInput):
     router,
     "tokens/refresh/",
     method="POST",
-    response={200: GenericResponse, codes_40x: ExceptionResponse},
+    response={200: APIResponse, codes_40x: ExceptionResponse},
     summary="Obtain a new token pair",
     description="Obtain a new token pair based on valid refresh token.",
 )
 def auth_refresh_token_pair(request, payload: TokensRefreshInput):
     tokens = token_pair_obtain_new_from_refresh_token(payload.refresh_token)
 
-    return 200, GenericResponse(
+    return 200, APIResponse(
         message=_("Tokens sucessfully refreshed."),
         data=TokensRefreshOutput(**tokens.dict()),
     )
@@ -60,13 +60,11 @@ def auth_refresh_token_pair(request, payload: TokensRefreshInput):
     router,
     "tokens/blacklist/",
     method="POST",
-    response={200: GenericResponse, codes_40x: ExceptionResponse},
+    response={200: APIResponse, codes_40x: ExceptionResponse},
     summary="Blacklists a refresh token",
     description="Blacklists a valid refresh token, typically done when a user logs out.",
 )
 def auth_log_out_and_blacklist_refresh_token(request, payload: TokenBlacklistInput):
     refresh_token_blacklist(payload.refresh_token)
 
-    return 200, GenericResponse(
-        message=_("Refresh token sucessfully blacklisted."), data={}
-    )
+    return 200, APIResponse(message=_("Refresh token sucessfully blacklisted."))

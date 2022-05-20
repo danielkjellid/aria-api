@@ -1,9 +1,9 @@
 from ninja import Schema
 
 
-class GenericResponse(Schema):
-    message: str
-    data: Schema
+class APIResponse(Schema):
+    message: str = None
+    data: list[Schema] | Schema = {}
 
 
 class ExceptionResponse(Schema):

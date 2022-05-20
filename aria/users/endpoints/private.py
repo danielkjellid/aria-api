@@ -5,7 +5,7 @@ from ninja import Query, Router
 
 from aria.api.decorators import api, paginate
 from aria.api.responses import codes_40x
-from aria.api.schemas.responses import ExceptionResponse, GenericResponse
+from aria.api.schemas.responses import ExceptionResponse, APIResponse
 from aria.api_auth.decorators import permission_required
 from aria.users.models import User
 from aria.users.schemas.filters import UserListFilters
@@ -44,7 +44,7 @@ def user_list_api(
     router,
     "{user_id}/",
     method="GET",
-    response={200: UserDetailOutput, codes_40x: ExceptionResponse},
+    response={200: APIResponse, codes_40x: ExceptionResponse},
     summary="Retrieve a single user",
 )
 @permission_required("users.has_users_list")
@@ -54,20 +54,20 @@ def user_detail_api(request, user_id: int) -> tuple[int, User]:
     """
 
     user = get_object_or_404(User, pk=user_id)
-    return 200, user
+    return 200, APIResponse(data=UserDetailOutput().from_orm(user))
 
 
 @api(
     router,
     "{user_id}/update/",
     method="POST",
-    response={200: GenericResponse, codes_40x: ExceptionResponse},
+    response={200: APIResponse, codes_40x: ExceptionResponse},
     summary="Update a single user",
 )
 @permission_required("users.has_user_edit")
 def user_update_api(
     request, user_id: int, payload: UserUpdateInput
-) -> tuple[int, GenericResponse]:
+) -> tuple[int, APIResponse]:
     """
     Update a specific user based on user id.
     """
@@ -81,4 +81,4 @@ def user_update_api(
 
     user_update(user=user, data=cleaned_payload, author=request.auth, log_change=True)
 
-    return 200, GenericResponse(message=_("User was updated successfully"), data={})
+    return 200, APIResponse(message=_("User was updated successfully"))
