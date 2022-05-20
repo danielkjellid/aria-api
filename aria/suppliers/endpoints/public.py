@@ -1,9 +1,7 @@
 from aria.api.decorators import api
 from ninja import Router
-from pydantic import parse_obj_as
 from aria.suppliers.schemas.outputs import SupplierListOutput
 from aria.suppliers.models import Supplier
-from aria.api.schemas.responses import APIResponse
 
 router = Router(tags="suppliers")
 

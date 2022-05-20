@@ -11,7 +11,6 @@ from ninja.signature.details import is_collection_type
 from ninja.types import DictStrAny
 
 from aria.api.pagination import PageNumberSetPagination
-from aria.api.schemas.responses import APIResponse
 from aria.core.exceptions import ApplicationError
 
 SUPPORTED_HTTP_METHODS = ["GET", "POST", "DELETE", "PATCH", "PUT"]
