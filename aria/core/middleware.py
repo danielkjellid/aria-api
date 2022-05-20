@@ -8,7 +8,7 @@ from django.utils.deprecation import MiddlewareMixin
 
 import structlog
 
-logger = structlog.get_logger()
+logger = structlog.get_logger(__name__)
 
 
 class DynamicSiteDomainMiddleware:
@@ -55,9 +55,8 @@ class QueryCountWarningMiddleware(MiddlewareMixin):
     Tresholds are set in settings.
     """
 
-    def process_response(
-        self, request: HttpRequest, response: HttpResponse
-    ) -> HttpResponse:
+    @staticmethod
+    def process_response(request: HttpRequest, response: HttpResponse) -> HttpResponse:
 
         if request.path.startswith(settings.STATIC_URL):
             return response
@@ -67,13 +66,7 @@ class QueryCountWarningMiddleware(MiddlewareMixin):
         query_duration = sum(float(q.get("time")) for q in connection.queries) * 1000
 
         if settings.DEBUG:
-            print(
-                "-----------------------------------------------------------------------------------------------------"
-            )
-            logger.info("query_info", num_queries=query_count, duration=query_duration)
-            print(
-                "-----------------------------------------------------------------------------------------------------"
-            )
+            logger.info("Query info", num_queries=query_count, duration=query_duration)
 
         if settings.LOG_SQL:
             for query in connection.queries:
@@ -87,7 +80,7 @@ class QueryCountWarningMiddleware(MiddlewareMixin):
         ):
             logger.warning("Query exceeding tresholds!")
             logger.warning(
-                "query_warning", num_queries=query_count, duration=query_duration
+                "Query warning", num_queries=query_count, duration=query_duration
             )
 
         return response
