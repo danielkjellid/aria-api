@@ -3,7 +3,8 @@ from django.utils.translation import gettext as _
 from ninja import Router
 
 from aria.api.decorators import api
-from aria.api.schemas.responses import GenericResponse
+from aria.api.schemas.responses import GenericResponse, ExceptionResponse
+from aria.api.responses import codes_40x
 from aria.api_auth.schemas.inputs import (
     TokenBlacklistInput,
     TokensObtainInput,
@@ -23,7 +24,7 @@ router = Router(tags="auth")
     router,
     "tokens/obtain/",
     method="POST",
-    response={200: GenericResponse, 401: None},
+    response={200: GenericResponse, codes_40x: ExceptionResponse},
     summary="Obtain access and refresh token pair",
     description="Authenticate user credentials and return access and refresh tokens.",
 )
@@ -42,7 +43,7 @@ def auth_obtain_token_pair(request, payload: TokensObtainInput):
     router,
     "tokens/refresh/",
     method="POST",
-    response={200: GenericResponse, 401: None},
+    response={200: GenericResponse, codes_40x: ExceptionResponse},
     summary="Obtain a new token pair",
     description="Obtain a new token pair based on valid refresh token.",
 )
@@ -59,7 +60,7 @@ def auth_refresh_token_pair(request, payload: TokensRefreshInput):
     router,
     "tokens/blacklist/",
     method="POST",
-    response={200: GenericResponse, 401: None},
+    response={200: GenericResponse, codes_40x: ExceptionResponse},
     summary="Blacklists a refresh token",
     description="Blacklists a valid refresh token, typically done when a user logs out.",
 )
