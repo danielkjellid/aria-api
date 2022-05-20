@@ -1,4 +1,5 @@
 from django.test import Client
+
 import pytest
 
 from aria.api_auth.services import token_pair_obtain_for_user

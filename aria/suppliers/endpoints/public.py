@@ -1,7 +1,8 @@
-from aria.api.decorators import api
 from ninja import Router
-from aria.suppliers.schemas.outputs import SupplierListOutput
+
+from aria.api.decorators import api
 from aria.suppliers.models import Supplier
+from aria.suppliers.schemas.outputs import SupplierListOutput
 
 router = Router(tags="suppliers")
 

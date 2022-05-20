@@ -1,8 +1,10 @@
-from model_bakery import baker
-from aria.suppliers.models import Supplier
-import pytest
-import tempfile
 import json
+import tempfile
+
+import pytest
+from model_bakery import baker
+
+from aria.suppliers.models import Supplier
 
 pytestmark = pytest.mark.django_db
 
