@@ -4,7 +4,6 @@ from django.utils import timezone
 
 import jwt
 import pytest
-from model_bakery import baker
 
 from aria.api_auth.exceptions import TokenError
 from aria.api_auth.models import BlacklistedToken, OutstandingToken

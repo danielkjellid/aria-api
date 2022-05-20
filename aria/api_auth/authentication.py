@@ -3,9 +3,10 @@ from typing import Any, Optional
 from django.http import HttpRequest
 
 from ninja.security import HttpBearer
-from aria.users.models import User
-from aria.core.exceptions import ApplicationError
+
 from aria.api_auth.selectors import access_token_is_valid
+from aria.core.exceptions import ApplicationError
+from aria.users.models import User
 
 
 class JWTAuthRequired(HttpBearer):

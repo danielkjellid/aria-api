@@ -1,9 +1,11 @@
 from typing import Any, Optional
+
 from django.conf import settings
 from django.contrib.auth import password_validation
 from django.contrib.auth.models import Group
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import validate_email
 from django.db import transaction
@@ -15,11 +17,10 @@ from django.utils.translation import gettext as _
 
 from aria.audit_logs.services import log_entry_create
 from aria.core.exceptions import ApplicationError
+from aria.core.schemas.records import SiteRecord
 from aria.core.services import model_update
 from aria.users.models import User
 from aria.users.schemas.records import UserRecord
-from aria.core.schemas.records import SiteRecord
-from django.contrib.sites.models import Site
 
 
 def _validate_email_and_password(email: str, password: str) -> tuple[str, str]:

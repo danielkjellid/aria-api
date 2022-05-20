@@ -1,19 +1,18 @@
 import functools
-
-from aria.api.schemas.responses import GenericResponse
-from aria.core.exceptions import ApplicationError
-from aria.api.pagination import PageNumberSetPagination
-
 from functools import partial, wraps
 from typing import Any, Callable, Optional, Tuple
 
 from ninja import Router
-from ninja.types import DictStrAny
+from ninja.compatibility.util import get_args as get_collection_args
+from ninja.constants import NOT_SET
 from ninja.errors import ConfigError
 from ninja.operation import Operation
 from ninja.signature.details import is_collection_type
-from ninja.compatibility.util import get_args as get_collection_args
-from ninja.constants import NOT_SET
+from ninja.types import DictStrAny
+
+from aria.api.pagination import PageNumberSetPagination
+from aria.api.schemas.responses import GenericResponse
+from aria.core.exceptions import ApplicationError
 
 SUPPORTED_HTTP_METHODS = ["GET", "POST", "DELETE", "PATCH", "PUT"]
 

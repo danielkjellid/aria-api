@@ -1,9 +1,11 @@
+from datetime import date, datetime
+
 from ninja import Schema
-from datetime import datetime, date
+
 from aria.users.schemas.records import (
-    UserProfileRecord,
-    UserNotesRecord,
     UserAuditLogsRecord,
+    UserNotesRecord,
+    UserProfileRecord,
 )
 
 

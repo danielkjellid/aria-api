@@ -1,17 +1,17 @@
-from ninja import Router, Query
 from django.utils.translation import gettext as _
+from rest_framework.generics import get_object_or_404
 
-from aria.api.decorators import api
+from ninja import Query, Router
+
+from aria.api.decorators import api, paginate
 from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse, GenericResponse
 from aria.core.decorators import permission_required
-from aria.users.selectors import user_list
-from aria.api.decorators import paginate
-from aria.users.schemas.outputs import UserListOutput, UserDetailOutput
-from aria.users.schemas.inputs import UserUpdateInput
-from aria.users.schemas.filters import UserListFilters
-from rest_framework.generics import get_object_or_404
 from aria.users.models import User
+from aria.users.schemas.filters import UserListFilters
+from aria.users.schemas.inputs import UserUpdateInput
+from aria.users.schemas.outputs import UserDetailOutput, UserListOutput
+from aria.users.selectors import user_list
 from aria.users.services import user_update
 
 router = Router(tags="users")

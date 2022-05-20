@@ -9,10 +9,7 @@ from aria.api_auth.schemas.inputs import (
     TokensObtainInput,
     TokensRefreshInput,
 )
-from aria.api_auth.schemas.outputs import (
-    TokensObtainOutput,
-    TokensRefreshOutput,
-)
+from aria.api_auth.schemas.outputs import TokensObtainOutput, TokensRefreshOutput
 from aria.api_auth.services import (
     refresh_token_blacklist,
     token_pair_obtain_for_unauthenticated_user,

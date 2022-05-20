@@ -320,7 +320,6 @@ class TestAPIAuthServices:
         self,
         django_assert_max_num_queries,
         mocker,
-        refresh_token_payload,
         unprivileged_user,
         encode_token,
     ):
@@ -330,8 +329,6 @@ class TestAPIAuthServices:
         """
 
         user = unprivileged_user
-
-        refresh_payload = refresh_token_payload(user_id=user.id)
 
         invalid_token = encode_token
 

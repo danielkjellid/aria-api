@@ -1,7 +1,8 @@
-from django.apps import AppConfig
-from django.conf import settings
 import logging
 from pathlib import Path
+
+from django.apps import AppConfig
+from django.conf import settings
 from django.core.management import call_command
 
 logger = logging.getLogger(__name__)
@@ -27,7 +28,7 @@ class ApiConfig(AppConfig):
         folder_path.mkdir(parents=True, exist_ok=True)
         path = folder_path / "schema.json"
 
-        with open(path, "w") as f:
+        with open(path, "w"):
             call_command(
                 "export_openapi_schema", api="aria.urls.endpoints", output=path
             )

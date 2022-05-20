@@ -1,6 +1,7 @@
+import functools
+
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-import functools
 
 
 class NotAllowedInProductionException(Exception):

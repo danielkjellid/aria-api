@@ -17,15 +17,16 @@ from django.utils.http import (
     urlsafe_base64_encode as uid_encoder,
 )
 from django.utils.translation import gettext_lazy as _
-from aria.users.schemas.records import (
-    UserProfileRecord,
-    UserNotesRecord,
-    UserAuditLogsRecord,
-)
+
 import phonenumbers
 
 from aria.users.enums import AvatarColors
 from aria.users.managers import UserManager
+from aria.users.schemas.records import (
+    UserAuditLogsRecord,
+    UserNotesRecord,
+    UserProfileRecord,
+)
 
 
 class User(AbstractBaseUser, PermissionsMixin):

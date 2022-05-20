@@ -3,8 +3,8 @@ from django.utils.translation import gettext as _
 from ninja import Router
 
 from aria.api.decorators import api
-from aria.api.schemas.responses import GenericResponse, ExceptionResponse
 from aria.api.responses import codes_40x
+from aria.api.schemas.responses import ExceptionResponse, GenericResponse
 from aria.core.exceptions import ApplicationError
 from aria.users.models import User
 from aria.users.schemas.inputs import (

@@ -1,6 +1,7 @@
 import pytest
-from aria.users.selectors import user_list
 from model_bakery import baker
+
+from aria.users.selectors import user_list
 
 pytestmark = pytest.mark.django_db
 

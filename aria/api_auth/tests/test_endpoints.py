@@ -1,8 +1,10 @@
-import pytest
-from aria.api_auth.services import _refresh_token_create_and_encode
 import json
-from aria.api_auth.models import BlacklistedToken
+
 import jwt
+import pytest
+
+from aria.api_auth.models import BlacklistedToken
+from aria.api_auth.services import _refresh_token_create_and_encode
 
 pytestmark = pytest.mark.django_db
 

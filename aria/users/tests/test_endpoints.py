@@ -1,7 +1,9 @@
 import json
-from django.contrib.sites.models import Site
-from django.contrib.auth.tokens import default_token_generator
 from datetime import datetime
+
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.models import Site
+
 import pytest
 from model_bakery import baker
 

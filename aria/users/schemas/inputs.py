@@ -1,5 +1,6 @@
-from ninja import Schema
 from typing import Optional
+
+from ninja import Schema
 
 
 class UserCreateInput(Schema):
