@@ -35,7 +35,7 @@ def auth_obtain_token_pair(request, payload: TokensObtainInput):
         email=payload.email, password=payload.password
     )
 
-    return 200, TokensObtainOutput(**tokens.dict())
+    return 200, tokens
 
 
 @api(
@@ -51,7 +51,7 @@ def auth_refresh_token_pair(request, payload: TokensRefreshInput):
     """
     tokens = token_pair_obtain_new_from_refresh_token(payload.refresh_token)
 
-    return 200, TokensRefreshOutput(**tokens.dict())
+    return 200, tokens
 
 
 @api(
