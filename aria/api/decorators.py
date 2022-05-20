@@ -26,6 +26,7 @@ def api(
     summary: Optional[str] = None,
     description: Optional[str] = None,
     url_name: Optional[str] = None,
+    **kwargs: Any,
 ) -> Callable[[Callable[..., Any]], Callable[..., GenericResponse]]:
     """
     Defines an API view. This is basically just a wrapper around Django
@@ -83,6 +84,7 @@ def api(
             summary=summary,
             description=description if description else None,
             url_name=default_url_name,
+            **kwargs,
         )
         @functools.wraps(func)
         def inner(*args, **kwargs):
