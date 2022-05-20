@@ -12,18 +12,6 @@ from ninja.types import DictStrAny
 from aria.api.exceptions import PageOutOfBoundsError
 
 
-class PaginatedResponseLinks(Schema):
-    next: str
-    previous: str
-
-
-class PaginatedResponseMeta(Schema):
-    current_page: int
-    total: int
-    current_range: str
-    total_pages: int
-
-
 class PageNumberSetPagination(PaginationBase):
     def __init__(
         self, page_size: int, order_by: str | None = None, **kwargs: Any
@@ -38,9 +26,6 @@ class PageNumberSetPagination(PaginationBase):
         page: int = Field(1, gt=0)
 
     class Output(Schema):
-        # links: PaginatedResponseLinks
-        # meta: PaginatedResponseMeta
-        # items: list[Any]
         next: str = None
         previous: str = None
         current_page: int
