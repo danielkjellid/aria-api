@@ -1,4 +1,5 @@
 import functools
+
 from django.core.exceptions import PermissionDenied
 
 

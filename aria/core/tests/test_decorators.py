@@ -1,5 +1,6 @@
 import pytest
-from aria.core.decorators import not_in_production, NotAllowedInProductionException
+
+from aria.core.decorators import NotAllowedInProductionException, not_in_production
 
 
 class TestCoreDecorator:
