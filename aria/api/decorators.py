@@ -1,6 +1,6 @@
 import functools
 
-from aria.api.responses import GenericResponse
+from aria.api.schemas.responses import GenericResponse
 from aria.core.exceptions import ApplicationError
 from aria.api.pagination import PageNumberSetPagination
 

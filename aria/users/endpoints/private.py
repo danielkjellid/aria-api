@@ -1,8 +1,9 @@
-from ninja import Router, Schema, Query
+from ninja import Router, Query
 from django.utils.translation import gettext as _
 
 from aria.api.decorators import api
-from aria.api.responses import ExceptionResponse, GenericResponse
+from aria.api.responses import codes_40x
+from aria.api.schemas.responses import ExceptionResponse, GenericResponse
 from aria.core.decorators import permission_required
 from aria.users.selectors import user_list
 from aria.api.decorators import paginate
@@ -22,14 +23,15 @@ router = Router(tags="users")
     method="GET",
     response={
         200: list[UserListOutput],
-        403: ExceptionResponse,
-        404: ExceptionResponse,
+        codes_40x: ExceptionResponse,
     },
     summary="Lists all users",
 )
 @paginate(page_size=18, order_by="id")
 @permission_required("users.has_users_list")
-def user_list_api(request, filters: UserListFilters = Query(...)):
+def user_list_api(
+    request, filters: UserListFilters = Query(...)
+) -> list[UserListOutput]:
     """
     Retrieve a list of all users in the application.
     """
@@ -42,15 +44,11 @@ def user_list_api(request, filters: UserListFilters = Query(...)):
     router,
     "{user_id}/",
     method="GET",
-    response={
-        200: UserDetailOutput,
-        403: ExceptionResponse,
-        404: ExceptionResponse,
-    },
+    response={200: UserDetailOutput, codes_40x: ExceptionResponse},
     summary="Retrieve a single user",
 )
 @permission_required("users.has_users_list")
-def user_detail_api(request, user_id: int):
+def user_detail_api(request, user_id: int) -> tuple[int, User]:
     """
     Retrieve a single user based on user id.
     """
@@ -63,11 +61,13 @@ def user_detail_api(request, user_id: int):
     router,
     "{user_id}/update/",
     method="POST",
-    response={200: GenericResponse, 403: ExceptionResponse, 404: ExceptionResponse},
+    response={200: GenericResponse, codes_40x: ExceptionResponse},
     summary="Update a single user",
 )
 @permission_required("users.has_user_edit")
-def user_update_api(request, user_id: int, payload: UserUpdateInput):
+def user_update_api(
+    request, user_id: int, payload: UserUpdateInput
+) -> tuple[int, GenericResponse]:
     """
     Update a specific user based on user id.
     """

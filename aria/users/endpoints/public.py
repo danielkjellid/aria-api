@@ -3,7 +3,8 @@ from django.utils.translation import gettext as _
 from ninja import Router
 
 from aria.api.decorators import api
-from aria.api.responses import GenericResponse
+from aria.api.schemas.responses import GenericResponse, ExceptionResponse
+from aria.api.responses import codes_40x
 from aria.core.exceptions import ApplicationError
 from aria.users.models import User
 from aria.users.schemas.inputs import (
@@ -41,7 +42,7 @@ def user_create_api(request, payload: UserCreateInput) -> tuple[int, GenericResp
     router,
     "verify/",
     method="POST",
-    response={200: GenericResponse},
+    response={200: GenericResponse, codes_40x: ExceptionResponse},
     summary="Sends verification email",
 )
 def user_account_verification_api(
@@ -65,7 +66,7 @@ def user_account_verification_api(
     router,
     "verify/confirm/",
     method="POST",
-    response={200: GenericResponse},
+    response={200: GenericResponse, codes_40x: ExceptionResponse},
     summary="Validate email tokens to confirm account",
 )
 def user_account_verification_confirm_api(
@@ -83,7 +84,7 @@ def user_account_verification_confirm_api(
     router,
     "password/reset/",
     method="POST",
-    response={200: GenericResponse},
+    response={200: GenericResponse, codes_40x: ExceptionResponse},
     summary="Send a reset password email",
 )
 def user_password_reset_api(request, payload: UserPasswordResetInput):
@@ -107,7 +108,7 @@ def user_password_reset_api(request, payload: UserPasswordResetInput):
     router,
     "password/reset/confirm/",
     method="POST",
-    response={200: GenericResponse},
+    response={200: GenericResponse, codes_40x: ExceptionResponse},
     summary="Send a reset password email",
 )
 def user_password_reset_confirm_api(request, payload: UserPasswordResetConfirmInput):

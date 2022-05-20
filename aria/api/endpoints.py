@@ -1,5 +1,5 @@
 from ninja import NinjaAPI
-from aria.api.responses import ExceptionResponse
+from aria.api.schemas.responses import ExceptionResponse
 from aria.api.exceptions import PageOutOfBoundsError
 from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
 from aria.api_auth.exceptions import TokenError
