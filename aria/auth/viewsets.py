@@ -9,7 +9,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from aria.core.schemas import APIViewSchema
+from aria.core.deprecated_schemas import APIViewSchema
 
 
 class AuthTokenObtainAPI(TokenObtainPairView):

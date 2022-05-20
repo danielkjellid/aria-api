@@ -22,6 +22,11 @@ import phonenumbers
 
 from aria.users.enums import AvatarColors
 from aria.users.managers import UserManager
+from aria.users.schemas.records import (
+    UserAuditLogsRecord,
+    UserNotesRecord,
+    UserProfileRecord,
+)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -189,35 +194,68 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         return uid_encoder(force_bytes(self.id))
 
+    @property
+    def profile(self) -> UserProfileRecord:
+        """
+        Grab a user's "profile".
+        """
+
+        return UserProfileRecord(
+            full_name=self.full_name,
+            initial=self.initial,
+            avatar_color=self.avatar_color,
+        )
+
     #########
     # Notes #
     #########
 
-    def get_notes(self):
+    def get_notes(self) -> list[UserNotesRecord]:
         """
         Return notes related to the user.
         """
 
         from aria.notes.models import NoteEntry
 
-        return NoteEntry.objects.filter(
+        notes = NoteEntry.objects.filter(
             content_type=ContentType.objects.get_for_model(self), object_id=self.id
         )
+
+        return [
+            UserNotesRecord(
+                id=note.id,
+                note=note.note,
+                updated_at=note.updated_at,
+                author=UserProfileRecord(
+                    full_name=note.author.full_name,
+                    initial=note.author.initial,
+                    avatar_color=note.author.avatar_color,
+                ),
+            )
+            for note in notes
+        ]
 
     ##############
     # Audit logs #
     ##############
 
-    def get_audit_logs(self):
+    def get_audit_logs(self) -> list[UserAuditLogsRecord]:
         """
         Return audit logs related to the user.
         """
 
         from aria.audit_logs.models import LogEntry
 
-        return LogEntry.objects.filter(
+        logs = LogEntry.objects.filter(
             content_type=ContentType.objects.get_for_model(self), object_id=self.id
         )
+
+        return [
+            UserAuditLogsRecord(
+                author=log.author, change=log.change, date_of_change=log.date_of_change
+            )
+            for log in logs
+        ]
 
     #########
     # Email #

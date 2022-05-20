@@ -9,7 +9,7 @@ from aria.users.models import User
 
 
 class NoteEntry(models.Model):
-    user = models.ForeignKey(
+    author = models.ForeignKey(
         User, related_name="note_entries", on_delete=models.CASCADE
     )
     content_type = models.ForeignKey(

@@ -4,7 +4,9 @@ from datetime import timedelta
 
 import environ
 import sentry_sdk
+import structlog.types
 from sentry_sdk.integrations.django import DjangoIntegration
+from structlog.types import Processor
 
 ###############
 # Environment #
@@ -29,6 +31,9 @@ ENVIRONMENT = env.str("ENVIRONMENT", default="dev")
 BASE_DIR = (pathlib.Path(__file__).parent / "..").resolve()
 
 DEBUG = env.bool("DEBUG", default=False)
+
+OPENAPI_AUTO_GENERATE = env.bool("OPENAPI_AUTO_GENERATE", default=True)
+OPENAPI_SCHEMA_PATH = env.str("OPENAPI_SCHEMA_PATH", default=None)
 
 #################
 # Django basics #
@@ -149,9 +154,12 @@ THIRD_PARTY_APPS = [
     "django_s3_storage",
     "imagekit",
     "mptt",
+    "ninja",
 ]
 
 PROJECT_APPS = [
+    "aria.api",
+    "aria.api_auth",
     "aria.audit_logs",
     "aria.auth",
     "aria.categories",
@@ -239,6 +247,71 @@ DATABASES = {
     "default": env.db(),
 }
 
+LOG_SQL = env.bool("LOG_SQL", default=False)
+
+if DEBUG:
+    QUERY_COUNT_WARNING_THRESHOLD = 20
+    QUERY_DURATION_WARNING_THRESHOLD = 300  # in ms
+    MIDDLEWARE = ["aria.core.middleware.QueryCountWarningMiddleware"] + MIDDLEWARE
+
+
+###########
+# Logging #
+###########
+
+log_renderer: Processor = (
+    structlog.dev.ConsoleRenderer(colors=True, sort_keys=True)
+    if DEBUG
+    else structlog.processors.JSONRenderer()
+)
+
+shared_log_processors: list[Processor] = [
+    structlog.processors.TimeStamper(fmt="iso"),
+    structlog.stdlib.add_log_level,
+    structlog.stdlib.add_logger_name,
+]
+
+structlog.configure(
+    processors=[
+        structlog.stdlib.filter_by_level,
+        *shared_log_processors,
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
+    ],
+    context_class=structlog.threadlocal.wrap_dict(dict),
+    logger_factory=structlog.stdlib.LoggerFactory(),
+    wrapper_class=structlog.stdlib.BoundLogger,
+    cache_logger_on_first_use=True,
+)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": True,
+    "formatters": {
+        "default": {
+            "()": structlog.stdlib.ProcessorFormatter,
+            "processor": log_renderer,
+            "foreign_pre_chain": shared_log_processors,
+        },
+    },
+    "handlers": {
+        "default": {
+            "formatter": "default",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stderr",
+        },
+    },
+    "loggers": {
+        "": {
+            "handlers": ["default"],
+            "level": "INFO",
+            "propagate": True,
+        },
+    },
+}
+
 ##########
 # Caches #
 ##########
@@ -247,6 +320,13 @@ DATABASES = {
 ##############
 # Simple JWT #
 ##############
+
+# New JWT code:
+JWT_ISSUER = "api.flis.no"
+JWT_SIGNING_KEY = SECRET_KEY
+JWT_ALGORITHM = "HS256"
+JWT_ACCESS_TOKEN_LIFETIME = timedelta(hours=1)
+JWT_REFRESH_TOKEN_LIFETIME = timedelta(days=30)
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),

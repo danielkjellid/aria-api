@@ -20,16 +20,18 @@ pytestmark = pytest.mark.django_db
 
 
 class TestUsersServices:
-    def test_user_create_creates_user(self, django_assert_max_num_queries):
+    def test_user_create_creates_user(
+        self, unprivileged_user, django_assert_max_num_queries
+    ):
         """
         Test that the user_create service creates a user.
         """
 
-        existing_user = baker.make(User)
+        existing_user = unprivileged_user
         group = baker.make(Group)
 
-        # Check if user exist (1), create user (1) add group (1)
-        with django_assert_max_num_queries(3):
+        # Check if user exist (1), create user (1), get site (1),  add group (1)
+        with django_assert_max_num_queries(4):
             new_user = user_create(
                 email="test@example.com",
                 password="supersecret",
@@ -42,7 +44,7 @@ class TestUsersServices:
         assert new_user.subscribed_to_newsletter is False
         assert new_user.is_staff is False
         assert new_user.is_superuser is False
-        assert new_user.groups.filter(id=group.id).exists()
+        assert Group.objects.filter(id=group.id, user__id=new_user.id).exists()
 
         with pytest.raises(ValueError):
             # Test no provided email
@@ -62,7 +64,27 @@ class TestUsersServices:
                 send_verification_email=False,
             )
 
-    def test_user_update_updates_user(self, django_assert_max_num_queries):
+        with pytest.raises(ApplicationError):
+            # Test email does does not pass validation.
+            user_create(
+                email="willnotpass",
+                password="supersecret",
+                subscribed_to_newsletter=False,
+                send_verification_email=False,
+            )
+
+        with pytest.raises(ApplicationError):
+            # Test password does does not pass validation.
+            user_create(
+                email="someone@example.com",
+                password="1234",
+                subscribed_to_newsletter=False,
+                send_verification_email=False,
+            )
+
+    def test_user_update_updates_user(
+        self, unprivileged_user, django_assert_max_num_queries
+    ):
         """
         Test that the user_update service updates a user and creates
         appropriate logs.
@@ -86,7 +108,7 @@ class TestUsersServices:
                 user=user, data=updates, author=author, log_change=True
             )
 
-        created_log_entry = logs_for_instance_list(instance=updated_user).first()
+        created_log_entry = logs_for_instance_list(User, updated_user.id).first()
 
         # Assert change
         assert updated_user.email == "updatedemail@example.com"
@@ -99,12 +121,14 @@ class TestUsersServices:
         assert created_log_entry.change["old_value"] == old_user_email
         assert created_log_entry.change["new_value"] == updated_user.email
 
-    def test_user_verify_account_verifies_account(self, django_assert_max_num_queries):
+    def test_user_verify_account_verifies_account(
+        self, unprivileged_user, django_assert_max_num_queries
+    ):
         """
         Test that the user_verify_account sets has_confirmed_email = True.
         """
 
-        user = baker.make(User)
+        user = unprivileged_user
         uid = user.uid
         token = user.generate_verification_email_token()
 
@@ -113,26 +137,32 @@ class TestUsersServices:
 
         old_email_confirmed_value = user.has_confirmed_email
 
-        with django_assert_max_num_queries(2):
+        # Uses 3 queries: 1 for getting user, 1 for updating user, and
+        # 1 for getting site.
+        with django_assert_max_num_queries(3):
             updated_user = user_verify_account(uid=uid, token=token)
 
         assert updated_user.has_confirmed_email is True
         assert updated_user.has_confirmed_email != old_email_confirmed_value
 
-    def test_user_set_password_sets_new_password(self, django_assert_max_num_queries):
+    def test_user_set_password_sets_new_password(
+        self, unprivileged_user, django_assert_max_num_queries
+    ):
         """
         Test that the user_set_password sets a new password, and that it is
         saved and hashed.
         """
-
-        user = baker.make(User)
+        user = unprivileged_user
         uid = user.uid
         token = default_token_generator.make_token(user)
 
-        with django_assert_max_num_queries(2):
+        # Uses 3 queries: 1 for getting user, 1 for setting password, and
+        # 1 for getting site.
+        with django_assert_max_num_queries(3):
             updated_user = user_set_password(
-                uid=uid, token=token, new_password="supersecret"
+                uid=uid, token=token, new_password="horsebatterystaple"
             )
 
-        assert updated_user.password != "supersecret"
-        assert check_password("supersecret", updated_user.password) is True
+        user_instance = User.objects.get(id=updated_user.id)
+
+        assert check_password("horsebatterystaple", user_instance.password) is True
