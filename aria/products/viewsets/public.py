@@ -5,7 +5,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from aria.core.schemas import APIViewSchema
+from aria.core.deprecated_schemas import APIViewSchema
 from aria.core.serializers import BaseHeaderImageSerializer, inline_serializer
 from aria.products.models import Product
 

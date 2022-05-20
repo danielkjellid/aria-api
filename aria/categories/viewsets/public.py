@@ -12,7 +12,7 @@ from aria.categories.selectors import (
     categories_parent_active_list,
 )
 from aria.core.pagination import LimitOffsetPagination, get_paginated_response
-from aria.core.schemas import APIViewSchema
+from aria.core.deprecated_schemas import APIViewSchema
 from aria.core.serializers import (
     BaseHeaderImageSerializer,
     BaseListImageSerializer,
