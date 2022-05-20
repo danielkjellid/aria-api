@@ -79,7 +79,7 @@ def refresh_token_is_valid(token: str) -> tuple[bool, TokenPayload | None]:
         # the token is valid.
         return True, decoded_token
     except jwt.ExpiredSignatureError:
-        return False, None  # Token has expire
+        return False, None  # Token has expired.
     except TokenError as exc:
         raise exc
 
