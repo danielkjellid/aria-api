@@ -211,10 +211,7 @@ class TestProtectedUsersEndpoints:
         """
 
         with django_assert_max_num_queries(0):
-            response = anonymous_client.get(
-                f"{self.BASE_ENDPOINT}/",
-                content_type="application/json",
-            )
+            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/")
 
         assert response.status_code == 401
 
@@ -230,10 +227,7 @@ class TestProtectedUsersEndpoints:
 
         # Uses 3 quieries: 1 for getting the user, 2 for checking permissions.
         with django_assert_max_num_queries(3):
-            response = n_authenticated_unprivileged_client.get(
-                f"{self.BASE_ENDPOINT}/",
-                content_type="application/json",
-            )
+            response = n_authenticated_unprivileged_client.get(f"{self.BASE_ENDPOINT}/")
 
         assert response.status_code == 403
 
@@ -251,10 +245,7 @@ class TestProtectedUsersEndpoints:
         # Uses 5 queries: 1 for getting request user, 2 for checking permissions,
         # 2 for getting users and pagination data.
         with django_assert_max_num_queries(5):
-            response = n_authenticated_privileged_client.get(
-                f"{self.BASE_ENDPOINT}/",
-                content_type="application/json",
-            )
+            response = n_authenticated_privileged_client.get(f"{self.BASE_ENDPOINT}/")
 
         assert response.status_code == 200
         assert (
@@ -279,10 +270,7 @@ class TestProtectedUsersEndpoints:
         user = baker.make("users.User")
 
         with django_assert_max_num_queries(0):
-            response = anonymous_client.get(
-                f"{self.BASE_ENDPOINT}/{user.id}/",
-                content_type="application/json",
-            )
+            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/{user.id}/")
 
         assert response.status_code == 401
 
@@ -301,8 +289,7 @@ class TestProtectedUsersEndpoints:
         # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
         with django_assert_max_num_queries(3):
             response = n_authenticated_unprivileged_client.get(
-                f"{self.BASE_ENDPOINT}/{user.id}/",
-                content_type="application/json",
+                f"{self.BASE_ENDPOINT}/{user.id}/"
             )
 
         assert response.status_code == 403
@@ -355,8 +342,7 @@ class TestProtectedUsersEndpoints:
         # 1 for getting notes associated with user, and 1 for getting audit logs.
         with django_assert_max_num_queries(6):
             response = n_authenticated_privileged_client.get(
-                f"{self.BASE_ENDPOINT}/{user.id}/",
-                content_type="application/json",
+                f"{self.BASE_ENDPOINT}/{user.id}/"
             )
 
         actual_json = json.loads(response.content)
@@ -397,9 +383,7 @@ class TestProtectedUsersEndpoints:
 
         with django_assert_max_num_queries(0):
             response = anonymous_client.post(
-                f"{self.BASE_ENDPOINT}/{user.id}/update/",
-                data=payload_json,
-                content_type="application/json",
+                f"{self.BASE_ENDPOINT}/{user.id}/update/", data=payload_json
             )
 
         assert response.status_code == 401
@@ -499,9 +483,7 @@ class TestProtectedUsersEndpoints:
 
         with django_assert_max_num_queries(0):
             response = anonymous_client.post(
-                f"{self.BASE_ENDPOINT}/{user.id}/update/",
-                data=payload_json,
-                content_type="application/json",
+                f"{self.BASE_ENDPOINT}/{user.id}/update/", data=payload_json
             )
 
         assert response.status_code == 401

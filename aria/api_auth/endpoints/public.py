@@ -4,7 +4,7 @@ from ninja import Router
 
 from aria.api.decorators import api
 from aria.api.responses import codes_40x
-from aria.api.schemas.responses import ExceptionResponse, APIResponse
+from aria.api.schemas.responses import ExceptionResponse
 from aria.api_auth.schemas.inputs import (
     TokenBlacklistInput,
     TokensObtainInput,

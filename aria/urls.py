@@ -16,7 +16,6 @@ urlpatterns = [
     path("api/", include("aria.kitchens.urls")),
     path("api/", include("aria.products.urls")),
     path("api/", include("aria.notes.urls")),
-    path("api/suppliers/", include("aria.suppliers.urls")),
     path("api-auth/", include("rest_framework.urls")),
     path("api/", include(api_patterns)),
     path("api/", endpoints.urls),
