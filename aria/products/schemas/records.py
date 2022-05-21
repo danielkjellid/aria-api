@@ -57,7 +57,6 @@ class ProductRecord(BaseModel):
     id: int
     name: str
     supplier: ProductSupplierRecord
-    categories: list[CategoryDetailRecord]
     status: ProductStatus
     slug: str
     search_keywords: str | None = None
@@ -67,13 +66,17 @@ class ProductRecord(BaseModel):
     unit: ProductUnit
     vat_rate: float
     available_in_special_sizes: bool = False
-    colors: list[ProductColorRecord] = []
-    shapes: list[ProductShapeRecord] = []
-    materials: list[str] | None
-    rooms: list[str] | None = []
     absorption: float | None = None
     is_imported_from_external_source: bool = False
-    files: list[ProductFileRecord] = []
+    rooms: list[str] | None = []
+    materials: list[str] | None
+
+
+class ProductDetailRecord(ProductRecord):
+    colors: list[ProductColorRecord] = []
+    shapes: list[ProductShapeRecord] = []
+    categories: list[CategoryDetailRecord]
+    options: list[ProductOptionRecord] = []
     thumbnail: str | None
     images: list[BaseHeaderImageRecord] = []
-    options: list[ProductOptionRecord] = []
+    files: list[ProductFileRecord] = []

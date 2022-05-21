@@ -5,7 +5,7 @@ from model_bakery import baker
 
 from aria.categories.models import Category
 from aria.categories.selectors import (
-    categories_children_active_list,
+    categories_children_active_list_for_category,
     categories_navigation_active_list,
     categories_parent_active_list,
 )
@@ -109,7 +109,7 @@ class TestPublicCategoriesEndpoints:
         category = baker.make(Category)
         baker.make(Category, _quantity=5, **{"parent": category})
 
-        categories = categories_children_active_list(parent=category)
+        categories = categories_children_active_list_for_category(category=category)
 
         expected_response = [
             {

@@ -38,7 +38,7 @@ def categories_parents_active_list_for_category(
     Get a list of active parents for a single category instance.
     """
 
-    parents = category.get_ancestors().active()
+    parents = category.get_ancestors().active().get_cached_trees()
 
     return [
         CategoryRecord(
@@ -85,7 +85,7 @@ def categories_siblings_active_list_for_category(
     Get a list of active siblings for a single category instance.
     """
 
-    siblings = category.get_siblings(include_self=True).active()
+    siblings = category.get_siblings(include_self=True).active().get_cached_trees()
 
     return [
         CategoryRecord(
