@@ -1,29 +1,29 @@
 from django.db.models import Q
 
 from aria.categories.models import Category
+from aria.categories.selectors import category_tree_active_list_for_product
+from aria.core.schemas.records import BaseHeaderImageRecord
 from aria.products.enums import ProductStatus
 from aria.products.filters import ProductSearchFilter
 from aria.products.models import Product
-from aria.core.schemas.records import BaseHeaderImageRecord
 from aria.products.schemas.records import (
-    ProductRecord,
+    ProductColorRecord,
     ProductDetailRecord,
-    ProductSupplierRecord,
-    ProductShapeRecord,
     ProductFileRecord,
     ProductOptionRecord,
+    ProductRecord,
+    ProductShapeRecord,
     ProductSizeRecord,
+    ProductSupplierRecord,
     ProductVariantRecord,
-    ProductColorRecord,
 )
-from aria.categories.selectors import category_tree_active_list_for_product
 
 
 def product_list_by_category(
     *, filters=None, category: Category
 ) -> list[ProductRecord]:
     """
-    Returns a list of products bellonging to the given
+    Returns a list of products belonging to the given
     category parent slug.
     """
 
@@ -37,7 +37,7 @@ def product_list_by_category(
 
 def product_options_list_for_product(product: Product) -> list[ProductOptionRecord]:
     """
-    Get a full represenation of a product options connected to
+    Get a full representation of a product options connected to
     a single product instance.
 
     If possible, use the manager method with_available_options()
@@ -88,7 +88,7 @@ def product_detail(
 ) -> ProductDetailRecord | None:
     """
     Get the detailed representation of a single product based on either
-    id or slug, allthough one of them has to be provided.
+    id or slug, although one of them has to be provided.
 
     Be careful to not run this in a loop unless absolutely needed. It
     already does quite a few queries, and will to that amount per loop
