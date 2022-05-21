@@ -1,5 +1,5 @@
 from ninja import Router
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 from aria.api.decorators import api
 from aria.products.schemas.outputs import ProductDetailOutput
 from aria.products.selectors import product_detail

@@ -58,7 +58,7 @@ class ProductDetailOutput(Schema):
     status: str
     unit: str
     name: str
-    description: str
+    description: str | None
     absorption: float | None
     materials: list[str] | None = []
     rooms: list[str] | None = []
