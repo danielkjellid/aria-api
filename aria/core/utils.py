@@ -108,3 +108,14 @@ def get_static_asset_upload_path(instance: "Model", filename: str) -> str:
     name, extension = os.path.splitext(filename)
 
     return f"{path}/{slugify(name)}{extension}"
+
+
+def get_array_field_labels(field, enum):
+    """
+    Return a list of human readable labels for ArrayChoiceFields
+    """
+
+    if field is None:
+        return []
+
+    return [item.label for item in enum for f in field if item.value == f]

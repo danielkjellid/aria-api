@@ -21,6 +21,7 @@ from aria.core.models import (
     BaseModel,
     BaseThumbnailImageModel,
 )
+from aria.core.utils import get_array_field_labels
 from aria.products import enums
 from aria.products.managers import (
     ProductQuerySet,
@@ -315,6 +316,14 @@ class Product(BaseModel, BaseThumbnailImageModel):
 
     def __str__(self):
         return self.name
+
+    @property
+    def materials_display(self) -> list[str]:
+        return get_array_field_labels(self.materials, enums.ProductMaterials)
+
+    @property
+    def rooms_display(self) -> list[str]:
+        return get_array_field_labels(self.rooms, enums.ProductRooms)
 
     def _get_array_field_labels(self, field, enum):
         """

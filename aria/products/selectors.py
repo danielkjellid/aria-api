@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 
 from aria.categories.models import Category
 from aria.products.enums import ProductStatus
@@ -87,10 +87,16 @@ def product_options_list_for_product(product: Product) -> list[ProductOptionReco
     ]
 
 
-def product_detail(product_id: int) -> ProductRecord | None:
+def product_detail(
+    *, product_id: int | None = None, product_slug: str | None = None
+) -> ProductRecord | None:
+    """
+    Get the detailed representation of a single product based on either
+    id or slug, allthough one of them has to be provided.
+    """
 
     product = (
-        Product.objects.filter(id=product_id)
+        Product.objects.filter(Q(id=product_id) | Q(slug=product_slug))
         .preload_for_list()
         .with_active_categories()
         .with_available_options()
@@ -107,6 +113,7 @@ def product_detail(product_id: int) -> ProductRecord | None:
         id=product.id,
         name=product.name,
         supplier=ProductSupplierRecord(
+            id=product.supplier_id,
             name=product.supplier.name,
             origin_country=product.supplier.origin_country,
         ),
@@ -131,8 +138,8 @@ def product_detail(product_id: int) -> ProductRecord | None:
             )
             for shape in product.shapes.all()
         ],
-        materials=product.materials,
-        rooms=product.rooms,
+        materials=product.materials_display,
+        rooms=product.rooms_display,
         absorption=product.absorption,
         is_imported_from_external_source=product.is_imported_from_external_source,
         files=[

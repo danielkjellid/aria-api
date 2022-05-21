@@ -8,13 +8,11 @@ from aria.api.api import api as endpoints
 api_patterns = [
     path("auth/", include("aria.auth.urls")),
     path("categories/", include("aria.categories.urls")),
-    path("products/", include("aria.products.urls")),
 ]
 
 urlpatterns = [
     path("alpha/", admin.site.urls),
     path("api/", include("aria.kitchens.urls")),
-    path("api/", include("aria.products.urls")),
     path("api/", include("aria.notes.urls")),
     path("api-auth/", include("rest_framework.urls")),
     path("api/", include(api_patterns)),

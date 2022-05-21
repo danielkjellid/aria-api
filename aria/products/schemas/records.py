@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from decimal import Decimal
 from aria.core.schemas.records import BaseHeaderImageRecord
 from aria.categories.schemas.records import CategoryDetailRecord
@@ -7,6 +7,7 @@ from aria.products.enums import ProductUnit
 
 
 class ProductSupplierRecord(BaseModel):
+    id: int
     name: str
     origin_country: str
 
@@ -68,7 +69,7 @@ class ProductRecord(BaseModel):
     available_in_special_sizes: bool = False
     colors: list[ProductColorRecord] = []
     shapes: list[ProductShapeRecord] = []
-    materials: list[str] | None = []
+    materials: list[str] | None
     rooms: list[str] | None = []
     absorption: float | None = None
     is_imported_from_external_source: bool = False
