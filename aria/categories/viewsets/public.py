@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from aria.categories.models import Category
 from aria.categories.selectors import (
-    categories_children_active_list,
+    categories_children_active_list_for_category,
     categories_navigation_active_list,
     categories_parent_active_list,
 )
@@ -46,7 +46,7 @@ class CategoryListAPI(APIView):
 
         def get_children(self, parent):
 
-            children = categories_children_active_list(parent=parent)
+            children = categories_children_active_list_for_category(category=parent)
 
             return self.ChildSerializer(children, many=True).data
 
@@ -104,7 +104,9 @@ class CategoryChildrenListAPI(APIView):
     @APIViewSchema.serializer(OutputSerializer())
     def get(self, request: HttpRequest, category_slug: str) -> HttpResponse:
         parent = get_object_or_404(Category, slug=category_slug)
-        children_categories = categories_children_active_list(parent=parent)
+        children_categories = categories_children_active_list_for_category(
+            category=parent
+        )
         serializer = self.OutputSerializer(children_categories, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)

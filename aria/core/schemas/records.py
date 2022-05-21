@@ -4,3 +4,13 @@ from pydantic import BaseModel
 class SiteRecord(BaseModel):
     domain: str
     name: str
+
+
+class BaseHeaderImageRecord(BaseModel):
+    apply_filter: bool
+    image_640x275: str | None
+    image_1024x1024: str | None
+    image_512x512: str | None
+    image_1024x575: str | None
+    image_1536x860: str | None
+    image_2048x1150: str | None

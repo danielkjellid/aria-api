@@ -3,6 +3,8 @@ from typing import Union
 from django.db.models import QuerySet
 
 from aria.categories.models import Category
+from aria.products.models import Product
+from aria.categories.schemas.records import CategoryDetailRecord, CategoryRecord
 
 
 def categories_navigation_list() -> Union[QuerySet, Category]:
@@ -29,16 +31,112 @@ def categories_parent_active_list() -> Union[QuerySet, Category]:
     return Category.objects.primary().active().get_cached_trees()
 
 
-def categories_children_active_list(parent: Category) -> Union[QuerySet, Category]:
+def categories_parents_active_list_for_category(
+    category: Category,
+) -> list[CategoryRecord]:
     """
-    Returns a queryset of active second level categories (is_secondary)
+    Get a list of active parents for a single category instance.
+    """
+
+    parents = category.get_ancestors().active()
+
+    return [
+        CategoryRecord(
+            id=parent.id,
+            name=parent.name,
+            slug=parent.slug,
+            ordering=parent.ordering,
+            parent=parent.parent_id,
+        )
+        for parent in parents
+    ]
+
+
+def categories_children_active_list_for_category(
+    category: Category,
+) -> list[CategoryRecord]:
+    """
+    Returns a list of active second level categories (is_secondary).
     """
 
     # Check if cached children exist. If not cached, filter
     # children to get active, as it gets all children by default.
-    if hasattr(parent, "_cached_children"):
-        children = parent.get_children().order_by("ordering")
+    if hasattr(category, "_cached_children"):
+        children = category.get_children().order_by("ordering")
     else:
-        children = parent.get_children().active().order_by("ordering")
+        children = category.get_children().active().order_by("ordering")
 
-    return children
+    return [
+        CategoryRecord(
+            id=child.id,
+            name=child.name,
+            slug=child.slug,
+            ordering=child.ordering,
+            parent=child.parent_id,
+        )
+        for child in children
+    ]
+
+
+def categories_siblings_active_list_for_category(
+    category: Category,
+) -> list[CategoryRecord]:
+    """
+    Get a list of active siblings for a single category instance.
+    """
+
+    siblings = category.get_siblings(include_self=True).active()
+
+    return [
+        CategoryRecord(
+            id=sibling.id,
+            name=sibling.name,
+            slug=sibling.slug,
+            ordering=sibling.ordering,
+            parent=sibling.parent_id,
+        )
+        for sibling in siblings
+    ]
+
+
+def category_tree_active_list_for_product(*, product: Product) -> CategoryDetailRecord:
+    """
+    Get a full represenation of a nested category tree connected to
+    a single product instance.
+
+    If possible, use the manager method with_active_categories()
+    on the product queryset before sending in the product instance
+    arg.
+    """
+
+    # Attempt to get prefetched categories if they exist.
+    prefetched_active_categories = getattr(product, "active_categories", None)
+
+    if prefetched_active_categories is not None:
+        active_categories = prefetched_active_categories
+    else:
+        # If prefetched value does not exist, fall back to a queryset.
+        active_categories = product.categories.active().order_by("-mptt_level")
+
+    return [category_record(category=category) for category in active_categories]
+
+
+def category_record(*, category: Category) -> CategoryDetailRecord:
+    """
+    Get the record representation for a single category instance.
+    """
+
+    parents = categories_parents_active_list_for_category(category=category)
+    siblings = categories_siblings_active_list_for_category(category=category)
+    children = categories_children_active_list_for_category(category=category)
+
+    return CategoryDetailRecord(
+        id=category.id,
+        name=category.name,
+        ordering=category.ordering,
+        description=category.description,
+        parent=category.parent_id,
+        parents=parents,
+        siblings=siblings,
+        children=children,
+    )

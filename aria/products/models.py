@@ -22,8 +22,20 @@ from aria.core.models import (
     BaseThumbnailImageModel,
 )
 from aria.products import enums
-from aria.products.managers import ProductManager, ProductQuerySet
+from aria.products.managers import (
+    ProductQuerySet,
+    SizeQuerySet,
+    VariantQuerySet,
+    ColorQuerySet,
+    ShapeQuerySet,
+    ProductSiteStateQuerySet,
+    ProductImageQuerySet,
+    ProductOptionQuerySet,
+    ProductFileQuerySet,
+)
 from aria.suppliers.models import Supplier
+
+_SizeManager = models.Manager.from_queryset(SizeQuerySet)
 
 
 class Size(models.Model):
@@ -64,6 +76,8 @@ class Size(models.Model):
         help_text="Circumference in centimeters",
     )
 
+    objects = _SizeManager()
+
     class Meta:
         verbose_name = "Size"
         verbose_name_plural = "Sizes"
@@ -102,6 +116,9 @@ class Size(models.Model):
         return str(round(n, 1) if n % 1 else int(n))
 
 
+_VariantManager = models.Manager.from_queryset(VariantQuerySet)
+
+
 class Variant(BaseThumbnailImageModel):
     """
     A variant is another version of the product, for
@@ -130,12 +147,17 @@ class Variant(BaseThumbnailImageModel):
         help_text="Designates if a variant should be treated as standard. This is to avoid multiple instances of the same variant. This field will also prevent cleanup deletion of these models.",
     )
 
+    objects = _VariantManager()
+
     class Meta:
         verbose_name = "Variant"
         verbose_name_plural = "Variants"
 
     def __str__(self):
         return self.name
+
+
+_ColorManager = models.Manager.from_queryset(ColorQuerySet)
 
 
 class Color(models.Model):
@@ -147,12 +169,17 @@ class Color(models.Model):
     name = models.CharField("name", max_length=100, unique=True)
     color_hex = models.CharField("color code", max_length=7, unique=True)
 
+    objects = _ColorManager()
+
     def __str__(self):
         return self.name
 
     class Meta:
         verbose_name = "Color"
         verbose_name_plural = "Colors"
+
+
+_ShapeManager = models.Manager.from_queryset(ShapeQuerySet)
 
 
 class Shape(BaseImageModel):
@@ -168,12 +195,17 @@ class Shape(BaseImageModel):
 
     name = models.CharField("name", max_length=30, unique=True)
 
+    objects = _ShapeManager()
+
     def __str__(self):
         return self.name
 
     class Meta:
         verbose_name = "Shape"
         verbose_name_plural = "Shapes"
+
+
+_ProductManager = models.Manager.from_queryset(ProductQuerySet)
 
 
 class Product(BaseModel, BaseThumbnailImageModel):
@@ -269,7 +301,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
     #     "shipping cost", decimal_places=2, max_digits=10, default=0.0
     # )
 
-    objects = ProductManager.from_queryset(ProductQuerySet)()
+    objects = _ProductManager()
 
     class Meta:
         verbose_name = "Product"
@@ -315,6 +347,9 @@ class Product(BaseModel, BaseThumbnailImageModel):
         return Variant.objects.filter(product_options__product=self).distinct("pk")
 
 
+_ProductImageManager = models.Manager.from_queryset(ProductImageQuerySet)
+
+
 class ProductImage(BaseHeaderImageModel):
     """
     Images bellonging to a product. Inherits a image
@@ -334,9 +369,14 @@ class ProductImage(BaseHeaderImageModel):
         related_name="images",
     )
 
+    objects = _ProductImageManager()
+
     class Meta:
         verbose_name = "Product image"
         verbose_name_plural = "Product images"
+
+
+_ProductFileManager = models.Manager.from_queryset(ProductFileQuerySet)
 
 
 class ProductFile(BaseFileModel):
@@ -358,12 +398,17 @@ class ProductFile(BaseFileModel):
     )
     name = models.CharField("product file name", max_length=255, unique=False)
 
+    objects = _ProductFileManager()
+
     class Meta:
         verbose_name = "Product file"
         verbose_name_plural = "Product files"
 
     def __str__(self):
         return self.name
+
+
+_ProductSiteStateManager = models.Manager.from_queryset(ProductSiteStateQuerySet)
 
 
 class ProductSiteState(BaseModel):
@@ -399,12 +444,15 @@ class ProductSiteState(BaseModel):
     )
     supplier_shipping_cost = models.FloatField(_("Shipping cost"), default=0.0)
 
-    objects = models.Manager()
+    objects = _ProductSiteStateManager()
     on_site = CurrentSiteManager()
 
     class Meta:
         verbose_name = _("Product site state")
         verbose_name_plural = _("Product site states")
+
+
+_ProductOptionManager = models.Manager.from_queryset(ProductOptionQuerySet)
 
 
 class ProductOption(BaseModel):
@@ -437,6 +485,8 @@ class ProductOption(BaseModel):
         default=enums.ProductStatus.AVAILABLE,
     )
 
+    objects = _ProductOptionManager()
+
     class Meta:
         verbose_name = "Product option"
         verbose_name_plural = "Product options"
@@ -449,7 +499,7 @@ class ProductOption(BaseModel):
 
     @property
     def vat(self):
-        return self.price * self.product.vat_rate
+        return self.gross_price * self.product.vat_rate
 
     def __str__(self):
         return f"{self.product} - {self.variant} - {self.size}"
