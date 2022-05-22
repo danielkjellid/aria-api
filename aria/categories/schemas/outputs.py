@@ -4,7 +4,6 @@ from typing import List
 from ninja import Schema
 
 from aria.core.schemas.records import BaseHeaderImageRecord
-from aria.products.enums import ProductUnit
 
 
 class CategoryListOutput(Schema):
@@ -41,6 +40,7 @@ class CategoryProductListColorOutput(Schema):
 
 
 class CategoryProductListShapeOutput(Schema):
+    id: int
     name: str
     image: str
 
@@ -48,16 +48,16 @@ class CategoryProductListShapeOutput(Schema):
 class CategoryProductListVariantOutput(Schema):
     id: int
     name: str
-    thumbnail: str
-    image: str
+    thumbnail: str | None
+    image: str | None
 
 
 class CategoryProductListOutput(Schema):
     id: int
     name: str
     slug: str
-    unit: ProductUnit
-    thumbnail: str
+    unit: str
+    thumbnail: str | None
     display_price: bool
     from_price: Decimal
     colors: list[CategoryProductListColorOutput]

@@ -24,15 +24,15 @@ from aria.core.models import (
 from aria.core.utils import get_array_field_labels
 from aria.products import enums
 from aria.products.managers import (
-    ProductQuerySet,
-    SizeQuerySet,
-    VariantQuerySet,
     ColorQuerySet,
-    ShapeQuerySet,
-    ProductSiteStateQuerySet,
+    ProductFileQuerySet,
     ProductImageQuerySet,
     ProductOptionQuerySet,
-    ProductFileQuerySet,
+    ProductQuerySet,
+    ProductSiteStateQuerySet,
+    ShapeQuerySet,
+    SizeQuerySet,
+    VariantQuerySet,
 )
 from aria.suppliers.models import Supplier
 

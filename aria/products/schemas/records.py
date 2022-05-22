@@ -1,9 +1,10 @@
-from pydantic import BaseModel, Field
 from decimal import Decimal
-from aria.core.schemas.records import BaseHeaderImageRecord
+
+from pydantic import BaseModel
+
 from aria.categories.schemas.records import CategoryDetailRecord
+from aria.core.schemas.records import BaseHeaderImageRecord
 from aria.products.enums import ProductStatus
-from aria.products.enums import ProductUnit
 
 
 class ProductSupplierRecord(BaseModel):
@@ -57,19 +58,20 @@ class ProductRecord(BaseModel):
     id: int
     name: str
     supplier: ProductSupplierRecord
-    status: ProductStatus
+    status: str
     slug: str
     search_keywords: str | None = None
     short_description: str | None = None
     description: str | None = None
     new_description: str
-    unit: ProductUnit
+    unit: str
     vat_rate: float
     available_in_special_sizes: bool = False
     absorption: float | None = None
     is_imported_from_external_source: bool = False
     rooms: list[str] | None = []
     materials: list[str] | None
+    thumbnail: str
 
 
 class ProductDetailRecord(ProductRecord):
@@ -77,6 +79,5 @@ class ProductDetailRecord(ProductRecord):
     shapes: list[ProductShapeRecord] = []
     categories: list[CategoryDetailRecord]
     options: list[ProductOptionRecord] = []
-    thumbnail: str | None
     images: list[BaseHeaderImageRecord] = []
     files: list[ProductFileRecord] = []

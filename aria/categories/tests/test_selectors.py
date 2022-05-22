@@ -6,6 +6,7 @@ from aria.categories.selectors import (
     categories_parent_active_list,
 )
 from aria.categories.tests.utils import create_category
+from aria.products.tests.utils import create_product
 
 pytestmark = pytest.mark.django_db
 
@@ -104,6 +105,21 @@ class TestCategoriesSelectors:
         pass
 
     def test_category_tree_active_list_for_product(self):
+        pass
+
+    def test_category_related_product_list_by_category(self):
+        cat_1 = create_category(name="Main cat 1")
+        subcat_1 = create_category(name="Sub cat 1", parent=cat_1)
+        subcat_2 = create_category(name="Sub cat 2", parent=cat_1)
+
+        products_subcat_1 = create_product(quantity=20)
+        products_subcat_2 = create_product(quantity=15)
+
+        for product in products_subcat_1:
+            product.categories.set([subcat_1])
+
+        for product in products_subcat_2:
+            product.categories.set([subcat_2])
         pass
 
     def test_category_detail_record(self):

@@ -5,39 +5,11 @@ import pytest
 from model_bakery import baker
 
 from aria.categories.models import Category
-from aria.categories.viewsets.public import CategoryDetailAPI, CategoryProductsListAPI
+from aria.categories.viewsets.public import CategoryProductsListAPI
 from aria.products.models import Product
 
 
 class TestPublicCategoriesSerializers:
-    @pytest.mark.django_db
-    def test_output_serializer_category_detail(self):
-        """
-        Test output serializer validity of the ProductDetailAPI endpoint.
-        """
-
-        category = baker.make(Category)
-
-        expected_output = {
-            "id": category.id,
-            "name": category.name,
-            "slug": category.slug,
-            "images": {
-                "apply_filter": category.apply_filter,
-                "image_1024x1024": category.image_1024x1024.url,
-                "image_1024x575": category.image_1024x575.url,
-                "image_1536x860": category.image_1536x860.url,
-                "image_2048x1150": category.image_2048x1150.url,
-                "image_512x512": category.image_512x512.url,
-                "image_640x275": category.image_640x275.url,
-            },
-        }
-
-        serializer = CategoryDetailAPI.OutputSerializer(category)
-
-        assert serializer.data
-        assert serializer.data == expected_output
-
     @pytest.mark.django_db
     def test_output_serializer_category_products_list(self):
         """

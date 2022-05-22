@@ -61,6 +61,19 @@ class ProductQuerySet(BaseQuerySet):
 
         return self.prefetch_related(prefetched_options)
 
+    def annotate_site_state_data(self):
+
+        from aria.products.models import ProductSiteState
+
+        option = ProductSiteState.on_site.filter(product__in=self).values(
+            "display_price", "gross_price"
+        )
+
+        return self.annotate(
+            display_price=option.values("display_price")[:1],
+            from_price=option.values("gross_price")[:1],
+        )
+
     def preload_for_list(self):
         """
         Utility to avoid n+1 queries

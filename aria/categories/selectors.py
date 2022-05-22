@@ -1,6 +1,15 @@
 from aria.categories.models import Category
-from aria.categories.schemas.records import CategoryDetailRecord, CategoryRecord
+from aria.categories.schemas.records import (
+    CategoryDetailRecord,
+    CategoryProductColorRecord,
+    CategoryProductRecord,
+    CategoryProductShapeRecord,
+    CategoryProductVariantRecord,
+    CategoryRecord,
+)
 from aria.core.selectors import base_header_image_record
+from aria.products.enums import ProductUnit
+from aria.products.filters import ProductSearchFilter
 from aria.products.models import Product
 
 
@@ -110,3 +119,62 @@ def category_detail_record(*, category: Category) -> CategoryDetailRecord:
         children=children,
         images=base_header_image_record(instance=category),
     )
+
+
+def category_related_product_list_by_category(*, category: Category, filters=None):
+    """
+    Returns a filterable list of products belonging to the given category
+    slug.
+    """
+
+    filters = filters or {}
+
+    # Preload all needed values
+    qs = (
+        Product.objects.by_category(category)
+        .preload_for_list()
+        .annotate_site_state_data()
+        .prefetch_related("options__variant")
+    )
+    filtered_qs = ProductSearchFilter(filters, qs).qs
+
+    print(qs.values("display_price"))
+
+    return [
+        CategoryProductRecord(
+            id=product.id,
+            name=product.name,
+            slug=product.slug,
+            unit=ProductUnit(product.unit).label,
+            thumbnail=product.thumbnail.url if product.thumbnail else None,
+            display_price=product.display_price,
+            from_price=product.from_price,
+            materials=product.materials_display,
+            rooms=product.rooms_display,
+            colors=[
+                CategoryProductColorRecord(
+                    id=color.id, name=color.name, color_hex=color.color_hex
+                )
+                for color in product.colors.all()
+            ],
+            shapes=[
+                CategoryProductShapeRecord(
+                    id=shape.id, name=shape.name, image=shape.image.url
+                )
+                for shape in product.shapes.all()
+            ],
+            variants=[
+                CategoryProductVariantRecord(
+                    id=option.variant.id,
+                    name=option.variant.name,
+                    image=option.variant.image.url if option.variant.image else None,
+                    thumbnail=option.variant.thumbnail.url
+                    if option.variant.thumbnail
+                    else None,
+                )
+                for option in product.options.all()
+                if option.variant
+            ],
+        )
+        for product in filtered_qs
+    ]

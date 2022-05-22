@@ -1,14 +1,13 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
-from rest_framework import serializers, status
+from rest_framework import serializers
 from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from aria.categories.models import Category
 from aria.core.deprecated_schemas import APIViewSchema
 from aria.core.pagination import LimitOffsetPagination, get_paginated_response
-from aria.core.serializers import BaseHeaderImageSerializer, inline_serializer
+from aria.core.serializers import inline_serializer
 from aria.products.selectors import product_list_by_category
 
 
@@ -97,27 +96,3 @@ class CategoryProductsListAPI(APIView):
             request=request,
             view=self,
         )
-
-
-class CategoryDetailAPI(APIView):
-    """
-    [PUBLIC] Endpoint for getting a details of a specific
-    category, parent or child.
-    """
-
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-    schema = APIViewSchema()
-
-    class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
-        name = serializers.CharField()
-        slug = serializers.SlugField()
-        images = BaseHeaderImageSerializer(source="*", read_only=True)
-
-    @APIViewSchema.serializer(OutputSerializer())
-    def get(self, request: HttpRequest, category_slug: str) -> HttpResponse:
-        category = get_object_or_404(Category, slug=category_slug)
-        serializer = self.OutputSerializer(category)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)

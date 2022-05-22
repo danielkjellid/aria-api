@@ -7,7 +7,6 @@ from aria.api.api import api as endpoints
 
 api_patterns = [
     path("auth/", include("aria.auth.urls")),
-    path("categories/", include("aria.categories.urls")),
 ]
 
 urlpatterns = [

@@ -1,19 +1,22 @@
 from django.shortcuts import get_object_or_404
 
-from ninja import Router
+from ninja import Query, Router
 
 from aria.api.decorators import api
 from aria.categories.models import Category
+from aria.categories.schemas.filters import CategoryProductListFilters
 from aria.categories.schemas.outputs import (
     CategoryChildrenListOutput,
     CategoryDetailOutput,
     CategoryListOutput,
     CategoryParentListOutput,
+    CategoryProductListOutput,
 )
 from aria.categories.selectors import (
     categories_children_active_list_for_category,
     categories_navigation_active_list,
     categories_parent_active_list,
+    category_related_product_list_by_category,
 )
 
 router = Router(tags="categories")
@@ -90,5 +93,22 @@ def category_children_list_api(request, category_slug: str):
     return children_categories
 
 
-def category_products_list_api(request):
-    pass
+@api(
+    router,
+    "category/{category_slug}/products/",
+    method="GET",
+    response={200: list[CategoryProductListOutput]},
+    summary="List all active children categories bellonging to a parent",
+)
+def category_products_list_api(
+    request, category_slug: str, search: CategoryProductListFilters = Query(...)
+):
+    """
+    Get a list of products related to a specific category.
+    """
+    category = get_object_or_404(Category, slug=category_slug)
+    products = category_related_product_list_by_category(
+        category=category, filters=search.dict()
+    )
+
+    return products

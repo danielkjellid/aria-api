@@ -3,7 +3,7 @@ from django.db.models import Q
 from aria.categories.models import Category
 from aria.categories.selectors import category_tree_active_list_for_product
 from aria.core.schemas.records import BaseHeaderImageRecord
-from aria.products.enums import ProductStatus
+from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.filters import ProductSearchFilter
 from aria.products.models import Product
 from aria.products.schemas.records import (
@@ -132,7 +132,6 @@ def product_detail(
             )
             for file in product.files.all()
         ],
-        thumbnail=product.thumbnail.url if product.thumbnail else None,
         images=[
             BaseHeaderImageRecord(
                 apply_filter=image.apply_filter,
@@ -172,17 +171,18 @@ def product_record(product: Product) -> ProductRecord:
             name=product.supplier.name,
             origin_country=product.supplier.origin_country,
         ),
-        status=product.status,
+        status=ProductStatus(product.status).label,
         slug=product.slug,
         search_keywords=product.search_keywords,
         short_description=product.short_description,
         description=product.description,  # Deprecated
         new_description=product.new_description,
-        unit=product.unit,
+        unit=ProductUnit(product.unit).label,
         vat_rate=product.vat_rate,
         available_in_special_sizes=product.available_in_special_sizes,
         absorption=product.absorption,
         is_imported_from_external_source=product.is_imported_from_external_source,
         materials=product.materials_display,
         rooms=product.rooms_display,
+        thumbnail=product.thumbnail.url,
     )

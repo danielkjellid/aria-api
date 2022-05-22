@@ -1,14 +1,39 @@
-from aria.products.enums import ProductStatus, ProductUnit
+import tempfile
+from decimal import Decimal
+
+from django.contrib.sites.models import Site
+from django.utils.text import slugify
+
 from aria.categories.models import Category
 from aria.categories.tests.utils import create_category
-from aria.products.models import Product, ProductOption, Variant, Size
-from django.utils.text import slugify
-from aria.suppliers.models import Supplier
 from aria.core.tests.utils import create_site
-from django.contrib.sites.models import Site
+from aria.products.enums import ProductStatus, ProductUnit
+from aria.products.models import Product, ProductOption, ProductSiteState, Size, Variant
+from aria.suppliers.models import Supplier
 from aria.suppliers.tests.utils import get_or_create_supplier
-from decimal import Decimal
-import tempfile
+
+
+def create_site_state(
+    *,
+    site: Site | None = None,
+    product: Product,
+    gross_price: Decimal = Decimal(500.00),
+    can_be_purchased_online: bool = False,
+    can_be_picked_up: bool = False,
+) -> ProductSiteState:
+
+    if site is None:
+        site = create_site()
+
+    site_state = ProductSiteState.objects.create(
+        site=site,
+        product=product,
+        gross_price=gross_price,
+        can_be_purchased_online=can_be_purchased_online,
+        can_be_picked_up=can_be_picked_up,
+    )
+
+    return site_state
 
 
 def create_product(
@@ -47,6 +72,9 @@ def create_product(
             vat_rate=0.25,
             available_in_special_sizes=available_in_special_sizes,
         )
+
+        site_state = create_site_state(product=product)
+        product.site_states.set([site_state])
 
         if category_name is not None:
             if category_parent is None:
