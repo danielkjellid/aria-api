@@ -20,5 +20,4 @@ def create_category(
     if parent is not None:
         category.parent = parent
         category.save(update_fields=["parent"])
-
     return category

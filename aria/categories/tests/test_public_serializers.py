@@ -8,7 +8,6 @@ from aria.categories.models import Category
 from aria.categories.viewsets.public import (
     CategoryChildrenListAPI,
     CategoryDetailAPI,
-    CategoryListAPI,
     CategoryParentListAPI,
     CategoryProductsListAPI,
 )
@@ -16,64 +15,6 @@ from aria.products.models import Product
 
 
 class TestPublicCategoriesSerializers:
-    #####################
-    # Input serializers #
-    #####################
-
-    # Currently none
-
-    ######################
-    # Output serializers #
-    ######################
-
-    @pytest.mark.django_db
-    def test_output_serializer_category_list(self):
-        """
-        Test output serializer validity of the ProductDetailAPI endpoint.
-        """
-
-        category_1, category_2 = baker.make(Category, _quantity=2)
-        subcategory_1 = baker.make(Category, **{"parent": category_1})
-        subcategory_2 = baker.make(Category, **{"parent": category_2})
-
-        expected_output = [
-            {
-                "id": category_1.id,
-                "name": category_1.name,
-                "slug": category_1.slug,
-                "ordering": category_1.ordering,
-                "children": [
-                    {
-                        "id": subcategory_1.id,
-                        "name": subcategory_1.name,
-                        "slug": subcategory_1.slug,
-                        "ordering": subcategory_1.ordering,
-                    }
-                ],
-            },
-            {
-                "id": category_2.id,
-                "name": category_2.name,
-                "slug": category_2.slug,
-                "ordering": category_2.ordering,
-                "children": [
-                    {
-                        "id": subcategory_2.id,
-                        "name": subcategory_2.name,
-                        "slug": subcategory_2.slug,
-                        "ordering": subcategory_2.ordering,
-                    }
-                ],
-            },
-        ]
-
-        serializer = CategoryListAPI.OutputSerializer(
-            [category_1, category_2], many=True
-        )
-
-        assert serializer.data
-        assert serializer.data == expected_output
-
     @pytest.mark.django_db
     def test_output_serializer_category_detail(self):
         """

@@ -8,7 +8,6 @@ from rest_framework.views import APIView
 from aria.categories.models import Category
 from aria.categories.selectors import (
     categories_children_active_list_for_category,
-    categories_navigation_active_list,
     categories_parent_active_list,
 )
 from aria.core.deprecated_schemas import APIViewSchema
@@ -19,43 +18,6 @@ from aria.core.serializers import (
     inline_serializer,
 )
 from aria.products.selectors import product_list_by_category
-
-
-class CategoryListAPI(APIView):
-    """
-    [PUBLIC] Endpoint to fetch categories used for
-    routing in the frontend navbar.
-    """
-
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-    schema = APIViewSchema()
-
-    class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
-        name = serializers.CharField()
-        slug = serializers.SlugField()
-        ordering = serializers.IntegerField()
-        children = serializers.SerializerMethodField()
-
-        class ChildSerializer(serializers.Serializer):
-            id = serializers.IntegerField()
-            name = serializers.CharField()
-            slug = serializers.SlugField()
-            ordering = serializers.IntegerField()
-
-        def get_children(self, parent):
-
-            children = categories_children_active_list_for_category(category=parent)
-
-            return self.ChildSerializer(children, many=True).data
-
-    @APIViewSchema.serializer(OutputSerializer())
-    def get(self, request: HttpRequest) -> HttpResponse:
-        categories = categories_navigation_active_list()
-        serializer = self.OutputSerializer(categories, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CategoryParentListAPI(APIView):

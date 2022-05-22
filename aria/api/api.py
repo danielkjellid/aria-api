@@ -16,7 +16,7 @@ from aria.users.endpoints import (
     public_endpoints as public_users_endpoints,
 )
 
-api = NinjaAPI()
+api = NinjaAPI(title="Aria API")
 
 # API auth endpoints
 

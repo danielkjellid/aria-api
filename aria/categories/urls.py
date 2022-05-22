@@ -3,7 +3,6 @@ from django.urls import path
 from aria.categories.viewsets.public import (
     CategoryChildrenListAPI,
     CategoryDetailAPI,
-    CategoryListAPI,
     CategoryParentListAPI,
     CategoryProductsListAPI,
 )
@@ -11,11 +10,6 @@ from aria.categories.viewsets.public import (
 internal_patterns = []
 
 public_patterns = [
-    path(
-        "",
-        CategoryListAPI.as_view(),
-        name="categories-list",
-    ),
     path("parents/", CategoryParentListAPI.as_view(), name="categories-parents-list"),
     path(
         "category/<slug:category_slug>/",

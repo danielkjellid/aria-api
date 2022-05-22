@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from aria.core.schemas.records import BaseHeaderImageRecord
+
 
 class CategoryRecord(BaseModel):
     id: int
@@ -7,6 +9,7 @@ class CategoryRecord(BaseModel):
     slug: str
     ordering: int
     parent: int | None
+    images: BaseHeaderImageRecord
 
 
 class CategoryDetailRecord(BaseModel):
@@ -18,3 +21,4 @@ class CategoryDetailRecord(BaseModel):
     parent: int | None
     parents: list[CategoryRecord]
     children: list[CategoryRecord]
+    images: BaseHeaderImageRecord

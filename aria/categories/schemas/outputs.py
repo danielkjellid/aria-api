@@ -17,7 +17,7 @@ class CategoryListOutput(Schema):
     ] | None  # Pydantic bug, need to use List instead of list
 
 
-class CategoryParenListOutput(Schema):
+class CategoryParentListOutput(Schema):
     id: int
     name: str
     slug: str

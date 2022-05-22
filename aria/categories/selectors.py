@@ -1,18 +1,7 @@
-from typing import Union
-
-from django.db.models import QuerySet
-
 from aria.categories.models import Category
 from aria.categories.schemas.records import CategoryDetailRecord, CategoryRecord
+from aria.core.selectors import base_header_image_record
 from aria.products.models import Product
-
-
-def categories_navigation_list() -> Union[QuerySet, Category]:
-    """
-    Returns a queryset of navigation categories.
-    """
-
-    return Category.objects.primary_and_secondary().get_cached_trees()
 
 
 def categories_navigation_active_list() -> list[CategoryDetailRecord]:
@@ -25,12 +14,14 @@ def categories_navigation_active_list() -> list[CategoryDetailRecord]:
     return [category_detail_record(category=category) for category in categories]
 
 
-def categories_parent_active_list() -> Union[QuerySet, Category]:
+def categories_parent_active_list() -> list[CategoryRecord]:
     """
     Returns a queryset of active first level categories (is_primary)
     """
 
-    return Category.objects.primary().active().get_cached_trees()
+    categories = Category.objects.primary().active().get_cached_trees()
+
+    return [category_record(category=category) for category in categories]
 
 
 def categories_parents_active_list_for_category(
@@ -42,16 +33,7 @@ def categories_parents_active_list_for_category(
 
     parents = category.get_ancestors().active().get_cached_trees()
 
-    return [
-        CategoryRecord(
-            id=parent.id,
-            name=parent.name,
-            slug=parent.slug,
-            ordering=parent.ordering,
-            parent=parent.parent_id,
-        )
-        for parent in parents
-    ]
+    return [category_record(category=parent) for parent in parents]
 
 
 def categories_children_active_list_for_category(
@@ -68,16 +50,7 @@ def categories_children_active_list_for_category(
     else:
         children = category.get_children().active().order_by("ordering")
 
-    return [
-        CategoryRecord(
-            id=child.id,
-            name=child.name,
-            slug=child.slug,
-            ordering=child.ordering,
-            parent=child.parent_id,
-        )
-        for child in children
-    ]
+    return [category_record(category=child) for child in children]
 
 
 def category_tree_active_list_for_product(*, product: Product) -> CategoryDetailRecord:
@@ -102,9 +75,24 @@ def category_tree_active_list_for_product(*, product: Product) -> CategoryDetail
     return [category_detail_record(category=category) for category in active_categories]
 
 
-def category_detail_record(*, category: Category) -> CategoryDetailRecord:
+def category_record(*, category: Category) -> CategoryRecord:
     """
     Get the record representation for a single category instance.
+    """
+
+    return CategoryRecord(
+        id=category.id,
+        name=category.name,
+        slug=category.slug,
+        ordering=category.ordering,
+        parent=category.parent_id,
+        images=base_header_image_record(instance=category),
+    )
+
+
+def category_detail_record(*, category: Category) -> CategoryDetailRecord:
+    """
+    Get the detail record representation for a single category instance.
     """
 
     parents = categories_parents_active_list_for_category(category=category)
@@ -119,4 +107,5 @@ def category_detail_record(*, category: Category) -> CategoryDetailRecord:
         parent=category.parent_id,
         parents=parents,
         children=children,
+        images=base_header_image_record(instance=category),
     )
