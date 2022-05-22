@@ -1,23 +1,26 @@
 import pytest
 
+from aria.categories.schemas.records import CategoryDetailRecord, CategoryRecord
 from aria.categories.selectors import (
-    categories_children_active_list_for_category,
-    categories_navigation_active_list,
-    categories_parent_active_list,
+    category_children_active_list_for_category,
+    category_detail_record,
+    category_navigation_active_list,
+    category_parent_active_list,
+    category_related_product_list_by_category,
+    category_tree_active_list_for_product,
 )
 from aria.categories.tests.utils import create_category
+from aria.core.schemas.records import BaseHeaderImageRecord
+from aria.products.models import Product
 from aria.products.tests.utils import create_product
 
 pytestmark = pytest.mark.django_db
 
 
 class TestCategoriesSelectors:
-    def test_categories_navigation_list(self):
-        pass  # Not converted yet
-
-    def test_categories_navigation_active_list(self, django_assert_max_num_queries):
+    def test_category_navigation_active_list(self, django_assert_max_num_queries):
         """
-        Test the selector categories_navigation_active_list returns expected
+        Test the selector category_navigation_active_list returns expected
         response within query limit.
         """
 
@@ -31,7 +34,7 @@ class TestCategoriesSelectors:
         # Uses 3 queries: 1 for getting categorues, 1 for getting parents and
         # 1 for getting children.
         with django_assert_max_num_queries(3):
-            categories = categories_navigation_active_list()
+            categories = category_navigation_active_list()
 
         assert len(categories) == 2
         assert categories[0].id == main_cat_1.id
@@ -40,9 +43,9 @@ class TestCategoriesSelectors:
         assert categories[1].id == main_cat_2.id
         assert categories[1].children[0].id == main_cat_2_sub_1.id
 
-    def test_categories_parent_active_list(self, django_assert_max_num_queries):
+    def test_category_parent_active_list(self, django_assert_max_num_queries):
         """
-        Test the categories_parent_active_list selector returns expected
+        Test the category_parent_active_list selector returns expected
         response within query limit.
         """
 
@@ -55,22 +58,22 @@ class TestCategoriesSelectors:
 
         # Uses 1 query for getting appropriate parent categories.
         with django_assert_max_num_queries(1):
-            parent_categories = categories_parent_active_list()
+            parent_categories = category_parent_active_list()
 
         assert len(parent_categories) == 2
         assert parent_categories[0].id == main_cat_1.id
         assert parent_categories[1].id == main_cat_2.id
 
-    def test_categories_parents_active_list_for_category(
+    def test_category_parents_active_list_for_category(
         self, django_assert_max_num_queries
     ):
         pass
 
-    def test_categories_children_active_list_for_category(
+    def test_category_children_active_list_for_category(
         self, django_assert_max_num_queries
     ):
         """
-        Test the categories_children_active_list_for_category
+        Test the category_children_active_list_for_category
         selector returns expected response within query limit
         for a specific category.
         """
@@ -84,7 +87,7 @@ class TestCategoriesSelectors:
 
         # Uses 1 query for getting child categories.
         with django_assert_max_num_queries(1):
-            main_cat_1_children = categories_children_active_list_for_category(
+            main_cat_1_children = category_children_active_list_for_category(
                 category=main_cat_1
             )
 
@@ -94,20 +97,59 @@ class TestCategoriesSelectors:
 
         # Uses 1 query for getting child categories.
         with django_assert_max_num_queries(1):
-            main_cat_2_children = categories_children_active_list_for_category(
+            main_cat_2_children = category_children_active_list_for_category(
                 category=main_cat_2
             )
 
         assert len(main_cat_2_children) == 1
         assert main_cat_2_children[0].id == main_cat_2_sub_1.id
 
-    def test_categories_siblings_active_list_for_category(self):
-        pass
+    def test_category_tree_active_list_for_product(self, django_assert_max_num_queries):
+        """
+        Test the category_tree_active_list_for_product selector returns
+        expected response within query limit for a specific product.
+        """
+        cat_1 = create_category(name="Category")
+        subcat_1 = create_category(name="Subcategory 1", parent=cat_1)
+        subcat_2 = create_category(name="Subcategory 2", parent=cat_1)
 
-    def test_category_tree_active_list_for_product(self):
-        pass
+        product = create_product()
+        product.categories.set([subcat_1, subcat_2])
 
-    def test_category_related_product_list_by_category(self):
+        # Test without prefetching first.
+        # Uses 3 queries: 1 for getting product category, 1 for getting parents,
+        # and 1 for getting children.
+        with django_assert_max_num_queries(3):
+            category_tree = category_tree_active_list_for_product(product=product)
+
+        assert len(category_tree) == 2  # The two subcategories.
+        assert category_tree[0].id == subcat_1.id
+        assert category_tree[1].id == subcat_2.id
+
+        prefetched_product = (
+            Product.objects.filter(id=product.id).with_active_categories().first()
+        )
+
+        # Test without prefetching first.
+        # Uses 2 queries: 1 for getting parents and 1 for getting children.
+        with django_assert_max_num_queries(2):
+            prefetched_category_tree = category_tree_active_list_for_product(
+                product=prefetched_product
+            )
+
+        assert len(prefetched_category_tree) == 2
+        assert prefetched_category_tree[0].id == subcat_1.id
+        assert prefetched_category_tree[1].id == subcat_2.id
+
+    def test_category_related_product_list_by_category(
+        self, django_assert_max_num_queries
+    ):
+        """
+        Test the category_related_product_list_by_category
+        selector returns expected response within query limit
+        for a specific category.
+        """
+
         cat_1 = create_category(name="Main cat 1")
         subcat_1 = create_category(name="Sub cat 1", parent=cat_1)
         subcat_2 = create_category(name="Sub cat 2", parent=cat_1)
@@ -120,7 +162,198 @@ class TestCategoriesSelectors:
 
         for product in products_subcat_2:
             product.categories.set([subcat_2])
-        pass
 
-    def test_category_detail_record(self):
-        pass
+        # First test getting products based on category subcat_1.
+        # Uses 7 queries:
+        # - 1 for getting products,
+        # - 1 for preloading categories,
+        # - 1 for preloading colors,
+        # - 1 for preloading shapes,
+        # - 1 for preloading images,
+        # - 1 for preloading options,
+        # - 1 for preloading files
+        with django_assert_max_num_queries(7):
+            filtered_products_subcat_1 = category_related_product_list_by_category(
+                category=subcat_1, filters=None
+            )
+
+        # Assert that only the products_subcat_1 is returned.
+        assert len(filtered_products_subcat_1) == 20
+        assert filtered_products_subcat_1[0].id == products_subcat_1[0].id
+        assert filtered_products_subcat_1[19].id == products_subcat_1[19].id
+
+        # Then test getting products based on category subcat_2.
+        # Uses 7 queries:
+        # - 1 for getting products,
+        # - 1 for preloading categories,
+        # - 1 for preloading colors,
+        # - 1 for preloading shapes,
+        # - 1 for preloading images,
+        # - 1 for preloading options,
+        # - 1 for preloading files
+        with django_assert_max_num_queries(7):
+            filtered_products_subcat_2 = category_related_product_list_by_category(
+                category=subcat_2, filters=None
+            )
+
+        # Assert that only the products_subcat_2 is returned.
+        assert len(filtered_products_subcat_2) == 15
+        assert filtered_products_subcat_2[0].id == products_subcat_2[0].id
+        assert filtered_products_subcat_2[14].id == products_subcat_2[14].id
+
+        # Explicitly set name of first instance.
+        products_subcat_2[0].name = "Awesome product"
+        products_subcat_2[0].save()
+
+        # Test searching on already filtered list.
+        # Uses 7 queries:
+        # - 1 for getting products,
+        # - 1 for preloading categories,
+        # - 1 for preloading colors,
+        # - 1 for preloading shapes,
+        # - 1 for preloading images,
+        # - 1 for preloading options,
+        # - 1 for preloading files
+        with django_assert_max_num_queries(7):
+            products_subcat_2_search = category_related_product_list_by_category(
+                category=subcat_2, filters={"search": "awesome"}
+            )
+
+        # Assert that only awesome product is returned.
+        assert len(products_subcat_2_search) == 1
+        assert products_subcat_2_search[0].id == products_subcat_2[0].id
+
+    def test_category_detail_record(self, django_assert_max_num_queries):
+        """
+        Test the category_detail_record selector returns expected response
+        within query limit for a specific category.
+        """
+
+        cat_1 = create_category(name="Parent")
+        subcat_1 = create_category(name="Child 1", parent=cat_1)
+        subcat_2 = create_category(name="Child 2", parent=cat_1)
+        subcat_3 = create_category(name="Child 3", parent=cat_1)
+
+        expected_parent_output = CategoryDetailRecord(
+            id=cat_1.id,
+            name=cat_1.name,
+            ordering=cat_1.ordering,
+            slug=cat_1.slug,
+            description=cat_1.description,
+            parent=None,
+            parents=[],
+            children=[
+                CategoryRecord(
+                    id=subcat_1.id,
+                    name=subcat_1.name,
+                    slug=subcat_1.slug,
+                    description=subcat_1.description,
+                    ordering=subcat_1.ordering,
+                    parent=subcat_1.parent_id,
+                    images=BaseHeaderImageRecord(
+                        apply_filter=subcat_1.apply_filter,
+                        image_512x512=subcat_1.image_512x512.url,
+                        image_640x275=subcat_1.image_640x275.url,
+                        image_1024x575=subcat_1.image_1024x575.url,
+                        image_1024x1024=subcat_1.image_1024x1024.url,
+                        image_1536x860=subcat_1.image_1536x860.url,
+                        image_2048x1150=subcat_1.image_2048x1150.url,
+                    ),
+                ),
+                CategoryRecord(
+                    id=subcat_2.id,
+                    name=subcat_2.name,
+                    slug=subcat_2.slug,
+                    description=subcat_2.description,
+                    ordering=subcat_2.ordering,
+                    parent=subcat_2.parent_id,
+                    images=BaseHeaderImageRecord(
+                        apply_filter=subcat_2.apply_filter,
+                        image_512x512=subcat_2.image_512x512.url,
+                        image_640x275=subcat_2.image_640x275.url,
+                        image_1024x575=subcat_2.image_1024x575.url,
+                        image_1024x1024=subcat_2.image_1024x1024.url,
+                        image_1536x860=subcat_2.image_1536x860.url,
+                        image_2048x1150=subcat_2.image_2048x1150.url,
+                    ),
+                ),
+                CategoryRecord(
+                    id=subcat_3.id,
+                    name=subcat_3.name,
+                    slug=subcat_3.slug,
+                    description=subcat_3.description,
+                    ordering=subcat_3.ordering,
+                    parent=subcat_3.parent_id,
+                    images=BaseHeaderImageRecord(
+                        apply_filter=subcat_3.apply_filter,
+                        image_512x512=subcat_3.image_512x512.url,
+                        image_640x275=subcat_3.image_640x275.url,
+                        image_1024x575=subcat_3.image_1024x575.url,
+                        image_1024x1024=subcat_3.image_1024x1024.url,
+                        image_1536x860=subcat_3.image_1536x860.url,
+                        image_2048x1150=subcat_3.image_2048x1150.url,
+                    ),
+                ),
+            ],
+            images=BaseHeaderImageRecord(
+                apply_filter=cat_1.apply_filter,
+                image_512x512=cat_1.image_512x512.url,
+                image_640x275=cat_1.image_640x275.url,
+                image_1024x575=cat_1.image_1024x575.url,
+                image_1024x1024=cat_1.image_1024x1024.url,
+                image_1536x860=cat_1.image_1536x860.url,
+                image_2048x1150=cat_1.image_2048x1150.url,
+            ),
+        )
+
+        # Test category with children, and no parent.
+        # Uses 1 query for getting category.
+        with django_assert_max_num_queries(1):
+            cat_1_detail_record = category_detail_record(category=cat_1)
+
+        assert cat_1_detail_record == expected_parent_output
+
+        expected_child_output = CategoryDetailRecord(
+            id=subcat_1.id,
+            name=subcat_1.name,
+            ordering=subcat_1.ordering,
+            slug=subcat_1.slug,
+            description=subcat_1.description,
+            parent=subcat_1.parent_id,
+            parents=[
+                CategoryRecord(
+                    id=cat_1.id,
+                    name=cat_1.name,
+                    slug=cat_1.slug,
+                    description=cat_1.description,
+                    ordering=cat_1.ordering,
+                    parent=None,
+                    images=BaseHeaderImageRecord(
+                        apply_filter=cat_1.apply_filter,
+                        image_512x512=cat_1.image_512x512.url,
+                        image_640x275=cat_1.image_640x275.url,
+                        image_1024x575=cat_1.image_1024x575.url,
+                        image_1024x1024=cat_1.image_1024x1024.url,
+                        image_1536x860=cat_1.image_1536x860.url,
+                        image_2048x1150=cat_1.image_2048x1150.url,
+                    ),
+                )
+            ],
+            children=[],
+            images=BaseHeaderImageRecord(
+                apply_filter=subcat_1.apply_filter,
+                image_512x512=subcat_1.image_512x512.url,
+                image_640x275=subcat_1.image_640x275.url,
+                image_1024x575=subcat_1.image_1024x575.url,
+                image_1024x1024=subcat_1.image_1024x1024.url,
+                image_1536x860=subcat_1.image_1536x860.url,
+                image_2048x1150=subcat_1.image_2048x1150.url,
+            ),
+        )
+
+        # Test category with parent, but not children.
+        # Uses 1 query for getting category.
+        with django_assert_max_num_queries(1):
+            subcat_1_detail_record = category_detail_record(category=subcat_1)
+
+        assert subcat_1_detail_record == expected_child_output

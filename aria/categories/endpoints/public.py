@@ -13,9 +13,9 @@ from aria.categories.schemas.outputs import (
     CategoryProductListOutput,
 )
 from aria.categories.selectors import (
-    categories_children_active_list_for_category,
-    categories_navigation_active_list,
-    categories_parent_active_list,
+    category_children_active_list_for_category,
+    category_navigation_active_list,
+    category_parent_active_list,
     category_related_product_list_by_category,
 )
 
@@ -35,7 +35,7 @@ def category_list_api(request):
     used for routing in the frontend navbar.
     """
 
-    categories = categories_navigation_active_list()
+    categories = category_navigation_active_list()
 
     return categories
 
@@ -51,7 +51,7 @@ def category_parent_list_api(request):
     """
     Retrives a list of all primary categories.
     """
-    parent_categories = categories_parent_active_list()
+    parent_categories = category_parent_active_list()
 
     return parent_categories
 
@@ -86,7 +86,7 @@ def category_children_list_api(request, category_slug: str):
     specific parent.
     """
     parent_category = get_object_or_404(Category, slug=category_slug)
-    children_categories = categories_children_active_list_for_category(
+    children_categories = category_children_active_list_for_category(
         category=parent_category
     )
 

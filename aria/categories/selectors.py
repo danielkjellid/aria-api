@@ -13,7 +13,44 @@ from aria.products.filters import ProductSearchFilter
 from aria.products.models import Product
 
 
-def categories_navigation_active_list() -> list[CategoryDetailRecord]:
+def category_record(*, category: Category) -> CategoryRecord:
+    """
+    Get the record representation for a single category instance.
+    """
+
+    return CategoryRecord(
+        id=category.id,
+        name=category.name,
+        slug=category.slug,
+        description=category.description,
+        ordering=category.ordering,
+        parent=category.parent_id,
+        images=base_header_image_record(instance=category),
+    )
+
+
+def category_detail_record(*, category: Category) -> CategoryDetailRecord:
+    """
+    Get the detail record representation for a single category instance.
+    """
+
+    parents = category_parents_active_list_for_category(category=category)
+    children = category_children_active_list_for_category(category=category)
+
+    return CategoryDetailRecord(
+        id=category.id,
+        name=category.name,
+        ordering=category.ordering,
+        slug=category.slug,
+        description=category.description,
+        parent=category.parent_id,
+        parents=parents,
+        children=children,
+        images=base_header_image_record(instance=category),
+    )
+
+
+def category_navigation_active_list() -> list[CategoryDetailRecord]:
     """
     Returns a queryset of active navigation categories.
     """
@@ -23,7 +60,7 @@ def categories_navigation_active_list() -> list[CategoryDetailRecord]:
     return [category_detail_record(category=category) for category in categories]
 
 
-def categories_parent_active_list() -> list[CategoryRecord]:
+def category_parent_active_list() -> list[CategoryRecord]:
     """
     Returns a queryset of active first level categories (is_primary)
     """
@@ -33,7 +70,7 @@ def categories_parent_active_list() -> list[CategoryRecord]:
     return [category_record(category=category) for category in categories]
 
 
-def categories_parents_active_list_for_category(
+def category_parents_active_list_for_category(
     category: Category,
 ) -> list[CategoryRecord]:
     """
@@ -45,7 +82,7 @@ def categories_parents_active_list_for_category(
     return [category_record(category=parent) for parent in parents]
 
 
-def categories_children_active_list_for_category(
+def category_children_active_list_for_category(
     category: Category,
 ) -> list[CategoryRecord]:
     """
@@ -82,43 +119,6 @@ def category_tree_active_list_for_product(*, product: Product) -> CategoryDetail
         active_categories = product.categories.active().order_by("-mptt_level")
 
     return [category_detail_record(category=category) for category in active_categories]
-
-
-def category_record(*, category: Category) -> CategoryRecord:
-    """
-    Get the record representation for a single category instance.
-    """
-
-    return CategoryRecord(
-        id=category.id,
-        name=category.name,
-        slug=category.slug,
-        description=category.description,
-        ordering=category.ordering,
-        parent=category.parent_id,
-        images=base_header_image_record(instance=category),
-    )
-
-
-def category_detail_record(*, category: Category) -> CategoryDetailRecord:
-    """
-    Get the detail record representation for a single category instance.
-    """
-
-    parents = categories_parents_active_list_for_category(category=category)
-    children = categories_children_active_list_for_category(category=category)
-
-    return CategoryDetailRecord(
-        id=category.id,
-        name=category.name,
-        ordering=category.ordering,
-        slug=category.slug,
-        description=category.description,
-        parent=category.parent_id,
-        parents=parents,
-        children=children,
-        images=base_header_image_record(instance=category),
-    )
 
 
 def category_related_product_list_by_category(*, category: Category, filters=None):
