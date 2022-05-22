@@ -106,5 +106,5 @@ class TestCategoriesSelectors:
     def test_category_tree_active_list_for_product(self):
         pass
 
-    def test_category_record(self):
+    def test_category_detail_record(self):
         pass

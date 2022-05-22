@@ -193,6 +193,13 @@ class TestPublicCategoriesEndpoints:
         assert response.status_code == 200
         assert actual_response == expected_response
 
+        # Test querying for a slug that does not exist returns a 404.
+        with django_assert_max_num_queries(1):
+            failed_response = anonymous_client.get(
+                f"{self.BASE_ENDPOINT}/category/does-not-exist/children/"
+            )
+        assert failed_response.status_code == 404
+
     def test_anonymous_request_category_products_list_api(
         self, anonymous_client, django_assert_max_num_queries
     ):
@@ -201,4 +208,43 @@ class TestPublicCategoriesEndpoints:
     def test_anonymous_request_category_detail_api(
         self, anonymous_client, django_assert_max_num_queries
     ):
-        pass
+        """
+        Test retrieving a specific category from an anonymous client returns
+        a valid response.
+        """
+
+        cat_1 = create_category(name="Main cat 1")
+
+        expected_response = {
+            "id": cat_1.id,
+            "name": cat_1.name,
+            "slug": cat_1.slug,
+            "images": {
+                "apply_filter": cat_1.apply_filter,
+                "image_512x512": cat_1.image_512x512.url,
+                "image_640x275": cat_1.image_640x275.url,
+                "image_1024x575": cat_1.image_1024x575.url,
+                "image_1024x1024": cat_1.image_1024x1024.url,
+                "image_1536x860": cat_1.image_1536x860.url,
+                "image_2048x1150": cat_1.image_2048x1150.url,
+            },
+        }
+
+        # Uses 1 query for getting category
+        with django_assert_max_num_queries(1):
+            response = anonymous_client.get(
+                f"{self.BASE_ENDPOINT}/category/{cat_1.slug}/"
+            )
+
+        actual_response = json.loads(response.content)
+
+        assert response.status_code == 200
+        assert actual_response == expected_response
+
+        # Test querying for a slug that does not exist returns a 404.
+        with django_assert_max_num_queries(1):
+            failed_response = anonymous_client.get(
+                f"{self.BASE_ENDPOINT}/category/does-not-exist/"
+            )
+
+        assert failed_response.status_code == 404
