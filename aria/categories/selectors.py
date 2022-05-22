@@ -138,8 +138,6 @@ def category_related_product_list_by_category(*, category: Category, filters=Non
     )
     filtered_qs = ProductSearchFilter(filters, qs).qs
 
-    print(qs.values("display_price"))
-
     return [
         CategoryProductRecord(
             id=product.id,

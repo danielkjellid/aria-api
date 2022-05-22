@@ -24,10 +24,7 @@ api.add_router("/ninja/auth/", public_auth_endpoints, tags=["[PUBLIC] Auth"], au
 
 # Categories endpoints
 api.add_router(
-    "/ninja/categories/",
-    public_categories_endpoints,
-    tags=["[PUBLIC] Categories"],
-    auth=None,
+    "/categories/", public_categories_endpoints, tags=["[PUBLIC] Categories"], auth=None
 )
 
 # Products endpoints

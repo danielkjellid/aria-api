@@ -11,7 +11,7 @@ pytestmark = pytest.mark.django_db
 
 class TestPublicCategoriesEndpoints:
 
-    BASE_ENDPOINT = "/api/ninja/categories"
+    BASE_ENDPOINT = "/api/categories"
 
     def test_anonymous_request_category_list_api(
         self, anonymous_client, django_assert_max_num_queries
@@ -40,14 +40,14 @@ class TestPublicCategoriesEndpoints:
                         "name": main_cat_1_sub_1.name,
                         "slug": main_cat_1_sub_1.slug,
                         "ordering": main_cat_1_sub_1.ordering,
-                        "children": [],
+                        "children": None,
                     },
                     {
                         "id": main_cat_1_sub_2.id,
                         "name": main_cat_1_sub_2.name,
                         "slug": main_cat_1_sub_2.slug,
                         "ordering": main_cat_1_sub_2.ordering,
-                        "children": [],
+                        "children": None,
                     },
                 ],
             },
@@ -62,7 +62,7 @@ class TestPublicCategoriesEndpoints:
                         "name": main_cat_2_sub_1.name,
                         "slug": main_cat_2_sub_1.slug,
                         "ordering": main_cat_2_sub_1.ordering,
-                        "children": [],
+                        "children": None,
                     }
                 ],
             },
@@ -280,7 +280,7 @@ class TestPublicCategoriesEndpoints:
                 f"{self.BASE_ENDPOINT}/category/does-not-exist/products/"
             )
 
-        assert failed_response == 404
+        assert failed_response.status_code == 404
 
     def test_anonymous_request_category_detail_api(
         self, anonymous_client, django_assert_max_num_queries
