@@ -3,8 +3,8 @@ from typing import Union
 from django.db.models import QuerySet
 
 from aria.categories.models import Category
-from aria.products.models import Product
 from aria.categories.schemas.records import CategoryDetailRecord, CategoryRecord
+from aria.products.models import Product
 
 
 def categories_navigation_list() -> Union[QuerySet, Category]:
@@ -15,12 +15,14 @@ def categories_navigation_list() -> Union[QuerySet, Category]:
     return Category.objects.primary_and_secondary().get_cached_trees()
 
 
-def categories_navigation_active_list() -> Union[QuerySet, Category]:
+def categories_navigation_active_list() -> list[CategoryDetailRecord]:
     """
     Returns a queryset of active navigation categories.
     """
 
-    return Category.objects.primary_and_secondary().active().get_cached_trees()
+    categories = Category.objects.primary_and_secondary().active().get_cached_trees()
+
+    return [category_detail_record(category=category) for category in categories]
 
 
 def categories_parent_active_list() -> Union[QuerySet, Category]:
@@ -78,27 +80,6 @@ def categories_children_active_list_for_category(
     ]
 
 
-def categories_siblings_active_list_for_category(
-    category: Category,
-) -> list[CategoryRecord]:
-    """
-    Get a list of active siblings for a single category instance.
-    """
-
-    siblings = category.get_siblings(include_self=True).active().get_cached_trees()
-
-    return [
-        CategoryRecord(
-            id=sibling.id,
-            name=sibling.name,
-            slug=sibling.slug,
-            ordering=sibling.ordering,
-            parent=sibling.parent_id,
-        )
-        for sibling in siblings
-    ]
-
-
 def category_tree_active_list_for_product(*, product: Product) -> CategoryDetailRecord:
     """
     Get a full represenation of a nested category tree connected to
@@ -118,25 +99,24 @@ def category_tree_active_list_for_product(*, product: Product) -> CategoryDetail
         # If prefetched value does not exist, fall back to a queryset.
         active_categories = product.categories.active().order_by("-mptt_level")
 
-    return [category_record(category=category) for category in active_categories]
+    return [category_detail_record(category=category) for category in active_categories]
 
 
-def category_record(*, category: Category) -> CategoryDetailRecord:
+def category_detail_record(*, category: Category) -> CategoryDetailRecord:
     """
     Get the record representation for a single category instance.
     """
 
     parents = categories_parents_active_list_for_category(category=category)
-    siblings = categories_siblings_active_list_for_category(category=category)
     children = categories_children_active_list_for_category(category=category)
 
     return CategoryDetailRecord(
         id=category.id,
         name=category.name,
         ordering=category.ordering,
+        slug=category.slug,
         description=category.description,
         parent=category.parent_id,
         parents=parents,
-        siblings=siblings,
         children=children,
     )

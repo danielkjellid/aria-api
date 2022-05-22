@@ -1,13 +1,8 @@
-from ninja import Schema
-from aria.core.schemas.records import BaseHeaderImageRecord
-from aria.products.schemas.records import (
-    ProductOptionRecord,
-    ProductShapeRecord,
-    ProductColorRecord,
-    ProductFileRecord,
-    ProductSupplierRecord,
-)
 from decimal import Decimal
+
+from ninja import Schema
+
+from aria.core.schemas.records import BaseHeaderImageRecord
 from aria.products.enums import ProductStatus
 
 

@@ -13,8 +13,8 @@ class CategoryDetailRecord(BaseModel):
     id: int
     name: str
     ordering: int
+    slug: str
     description: str
     parent: int | None
     parents: list[CategoryRecord]
-    siblings: list[CategoryRecord]
     children: list[CategoryRecord]
