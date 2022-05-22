@@ -84,6 +84,7 @@ def category_record(*, category: Category) -> CategoryRecord:
         id=category.id,
         name=category.name,
         slug=category.slug,
+        description=category.description,
         ordering=category.ordering,
         parent=category.parent_id,
         images=base_header_image_record(instance=category),

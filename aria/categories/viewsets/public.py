@@ -6,72 +6,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from aria.categories.models import Category
-from aria.categories.selectors import (
-    categories_children_active_list_for_category,
-    categories_parent_active_list,
-)
 from aria.core.deprecated_schemas import APIViewSchema
 from aria.core.pagination import LimitOffsetPagination, get_paginated_response
-from aria.core.serializers import (
-    BaseHeaderImageSerializer,
-    BaseListImageSerializer,
-    inline_serializer,
-)
+from aria.core.serializers import BaseHeaderImageSerializer, inline_serializer
 from aria.products.selectors import product_list_by_category
-
-
-class CategoryParentListAPI(APIView):
-    """
-    [PUBLIC] Endpoint for getting a list of parent
-    categories.
-    """
-
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-    schema = APIViewSchema()
-
-    class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
-        name = serializers.CharField()
-        slug = serializers.SlugField()
-        ordering = serializers.IntegerField()
-        images = BaseHeaderImageSerializer(source="*", read_only=True)
-
-    @APIViewSchema.serializer(OutputSerializer())
-    def get(self, request: HttpRequest) -> HttpResponse:
-        parent_categories = categories_parent_active_list()
-        serializer = self.OutputSerializer(parent_categories, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class CategoryChildrenListAPI(APIView):
-    """
-    [PUBLIC] Endpoint for getting a list of children
-    categories attached to a specific parent.
-    """
-
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
-    schema = APIViewSchema()
-
-    class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
-        name = serializers.CharField()
-        slug = serializers.SlugField()
-        ordering = serializers.IntegerField()
-        description = serializers.CharField()
-        images = BaseListImageSerializer(source="*", read_only=True)
-
-    @APIViewSchema.serializer(OutputSerializer())
-    def get(self, request: HttpRequest, category_slug: str) -> HttpResponse:
-        parent = get_object_or_404(Category, slug=category_slug)
-        children_categories = categories_children_active_list_for_category(
-            category=parent
-        )
-        serializer = self.OutputSerializer(children_categories, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CategoryProductsListAPI(APIView):

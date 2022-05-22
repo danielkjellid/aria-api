@@ -1,8 +1,16 @@
+from django.shortcuts import get_object_or_404
+
 from ninja import Router
 
 from aria.api.decorators import api
-from aria.categories.schemas.outputs import CategoryListOutput, CategoryParentListOutput
+from aria.categories.models import Category
+from aria.categories.schemas.outputs import (
+    CategoryChildrenListOutput,
+    CategoryListOutput,
+    CategoryParentListOutput,
+)
 from aria.categories.selectors import (
+    categories_children_active_list_for_category,
     categories_navigation_active_list,
     categories_parent_active_list,
 )
@@ -44,8 +52,20 @@ def category_parent_list_api(request):
     return parent_categories
 
 
-def category_children_list_api(request):
-    pass
+@api(
+    router,
+    "category/{category_slug}/children/",
+    method="GET",
+    response={200: list[CategoryChildrenListOutput]},
+    summary="List all active children categories bellonging to a parent",
+)
+def category_children_list_api(request, category_slug: str):
+    parent_category = get_object_or_404(Category, slug=category_slug)
+    children_categories = categories_children_active_list_for_category(
+        category=parent_category
+    )
+
+    return children_categories
 
 
 def category_products_list_api(request):

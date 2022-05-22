@@ -137,7 +137,61 @@ class TestPublicCategoriesEndpoints:
     def test_anonymous_request_category_children_list_api(
         self, anonymous_client, django_assert_max_num_queries
     ):
-        pass
+        """
+        Test listing parent categories from an anonymous client returns
+        a valid response.
+        """
+
+        cat_1 = create_category(name="Main cat 1")
+        sub_1 = create_category("Sub cat 1.1", parent=cat_1)
+        sub_2 = create_category("Sub cat 1.2", parent=cat_1)
+
+        expected_response = [
+            {
+                "id": sub_1.id,
+                "name": sub_1.name,
+                "slug": sub_1.slug,
+                "ordering": sub_1.ordering,
+                "description": sub_1.description,
+                "images": {
+                    "apply_filter": sub_1.apply_filter,
+                    "image_512x512": sub_1.image_512x512.url,
+                    "image_640x275": sub_1.image_640x275.url,
+                    "image_1024x575": sub_1.image_1024x575.url,
+                    "image_1024x1024": sub_1.image_1024x1024.url,
+                    "image_1536x860": sub_1.image_1536x860.url,
+                    "image_2048x1150": sub_1.image_2048x1150.url,
+                },
+            },
+            {
+                "id": sub_2.id,
+                "name": sub_2.name,
+                "slug": sub_2.slug,
+                "ordering": sub_2.ordering,
+                "description": sub_2.description,
+                "images": {
+                    "apply_filter": sub_2.apply_filter,
+                    "image_512x512": sub_2.image_512x512.url,
+                    "image_640x275": sub_2.image_640x275.url,
+                    "image_1024x575": sub_2.image_1024x575.url,
+                    "image_1024x1024": sub_2.image_1024x1024.url,
+                    "image_1536x860": sub_2.image_1536x860.url,
+                    "image_2048x1150": sub_2.image_2048x1150.url,
+                },
+            },
+        ]
+
+        # Uses 2 queries: 1 for checking if category with procided slug
+        # exist, and 1 for getting children.
+        with django_assert_max_num_queries(2):
+            response = anonymous_client.get(
+                f"{self.BASE_ENDPOINT}/category/{cat_1.slug}/children/"
+            )
+
+        actual_response = json.loads(response.content)
+
+        assert response.status_code == 200
+        assert actual_response == expected_response
 
     def test_anonymous_request_category_products_list_api(
         self, anonymous_client, django_assert_max_num_queries

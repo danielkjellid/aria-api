@@ -7,6 +7,7 @@ class CategoryRecord(BaseModel):
     id: int
     name: str
     slug: str
+    description: str
     ordering: int
     parent: int | None
     images: BaseHeaderImageRecord
