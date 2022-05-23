@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import List, Union
 
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
@@ -325,35 +324,8 @@ class Product(BaseModel, BaseThumbnailImageModel):
     def rooms_display(self) -> list[str]:
         return get_array_field_labels(self.rooms, enums.ProductRooms)
 
-    def _get_array_field_labels(self, field, enum):
-        """
-        Return a list of human readable labels for ArrayChoiceFields
-        """
-
-        if field is None:
-            return []
-
-        # TODO: Remove value as dict, done now to not mess up frontend
-        return [{"name": item.label} for item in enum for f in field if item.value == f]
-
-    def get_materials_display(self) -> List:
-        return self._get_array_field_labels(self.materials, enums.ProductMaterials)
-
-    def get_rooms_display(self) -> List:
-        return self._get_array_field_labels(self.rooms, enums.ProductRooms)
-
     def get_lowest_option_price(self) -> Decimal:
         return self.options.all().aggregate(Min("gross_price"))["gross_price__min"]
-
-    def get_display_price(self) -> bool:
-        current_site = Site.objects.get_current()
-        try:
-            return self.site_states.get(site=current_site).display_price
-        except ProductSiteState.DoesNotExist:
-            return False
-
-    def get_variants(self) -> Union[models.QuerySet, Variant]:
-        return Variant.objects.filter(product_options__product=self).distinct("pk")
 
 
 _ProductImageManager = models.Manager.from_queryset(ProductImageQuerySet)

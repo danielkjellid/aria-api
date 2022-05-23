@@ -2,90 +2,14 @@ from decimal import Decimal
 
 import pytest
 
-from aria.categories.tests.utils import create_category
 from aria.products.models import Product
-from aria.products.selectors import (
-    product_detail,
-    product_list_by_category,
-    product_options_list_for_product,
-)
+from aria.products.selectors import product_detail, product_options_list_for_product
 from aria.products.tests.utils import create_product, create_product_option
 
 pytestmark = pytest.mark.django_db
 
 
 class TestProductsSelectors:
-    def test_product_list_by_category(self, django_assert_max_num_queries):
-        """
-        Test that the product_list_by_category is able to get products
-        with right category, and filter's the query correctly if needed.
-        """
-
-        category_1 = create_category()
-        subcategory_1 = create_category(name="Floor times", parent=category_1)
-        products_cat_1 = create_product(quantity=5)
-
-        # Set all categories in products_cat_1 to subcategory_1.
-        for product in products_cat_1:
-            product.categories.set([subcategory_1])
-
-        category_2 = create_category()
-        subcategory_2 = create_category(name="Wall tiles", parent=category_2)
-        products_cat_2 = create_product(quantity=3)
-
-        # Set all categories in products_cat_1 to subcategory_1.
-        for product in products_cat_2:
-            product.categories.set([subcategory_2])
-
-        # Manually set atributes to be able to filter later on.
-        products_cat_2[0].name = "Awesome product"
-        products_cat_2[0].save()
-        products_cat_2[1].materials = ["wood"]
-        products_cat_2[1].save()
-
-        # Check that we're in a good place before continuing.
-        assert Product.objects.count() == 8
-
-        # Test initially filtering on subcategory_1.
-        with django_assert_max_num_queries(7):
-            filtered_product_subcat_1 = product_list_by_category(
-                filters=None, category=subcategory_1
-            )
-
-        # Assert that it's only the 5 connected to the query thats returned.
-        assert len(filtered_product_subcat_1) == 5
-
-        # Test filtering on subcategory_2.
-        with django_assert_max_num_queries(7):
-            filtered_product_subcat_2 = product_list_by_category(
-                filters=None, category=subcategory_2
-            )
-
-        # Assert that it's only the 3 connected to the query thats returned.
-        assert len(filtered_product_subcat_2) == 3
-
-        # Test filtering on subcategory_2 and name = "Awesome product".
-        with django_assert_max_num_queries(7):
-            filtered_product_subcat_2 = product_list_by_category(
-                filters={"search": "Awesome product"}, category=subcategory_2
-            )
-
-        # Assert that only one item is returned, and the item in question
-        # is the first element in products_cat_2.
-        assert len(filtered_product_subcat_2) == 1
-        assert filtered_product_subcat_2[0].id == products_cat_2[0].id
-
-        # Test filtering on subcategory_2 and partial material "woo".
-        with django_assert_max_num_queries(7):
-            filtered_product_subcat_2 = product_list_by_category(
-                filters={"search": "woo"}, category=subcategory_2
-            )
-
-        # Assert that only one item is returned, and the item in question
-        # is the second element in products_cat_2.
-        assert len(filtered_product_subcat_2) == 1
-        assert filtered_product_subcat_2[0].id == products_cat_2[1].id
-
     def test_product_options_list_for_product(self, django_assert_max_num_queries):
         """
         Test that the product_options_list_for_product selector returns

@@ -104,11 +104,3 @@ class Category(MPTTModel, BaseModel, BaseHeaderImageModel, BaseListImageModel):
             image_1536x860=self.image_1536x860.url,
             image_2048x1150=self.image_2048x1150.url,
         )
-
-    def get_products(self):
-        """
-        Returns products from this category.
-        """
-        from aria.products.models import Product
-
-        return Product.objects.by_category(self).preload_for_list()

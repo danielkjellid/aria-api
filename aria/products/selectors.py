@@ -1,10 +1,8 @@
 from django.db.models import Q
 
-from aria.categories.models import Category
 from aria.categories.selectors import category_tree_active_list_for_product
 from aria.core.schemas.records import BaseHeaderImageRecord
 from aria.products.enums import ProductStatus, ProductUnit
-from aria.products.filters import ProductSearchFilter
 from aria.products.models import Product
 from aria.products.schemas.records import (
     ProductColorRecord,
@@ -17,22 +15,6 @@ from aria.products.schemas.records import (
     ProductSupplierRecord,
     ProductVariantRecord,
 )
-
-
-def product_list_by_category(
-    *, filters=None, category: Category
-) -> list[ProductRecord]:
-    """
-    Returns a list of products belonging to the given
-    category parent slug.
-    """
-
-    filters = filters or {}
-
-    qs = category.get_products().filter(status=ProductStatus.AVAILABLE)
-    filtered_qs = ProductSearchFilter(filters, qs).qs
-
-    return [product_record(product=product) for product in filtered_qs]
 
 
 def product_options_list_for_product(product: Product) -> list[ProductOptionRecord]:
