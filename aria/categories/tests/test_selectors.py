@@ -122,9 +122,11 @@ class TestCategoriesSelectors:
         with django_assert_max_num_queries(3):
             category_tree = category_tree_active_list_for_product(product=product)
 
-        assert len(category_tree) == 2  # The two subcategories.
-        assert category_tree[0].id == subcat_1.id
-        assert category_tree[1].id == subcat_2.id
+        sorted_category_tree = sorted(category_tree, key=lambda c: c.id)
+
+        assert len(sorted_category_tree) == 2  # The two subcategories.
+        assert sorted_category_tree[0].id == subcat_1.id
+        assert sorted_category_tree[1].id == subcat_2.id
 
         prefetched_product = (
             Product.objects.filter(id=product.id).with_active_categories().first()
@@ -137,9 +139,13 @@ class TestCategoriesSelectors:
                 product=prefetched_product
             )
 
-        assert len(prefetched_category_tree) == 2
-        assert prefetched_category_tree[0].id == subcat_1.id
-        assert prefetched_category_tree[1].id == subcat_2.id
+        sorted_prefetched_category_tree = sorted(
+            prefetched_category_tree, key=lambda c: c.id
+        )
+
+        assert len(sorted_prefetched_category_tree) == 2
+        assert sorted_prefetched_category_tree[0].id == subcat_1.id
+        assert sorted_prefetched_category_tree[1].id == subcat_2.id
 
     def test_category_related_product_list_by_category(
         self, django_assert_max_num_queries
