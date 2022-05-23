@@ -7,7 +7,7 @@ from aria.categories.schemas.records import (
     CategoryProductVariantRecord,
     CategoryRecord,
 )
-from aria.core.selectors import base_header_image_record
+from aria.core.selectors import base_header_image_record, base_list_image_record
 from aria.products.enums import ProductUnit
 from aria.products.filters import ProductSearchFilter
 from aria.products.models import Product
@@ -26,6 +26,7 @@ def category_record(*, category: Category) -> CategoryRecord:
         ordering=category.ordering,
         parent=category.parent_id,
         images=base_header_image_record(instance=category),
+        list_images=base_list_image_record(instance=category),
     )
 
 
@@ -47,6 +48,7 @@ def category_detail_record(*, category: Category) -> CategoryDetailRecord:
         parents=parents,
         children=children,
         images=base_header_image_record(instance=category),
+        list_images=base_list_image_record(instance=category),
     )
 
 

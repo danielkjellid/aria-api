@@ -12,7 +12,7 @@ router = Router(tags="products")
 
 @api(
     router,
-    "{product_slug}/",
+    "product/{product_slug}/",
     method="GET",
     response={200: ProductDetailOutput},
     summary="Get information about a single product instance",

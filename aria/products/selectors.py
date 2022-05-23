@@ -57,6 +57,7 @@ def product_options_list_for_product(product: Product) -> list[ProductOptionReco
                 height=option.size.height,
                 depth=option.size.depth,
                 circumference=option.size.circumference,
+                name=option.size.name,
             )
             if option.size
             else None,
@@ -157,7 +158,7 @@ def product_record(product: Product) -> ProductRecord:
         slug=product.slug,
         search_keywords=product.search_keywords,
         short_description=product.short_description,
-        description=product.description,  # Deprecated
+        description=product.new_description,
         new_description=product.new_description,
         unit=ProductUnit(product.unit).label,
         vat_rate=product.vat_rate,

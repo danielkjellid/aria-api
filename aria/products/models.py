@@ -108,6 +108,10 @@ class Size(models.Model):
 
         return f"B{self.convert_to_self_repr(self.width)} x H{self.convert_to_self_repr(self.height)}"
 
+    @property
+    def name(self) -> str:
+        return self.__str__()
+
     @staticmethod
     def convert_to_self_repr(n):
         """

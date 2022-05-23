@@ -31,6 +31,7 @@ class ProductSizeRecord(BaseModel):
     height: Decimal | None = None
     depth: Decimal | None = None
     circumference: Decimal | None = None
+    name: str
 
 
 class ProductOptionRecord(BaseModel):

@@ -10,26 +10,23 @@ class ProductSupplierOutput(Schema):
     origin_country: str
 
 
-class ProductVariantRecord(Schema):
+class ProductVariantOutput(Schema):
     id: int
     name: str
     image: str | None
 
 
-class ProductSizeRecord(Schema):
+class ProductSizeOutput(Schema):
     id: int
-    width: Decimal | None = None
-    height: Decimal | None = None
-    depth: Decimal | None = None
-    circumference: Decimal | None = None
+    name: str
 
 
 class ProductOptionOutput(Schema):
     id: int
     gross_price: Decimal
     status: str
-    variant: ProductVariantRecord | None
-    size: ProductSizeRecord | None
+    variant: ProductVariantOutput | None
+    size: ProductSizeOutput | None
 
 
 class ProductColorOutput(Schema):

@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from pydantic import BaseModel
 
-from aria.core.schemas.records import BaseHeaderImageRecord
+from aria.core.schemas.records import BaseHeaderImageRecord, BaseListImageRecord
 
 
 class CategoryRecord(BaseModel):
@@ -13,6 +13,7 @@ class CategoryRecord(BaseModel):
     ordering: int
     parent: int | None
     images: BaseHeaderImageRecord
+    list_images: BaseListImageRecord
 
 
 class CategoryDetailRecord(BaseModel):
@@ -25,6 +26,7 @@ class CategoryDetailRecord(BaseModel):
     parents: list[CategoryRecord]
     children: list[CategoryRecord]
     images: BaseHeaderImageRecord
+    list_images: BaseListImageRecord
 
 
 class CategoryProductColorRecord(BaseModel):
