@@ -4,7 +4,6 @@ from pydantic import BaseModel
 
 from aria.categories.schemas.records import CategoryDetailRecord
 from aria.core.schemas.records import BaseHeaderImageRecord
-from aria.products.enums import ProductStatus
 
 
 class ProductSupplierRecord(BaseModel):
@@ -37,7 +36,7 @@ class ProductSizeRecord(BaseModel):
 class ProductOptionRecord(BaseModel):
     id: int
     gross_price: Decimal
-    status: ProductStatus
+    status: str
     variant: ProductVariantRecord | None
     size: ProductSizeRecord | None
 
@@ -71,7 +70,7 @@ class ProductRecord(BaseModel):
     is_imported_from_external_source: bool = False
     rooms: list[str] | None = []
     materials: list[str] | None
-    thumbnail: str
+    thumbnail: str | None
 
 
 class ProductDetailRecord(ProductRecord):

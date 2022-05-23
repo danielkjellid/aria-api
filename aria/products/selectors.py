@@ -60,7 +60,7 @@ def product_options_list_for_product(product: Product) -> list[ProductOptionReco
         ProductOptionRecord(
             id=option.id,
             gross_price=option.gross_price,
-            status=option.status,
+            status=ProductStatus(option.status).label,
             variant=ProductVariantRecord(
                 id=option.variant.id,
                 name=option.variant.name,
@@ -184,5 +184,5 @@ def product_record(product: Product) -> ProductRecord:
         is_imported_from_external_source=product.is_imported_from_external_source,
         materials=product.materials_display,
         rooms=product.rooms_display,
-        thumbnail=product.thumbnail.url,
+        thumbnail=product.thumbnail.url if product.thumbnail else None,
     )

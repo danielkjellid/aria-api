@@ -3,7 +3,6 @@ from decimal import Decimal
 from ninja import Schema
 
 from aria.core.schemas.records import BaseHeaderImageRecord
-from aria.products.enums import ProductStatus
 
 
 class ProductSupplierOutput(Schema):
@@ -28,7 +27,7 @@ class ProductSizeRecord(Schema):
 class ProductOptionOutput(Schema):
     id: int
     gross_price: Decimal
-    status: ProductStatus
+    status: str
     variant: ProductVariantRecord | None
     size: ProductSizeRecord | None
 
