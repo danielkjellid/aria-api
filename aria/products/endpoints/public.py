@@ -1,9 +1,11 @@
-from ninja import Router
 from django.utils.translation import gettext as _
+
+from ninja import Router
+
 from aria.api.decorators import api
+from aria.core.exceptions import ApplicationError
 from aria.products.schemas.outputs import ProductDetailOutput
 from aria.products.selectors import product_detail
-from aria.core.exceptions import ApplicationError
 
 router = Router(tags="products")
 

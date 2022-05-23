@@ -1,13 +1,15 @@
+from decimal import Decimal
+
 import pytest
+
+from aria.categories.tests.utils import create_category
+from aria.products.models import Product
 from aria.products.selectors import (
+    product_detail,
     product_list_by_category,
     product_options_list_for_product,
-    product_detail,
 )
-from aria.products.models import Product
 from aria.products.tests.utils import create_product, create_product_option
-from aria.categories.tests.utils import create_category
-from decimal import Decimal
 
 pytestmark = pytest.mark.django_db
 

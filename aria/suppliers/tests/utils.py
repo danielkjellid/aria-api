@@ -1,6 +1,7 @@
-from aria.suppliers.models import Supplier
-from aria.core.tests.utils import create_site
 from django.contrib.sites.models import Site
+
+from aria.core.tests.utils import create_site
+from aria.suppliers.models import Supplier
 
 
 def get_or_create_supplier(
