@@ -132,7 +132,6 @@ class Plywood(models.Model):
 
     UPLOAD_PATH = kitchen_playwood_upload_path
 
-    # TODO: Remove image when images are uploaded to thumbnail instead
     image = ProcessedImageField(
         upload_to="t",
         processors=[ResizeToFill(80, 80)],
