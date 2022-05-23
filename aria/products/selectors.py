@@ -1,7 +1,7 @@
 from django.db.models import Q
 
 from aria.categories.selectors import category_tree_active_list_for_product
-from aria.core.schemas.records import BaseHeaderImageRecord
+from aria.core.selectors import base_header_image_record
 from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.models import Product
 from aria.products.schemas.records import (
@@ -116,24 +116,7 @@ def product_detail(
             for file in product.files.all()
         ],
         images=[
-            BaseHeaderImageRecord(
-                apply_filter=image.apply_filter,
-                image_640x275=image.image_640x275.url if image.image_640x275 else None,
-                image_1024x1024=image.image_1024x1024.url
-                if image.image_1024x1024
-                else None,
-                image_512x512=image.image_512x512.url if image.image_512x512 else None,
-                image_1024x575=image.image_1024x575.url
-                if image.image_1024x575
-                else None,
-                image_1536x860=image.image_1536x860.url
-                if image.image_1536x860
-                else None,
-                image_2048x1150=image.image_2048x1150.url
-                if image.image_2048x1150
-                else None,
-            )
-            for image in product.images.all()
+            base_header_image_record(instance=image) for image in product.images.all()
         ],
         options=options,
     )
