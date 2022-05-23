@@ -11,7 +11,6 @@ api_patterns = [
 
 urlpatterns = [
     path("alpha/", admin.site.urls),
-    path("api/", include("aria.kitchens.urls")),
     path("api/", include("aria.notes.urls")),
     path("api-auth/", include("rest_framework.urls")),
     path("api/", include(api_patterns)),

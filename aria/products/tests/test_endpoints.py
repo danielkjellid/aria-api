@@ -100,4 +100,4 @@ class TestPublicProductsEndpoints:
                 f"{self.BASE_ENDPOINT}/does-not-exist/"
             )
 
-            assert failed_response.status_code == 404
+        assert failed_response.status_code == 404

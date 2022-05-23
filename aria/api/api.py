@@ -9,6 +9,7 @@ from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
 from aria.api_auth.exceptions import TokenError
 from aria.categories.endpoints import public_endpoints as public_categories_endpoints
 from aria.core.exceptions import ApplicationError
+from aria.kitchens.endpoints import public_endpoints as public_kitchens_endpoints
 from aria.products.endpoints import public_endpoints as public_products_endpoints
 from aria.suppliers.endpoints import public_endpoints as public_suppliers_endpoints
 from aria.users.endpoints import (
@@ -27,14 +28,19 @@ api.add_router(
     "/categories/", public_categories_endpoints, tags=["[PUBLIC] Categories"], auth=None
 )
 
+# Kitchens endpoints
+api.add_router(
+    "/kitchens/", public_kitchens_endpoints, tags=["[PUBLIC] Kitchens"], auth=None
+)
+
 # Products endpoints
 api.add_router(
-    "products/", public_products_endpoints, tags=["[PUBLIC] Products"], auth=None
+    "/products/", public_products_endpoints, tags=["[PUBLIC] Products"], auth=None
 )
 
 # Suppliers endpoints
 api.add_router(
-    "suppliers/", public_suppliers_endpoints, tags=["[PUBLIC] Suppliers"], auth=None
+    "/suppliers/", public_suppliers_endpoints, tags=["[PUBLIC] Suppliers"], auth=None
 )
 
 # Users endpoints

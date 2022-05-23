@@ -2,15 +2,18 @@ from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
-from imagekit.models import ImageSpecField, ProcessedImageField
+from imagekit.models.fields import ProcessedImageField
 from imagekit.processors import ResizeToFill
 
-from aria.core.models import BaseHeaderImageModel, BaseModel, BaseThumbnailImageModel
+from aria.core.models import BaseHeaderImageModel, BaseListImageModel, BaseModel
+from aria.kitchens.managers import KitchenQuerySet
 from aria.products.enums import ProductStatus
 from aria.suppliers.models import Supplier
 
+_KitchenManager = models.Manager.from_queryset(KitchenQuerySet)
 
-class Kitchen(BaseModel, BaseHeaderImageModel):
+
+class Kitchen(BaseModel, BaseHeaderImageModel, BaseListImageModel):
     @property
     def kitchen_image_directory(self):
         return f"media/kitchens/{slugify(self.name)}"
@@ -56,50 +59,25 @@ class Kitchen(BaseModel, BaseHeaderImageModel):
         ),
     )
     silk_variants = models.ManyToManyField(
-        "kitchens.SilkColor", related_name="kitchen_silk", blank=True
+        "kitchens.SilkColor", related_name="kitchens", blank=True
     )
     decor_variants = models.ManyToManyField(
-        "kitchens.Decor", related_name="kitchen_decor", blank=True
+        "kitchens.Decor", related_name="kitchens", blank=True
     )
     plywood_variants = models.ManyToManyField(
-        "kitchens.Plywood", related_name="kitchen_plywood", blank=True
+        "kitchens.Plywood", related_name="kitchens", blank=True
     )
     laminate_variants = models.ManyToManyField(
-        "kitchens.LaminateColor", related_name="kitchen_decor", blank=True
+        "kitchens.LaminateColor", related_name="kitchens", blank=True
     )
     exclusive_variants = models.ManyToManyField(
-        "kitchens.ExclusiveColor", related_name="kitchen_exclusive", blank=True
+        "kitchens.ExclusiveColor", related_name="kitchens", blank=True
     )
     trend_variants = models.ManyToManyField(
-        "kitchens.TrendColor", related_name="kitchen_decor", blank=True
+        "kitchens.TrendColor", related_name="kitchens", blank=True
     )
-    created_at = models.DateTimeField(_("Date created"), auto_now_add=True)
-    updated_at = models.DateTimeField(_("Date updated"), auto_now=True)
-    apply_filter = models.BooleanField(
-        _("Apply filter"),
-        default=False,
-        help_text=_(
-            "Apply filter to image if the image is light to maintain an acceptable contrast"
-        ),
-    )
-    thumbnail_500x305 = ImageSpecField(
-        source="image",
-        processors=[ResizeToFill(500, 305)],
-        format="JPEG",
-        options={"quality": 90},
-    )
-    thumbnail_660x400 = ImageSpecField(
-        source="image",
-        processors=[ResizeToFill(660, 400)],
-        format="JPEG",
-        options={"quality": 90},
-    )
-    thumbnail_850x520 = ImageSpecField(
-        source="image",
-        processors=[ResizeToFill(850, 520)],
-        format="JPEG",
-        options={"quality": 90},
-    )
+
+    objects = _KitchenManager()
 
     class Meta:
         verbose_name = _("Kitchen")
@@ -122,8 +100,13 @@ class SilkColor(models.Model):
         return self.name
 
 
-class Decor(BaseThumbnailImageModel):
-    # TODO: Remove image when images are uploaded to thumbnail instead
+class Decor(models.Model):
+    @property
+    def kitchen_decor_upload_path(self):
+        return f"media/kitchens/decors/{slugify(self.name)}"
+
+    UPLOAD_PATH = kitchen_decor_upload_path
+
     image = ProcessedImageField(
         upload_to="t",
         processors=[ResizeToFill(80, 80)],
@@ -134,16 +117,6 @@ class Decor(BaseThumbnailImageModel):
     )
     name = models.CharField(_("Kitchen decor name"), max_length=255, unique=False)
 
-    @property
-    def kitchen_decor_upload_path(self):
-        return f"media/kitchens/decors/{slugify(self.name)}"
-
-    # Set height and with of generated image (in pixels)
-    WIDTH = 80
-    HEIGHT = 80
-
-    UPLOAD_PATH = kitchen_decor_upload_path
-
     class Meta:
         verbose_name = _("Decor")
         verbose_name_plural = _("Decors")
@@ -152,8 +125,13 @@ class Decor(BaseThumbnailImageModel):
         return self.name
 
 
-class Plywood(BaseThumbnailImageModel):
-    # TODO: Remove image when images are uploaded to thumbnail instead
+class Plywood(models.Model):
+    @property
+    def kitchen_playwood_upload_path(self):
+        return f"media/kitchens/plywoods/{slugify(self.name)}"
+
+    UPLOAD_PATH = kitchen_playwood_upload_path
+
     image = ProcessedImageField(
         upload_to="t",
         processors=[ResizeToFill(80, 80)],
@@ -163,16 +141,6 @@ class Plywood(BaseThumbnailImageModel):
         null=True,
     )
     name = models.CharField(_("Kitchen playwood name"), max_length=255, unique=False)
-
-    @property
-    def kitchen_playwood_upload_path(self):
-        return f"media/kitchens/plywoods/{slugify(self.name)}"
-
-    # Set height and with of generated image (in pixels)
-    WIDTH = 80
-    HEIGHT = 80
-
-    UPLOAD_PATH = kitchen_playwood_upload_path
 
     class Meta:
         verbose_name = _("Plywood")

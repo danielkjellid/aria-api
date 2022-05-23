@@ -63,7 +63,9 @@ class QueryCountWarningMiddleware(MiddlewareMixin):
 
         # Get some debug data from the connection object
         query_count = len(connection.queries)
-        query_duration = sum(float(q.get("time")) for q in connection.queries) * 1000
+        query_duration = round(
+            sum(float(q.get("time")) for q in connection.queries) * 1000
+        )
 
         if settings.DEBUG:
             logger.info("Query info", num_queries=query_count, duration=query_duration)

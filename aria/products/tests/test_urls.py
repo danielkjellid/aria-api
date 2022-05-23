@@ -2,7 +2,7 @@ from django.urls import reverse
 
 
 class TestPublicProductsUrls:
-    def test_product_detail_api(self):
+    def test_url_product_detail_api(self):
         """
         Test reverse match of product_detail_api endpoint.
         """

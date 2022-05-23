@@ -54,7 +54,7 @@ def category_detail_record(*, category: Category) -> CategoryDetailRecord:
 
 def category_navigation_active_list() -> list[CategoryDetailRecord]:
     """
-    Returns a queryset of active navigation categories.
+    Returns a list of active navigation categories.
     """
 
     categories = Category.objects.primary_and_secondary().active().get_cached_trees()
@@ -64,7 +64,7 @@ def category_navigation_active_list() -> list[CategoryDetailRecord]:
 
 def category_parent_active_list() -> list[CategoryRecord]:
     """
-    Returns a queryset of active first level categories (is_primary)
+    Returns a list of active first level categories (is_primary)
     """
 
     categories = Category.objects.primary().active().get_cached_trees()
