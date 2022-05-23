@@ -5,7 +5,7 @@ from ninja import Schema
 from aria.core.schemas.records import BaseHeaderImageRecord, BaseListImageRecord
 
 
-class KithcenListOutput(Schema):
+class KitchenListOutput(Schema):
     id: int
     name: str
     slug: str

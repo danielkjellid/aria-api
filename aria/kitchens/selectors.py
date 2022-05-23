@@ -4,10 +4,38 @@ from aria.core.selectors import base_header_image_record, base_list_image_record
 from aria.kitchens.models import Kitchen
 from aria.kitchens.schemas.records import (
     KitchenDetailRecord,
+    KitchenRecord,
     KitchenSupplierRecord,
     KitchenVariantColorRecord,
     KitchenVariantRecord,
 )
+
+
+def kitchen_record(*, kitchen: Kitchen) -> KitchenRecord:
+    """
+    Get the record representation for a single kitchen instance.
+    """
+
+    return KitchenRecord(
+        id=kitchen.id,
+        name=kitchen.name,
+        slug=kitchen.slug,
+        supplier=KitchenSupplierRecord(
+            id=kitchen.supplier.id, name=kitchen.supplier.name
+        ),
+        thumbnail_description=kitchen.thumbnail_description,
+        list_images=base_list_image_record(instance=kitchen),
+    )
+
+
+def kitchen_available_list() -> list[KitchenRecord]:
+    """
+    Returns a list of active kitchens.
+    """
+
+    kitchens = Kitchen.objects.available()
+
+    return [kitchen_record(kitchen=kitchen) for kitchen in kitchens]
 
 
 def kitchen_detail(
@@ -35,13 +63,10 @@ def kitchen_detail(
     if not kitchen:
         return None
 
+    kitchen_base_record = kitchen_record(kitchen=kitchen)
+
     record = KitchenDetailRecord(
-        id=kitchen.id,
-        name=kitchen.name,
-        slug=kitchen.slug,
-        supplier=KitchenSupplierRecord(
-            id=kitchen.supplier.id, name=kitchen.supplier.name
-        ),
+        **kitchen_base_record.dict(),
         description=kitchen.description,
         extra_description=kitchen.extra_description,
         example_from_price=kitchen.example_from_price,
@@ -71,7 +96,6 @@ def kitchen_detail(
             for obj in kitchen.trend_variants.all()
         ],
         images=base_header_image_record(instance=kitchen),
-        list_images=base_list_image_record(instance=kitchen),
     )
 
     return record

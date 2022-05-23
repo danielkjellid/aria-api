@@ -6,8 +6,11 @@ from imagekit.models.fields import ProcessedImageField
 from imagekit.processors import ResizeToFill
 
 from aria.core.models import BaseHeaderImageModel, BaseListImageModel, BaseModel
+from aria.kitchens.managers import KitchenQuerySet
 from aria.products.enums import ProductStatus
 from aria.suppliers.models import Supplier
+
+_KitchenManager = models.Manager.from_queryset(KitchenQuerySet)
 
 
 class Kitchen(BaseModel, BaseHeaderImageModel, BaseListImageModel):
@@ -75,6 +78,8 @@ class Kitchen(BaseModel, BaseHeaderImageModel, BaseListImageModel):
     )
     created_at = models.DateTimeField(_("Date created"), auto_now_add=True)
     updated_at = models.DateTimeField(_("Date updated"), auto_now=True)
+
+    objects = _KitchenManager()
 
     class Meta:
         verbose_name = _("Kitchen")

@@ -22,11 +22,16 @@ class KitchenSupplierRecord(BaseModel):
     name: str
 
 
-class KitchenDetailRecord(BaseModel):
+class KitchenRecord(BaseModel):
     id: int
     name: str
     slug: str
     supplier: KitchenSupplierRecord
+    thumbnail_description: str
+    list_images: BaseListImageRecord
+
+
+class KitchenDetailRecord(KitchenRecord):
     description: str
     extra_description: str
     example_from_price: Decimal
@@ -38,4 +43,3 @@ class KitchenDetailRecord(BaseModel):
     exclusive_variants: list[KitchenVariantColorRecord]
     trend_variants: list[KitchenVariantColorRecord]
     images: BaseHeaderImageRecord
-    list_images: BaseListImageRecord

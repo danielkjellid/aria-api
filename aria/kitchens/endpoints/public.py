@@ -4,14 +4,27 @@ from ninja import Router
 
 from aria.api.decorators import api
 from aria.core.exceptions import ApplicationError
-from aria.kitchens.schemas.outputs import KitchenDetailOutput
-from aria.kitchens.selectors import kitchen_detail
+from aria.kitchens.schemas.outputs import KitchenDetailOutput, KitchenListOutput
+from aria.kitchens.selectors import kitchen_available_list, kitchen_detail
 
 router = Router(tags="kitchens")
 
 
+@api(
+    router,
+    "/",
+    method="GET",
+    response={200: list[KitchenListOutput]},
+    summary="List all available kitchens",
+)
 def kitchen_list_api(request):
-    pass
+    """
+    Retrieves a list of all kitchens with status available.
+    """
+
+    available_kitchens = kitchen_available_list()
+
+    return available_kitchens
 
 
 @api(
