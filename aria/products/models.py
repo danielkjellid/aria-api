@@ -108,7 +108,8 @@ class Size(models.Model):
 
         return f"B{self.convert_to_self_repr(self.width)} x H{self.convert_to_self_repr(self.height)}"
 
-    def convert_to_self_repr(self, n):
+    @staticmethod
+    def convert_to_self_repr(n):
         """
         Returns a whole number is decimals is .0
         """
