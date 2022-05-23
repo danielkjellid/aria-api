@@ -10,7 +10,7 @@ from aria.categories.selectors import (
     category_tree_active_list_for_product,
 )
 from aria.categories.tests.utils import create_category
-from aria.core.schemas.records import BaseHeaderImageRecord
+from aria.core.schemas.records import BaseHeaderImageRecord, BaseListImageRecord
 from aria.products.models import Product
 from aria.products.tests.utils import create_product
 
@@ -265,6 +265,11 @@ class TestCategoriesSelectors:
                         image_1536x860=subcat_1.image_1536x860.url,
                         image_2048x1150=subcat_1.image_2048x1150.url,
                     ),
+                    list_images=BaseListImageRecord(
+                        image500x305=subcat_1.image500x305.url,
+                        image600x440=subcat_1.image600x440.url,
+                        image850x520=subcat_1.image850x520.url,
+                    ),
                 ),
                 CategoryRecord(
                     id=subcat_2.id,
@@ -281,6 +286,11 @@ class TestCategoriesSelectors:
                         image_1024x1024=subcat_2.image_1024x1024.url,
                         image_1536x860=subcat_2.image_1536x860.url,
                         image_2048x1150=subcat_2.image_2048x1150.url,
+                    ),
+                    list_images=BaseListImageRecord(
+                        image500x305=subcat_2.image500x305.url,
+                        image600x440=subcat_2.image600x440.url,
+                        image850x520=subcat_2.image850x520.url,
                     ),
                 ),
                 CategoryRecord(
@@ -299,6 +309,11 @@ class TestCategoriesSelectors:
                         image_1536x860=subcat_3.image_1536x860.url,
                         image_2048x1150=subcat_3.image_2048x1150.url,
                     ),
+                    list_images=BaseListImageRecord(
+                        image500x305=subcat_3.image500x305.url,
+                        image600x440=subcat_3.image600x440.url,
+                        image850x520=subcat_3.image850x520.url,
+                    ),
                 ),
             ],
             images=BaseHeaderImageRecord(
@@ -309,6 +324,11 @@ class TestCategoriesSelectors:
                 image_1024x1024=cat_1.image_1024x1024.url,
                 image_1536x860=cat_1.image_1536x860.url,
                 image_2048x1150=cat_1.image_2048x1150.url,
+            ),
+            list_images=BaseListImageRecord(
+                image500x305=cat_1.image500x305.url,
+                image600x440=cat_1.image600x440.url,
+                image850x520=cat_1.image850x520.url,
             ),
         )
 
@@ -343,6 +363,11 @@ class TestCategoriesSelectors:
                         image_1536x860=cat_1.image_1536x860.url,
                         image_2048x1150=cat_1.image_2048x1150.url,
                     ),
+                    list_images=BaseListImageRecord(
+                        image500x305=cat_1.image500x305.url,
+                        image600x440=cat_1.image600x440.url,
+                        image850x520=cat_1.image850x520.url,
+                    ),
                 )
             ],
             children=[],
@@ -354,6 +379,11 @@ class TestCategoriesSelectors:
                 image_1024x1024=subcat_1.image_1024x1024.url,
                 image_1536x860=subcat_1.image_1536x860.url,
                 image_2048x1150=subcat_1.image_2048x1150.url,
+            ),
+            list_images=BaseListImageRecord(
+                image500x305=subcat_1.image500x305.url,
+                image600x440=subcat_1.image600x440.url,
+                image850x520=subcat_1.image850x520.url,
             ),
         )
 

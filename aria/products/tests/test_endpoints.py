@@ -27,7 +27,7 @@ class TestPublicProductsEndpoints:
             "status": ProductStatus(product.status).label,
             "unit": ProductUnit(product.unit).label,
             "name": product.name,
-            "description": product.description,
+            "description": product.new_description,
             "absorption": product.absorption,
             "materials": product.materials_display,
             "rooms": product.rooms_display,
@@ -62,10 +62,7 @@ class TestPublicProductsEndpoints:
                     else None,
                     "size": {
                         "id": option.size.id,
-                        "width": option.size.width,
-                        "height": option.size.height,
-                        "depth": option.size.depth,
-                        "circumference": option.size.circumference,
+                        "name": option.size.name,
                     }
                     if option.size
                     else None,
@@ -88,7 +85,9 @@ class TestPublicProductsEndpoints:
 
         # Test that we return a valid response on existing slug.
         with django_assert_max_num_queries(12):
-            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/{product.slug}/")
+            response = anonymous_client.get(
+                f"{self.BASE_ENDPOINT}/product/{product.slug}/"
+            )
 
         actual_response = json.loads(response.content)
 

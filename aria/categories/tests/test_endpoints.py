@@ -155,14 +155,10 @@ class TestPublicCategoriesEndpoints:
                 "slug": sub_1.slug,
                 "ordering": sub_1.ordering,
                 "description": sub_1.description,
-                "images": {
-                    "apply_filter": sub_1.apply_filter,
-                    "image_512x512": sub_1.image_512x512.url,
-                    "image_640x275": sub_1.image_640x275.url,
-                    "image_1024x575": sub_1.image_1024x575.url,
-                    "image_1024x1024": sub_1.image_1024x1024.url,
-                    "image_1536x860": sub_1.image_1536x860.url,
-                    "image_2048x1150": sub_1.image_2048x1150.url,
+                "list_images": {
+                    "image500x305": sub_1.image500x305.url,
+                    "image600x440": sub_1.image600x440.url,
+                    "image850x520": sub_1.image850x520.url,
                 },
             },
             {
@@ -171,14 +167,10 @@ class TestPublicCategoriesEndpoints:
                 "slug": sub_2.slug,
                 "ordering": sub_2.ordering,
                 "description": sub_2.description,
-                "images": {
-                    "apply_filter": sub_2.apply_filter,
-                    "image_512x512": sub_2.image_512x512.url,
-                    "image_640x275": sub_2.image_640x275.url,
-                    "image_1024x575": sub_2.image_1024x575.url,
-                    "image_1024x1024": sub_2.image_1024x1024.url,
-                    "image_1536x860": sub_2.image_1536x860.url,
-                    "image_2048x1150": sub_2.image_2048x1150.url,
+                "list_images": {
+                    "image500x305": sub_1.image500x305.url,
+                    "image600x440": sub_1.image600x440.url,
+                    "image850x520": sub_1.image850x520.url,
                 },
             },
         ]
