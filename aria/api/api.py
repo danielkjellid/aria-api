@@ -7,18 +7,30 @@ from aria.api.schemas.responses import ExceptionResponse
 from aria.api_auth.authentication import JWTAuthRequired
 from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
 from aria.api_auth.exceptions import TokenError
+from aria.categories.endpoints import public_endpoints as public_categories_endpoints
 from aria.core.exceptions import ApplicationError
+from aria.products.endpoints import public_endpoints as public_products_endpoints
 from aria.suppliers.endpoints import public_endpoints as public_suppliers_endpoints
 from aria.users.endpoints import (
     private_endpoints as private_users_endpoints,
     public_endpoints as public_users_endpoints,
 )
 
-api = NinjaAPI()
+api = NinjaAPI(title="Aria API")
 
 # API auth endpoints
 
 api.add_router("/ninja/auth/", public_auth_endpoints, tags=["[PUBLIC] Auth"], auth=None)
+
+# Categories endpoints
+api.add_router(
+    "/categories/", public_categories_endpoints, tags=["[PUBLIC] Categories"], auth=None
+)
+
+# Products endpoints
+api.add_router(
+    "products/", public_products_endpoints, tags=["[PUBLIC] Products"], auth=None
+)
 
 # Suppliers endpoints
 api.add_router(

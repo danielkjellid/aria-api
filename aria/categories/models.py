@@ -6,6 +6,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 from aria.categories.enums import PromotionType
 from aria.categories.managers import CategoryManager, CategoryQueryset
 from aria.core.models import BaseHeaderImageModel, BaseListImageModel, BaseModel
+from aria.core.schemas.records import BaseHeaderImageRecord, BaseListImageRecord
 
 
 class Category(MPTTModel, BaseModel, BaseHeaderImageModel, BaseListImageModel):
@@ -92,10 +93,21 @@ class Category(MPTTModel, BaseModel, BaseHeaderImageModel, BaseListImageModel):
     def is_new(self) -> bool:
         return self.promotion_type == PromotionType.NEW
 
-    def get_products(self):
-        """
-        Returns products from this category.
-        """
-        from aria.products.models import Product
+    @property
+    def images(self) -> BaseHeaderImageRecord:
+        return BaseHeaderImageRecord(
+            apply_filter=self.apply_filter,
+            image_512x512=self.image_512x512.url,
+            image_640x275=self.image_640x275.url,
+            image_1024x575=self.image_1024x575.url,
+            image_1024x1024=self.image_1024x1024.url,
+            image_1536x860=self.image_1536x860.url,
+            image_2048x1150=self.image_2048x1150.url,
+        )
 
-        return Product.objects.by_category(self).preload_for_list()
+    def list_images(self) -> BaseListImageRecord:
+        return BaseListImageRecord(
+            image500x305=self.image500x305.url,
+            image600x440=self.image600x440.url,
+            image850x520=self.image850x520.url,
+        )
