@@ -30,17 +30,17 @@ api.add_router(
 
 # Kitchens endpoints
 api.add_router(
-    "/ninja/kitchens/", public_kitchens_endpoints, tags=["[PUBLIC] Kitchens"], auth=None
+    "/kitchens/", public_kitchens_endpoints, tags=["[PUBLIC] Kitchens"], auth=None
 )
 
 # Products endpoints
 api.add_router(
-    "products/", public_products_endpoints, tags=["[PUBLIC] Products"], auth=None
+    "/products/", public_products_endpoints, tags=["[PUBLIC] Products"], auth=None
 )
 
 # Suppliers endpoints
 api.add_router(
-    "suppliers/", public_suppliers_endpoints, tags=["[PUBLIC] Suppliers"], auth=None
+    "/suppliers/", public_suppliers_endpoints, tags=["[PUBLIC] Suppliers"], auth=None
 )
 
 # Users endpoints

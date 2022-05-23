@@ -9,6 +9,7 @@ class KitchenListOutput(Schema):
     id: int
     name: str
     slug: str
+    thumbnail_description: str
     list_images: BaseListImageRecord
 
 
@@ -28,7 +29,7 @@ class KitchenDetailOutput(Schema):
     slug: str
     description: str
     extra_description: str
-    example_from_price: Decimal
+    example_from_price: Decimal | None
     can_be_painted: bool
     silk_variants: list[KitchenVariantColorOutput]
     decor_variants: list[KitchenVariantOutput]
