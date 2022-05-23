@@ -48,8 +48,6 @@ class TestCategoriesModels:
 
         category = Category.objects.create(**options)
 
-        print(category.__dict__)
-
         # Assert model fields
         assert category.name == "Child"
         assert category.slug == "child"
