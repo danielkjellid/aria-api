@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from ninja import Schema
 
 from aria.core.schemas.records import BaseHeaderImageRecord, BaseListImageRecord
@@ -29,7 +27,7 @@ class KitchenDetailOutput(Schema):
     slug: str
     description: str
     extra_description: str
-    example_from_price: Decimal | None
+    example_from_price: str | None
     can_be_painted: bool
     silk_variants: list[KitchenVariantColorOutput]
     decor_variants: list[KitchenVariantOutput]

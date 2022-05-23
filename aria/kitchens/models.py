@@ -76,8 +76,6 @@ class Kitchen(BaseModel, BaseHeaderImageModel, BaseListImageModel):
     trend_variants = models.ManyToManyField(
         "kitchens.TrendColor", related_name="kitchens", blank=True
     )
-    created_at = models.DateTimeField(_("Date created"), auto_now_add=True)
-    updated_at = models.DateTimeField(_("Date updated"), auto_now=True)
 
     objects = _KitchenManager()
 
