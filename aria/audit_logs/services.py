@@ -1,10 +1,11 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import ManyToOneRel, Model
 from django.utils import timezone
 
 from aria.audit_logs.models import LogEntry
+from aria.audit_logs.schemas.records import LogEntryChangeRecord, LogEntryRecord
 from aria.users.models import User
 
 
@@ -13,7 +14,7 @@ def log_entry_create(
     author: User,
     instance: Model,
     change_messages: List[Dict[str, Any]],
-) -> Union[List[LogEntry], None]:
+) -> list[LogEntryRecord]:
     """
     Generic method for creating a new logging instance which can be used in other
     update/create services.
@@ -24,7 +25,7 @@ def log_entry_create(
         {"field": ..., "old_value": ..., "new_value": ...}
     ]
 
-    The update_model core service will format and changes accordingly.
+    The update_model core service will format and change accordingly.
     """
 
     entries_to_create = []
@@ -62,11 +63,23 @@ def log_entry_create(
             content_object=instance,
             object_id=instance.id,
             change=change_message,
-            date_of_change=timezone.now(),
+            created_at=timezone.now(),
         )
 
         entries_to_create.append(new_log_entry)
 
     created_entries = LogEntry.objects.bulk_create(entries_to_create)
 
-    return created_entries
+    return [
+        LogEntryRecord(
+            id=entry.id,
+            author_id=entry.author_id,
+            change=LogEntryChangeRecord(
+                field=entry.change["field"],
+                old_value=entry.change["old_value"],
+                new_value=entry.change["new_value"],
+            ),
+            created_at=entry.created_at,
+        )
+        for entry in created_entries
+    ]

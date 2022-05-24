@@ -72,8 +72,8 @@ class TestNotesServices:
         assert updated_note.author_id == author.id
 
         # Assert correct log entry
-        assert created_log_entry.change["old_value"] == old_note_content
-        assert created_log_entry.change["new_value"] == updated_note.note
+        assert created_log_entry.change.old_value == old_note_content
+        assert created_log_entry.change.new_value == updated_note.note
 
     def test_note_entry_delete(self, django_assert_max_num_queries):
         """

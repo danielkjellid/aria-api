@@ -108,7 +108,7 @@ class TestUsersServices:
                 user=user, data=updates, author=author, log_change=True
             )
 
-        created_log_entry = log_list_for_instance(User, id=updated_user.id).first()
+        created_log_entry = log_list_for_instance(User, id=updated_user.id)[0]
 
         # Assert change
         assert updated_user.email == "updatedemail@example.com"
@@ -118,8 +118,8 @@ class TestUsersServices:
         assert updated_user.has_confirmed_email == old_user_has_confirmed_email
 
         # Assert correct log entry
-        assert created_log_entry.change["old_value"] == old_user_email
-        assert created_log_entry.change["new_value"] == updated_user.email
+        assert created_log_entry.change.old_value == old_user_email
+        assert created_log_entry.change.new_value == updated_user.email
 
     def test_user_verify_account_verifies_account(
         self, unprivileged_user, django_assert_max_num_queries

@@ -1,5 +1,7 @@
 from django.db import models
 
+from aria.core.models import BaseQuerySet
+
 
 class LogEntryManager(models.Manager):
 
@@ -18,3 +20,7 @@ class LogEntryManager(models.Manager):
             change=change,
             date_of_change=date_of_change,
         )
+
+
+class LogEntryQuerySet(BaseQuerySet):
+    pass
