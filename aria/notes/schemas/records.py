@@ -2,5 +2,6 @@ from pydantic import BaseModel
 
 
 class NoteEntryRecord(BaseModel):
-    author: int
+    id: int
+    author_id: int
     note: str
