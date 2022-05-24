@@ -71,7 +71,7 @@ class TestPrivateNotesEndpoints:
 
         # Uses 5 queries: 1 for getting the user, 2 for checking permissions,
         # 1 for getting note and 1 for deleting note.
-        with django_assert_max_num_queries(0):
+        with django_assert_max_num_queries(5):
             response = n_authenticated_privileged_client.delete(
                 f"{self.BASE_ENDPOINT}/note/{note.id}/delete/"
             )
