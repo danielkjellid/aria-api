@@ -67,7 +67,7 @@ safe = true
 profile = "black"
 skip_gitignore = true
 skip_glob = "*migrations*"
-known_django = ["django", "rest_framework"]
+known_django = ["django"]
 sections = ["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 combine_as_imports = true
 
