@@ -148,9 +148,7 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    "rest_framework",
     "corsheaders",
-    "rest_framework_simplejwt.token_blacklist",
     "django_s3_storage",
     "imagekit",
     "mptt",
