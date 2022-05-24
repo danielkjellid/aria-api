@@ -10,6 +10,7 @@ from aria.api_auth.exceptions import TokenError
 from aria.categories.endpoints import public_endpoints as public_categories_endpoints
 from aria.core.exceptions import ApplicationError
 from aria.kitchens.endpoints import public_endpoints as public_kitchens_endpoints
+from aria.notes.endpoints import private_endpoints as private_notes_endpoints
 from aria.products.endpoints import public_endpoints as public_products_endpoints
 from aria.suppliers.endpoints import public_endpoints as public_suppliers_endpoints
 from aria.users.endpoints import (
@@ -21,32 +22,65 @@ api = NinjaAPI(title="Aria API")
 
 # API auth endpoints
 
-api.add_router("/ninja/auth/", public_auth_endpoints, tags=["[PUBLIC] Auth"], auth=None)
+api.add_router(
+    "/ninja/auth/",
+    public_auth_endpoints,
+    tags=["[PUBLIC] Auth"],
+    auth=None,
+)
 
 # Categories endpoints
 api.add_router(
-    "/categories/", public_categories_endpoints, tags=["[PUBLIC] Categories"], auth=None
+    "/categories/",
+    public_categories_endpoints,
+    tags=["[PUBLIC] Categories"],
+    auth=None,
 )
 
 # Kitchens endpoints
 api.add_router(
-    "/kitchens/", public_kitchens_endpoints, tags=["[PUBLIC] Kitchens"], auth=None
+    "/kitchens/",
+    public_kitchens_endpoints,
+    tags=["[PUBLIC] Kitchens"],
+    auth=None,
+)
+
+# Notes endpoints
+api.add_router(
+    "/notes/",
+    private_notes_endpoints,
+    tags=["[PRIVATE] Notes"],
+    auth=JWTAuthRequired(),
 )
 
 # Products endpoints
 api.add_router(
-    "/products/", public_products_endpoints, tags=["[PUBLIC] Products"], auth=None
+    "/products/",
+    public_products_endpoints,
+    tags=["[PUBLIC] Products"],
+    auth=None,
 )
 
 # Suppliers endpoints
 api.add_router(
-    "/suppliers/", public_suppliers_endpoints, tags=["[PUBLIC] Suppliers"], auth=None
+    "/suppliers/",
+    public_suppliers_endpoints,
+    tags=["[PUBLIC] Suppliers"],
+    auth=None,
 )
 
 # Users endpoints
-api.add_router("/users/", public_users_endpoints, tags=["[PUBLIC] Users"], auth=None)
 api.add_router(
-    "/users/", private_users_endpoints, tags=["[PRIVATE] Users"], auth=JWTAuthRequired()
+    "/users/",
+    public_users_endpoints,
+    tags=["[PUBLIC] Users"],
+    auth=None,
+)
+api.add_router(
+    "/users/",
+    private_users_endpoints,
+    tags=["[PRIVATE] Users"],
+    auth=JWTAuthRequired(),
 )
 
 
