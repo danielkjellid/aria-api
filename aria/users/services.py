@@ -15,7 +15,7 @@ from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode as uid_decoder
 from django.utils.translation import gettext as _
 
-from aria.audit_logs.services import log_entry_create
+from aria.audit_logs.services import log_entries_create
 from aria.core.exceptions import ApplicationError
 from aria.core.schemas.records import SiteRecord
 from aria.core.services import model_update
@@ -159,7 +159,7 @@ def user_update(
     )
 
     if has_updated and author is not None and log_change:
-        log_entry_create(author=author, instance=user, change_messages=updated_fields)
+        log_entries_create(author=author, instance=user, change_messages=updated_fields)
 
     return UserRecord(
         id=user.id,

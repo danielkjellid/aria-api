@@ -1,13 +1,13 @@
 from datetime import datetime
-from decimal import Decimal
+from typing import Any
 
 from pydantic import BaseModel
 
 
 class LogEntryChangeRecord(BaseModel):
     field: str
-    old_value: str | int | Decimal | None
-    new_value: str | int | Decimal | None
+    old_value: Any
+    new_value: Any
 
 
 class LogEntryRecord(BaseModel):

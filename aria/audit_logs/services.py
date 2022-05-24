@@ -1,19 +1,21 @@
-from typing import Any, Dict, List
+from typing import List
 
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import FieldDoesNotExist
 from django.db.models import ManyToOneRel, Model
 from django.utils import timezone
 
 from aria.audit_logs.models import LogEntry
 from aria.audit_logs.schemas.records import LogEntryChangeRecord, LogEntryRecord
+from aria.audit_logs.types import ChangeMessage
 from aria.users.models import User
 
 
-def log_entry_create(
+def log_entries_create(
     *,
     author: User,
     instance: Model,
-    change_messages: List[Dict[str, Any]],
+    change_messages: List[ChangeMessage],
 ) -> list[LogEntryRecord]:
     """
     Generic method for creating a new logging instance which can be used in other
@@ -49,24 +51,32 @@ def log_entry_create(
         # Validate that there has actually been a loggable change.
         if new_value == old_value:
             raise ValueError(
-                "Error when creating logging instance, old and new values are equal."
+                f"Error when creating logging instance, old ({old_value}) and new ({new_value}) values are equal"
             )
-        # Filter out reverse relations to prevent type error, and continue
-        # to the next iteration.
-        if isinstance(instance._meta.get_field(field), ManyToOneRel):
+
+        # Check if field actually exist on model, if not, continue to next
+        # iterations.
+        try:
+            instance._meta.get_field(field)
+
+            # Filter out reverse relations to prevent type error, and continue
+            # to the next iteration.
+            if isinstance(instance._meta.get_field(field), ManyToOneRel):
+                continue
+
+            content_type = ContentType.objects.get_for_model(instance)
+            new_log_entry = LogEntry(
+                author=author,
+                content_type=content_type,
+                content_object=instance,
+                object_id=instance.id,
+                change=change_message,
+                created_at=timezone.now(),
+            )
+
+            entries_to_create.append(new_log_entry)
+        except FieldDoesNotExist:
             continue
-
-        content_type = ContentType.objects.get_for_model(instance)
-        new_log_entry = LogEntry(
-            author=author,
-            content_type=content_type,
-            content_object=instance,
-            object_id=instance.id,
-            change=change_message,
-            created_at=timezone.now(),
-        )
-
-        entries_to_create.append(new_log_entry)
 
     created_entries = LogEntry.objects.bulk_create(entries_to_create)
 

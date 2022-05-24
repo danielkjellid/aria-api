@@ -1,6 +1,6 @@
 import pytest
 
-from aria.audit_logs.selectors import log_list_for_instance
+from aria.audit_logs.selectors import log_entry_list_for_instance
 from aria.notes.models import NoteEntry
 from aria.notes.services import note_entry_create, note_entry_delete, note_entry_update
 from aria.notes.tests.utils import create_note_entry
@@ -64,7 +64,9 @@ class TestNotesServices:
                 note_id=note.id, author=author, data=updates, log_change=True
             )
 
-        created_log_entry = log_list_for_instance(NoteEntry, id=updated_note.id)[0]
+        created_log_entry = log_entry_list_for_instance(NoteEntry, id=updated_note.id)[
+            0
+        ]
 
         assert updated_note.note == "Updated user note"
 
