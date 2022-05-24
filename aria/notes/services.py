@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.db.models import Model
 
-from aria.audit_logs.services import log_entry_create
+from aria.audit_logs.services import log_entries_create
 from aria.core.services import model_update
 from aria.notes.models import NoteEntry
 from aria.notes.schemas.records import NoteEntryRecord
@@ -59,7 +59,7 @@ def note_entry_update(
     )
 
     if has_updated and author is not None and log_change:
-        log_entry_create(
+        log_entries_create(
             author=author, instance=note_entry, change_messages=updated_fields
         )
 

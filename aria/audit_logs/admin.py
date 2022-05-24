@@ -10,7 +10,7 @@ class LogEntryAdmin(admin.ModelAdmin):
         "object_id",
         "content_object",
         "change",
-        "date_of_change",
+        "created_at",
     ]
 
 

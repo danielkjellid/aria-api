@@ -5,20 +5,21 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.translation import gettext_lazy as _
 
-from aria.audit_logs.managers import LogEntryManager
+from aria.audit_logs.managers import LogEntryQuerySet
 from aria.users.models import User
+
+_LogEntryManager = models.Manager.from_queryset(LogEntryQuerySet)
 
 
 class LogEntry(models.Model):
     author = models.ForeignKey(
-        User, related_name="log_entries", on_delete=models.CASCADE
+        User, related_name="log_entries", on_delete=models.SET_NULL, null=True
     )
     content_type = models.ForeignKey(
         ContentType,
         models.SET_NULL,
-        verbose_name=_("content type"),
+        verbose_name="content type",
         blank=True,
         null=True,
         related_name="logs",
@@ -26,16 +27,15 @@ class LogEntry(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
     change = models.JSONField()
-    date_of_change = models.DateTimeField(
-        _("changed at"), default=timezone.now, editable=False
+    created_at = models.DateTimeField(
+        "changed at", default=timezone.now, editable=False
     )
 
-    # add the auditlog model to the LogEntryManager
-    objects = LogEntryManager()
+    objects = _LogEntryManager()
 
     class Meta:
-        verbose_name = _("Audit log entry")
-        verbose_name_plural = _("Audit log entries")
+        verbose_name = "Audit log entry"
+        verbose_name_plural = "Audit log entries"
         permissions = (
             ("has_audit_logs_list", "Can view audit logs"),
             ("has_audit_logs_edit", "Can edit a single log instance"),
@@ -43,7 +43,6 @@ class LogEntry(models.Model):
         )
 
     # property to parse and return the changed JSON
-    @cached_property
-    # cached property is useful as it stops parsing the changes on every access
+    @cached_property  # cached property is useful as it stops parsing the changes on every access
     def changes_dict(self):
         return json.loads(self.change)
