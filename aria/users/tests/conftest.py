@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AnonymousUser, Permission
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from rest_framework.test import APIClient
 
@@ -37,13 +36,16 @@ def create_user_with_permissions(django_user_model, site):
         )[0]
 
         parsed_perms = []
-        content_type = ContentType.objects.get_for_model(django_user_model)
 
         for perm in perms:
-            parsed_perm = Permission.objects.get(
-                codename=perm, content_type=content_type
-            )
-            parsed_perms.append(parsed_perm)
+            parsed_perm = Permission.objects.filter(codename=perm)
+
+            # If multiple codenames are found, add them all.
+            if len(parsed_perm) > 1:
+                parsed_perm = list(parsed_perm)
+                parsed_perms.extend(parsed_perm)
+            else:
+                parsed_perms.append(parsed_perm[0])
 
         user.user_permissions.set(parsed_perms)
         user.site = site
