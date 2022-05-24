@@ -6,7 +6,7 @@ from django.contrib.sites.models import Site
 import pytest
 from model_bakery import baker
 
-from aria.audit_logs.selectors import logs_for_instance_list
+from aria.audit_logs.selectors import log_list_for_instance
 from aria.core.exceptions import ApplicationError
 from aria.users.models import User
 from aria.users.services import (
@@ -108,7 +108,7 @@ class TestUsersServices:
                 user=user, data=updates, author=author, log_change=True
             )
 
-        created_log_entry = logs_for_instance_list(User, updated_user.id).first()
+        created_log_entry = log_list_for_instance(User, id=updated_user.id).first()
 
         # Assert change
         assert updated_user.email == "updatedemail@example.com"
