@@ -48,7 +48,7 @@ class TestPrivateNotesEndpoints:
         note = create_note_entry(User, id=user.id, author=author, note="Test note")
 
         # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
-        with django_assert_max_num_queries(0):
+        with django_assert_max_num_queries(3):
             response = n_authenticated_unprivileged_client.delete(
                 f"{self.BASE_ENDPOINT}/note/{note.id}/delete/"
             )
