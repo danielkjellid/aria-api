@@ -5,14 +5,9 @@ from django.urls import include, path
 
 from aria.api.api import api as endpoints
 
-api_patterns = [
-    path("auth/", include("aria.auth.urls")),
-]
-
 urlpatterns = [
     path("alpha/", admin.site.urls),
     path("api-auth/", include("rest_framework.urls")),
-    path("api/", include(api_patterns)),
     path("api/", endpoints.urls),
 ]
 
