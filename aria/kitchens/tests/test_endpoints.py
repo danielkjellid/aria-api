@@ -30,14 +30,14 @@ class TestPublicKitchensEndpoints:
 
         expected_response = [
             {
-                "id": available_kitchen_1.id,
-                "name": available_kitchen_1.name,
-                "slug": available_kitchen_1.slug,
-                "thumbnail_description": available_kitchen_1.thumbnail_description,
+                "id": available_kitchen_3.id,
+                "name": available_kitchen_3.name,
+                "slug": available_kitchen_3.slug,
+                "thumbnail_description": available_kitchen_3.thumbnail_description,
                 "list_images": {
-                    "image500x305": available_kitchen_1.image500x305.url,
-                    "image600x440": available_kitchen_1.image600x440.url,
-                    "image850x520": available_kitchen_1.image850x520.url,
+                    "image500x305": available_kitchen_3.image500x305.url,
+                    "image600x440": available_kitchen_3.image600x440.url,
+                    "image850x520": available_kitchen_3.image850x520.url,
                 },
             },
             {
@@ -52,14 +52,14 @@ class TestPublicKitchensEndpoints:
                 },
             },
             {
-                "id": available_kitchen_3.id,
-                "name": available_kitchen_3.name,
-                "slug": available_kitchen_3.slug,
-                "thumbnail_description": available_kitchen_3.thumbnail_description,
+                "id": available_kitchen_1.id,
+                "name": available_kitchen_1.name,
+                "slug": available_kitchen_1.slug,
+                "thumbnail_description": available_kitchen_1.thumbnail_description,
                 "list_images": {
-                    "image500x305": available_kitchen_3.image500x305.url,
-                    "image600x440": available_kitchen_3.image600x440.url,
-                    "image850x520": available_kitchen_3.image850x520.url,
+                    "image500x305": available_kitchen_1.image500x305.url,
+                    "image600x440": available_kitchen_1.image600x440.url,
+                    "image850x520": available_kitchen_1.image850x520.url,
                 },
             },
         ]

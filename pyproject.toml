@@ -16,8 +16,6 @@ django-filter = "^21.1"
 django-imagekit = "4.1.0"
 django-mptt = "^0.13.4"
 django-s3-storage = "0.13.6"
-djangorestframework = "^3.13.1"
-djangorestframework-simplejwt = "5.1.0"
 gunicorn = "20.1.0"
 ipython = "8.3.0"
 jedi = "0.18.0"
@@ -69,7 +67,7 @@ safe = true
 profile = "black"
 skip_gitignore = true
 skip_glob = "*migrations*"
-known_django = ["django", "rest_framework"]
+known_django = ["django"]
 sections = ["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 combine_as_imports = true
 

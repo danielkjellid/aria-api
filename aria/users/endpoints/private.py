@@ -1,4 +1,4 @@
-from rest_framework.generics import get_object_or_404
+from django.shortcuts import get_object_or_404
 
 from ninja import Query, Router
 

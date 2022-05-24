@@ -1,9 +1,7 @@
 from django.contrib.auth.models import AnonymousUser, Permission
 from django.contrib.sites.models import Site
-from rest_framework.test import APIClient
 
 import pytest
-from rest_framework_simplejwt.tokens import RefreshToken
 
 ###############
 # Permissions #
@@ -87,49 +85,3 @@ def privileged_staff_user(create_user_with_permissions, test_permissions):
 @pytest.fixture
 def superuser(create_user_with_permissions):
     return create_user_with_permissions([], is_superuser=True, is_staff=True)
-
-
-###############
-# API Clients #
-###############
-
-
-@pytest.fixture
-def unauthenticated_client():
-    return APIClient()
-
-
-@pytest.fixture
-def authenticated_unprivileged_client(unprivileged_user):
-    client = APIClient()
-    tokens = RefreshToken.for_user(unprivileged_user)
-    client.credentials(HTTP_AUTHORIZATION=f"JWT {tokens.access_token}")
-
-    return client
-
-
-@pytest.fixture
-def authenticated_privileged_client(privileged_user):
-    client = APIClient()
-    tokens = RefreshToken.for_user(privileged_user)
-    client.credentials(HTTP_AUTHORIZATION=f"JWT {tokens.access_token}")
-
-    return client
-
-
-@pytest.fixture
-def authenticated_privileged_staff_client(privileged_staff_user):
-    client = APIClient()
-    tokens = RefreshToken.for_user(privileged_staff_user)
-    client.credentials(HTTP_AUTHORIZATION=f"JWT {tokens.access_token}")
-
-    return client
-
-
-@pytest.fixture
-def authenticated_superuser_client(superuser):
-    client = APIClient()
-    tokens = RefreshToken.for_user(superuser)
-    client.credentials(HTTP_AUTHORIZATION=f"JWT {tokens.access_token}")
-
-    return client

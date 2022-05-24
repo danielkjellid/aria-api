@@ -33,7 +33,7 @@ def kitchen_available_list() -> list[KitchenRecord]:
     Returns a list of active kitchens.
     """
 
-    kitchens = Kitchen.objects.available().select_related("supplier")
+    kitchens = Kitchen.objects.available().select_related("supplier").order_by("-id")
 
     return [kitchen_record(kitchen=kitchen) for kitchen in kitchens]
 
