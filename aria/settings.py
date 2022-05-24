@@ -161,7 +161,6 @@ PROJECT_APPS = [
     "aria.api",
     "aria.api_auth",
     "aria.audit_logs",
-    "aria.auth",
     "aria.categories",
     "aria.core",
     "aria.kitchens",
