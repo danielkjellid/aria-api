@@ -4,7 +4,7 @@ from aria.api.decorators import api
 from aria.api_auth.decorators import permission_required
 from aria.notes.services import note_entry_delete
 
-router = Router(tags="notes")
+router = Router(tags=["Notes"])
 
 
 @api(

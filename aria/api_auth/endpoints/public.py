@@ -15,7 +15,7 @@ from aria.api_auth.services import (
     token_pair_obtain_new_from_refresh_token,
 )
 
-router = Router(tags="auth")
+router = Router(tags=["Auth"])
 
 
 @api(

@@ -16,7 +16,7 @@ class TestPublicUsersEndpoints:
 
     BASE_ENDPOINT = "/api/users"
 
-    def test_anonymous_request_user_create(
+    def test_anonymous_request_user_create_api(
         self, anonymous_client, django_assert_max_num_queries, mocker
     ):
         """
@@ -56,7 +56,7 @@ class TestPublicUsersEndpoints:
         # what's being called in the service.
         assert service_mock.call_args_list[0].kwargs == payload_json
 
-    def test_anonymous_request_user_verify_account(
+    def test_anonymous_request_user_verify_account_api(
         self, anonymous_client, django_assert_max_num_queries
     ):
         """
@@ -91,7 +91,7 @@ class TestPublicUsersEndpoints:
         # Assert that appropraite response is returned.
         assert failed_response.status_code == 404
 
-    def test_anonymous_request_user_verify_account_confirm(
+    def test_anonymous_request_user_verify_account_confirm_api(
         self, anonymous_client, django_assert_max_num_queries, mocker
     ):
         """
@@ -123,7 +123,7 @@ class TestPublicUsersEndpoints:
             "token": user_token,
         }
 
-    def test_anonymous_request_user_password_reset(
+    def test_anonymous_request_user_password_reset_api(
         self, anonymous_client, django_assert_max_num_queries
     ):
         """
@@ -156,7 +156,7 @@ class TestPublicUsersEndpoints:
         # Assert that appropraite response is returned.
         assert failed_response.status_code == 404
 
-    def test_anonymous_request_user_password_reset_confirm(
+    def test_anonymous_request_user_password_reset_confirm_api(
         self, anonymous_client, django_assert_max_num_queries, mocker
     ):
         """
@@ -259,7 +259,7 @@ class TestProtectedUsersEndpoints:
     # The user detail endpoint requires authorization and the permission
     # has_users_list for the user or user group.
 
-    def test_anonymous_client_user_detail(
+    def test_anonymous_client_user_detail_api(
         self, anonymous_client, django_assert_max_num_queries
     ):
         """
@@ -270,11 +270,11 @@ class TestProtectedUsersEndpoints:
         user = baker.make("users.User")
 
         with django_assert_max_num_queries(0):
-            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/{user.id}/")
+            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/user/{user.id}/")
 
         assert response.status_code == 401
 
-    def test_authenticated_unprivileged_client_user_detail(
+    def test_authenticated_unprivileged_client_user_detail_api(
         self,
         n_authenticated_unprivileged_client,
         django_assert_max_num_queries,
@@ -289,13 +289,13 @@ class TestProtectedUsersEndpoints:
         # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
         with django_assert_max_num_queries(3):
             response = n_authenticated_unprivileged_client.get(
-                f"{self.BASE_ENDPOINT}/{user.id}/"
+                f"{self.BASE_ENDPOINT}/user/{user.id}/"
             )
 
         assert response.status_code == 403
 
     @pytest.mark.parametrize("test_permissions", ["has_users_list"], indirect=True)
-    def test_authenticated_privileged_client_user_detail(
+    def test_authenticated_privileged_client_user_detail_api(
         self,
         n_authenticated_privileged_client,
         django_assert_max_num_queries,
@@ -342,7 +342,7 @@ class TestProtectedUsersEndpoints:
         # 1 for getting notes associated with user, and 1 for getting audit logs.
         with django_assert_max_num_queries(6):
             response = n_authenticated_privileged_client.get(
-                f"{self.BASE_ENDPOINT}/{user.id}/"
+                f"{self.BASE_ENDPOINT}/user/{user.id}/"
             )
 
         actual_json = json.loads(response.content)
@@ -357,7 +357,7 @@ class TestProtectedUsersEndpoints:
     # The user update endpoint requires authorization and the permission
     # has_user_edot for the user or user group.
 
-    def test_anonymous_client_user_update(
+    def test_anonymous_client_user_update_api(
         self, anonymous_client, django_assert_max_num_queries
     ):
         """
@@ -383,12 +383,12 @@ class TestProtectedUsersEndpoints:
 
         with django_assert_max_num_queries(0):
             response = anonymous_client.post(
-                f"{self.BASE_ENDPOINT}/{user.id}/update/", data=payload_json
+                f"{self.BASE_ENDPOINT}/user/{user.id}/update/", data=payload_json
             )
 
         assert response.status_code == 401
 
-    def test_authenticated_unprivileged_client_user_update(
+    def test_authenticated_unprivileged_client_user_update_api(
         self, n_authenticated_unprivileged_client, django_assert_max_num_queries
     ):
         """
@@ -415,7 +415,7 @@ class TestProtectedUsersEndpoints:
         # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
         with django_assert_max_num_queries(3):
             response = n_authenticated_unprivileged_client.post(
-                f"{self.BASE_ENDPOINT}/{user.id}/update/",
+                f"{self.BASE_ENDPOINT}/user/{user.id}/update/",
                 data=payload_json,
                 content_type="application/json",
             )
@@ -423,7 +423,7 @@ class TestProtectedUsersEndpoints:
         assert response.status_code == 403
 
     @pytest.mark.parametrize("test_permissions", ["has_user_edit"], indirect=True)
-    def test_authenticated_privileged_client_user_update(
+    def test_authenticated_privileged_client_user_update_api(
         self, n_authenticated_privileged_client, django_assert_max_num_queries
     ):
         """
@@ -455,7 +455,7 @@ class TestProtectedUsersEndpoints:
         # releasing savepoint.
         with django_assert_max_num_queries(12):
             response = n_authenticated_privileged_client.post(
-                f"{self.BASE_ENDPOINT}/{user.id}/update/",
+                f"{self.BASE_ENDPOINT}/user/{user.id}/update/",
                 data=payload_json,
                 content_type="application/json",
             )
@@ -470,7 +470,7 @@ class TestProtectedUsersEndpoints:
         assert user.zip_code == "1234"
         assert user.zip_place == "Oslo"
 
-    def test_anonymous_client_user_partial_update(
+    def test_anonymous_client_user_partial_update_api(
         self, anonymous_client, django_assert_max_num_queries
     ):
         """
@@ -483,12 +483,12 @@ class TestProtectedUsersEndpoints:
 
         with django_assert_max_num_queries(0):
             response = anonymous_client.post(
-                f"{self.BASE_ENDPOINT}/{user.id}/update/", data=payload_json
+                f"{self.BASE_ENDPOINT}/user/{user.id}/update/", data=payload_json
             )
 
         assert response.status_code == 401
 
-    def test_authenticated_unprivileged_client_user_partial_update(
+    def test_authenticated_unprivileged_client_user_update_api_partial(
         self, n_authenticated_unprivileged_client, django_assert_max_num_queries
     ):
         """
@@ -503,7 +503,7 @@ class TestProtectedUsersEndpoints:
         # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
         with django_assert_max_num_queries(3):
             response = n_authenticated_unprivileged_client.post(
-                f"{self.BASE_ENDPOINT}/{user.id}/update/",
+                f"{self.BASE_ENDPOINT}/user/{user.id}/update/",
                 data=payload_json,
                 content_type="application/json",
             )
@@ -511,7 +511,7 @@ class TestProtectedUsersEndpoints:
         assert response.status_code == 403
 
     @pytest.mark.parametrize("test_permissions", ["has_user_edit"], indirect=True)
-    def test_authenticated_privileged_client_user_partial_update(
+    def test_authenticated_privileged_client_user_update_api_partial(
         self, n_authenticated_privileged_client, django_assert_max_num_queries
     ):
         """
@@ -531,7 +531,7 @@ class TestProtectedUsersEndpoints:
         # releasing savepoint.
         with django_assert_max_num_queries(12):
             response = n_authenticated_privileged_client.post(
-                f"{self.BASE_ENDPOINT}/{user.id}/update/",
+                f"{self.BASE_ENDPOINT}/user/{user.id}/update/",
                 data=payload_json,
                 content_type="application/json",
             )

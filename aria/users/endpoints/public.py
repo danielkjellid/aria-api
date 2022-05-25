@@ -16,7 +16,7 @@ from aria.users.schemas.inputs import (
 )
 from aria.users.services import user_create, user_set_password, user_verify_account
 
-router = Router(tags="users")
+router = Router(tags=["Users"])
 
 
 @api(

@@ -7,7 +7,7 @@ from aria.core.exceptions import ApplicationError
 from aria.products.schemas.outputs import ProductDetailOutput
 from aria.products.selectors import product_detail
 
-router = Router(tags="products")
+router = Router(tags=["Products"])
 
 
 @api(

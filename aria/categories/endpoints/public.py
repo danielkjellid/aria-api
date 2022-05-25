@@ -19,7 +19,7 @@ from aria.categories.selectors import (
     category_related_product_list_by_category,
 )
 
-router = Router(tags="categories")
+router = Router(tags=["Categories"])
 
 
 @api(

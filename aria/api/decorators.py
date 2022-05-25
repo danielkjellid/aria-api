@@ -106,14 +106,14 @@ def _get_and_validate_router_tag(router: Router):
 
     if router_tag is None:
         raise NotImplementedError(
-            'Router object must have a defined tag: Router(tags="...")'
+            'Router object must have a defined tag: Router(tags=["..."])'
         )
 
     if isinstance(router_tag, list):
         if len(router_tag) > 1:
             raise ValueError("Router object must only have one tag!")
 
-        router_tag = router_tag[0]
+        router_tag = router_tag[0].lower()
 
     return router_tag
 

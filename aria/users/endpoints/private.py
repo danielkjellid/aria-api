@@ -13,7 +13,7 @@ from aria.users.schemas.outputs import UserDetailOutput, UserListOutput
 from aria.users.selectors import user_list
 from aria.users.services import user_update
 
-router = Router(tags="users")
+router = Router(tags=["Users"])
 
 
 @api(
@@ -41,7 +41,7 @@ def user_list_api(
 
 @api(
     router,
-    "{user_id}/",
+    "user/{user_id}/",
     method="GET",
     response={200: UserDetailOutput, codes_40x: ExceptionResponse},
     summary="Retrieve a single user",
@@ -58,7 +58,7 @@ def user_detail_api(request, user_id: int) -> tuple[int, User]:
 
 @api(
     router,
-    "{user_id}/update/",
+    "user/{user_id}/update/",
     method="POST",
     response={200: None, codes_40x: ExceptionResponse},
     summary="Update a single user",

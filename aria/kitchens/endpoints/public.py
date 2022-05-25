@@ -7,7 +7,7 @@ from aria.core.exceptions import ApplicationError
 from aria.kitchens.schemas.outputs import KitchenDetailOutput, KitchenListOutput
 from aria.kitchens.selectors import kitchen_available_list, kitchen_detail
 
-router = Router(tags="kitchens")
+router = Router(tags=["Kitchens"])
 
 
 @api(

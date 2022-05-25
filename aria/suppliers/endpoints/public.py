@@ -4,7 +4,7 @@ from aria.api.decorators import api
 from aria.suppliers.models import Supplier
 from aria.suppliers.schemas.outputs import SupplierListOutput
 
-router = Router(tags="suppliers")
+router = Router(tags=["Suppliers"])
 
 
 @api(
