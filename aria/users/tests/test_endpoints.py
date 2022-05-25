@@ -8,6 +8,7 @@ import pytest
 from model_bakery import baker
 
 from aria.users.models import User
+from aria.users.tests.utils import create_user
 
 pytestmark = pytest.mark.django_db
 
@@ -240,7 +241,9 @@ class TestProtectedUsersEndpoints:
         the application.
         """
 
-        baker.make("users.User", _quantity=3)
+        users = create_user(quantity=3)
+
+        print(users)
 
         # Uses 5 queries: 1 for getting request user, 2 for checking permissions,
         # 2 for getting users and pagination data.

@@ -1,7 +1,9 @@
-from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.models import BaseUserManager
+
+from aria.core.models import BaseQuerySet
 
 
-class UserManager(BaseUserManager):
+class UserQuerySet(BaseQuerySet):
     """
     Custom user model manager where email is used as the unique identifier
     for authentication instead of usernames.
@@ -15,7 +17,7 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError("The email must be set")
 
-        email = self.normalize_email(email)
+        email = BaseUserManager.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save()

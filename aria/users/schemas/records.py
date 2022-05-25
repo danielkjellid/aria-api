@@ -5,13 +5,19 @@ from pydantic import BaseModel
 from aria.core.schemas.records import SiteRecord
 
 
+class UserProfileRecord(BaseModel):
+    full_name: str
+    initial: str
+    avatar_color: str
+
+
 class UserRecord(BaseModel):
     id: int
     email: str
     first_name: str
     last_name: str
-    bith_date: date | None = None
-    avatar_color: str
+    profile: UserProfileRecord
+    birth_date: date | None = None
     phone_number: str
     has_confirmed_email: bool = False
     street_address: str
@@ -27,12 +33,6 @@ class UserRecord(BaseModel):
     is_staff: bool = False
     is_superuser: bool = False
     site: SiteRecord
-
-
-class UserProfileRecord(BaseModel):
-    full_name: str
-    initial: str
-    avatar_color: str
 
 
 class UserNotesRecord(BaseModel):

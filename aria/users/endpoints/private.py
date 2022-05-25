@@ -26,7 +26,7 @@ router = Router(tags=["Users"])
     },
     summary="Lists all users",
 )
-@paginate(page_size=18, order_by="id")
+@paginate(page_size=18, order_by="-date_joined")
 @permission_required("users.has_users_list")
 def user_list_api(
     request, filters: UserListFilters = Query(...)

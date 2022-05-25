@@ -17,10 +17,10 @@ from django.utils.translation import gettext as _
 
 from aria.audit_logs.services import log_entries_create
 from aria.core.exceptions import ApplicationError
-from aria.core.schemas.records import SiteRecord
 from aria.core.services import model_update
 from aria.users.models import User
 from aria.users.schemas.records import UserRecord
+from aria.users.selectors import user_record
 
 
 def _validate_email_and_password(email: str, password: str) -> tuple[str, str]:
@@ -93,29 +93,7 @@ def user_create(
     if send_verification_email:
         new_user.send_verification_email()
 
-    return UserRecord(
-        id=new_user.id,
-        email=new_user.email,
-        first_name=new_user.first_name,
-        last_name=new_user.last_name,
-        birth_date=new_user.birth_date,
-        avatar_color=new_user.avatar_color,
-        phone_number=new_user.phone_number,
-        has_confirmed_email=new_user.has_confirmed_email,
-        street_address=new_user.street_address,
-        zip_code=new_user.zip_code,
-        zip_place=new_user.zip_place,
-        disabled_emails=new_user.disabled_emails,
-        subscribed_to_newsletter=new_user.subscribed_to_newsletter,
-        allow_personalization=new_user.allow_personalization,
-        allow_third_party_personalization=new_user.allow_third_party_personalization,
-        acquisition_source=new_user.acquisition_source,
-        date_joined=new_user.date_joined,
-        is_active=new_user.is_active,
-        is_staff=new_user.is_staff,
-        is_superuser=new_user.is_superuser,
-        site=SiteRecord(name=new_user.site.name, domain=new_user.site.domain),
-    )
+    return user_record(user=new_user)
 
 
 @transaction.atomic
@@ -161,29 +139,7 @@ def user_update(
     if has_updated and author is not None and log_change:
         log_entries_create(author=author, instance=user, change_messages=updated_fields)
 
-    return UserRecord(
-        id=user.id,
-        email=user.email,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        birth_date=user.birth_date,
-        avatar_color=user.avatar_color,
-        phone_number=user.phone_number,
-        has_confirmed_email=user.has_confirmed_email,
-        street_address=user.street_address,
-        zip_code=user.zip_code,
-        zip_place=user.zip_place,
-        disabled_emails=user.disabled_emails,
-        subscribed_to_newsletter=user.subscribed_to_newsletter,
-        allow_personalization=user.allow_personalization,
-        allow_third_party_personalization=user.allow_third_party_personalization,
-        acquisition_source=user.acquisition_source,
-        date_joined=user.date_joined,
-        is_active=user.is_active,
-        is_staff=user.is_staff,
-        is_superuser=user.is_superuser,
-        site=SiteRecord(name=user.site.name, domain=user.site.domain),
-    )
+    return user_record(user=user)
 
 
 def user_verify_account(*, uid: str, token: str) -> UserRecord:
@@ -209,29 +165,7 @@ def user_verify_account(*, uid: str, token: str) -> UserRecord:
     user.has_confirmed_email = True
     user.save()
 
-    return UserRecord(
-        id=user.id,
-        email=user.email,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        birth_date=user.birth_date,
-        avatar_color=user.avatar_color,
-        phone_number=user.phone_number,
-        has_confirmed_email=user.has_confirmed_email,
-        street_address=user.street_address,
-        zip_code=user.zip_code,
-        zip_place=user.zip_place,
-        disabled_emails=user.disabled_emails,
-        subscribed_to_newsletter=user.subscribed_to_newsletter,
-        allow_personalization=user.allow_personalization,
-        allow_third_party_personalization=user.allow_third_party_personalization,
-        acquisition_source=user.acquisition_source,
-        date_joined=user.date_joined,
-        is_active=user.is_active,
-        is_staff=user.is_staff,
-        is_superuser=user.is_superuser,
-        site=SiteRecord(name=user.site.name, domain=user.site.domain),
-    )
+    return user_record(user=user)
 
 
 def user_set_password(*, uid: str, token: str, new_password: str) -> UserRecord:
@@ -258,26 +192,4 @@ def user_set_password(*, uid: str, token: str, new_password: str) -> UserRecord:
     user.set_password(new_password)
     user.save()
 
-    return UserRecord(
-        id=user.id,
-        email=user.email,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        birth_date=user.birth_date,
-        avatar_color=user.avatar_color,
-        phone_number=user.phone_number,
-        has_confirmed_email=user.has_confirmed_email,
-        street_address=user.street_address,
-        zip_code=user.zip_code,
-        zip_place=user.zip_place,
-        disabled_emails=user.disabled_emails,
-        subscribed_to_newsletter=user.subscribed_to_newsletter,
-        allow_personalization=user.allow_personalization,
-        allow_third_party_personalization=user.allow_third_party_personalization,
-        acquisition_source=user.acquisition_source,
-        date_joined=user.date_joined,
-        is_active=user.is_active,
-        is_staff=user.is_staff,
-        is_superuser=user.is_superuser,
-        site=SiteRecord(name=user.site.name, domain=user.site.domain),
-    )
+    return user_record(user=user)

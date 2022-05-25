@@ -13,13 +13,8 @@ from aria.api.exceptions import PageOutOfBoundsError
 
 
 class PageNumberSetPagination(PaginationBase):
-    def __init__(
-        self, page_size: int, order_by: str | None = None, **kwargs: Any
-    ) -> None:
+    def __init__(self, page_size: int, **kwargs: Any) -> None:
         self.page_size = page_size
-        self.order_by = (
-            order_by if order_by else "id"
-        )  # Order by id if no other field is set.
         super().__init__(**kwargs)
 
     class Input(Schema):
@@ -47,8 +42,6 @@ class PageNumberSetPagination(PaginationBase):
         if pagination.page > total_pages:
             raise PageOutOfBoundsError()
 
-        qs = queryset.order_by(self.order_by)
-
         return {
             "next": self._get_next_link(pagination.page, total_pages),
             "previous": self._get_previous_link(pagination.page),
@@ -58,7 +51,7 @@ class PageNumberSetPagination(PaginationBase):
                 current_offset=offset, total_items=total_items
             ),
             "total_pages": total_pages,
-            "data": qs[offset : offset + self.page_size],
+            "data": queryset[offset : offset + self.page_size],
         }
 
     def _current_range(self, current_offset: int, total_items: int):

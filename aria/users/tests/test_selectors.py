@@ -1,7 +1,7 @@
 import pytest
-from model_bakery import baker
 
 from aria.users.selectors import user_list
+from aria.users.tests.utils import create_user
 
 pytestmark = pytest.mark.django_db
 
@@ -13,42 +13,32 @@ class TestUsersSelectors:
         when filters are provided.
         """
 
-        user_1 = baker.make(
-            "users.User",
-            **{
-                "email": "user_1@example.com",
-                "phone_number": "12345678",
-                "first_name": "First",
-                "last_name": "User",
-            },
+        user_1 = create_user(
+            email="user_1@example.com",
+            phone_number="12345678",
+            first_name="First",
+            last_name="User",
         )
-        user_2 = baker.make(
-            "users.User",
-            **{
-                "email": "user_2@example.com",
-                "phone_number": "87651234",
-                "first_name": "Second",
-                "last_name": "User",
-            },
+        user_2 = create_user(
+            email="user_2@example.com",
+            phone_number="87651234",
+            first_name="Second",
+            last_name="User",
         )
-        user_3 = baker.make(
-            "users.User",
-            **{
-                "email": "user_3@example.com",
-                "phone_number": "12121212",
-                "first_name": "Third",
-                "last_name": "User",
-            },
+        user_3 = create_user(
+            email="user_3@example.com",
+            phone_number="12121212",
+            first_name="Third",
+            last_name="User",
         )
-        user_4 = baker.make(
-            "users.User",
-            **{
-                "email": "user_5@example.com",
-                "phone_number": "12345678",
-                "first_name": "Fifth",
-                "last_name": "Person",
-            },
+        user_4 = create_user(
+            email="user_4@example.com",
+            phone_number="12345678",
+            first_name="Fourth",
+            last_name="Person",
         )
+
+        print(user_1.site.name)
 
         # Test email filter
         with django_assert_max_num_queries(1):
@@ -76,4 +66,4 @@ class TestUsersSelectors:
             users = user_list(filters={"last_name": "User"})
 
         assert len(users) == 3  # All users except last has the same last name
-        assert user_4.id not in users.values_list("id", flat=True)
+        assert user_4.id not in sorted(users, key=lambda u: u.id)

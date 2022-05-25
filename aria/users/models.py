@@ -21,12 +21,14 @@ from django.utils.translation import gettext_lazy as _
 import phonenumbers
 
 from aria.users.enums import AvatarColors
-from aria.users.managers import UserManager
+from aria.users.managers import UserQuerySet
 from aria.users.schemas.records import (
     UserAuditLogsRecord,
     UserNotesRecord,
     UserProfileRecord,
 )
+
+_UserManager = models.Manager.from_queryset(UserQuerySet)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -113,7 +115,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
-    objects = UserManager()
+    objects = _UserManager()
     on_site = CurrentSiteManager()
 
     class Meta:
