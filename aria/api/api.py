@@ -8,6 +8,7 @@ from aria.api_auth.authentication import JWTAuthRequired
 from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
 from aria.api_auth.exceptions import TokenError
 from aria.categories.endpoints import public_endpoints as public_categories_endpoints
+from aria.core.endpoints import public_endpoints as public_core_endpoints
 from aria.core.exceptions import ApplicationError
 from aria.kitchens.endpoints import public_endpoints as public_kitchens_endpoints
 from aria.notes.endpoints import private_endpoints as private_notes_endpoints
@@ -26,6 +27,9 @@ api.add_router("/ninja/auth/", public_auth_endpoints, auth=None)
 
 # Categories endpoints
 api.add_router("/categories/", public_categories_endpoints, auth=None)
+
+# Core endpoints
+api.add_router("/core/", public_core_endpoints, auth=None)
 
 # Kitchens endpoints
 api.add_router("/kitchens/", public_kitchens_endpoints, auth=None)
