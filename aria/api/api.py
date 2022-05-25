@@ -22,66 +22,26 @@ api = NinjaAPI(title="Aria API")
 
 # API auth endpoints
 
-api.add_router(
-    "/ninja/auth/",
-    public_auth_endpoints,
-    tags=["[PUBLIC] Auth"],
-    auth=None,
-)
+api.add_router("/ninja/auth/", public_auth_endpoints, auth=None)
 
 # Categories endpoints
-api.add_router(
-    "/categories/",
-    public_categories_endpoints,
-    tags=["[PUBLIC] Categories"],
-    auth=None,
-)
+api.add_router("/categories/", public_categories_endpoints, auth=None)
 
 # Kitchens endpoints
-api.add_router(
-    "/kitchens/",
-    public_kitchens_endpoints,
-    tags=["[PUBLIC] Kitchens"],
-    auth=None,
-)
+api.add_router("/kitchens/", public_kitchens_endpoints, auth=None)
 
 # Notes endpoints
-api.add_router(
-    "/notes/",
-    private_notes_endpoints,
-    tags=["[PRIVATE] Notes"],
-    auth=JWTAuthRequired(),
-)
+api.add_router("/notes/", private_notes_endpoints, auth=JWTAuthRequired())
 
 # Products endpoints
-api.add_router(
-    "/products/",
-    public_products_endpoints,
-    tags=["[PUBLIC] Products"],
-    auth=None,
-)
+api.add_router("/products/", public_products_endpoints, auth=None)
 
 # Suppliers endpoints
-api.add_router(
-    "/suppliers/",
-    public_suppliers_endpoints,
-    tags=["[PUBLIC] Suppliers"],
-    auth=None,
-)
+api.add_router("/suppliers/", public_suppliers_endpoints, auth=None)
 
 # Users endpoints
-api.add_router(
-    "/users/",
-    public_users_endpoints,
-    tags=["[PUBLIC] Users"],
-    auth=None,
-)
-api.add_router(
-    "/users/",
-    private_users_endpoints,
-    tags=["[PRIVATE] Users"],
-    auth=JWTAuthRequired(),
-)
+api.add_router("/users/", private_users_endpoints, auth=JWTAuthRequired())
+api.add_router("/users/", public_users_endpoints, auth=None)
 
 
 # Custom exception handler for Application errors.
