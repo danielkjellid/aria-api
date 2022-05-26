@@ -3,6 +3,7 @@ from django.core.exceptions import PermissionDenied
 from ninja import NinjaAPI
 
 from aria.api.exceptions import PageOutOfBoundsError
+from aria.api.parsers import CamelCaseParser
 from aria.api.renderers import CamelCaseRenderer
 from aria.api.schemas.responses import ExceptionResponse
 from aria.api_auth.authentication import JWTAuthRequired
@@ -20,7 +21,12 @@ from aria.users.endpoints import (
     public_endpoints as public_users_endpoints,
 )
 
-api = NinjaAPI(title="Aria API", renderer=CamelCaseRenderer())
+api = NinjaAPI(
+    title="Aria API",
+    # renderer=ORJSONRenderer(),
+    renderer=CamelCaseRenderer(),
+    parser=CamelCaseParser(),
+)
 
 # API auth endpoints
 
