@@ -326,7 +326,7 @@ class TestProtectedUsersEndpoints:
                 "initial": user.initial,
                 "avatar_color": user.avatar_color,
             },
-            "date_joined": "1970-01-01T20:00:00Z",
+            "date_joined": "1970-01-01T20:00:00+00:00",
             "is_active": user.is_active,
             "full_address": user.full_address,
             "street_address": user.street_address,

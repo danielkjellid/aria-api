@@ -1,4 +1,3 @@
-from decimal import Decimal
 from typing import List
 
 from ninja import Schema
@@ -59,7 +58,7 @@ class CategoryProductListOutput(Schema):
     unit: str
     thumbnail: str | None
     display_price: bool
-    from_price: Decimal
+    from_price: float
     colors: list[CategoryProductListColorOutput]
     shapes: list[CategoryProductListShapeOutput]
     materials: list[str]

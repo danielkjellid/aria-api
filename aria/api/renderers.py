@@ -16,7 +16,17 @@ class ORJSONRenderer(BaseRenderer):
     media_type = "application/json"
 
     def render(self, request: HttpRequest, data: Any, *, response_status: int) -> Any:
-        return orjson.dumps(data)
+
+        # When exceptions are raised and handled through exception handlers, the data
+        # content is not rendered from pydantic to dict automatically, so therefore
+        # we try to access the .dict() method of the returned pydantic model before
+        # falling back to data.
+        try:
+            data_to_render = data.dict()
+        except AttributeError:
+            data_to_render = data
+
+        return orjson.dumps(data_to_render)
 
 
 class CamelCaseRenderer(BaseRenderer):
