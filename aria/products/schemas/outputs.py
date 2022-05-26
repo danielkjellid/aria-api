@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from ninja import Schema
 
 from aria.core.schemas.records import BaseHeaderImageRecord
@@ -23,7 +21,7 @@ class ProductSizeOutput(Schema):
 
 class ProductOptionOutput(Schema):
     id: int
-    gross_price: Decimal
+    gross_price: float
     status: str
     variant: ProductVariantOutput | None
     size: ProductSizeOutput | None

@@ -217,7 +217,7 @@ class TestPublicCategoriesEndpoints:
                 "unit": ProductUnit(product.unit).label,
                 "thumbnail": product.thumbnail.url if product.thumbnail else None,
                 "display_price": False,
-                "from_price": "500.0",
+                "from_price": 500.0,
                 "colors": [
                     {"id": color.id, "name": color.name, "color_hex": color.color_hex}
                     for color in product.colors.all()
