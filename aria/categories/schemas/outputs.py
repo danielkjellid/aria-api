@@ -73,6 +73,7 @@ class CategoryProductListOutput(Schema):
     colors: list[CategoryProductListColorOutput]
     shapes: list[CategoryProductListShapeOutput]
     materials: list[BaseArrayFieldLabelRecord]
+    rooms: list[BaseArrayFieldLabelRecord]
     variants: list[CategoryProductListVariantOutput]
 
 
