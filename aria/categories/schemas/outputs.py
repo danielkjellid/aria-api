@@ -51,11 +51,18 @@ class CategoryProductListVariantOutput(Schema):
     image: str | None
 
 
+class CategoryProductSupplierOutput(Schema):
+    name: str
+    origin_country: str
+    origin_country_flag: str
+
+
 class CategoryProductListOutput(Schema):
     id: int
     name: str
     slug: str
     unit: str
+    supplier: CategoryProductSupplierOutput
     thumbnail: str | None
     display_price: bool
     from_price: float

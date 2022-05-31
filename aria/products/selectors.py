@@ -135,7 +135,8 @@ def product_record(product: Product) -> ProductRecord:
         supplier=ProductSupplierRecord(
             id=product.supplier_id,
             name=product.supplier.name,
-            origin_country=product.supplier.origin_country,
+            origin_country=product.supplier.origin_country.name,
+            origin_country_flag=product.supplier.origin_country.unicode_flag,
         ),
         status=ProductStatus(product.status).label,
         slug=product.slug,

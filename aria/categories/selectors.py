@@ -4,6 +4,7 @@ from aria.categories.schemas.records import (
     CategoryProductColorRecord,
     CategoryProductRecord,
     CategoryProductShapeRecord,
+    CategoryProductSupplierRecord,
     CategoryProductVariantRecord,
     CategoryRecord,
 )
@@ -146,6 +147,12 @@ def category_related_product_list_by_category(*, category: Category, filters=Non
             name=product.name,
             slug=product.slug,
             unit=ProductUnit(product.unit).label,
+            supplier=CategoryProductSupplierRecord(
+                id=product.supplier.id,
+                name=product.supplier.name,
+                origin_country=product.supplier.origin_country.name,
+                origin_country_flag=product.supplier.origin_country.unicode_flag,
+            ),
             thumbnail=product.thumbnail.url if product.thumbnail else None,
             display_price=product.display_price,
             from_price=product.from_price,

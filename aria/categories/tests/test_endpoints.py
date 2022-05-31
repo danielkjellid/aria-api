@@ -215,6 +215,11 @@ class TestPublicCategoriesEndpoints:
                 "name": product.name,
                 "slug": product.slug,
                 "unit": ProductUnit(product.unit).label,
+                "supplier": {
+                    "name": product.supplier.name,
+                    "origin_country": product.supplier.origin_country.name,
+                    "origin_country_flag": product.supplier.origin_country.unicode_flag,
+                },
                 "thumbnail": product.thumbnail.url if product.thumbnail else None,
                 "display_price": False,
                 "from_price": 500.0,

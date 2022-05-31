@@ -34,7 +34,7 @@ class TestPublicProductsEndpoints:
             "available_in_special_sizes": product.available_in_special_sizes,
             "supplier": {
                 "name": product.supplier.name,
-                "origin_country": product.supplier.origin_country,
+                "origin_country": product.supplier.origin_country.name,
             },
             "images": [
                 {
