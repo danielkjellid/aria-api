@@ -2,7 +2,11 @@ from typing import List
 
 from ninja import Schema
 
-from aria.core.schemas.records import BaseHeaderImageRecord, BaseListImageRecord
+from aria.core.schemas.records import (
+    BaseArrayFieldLabelRecord,
+    BaseHeaderImageRecord,
+    BaseListImageRecord,
+)
 
 
 class CategoryListOutput(Schema):
@@ -68,7 +72,8 @@ class CategoryProductListOutput(Schema):
     from_price: float
     colors: list[CategoryProductListColorOutput]
     shapes: list[CategoryProductListShapeOutput]
-    materials: list[str]
+    materials: list[BaseArrayFieldLabelRecord]
+    rooms: list[BaseArrayFieldLabelRecord]
     variants: list[CategoryProductListVariantOutput]
 
 
