@@ -50,15 +50,3 @@ class Supplier(BaseModel, BaseImageModel):
 
     def __str__(self):
         return self.name
-
-
-# for s in Supplier.objects.all():
-#     if s.origin_country == "Italia":
-#         s.origin_country = "it"
-#     elif s.origin_country == "Danmark":
-#         s.origin_country = "dk"
-#     elif s.origin_country == "Norge":
-#         s.origin_country = "no"
-#     elif s.origin_country == "Nederland":
-#         s.origin_country = "nl"
-#     s.save()
