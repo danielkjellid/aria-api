@@ -227,6 +227,7 @@ class TestPublicCategoriesEndpoints:
                     for shape in product.shapes.all()
                 ],
                 "materials": product.materials_display,
+                "rooms": product.rooms_display,
                 "variants": [
                     {
                         "id": option.variant.id,
