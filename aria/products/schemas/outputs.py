@@ -1,6 +1,6 @@
 from ninja import Schema
 
-from aria.core.schemas.records import BaseHeaderImageRecord
+from aria.core.schemas.records import BaseArrayFieldLabelRecord, BaseHeaderImageRecord
 
 
 class ProductSupplierOutput(Schema):
@@ -49,8 +49,8 @@ class ProductDetailOutput(Schema):
     name: str
     description: str | None
     absorption: float | None
-    materials: list[str] | None = []
-    rooms: list[str] | None = []
+    materials: list[BaseArrayFieldLabelRecord] | None = []
+    rooms: list[BaseArrayFieldLabelRecord] | None = []
     available_in_special_sizes: bool = False
     supplier: ProductSupplierOutput
     images: list[BaseHeaderImageRecord] = []

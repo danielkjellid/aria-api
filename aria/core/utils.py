@@ -118,4 +118,4 @@ def get_array_field_labels(field, enum):
     if field is None:
         return []
 
-    return [item.label for item in enum for f in field if item.value == f]
+    return [{"name": item.label} for item in enum for f in field if item.value == f]

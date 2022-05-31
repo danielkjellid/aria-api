@@ -20,3 +20,7 @@ class BaseListImageRecord(BaseModel):
     image500x305: str | None
     image600x440: str | None
     image850x520: str | None
+
+
+class BaseArrayFieldLabelRecord(BaseModel):
+    name: str
