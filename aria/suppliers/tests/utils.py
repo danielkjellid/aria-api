@@ -8,19 +8,21 @@ def get_or_create_supplier(
     *,
     supplier_name: str = "Example supplier",
     supplier_discount: float = 0.2,
-    origin_country: str = "Norway",
+    origin_country: str = "no",
     sites: list[Site] | None = None,
     website_link: str = "example.com",
 ) -> Supplier:
 
     supplier, _ = Supplier.objects.get_or_create(
         name=supplier_name,
-        contact_first_name="Ola",
-        contact_last_name="Nordmann",
-        contact_email="ola@example.com",
-        supplier_discount=supplier_discount,
-        origin_country=origin_country,
-        website_link=website_link,
+        defaults={
+            "contact_first_name": "Ola",
+            "contact_last_name": "Nordmann",
+            "contact_email": "ola@example.com",
+            "supplier_discount": supplier_discount,
+            "website_link": website_link,
+            "origin_country": origin_country,
+        },
     )
 
     if sites is None:
