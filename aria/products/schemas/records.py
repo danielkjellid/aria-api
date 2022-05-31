@@ -10,6 +10,7 @@ class ProductSupplierRecord(BaseModel):
     id: int
     name: str
     origin_country: str
+    origin_country_flag: str
 
 
 class ProductColorRecord(BaseModel):

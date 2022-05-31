@@ -48,11 +48,19 @@ class CategoryProductVariantRecord(BaseModel):
     image: str | None
 
 
+class CategoryProductSupplierRecord(BaseModel):
+    id: int
+    name: str
+    origin_country: str
+    origin_country_flag: str
+
+
 class CategoryProductRecord(BaseModel):
     id: int
     name: str
     slug: str
     unit: str
+    supplier: CategoryProductSupplierRecord
     thumbnail: str = None
     display_price: bool | None = False
     from_price: Decimal
