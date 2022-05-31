@@ -179,7 +179,7 @@ def category_related_product_list_by_category(*, category: Category, filters=Non
                     if option.variant.thumbnail
                     else None,
                 )
-                for option in product.options.all().distinct("variant_id")
+                for option in product.options.all()
                 if option.variant
             ],
         )
