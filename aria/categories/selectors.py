@@ -1,3 +1,5 @@
+from django.db.models import Prefetch
+
 from aria.categories.models import Category
 from aria.categories.schemas.records import (
     CategoryDetailRecord,
@@ -11,7 +13,7 @@ from aria.categories.schemas.records import (
 from aria.core.selectors import base_header_image_record, base_list_image_record
 from aria.products.enums import ProductUnit
 from aria.products.filters import ProductSearchFilter
-from aria.products.models import Product
+from aria.products.models import Product, ProductOption
 
 
 def category_record(*, category: Category) -> CategoryRecord:
@@ -135,9 +137,16 @@ def category_related_product_list_by_category(*, category: Category, filters=Non
     # Preload all needed values
     qs = (
         Product.objects.by_category(category)
+        .prefetch_related(
+            Prefetch(
+                "options",
+                queryset=ProductOption.objects.select_related("variant").distinct(
+                    "variant_id"
+                ),
+            )
+        )
         .preload_for_list()
         .annotate_site_state_data()
-        .prefetch_related("options__variant")
     )
     filtered_qs = ProductSearchFilter(filters, qs).qs
 
