@@ -3,7 +3,7 @@ from decimal import Decimal
 from pydantic import BaseModel
 
 from aria.categories.schemas.records import CategoryDetailRecord
-from aria.core.schemas.records import BaseHeaderImageRecord
+from aria.core.schemas.records import BaseArrayFieldLabelRecord, BaseHeaderImageRecord
 
 
 class ProductSupplierRecord(BaseModel):
@@ -70,8 +70,8 @@ class ProductRecord(BaseModel):
     available_in_special_sizes: bool = False
     absorption: float | None = None
     is_imported_from_external_source: bool = False
-    rooms: list[str] | None = []
-    materials: list[str] | None
+    rooms: list[BaseArrayFieldLabelRecord] | None = []
+    materials: list[BaseArrayFieldLabelRecord] | None = []
     thumbnail: str | None
 
 
