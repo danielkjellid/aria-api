@@ -7,7 +7,7 @@ class SiteRecord(BaseModel):
 
 
 class BaseHeaderImageRecord(BaseModel):
-    apply_filter: bool = False
+    apply_filter: bool
     image_640x275: str | None
     image_1024x1024: str | None
     image_512x512: str | None

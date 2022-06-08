@@ -12,6 +12,7 @@ class ProductVariantOutput(Schema):
     id: int
     name: str
     image: str | None
+    thumbnail: str | None
 
 
 class ProductSizeOutput(Schema):
@@ -49,6 +50,10 @@ class ProductDetailOutput(Schema):
     name: str
     description: str | None
     absorption: float | None
+    from_price: float
+    display_price: float
+    can_be_picked_up: bool
+    can_be_purchased_online: bool
     materials: list[BaseArrayFieldLabelRecord] | None = []
     rooms: list[BaseArrayFieldLabelRecord] | None = []
     available_in_special_sizes: bool = False

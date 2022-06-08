@@ -47,6 +47,7 @@ def product_options_list_for_product(product: Product) -> list[ProductOptionReco
                 id=option.variant.id,
                 name=option.variant.name,
                 image=option.variant.image.url,
+                thumbnail=option.variant.thumbnail.url,
                 is_standard=option.variant.is_standard,
             )
             if option.variant
@@ -83,6 +84,7 @@ def product_detail(
         .preload_for_list()
         .with_active_categories()
         .with_available_options()
+        .annotate_site_state_data()
         .first()
     )
 
@@ -97,6 +99,10 @@ def product_detail(
     record = ProductDetailRecord(
         **product_base_record.dict(),
         categories=categories,
+        from_price=product.from_price,
+        display_price=product.display_price,
+        can_be_picked_up=product.can_be_picked_up,
+        can_be_purchased_online=product.can_be_purchased_online,
         colors=[
             ProductColorRecord(id=color.id, name=color.name, color_hex=color.color_hex)
             for color in product.colors.all()

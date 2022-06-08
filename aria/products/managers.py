@@ -66,12 +66,17 @@ class ProductQuerySet(BaseQuerySet):
         from aria.products.models import ProductSiteState
 
         option = ProductSiteState.on_site.filter(product__in=self).values(
-            "display_price", "gross_price"
+            "display_price",
+            "gross_price",
+            "can_be_picked_up",
+            "can_be_purchased_online",
         )
 
         return self.annotate(
             display_price=option.values("display_price")[:1],
             from_price=option.values("gross_price")[:1],
+            can_be_picked_up=option.values("can_be_picked_up")[:1],
+            can_be_purchased_online=option.values("can_be_purchased_online")[:1],
         )
 
     def preload_for_list(self):

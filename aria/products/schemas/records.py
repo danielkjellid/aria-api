@@ -23,6 +23,7 @@ class ProductVariantRecord(BaseModel):
     id: int
     name: str
     image: str | None
+    thumbnail: str | None
     is_standard: bool = False
 
 
@@ -76,6 +77,10 @@ class ProductRecord(BaseModel):
 
 
 class ProductDetailRecord(ProductRecord):
+    from_price: float
+    display_price: float
+    can_be_picked_up: bool
+    can_be_purchased_online: bool
     colors: list[ProductColorRecord] = []
     shapes: list[ProductShapeRecord] = []
     categories: list[CategoryDetailRecord]
