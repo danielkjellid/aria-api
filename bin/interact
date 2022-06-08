@@ -4,7 +4,7 @@ import os
 import sys
 
 import requests
-from utils.colors import gray, magenta, red
+from utils.colors import red
 from utils.executables import run_cli_command
 from utils.managers import action_runner
 
@@ -86,9 +86,7 @@ def main() -> None:
             if obj["service"]["slug"] == f"aria-api-{environment}"
         )
 
-    with action_runner(
-        description=f"SSH-ing into {magenta(environment)} {gray('pod')}"
-    ):
+    with action_runner(description=f"SSH-ing into [{environment}] pod"):
         run_cli_command(
             "ssh",
             f"{service['id']}@ssh.{service['serviceDetails']['region']}.render.com",
