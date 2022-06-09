@@ -5,6 +5,7 @@ import sys
 
 import requests
 from utils.colors import red
+from utils.decorators import not_in_production
 from utils.executables import run_cli_command
 from utils.managers import action_runner
 
@@ -30,6 +31,7 @@ def _sanity_checks() -> None:
         )
 
 
+@not_in_production
 def main() -> None:
     parser = argparse.ArgumentParser(description="Download static files from AWS")
 

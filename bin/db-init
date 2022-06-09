@@ -10,6 +10,7 @@ from typing import Optional
 
 from utils.colors import red
 from utils.config import PROJECT_ROOT, postgres_env
+from utils.decorators import not_in_production
 from utils.executables import (
     run_cli_command,
     run_management_command,
@@ -109,6 +110,7 @@ def _kill_active_db_sessions(
     )
 
 
+@not_in_production
 def main() -> None:
     parser = argparse.ArgumentParser(description="Install or update the local database")
 
