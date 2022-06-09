@@ -102,6 +102,7 @@ def create_variant(
     variant = Variant.objects.create(name=name, is_standard=False)
 
     variant.image = tempfile.NamedTemporaryFile(suffix=".jpg").name
+    variant.thumbnail = tempfile.NamedTemporaryFile(suffix=".jpg").name
     variant.save()
 
     return variant
