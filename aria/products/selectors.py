@@ -46,8 +46,10 @@ def product_options_list_for_product(product: Product) -> list[ProductOptionReco
             variant=ProductVariantRecord(
                 id=option.variant.id,
                 name=option.variant.name,
-                image=option.variant.image.url,
-                thumbnail=option.variant.thumbnail.url,
+                image=option.variant.image.url if option.variant.image else None,
+                thumbnail=option.variant.thumbnail.url
+                if option.variant.thumbnail
+                else None,
                 is_standard=option.variant.is_standard,
             )
             if option.variant
