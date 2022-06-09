@@ -1,54 +1,56 @@
 #!/usr/bin/env python3
-import functools
-import subprocess
-import os
 import argparse
-import sys
+import functools
+import os
 import pathlib
+import subprocess
+import sys
 import time
 from typing import Optional
-from utils.config import PROJECT_ROOT, postgres_env
-from utils.executables import run_cli_command, run_management_command, run_postgres_command
-from utils.managers import action_runner
+
 from utils.colors import red
+from utils.config import PROJECT_ROOT, postgres_env
+from utils.decorators import not_in_production
+from utils.executables import (
+    run_cli_command,
+    run_management_command,
+    run_postgres_command,
+)
 from utils.helpers import check_exit_code, print_with_time
+from utils.managers import action_runner
 
-HEROKU_CLI_INSTALL_ERROR_MESSAGE = f"""
-{red("Please install the heroku CLI")}
-It does not look you have a functional installation of the Heroku CLI.
-Heroku CLI is used to download the database dump, so it needs to be on
-the PATH and authenticated.
-
-A dump file can also be provided instead. See --help for details.
+AWS_CLI_INSTALL_ERROR_MESSAGE = f"""
+{red("Please install the AWS CLI")}
+It does not look lik you have a functional installation of AWS CLI.
+AWS CLI is used to download the static files, so it needs to be on
+the path and authenticated.
 """
 
-HEROKU_CLI_CAPTURE_ERROR_MESSAGE = f"""
-{red("Unable to capture database backup")}
-Please make sure the Heroku CLI is authenticated. Heroku CLI is used
-to download the database dump. You might need to run heroku login.
+AWS_CLI_DOWNLOAD_ERROR_MESSAGE = f"""
+{red("Unable to download dump file")}
+Please make sure AWS CLI is authenticated. AWS CLI is used to download
+the static files. You might need to run aws configure.
 
-A dump file can also be provided instead. See --help for details.
-"""
-
-HEROKU_CLI_DOWNLOAD_ERROR_MESSAGE = f"""
-{red("Unable to download database dump")}
-Please make sure the Heroku CLI is authenticated. Heroku CLI is used
-to download the database dump. You might need to run heroku auth:login.
-
-A dump file can also be provided instead. See --help for details.
+Also make sure to have set both AWS_ACCESS_KEY and AWS_SECRET_ACCESS_KEY
+in your .envrc. These values can be obtained by an admin.
 """
 
 has_heroku_cli = functools.partial(check_exit_code, "heroku", "version")
 authenticated_heroku_cli = functools.partial(check_exit_code, "heroku", "whoami")
 
+has_aws_cli = functools.partial(check_exit_code, "aws", "--version")
+authenticated_aws_cli = functools.partial(
+    check_exit_code, "aws", "sts", "get-caller-identity"
+)
+
 
 def database_exists(
-        name: str,
-        *,
-        user: Optional[str],
-        host: Optional[str],
-        port: Optional[int],
-        password: Optional[str]
+    name: str,
+    *,
+    user: Optional[str],
+    host: Optional[str],
+    port: Optional[int],
+    password: Optional[str],
 ) -> bool:
     try:
         run_postgres_command(
@@ -76,7 +78,14 @@ def _sanity_checks() -> None:
         )
 
 
-def _kill_active_db_sessions(*, db_name: str, user: Optional[str], host: Optional[str], port: Optional[int], password: Optional[str]) -> None:
+def _kill_active_db_sessions(
+    *,
+    db_name: str,
+    user: Optional[str],
+    host: Optional[str],
+    port: Optional[int],
+    password: Optional[str],
+) -> None:
     """
     Make postgres kill active sessions using the database.
     """
@@ -101,6 +110,7 @@ def _kill_active_db_sessions(*, db_name: str, user: Optional[str], host: Optiona
     )
 
 
+@not_in_production
 def main() -> None:
     parser = argparse.ArgumentParser(description="Install or update the local database")
 
@@ -109,12 +119,6 @@ def main() -> None:
     parser.add_argument("--user", help="User to connect to PostgreSQL with")
     parser.add_argument("--password", help="Password to connect to PostgreSQL with")
 
-    parser.add_argument("--env", help="Download from specific heroku env")
-    parser.add_argument(
-        "--skip-capture",
-        action="store_true",
-        help="Skip capturing latest version of the db - might download an old version",
-    )
     parser.add_argument(
         "--keep-dump",
         action="store_true",
@@ -136,27 +140,48 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    dump_filename = "aria.dump"
+    bucket_name = os.environ.get("AWS_S3_BUCKET_NAME")
+    dump_filename = args.file or "aria.dump"
     dump_path = args.file if args.file else PROJECT_ROOT / dump_filename
-
-    env = args.env if args.env else "aria-api-prod"
 
     # Check that we are in a good state before starting to download.
     _sanity_checks()
 
     if not args.file:
-        if not has_heroku_cli():
-            sys.exit(HEROKU_CLI_INSTALL_ERROR_MESSAGE)
+        if not has_aws_cli():
+            sys.exit(AWS_CLI_INSTALL_ERROR_MESSAGE)
 
-        if not authenticated_heroku_cli():
-            sys.exit(HEROKU_CLI_DOWNLOAD_ERROR_MESSAGE)
+        if not authenticated_aws_cli():
+            sys.exit(AWS_CLI_DOWNLOAD_ERROR_MESSAGE)
 
-        if not args.skip_capture:
-            with action_runner(description="Capturing latest version", error_message=HEROKU_CLI_CAPTURE_ERROR_MESSAGE):
-                run_cli_command("heroku", "pg:backups:capture", "-a", env)
+        with action_runner(
+            description="Getting latest database dump",
+            error_message=AWS_CLI_DOWNLOAD_ERROR_MESSAGE,
+        ):
+            latest_dumps_list = run_cli_command(
+                "aws",
+                "s3",
+                "ls",
+                f"s3://{bucket_name}/dumps/",
+                "--recursive",
+            )
+            sorted_list = run_cli_command("sort", inp=latest_dumps_list)
+            latest_dump_elem = run_cli_command("tail", "-n", "1", inp=sorted_list)
+            latest_dump_path = run_cli_command(
+                "awk", "{print $4}", inp=latest_dump_elem
+            )
 
-        with action_runner(description="Downloading latest database dump", error_message=HEROKU_CLI_DOWNLOAD_ERROR_MESSAGE):
-            run_cli_command("heroku", "pg:backups:download", "-a", env, "-o", dump_path)
+        with action_runner(
+            description="Downloading latest database dump",
+            error_message=AWS_CLI_DOWNLOAD_ERROR_MESSAGE,
+        ):
+            run_cli_command(
+                "aws",
+                "s3",
+                "cp",
+                f"s3://{bucket_name}/{latest_dump_path.strip()}",
+                dump_filename,
+            )
 
     elif not dump_path.exists():
         sys.exit(f"Error: {dump_path} path was not found.")
@@ -176,7 +201,7 @@ def main() -> None:
                 user=args.user,
                 host=args.host,
                 port=args.port,
-                password=args.password
+                password=args.password,
             )
 
     # Restore the dump to the specific database
@@ -195,36 +220,6 @@ def main() -> None:
             port=args.port,
             host=args.host,
             password=args.password,
-        )
-
-    # Run migrations against the restored database. This is required as we might
-    # have made changes since the dump was made that will break the cleanup script.
-    try:
-        with action_runner(description="Migrating database", exit_on_failure=False):
-            run_management_command(
-                "migrate",
-                db_name=db_name,
-                env_vars=postgres_env(
-                    host=args.host,
-                    port=args.port,
-                    user=args.user,
-                    password=args.password,
-                )
-            )
-    except subprocess.CalledProcessError:
-        print_with_time(red("Failed to apply migrations, continuing without"))
-
-    with action_runner(description="Cleaning database"):
-        run_management_command(
-            "scrub_db_dump",
-            "--confirm",
-            db_name=db_name,
-            env_vars=postgres_env(
-                host=args.host,
-                port=args.port,
-                user=args.user,
-                password=args.password,
-            ),
         )
 
     if args.swap_db:
@@ -290,6 +285,36 @@ def main() -> None:
                     user=args.user,
                     password=args.password,
                 )
+
+    # Run migrations against the restored database. This is required as we might
+    # have made changes since the dump was made that will break the cleanup script.
+    try:
+        with action_runner(description="Migrating database", exit_on_failure=False):
+            run_management_command(
+                "migrate",
+                db_name=db_name,
+                env_vars=postgres_env(
+                    host=args.host,
+                    port=args.port,
+                    user=args.user,
+                    password=args.password,
+                ),
+            )
+    except subprocess.CalledProcessError:
+        print_with_time(red("Failed to apply migrations, continuing without"))
+
+    with action_runner(description="Cleaning database"):
+        run_management_command(
+            "scrub_db_dump",
+            "--confirm",
+            db_name=db_name,
+            env_vars=postgres_env(
+                host=args.host,
+                port=args.port,
+                user=args.user,
+                password=args.password,
+            ),
+        )
 
     if not (args.file or args.keep_dump):
         with action_runner(description="Removing database dump"):

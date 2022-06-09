@@ -1,8 +1,9 @@
-import subprocess
-import pathlib
-from typing import Optional, Union, Dict
 import os
+import pathlib
+import subprocess
 import sys
+from typing import Dict, Optional, Union
+
 from .config import PROJECT_ROOT
 
 

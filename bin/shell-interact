@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+import argparse
+import os
+import sys
+
+import requests
+from utils.colors import red
+from utils.decorators import not_in_production
+from utils.executables import run_cli_command
+from utils.managers import action_runner
+
+RENDER_API_CALL_ERROR_MESSAGE = f"""
+{red("Unable to call Render endpoint")}
+It does not look like the provided API key is functional. Please make sure
+to add a personal API key to your account, and that you have access to the
+project on Render.
+"""
+
+RENDER_SSH_PERMISSION_DENIED_ERROR_MESSAGE = f"""
+{red("Unable to ssh into pod")}
+We got an error attempting to ssh into the environment pod. Please make sure
+that your ssh key is created, and added to the project on render.
+"""
+
+
+def _sanity_checks() -> None:
+    if not os.environ.get("RENDER_API_KEY"):
+        sys.exit(
+            "Error: the RENDER_API_KEY is not set. This must be configured\n"
+            "before you can interact with a production pod."
+        )
+
+
+@not_in_production
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Download static files from AWS")
+
+    parser.add_argument("--env", help="Choose which environment to ssh into")
+    parser.add_argument(
+        "command",
+        nargs="?",
+        type=str,
+        help="Run a specific command when tunnel is opened",
+    )
+
+    args = parser.parse_args()
+
+    # Check that we are in a good state before starting to download.
+    _sanity_checks()
+
+    render_api_key = os.environ.get("RENDER_API_KEY")
+    environment = args.env if args.env else "prod"
+    command_to_exec = args.command if args.command else ""
+
+    api_headers = {
+        "Accept": "application/json",
+        "Authorization": f"Bearer {render_api_key}",
+    }
+
+    owners_endpoint_url = "https://api.render.com/v1/owners?limit=10"
+    with action_runner(description="Getting Render owner id"):
+        response = requests.get(owners_endpoint_url, headers=api_headers)
+
+        if response.status_code != 200:
+            sys.exit(RENDER_API_CALL_ERROR_MESSAGE)
+
+        owner_id = next(
+            obj["owner"]["id"]
+            for obj in response.json()
+            if obj["owner"]["name"] == "FK JKE Design"
+        )
+
+    service_endpoint_url = (
+        f"https://api.render.com/v1/services?ownerId={owner_id}&limit=20"
+    )
+    with action_runner(
+        description="Getting Render service",
+        error_message="Not able to find specified environment. Is it spelled correctly?",
+    ):
+        response = requests.get(service_endpoint_url, headers=api_headers)
+
+        if response.status_code != 200:
+            sys.exit(RENDER_API_CALL_ERROR_MESSAGE)
+
+        service = next(
+            obj["service"]
+            for obj in response.json()
+            if obj["service"]["slug"] == f"aria-api-{environment}"
+        )
+
+    with action_runner(description=f"SSH-ing into [{environment}] pod"):
+        run_cli_command(
+            "ssh",
+            f"{service['id']}@ssh.{service['serviceDetails']['region']}.render.com",
+            command_to_exec,
+            capture=False,
+        )
+
+
+if __name__ == "__main__":
+    main()
