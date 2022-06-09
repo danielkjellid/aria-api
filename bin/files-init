@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-import functools
 import argparse
+import functools
 import os
 import sys
 
 from utils.colors import red
-from utils.helpers import check_exit_code, print_with_time
 from utils.config import PROJECT_ROOT
-from utils.managers import action_runner
 from utils.executables import run_cli_command
+from utils.helpers import check_exit_code, print_with_time
+from utils.managers import action_runner
 
 AWS_CLI_INSTALL_ERROR_MESSAGE = f"""
 {red("Please install the AWS CLI")}
@@ -27,7 +27,9 @@ in your .envrc. These values can be obtained by an admin.
 """
 
 has_aws_cli = functools.partial(check_exit_code, "aws", "--version")
-authenticated_aws_cli = functools.partial(check_exit_code, "aws", "sts", "get-caller-identity")
+authenticated_aws_cli = functools.partial(
+    check_exit_code, "aws", "sts", "get-caller-identity"
+)
 
 
 def _sanity_checks() -> None:
@@ -43,8 +45,18 @@ def main() -> None:
 
     parser.add_argument("--path", help="Only download a certain (aws) path")
     parser.add_argument("--dest", help="Destination folder, defaults to /media/")
-    parser.add_argument("--media-only", dest="media_only", action="store_true", help="Only download the media folder, not all static files")
-    parser.add_argument("--confirm", dest="confirm", action="store_true", help="Initiates download of files")
+    parser.add_argument(
+        "--media-only",
+        dest="media_only",
+        action="store_true",
+        help="Only download the media folder, not all static files",
+    )
+    parser.add_argument(
+        "--confirm",
+        dest="confirm",
+        action="store_true",
+        help="Initiates download of files",
+    )
 
     args = parser.parse_args()
 
@@ -72,10 +84,21 @@ def main() -> None:
 
     if not args.confirm:
         with action_runner(description="[DRY RUN] Downloading static files"):
-            run_cli_command("aws", "s3", "sync", f"s3://{bucket_name}/{path}", destination, "--dryrun")
+            run_cli_command(
+                "aws",
+                "s3",
+                "sync",
+                f"s3://{bucket_name}/{path}",
+                destination,
+                "--dryrun",
+            )
     else:
-        with action_runner(description="Downloading static files, this might take a while"):
-            run_cli_command("aws", "s3", "sync", f"s3://{bucket_name}/{path}", destination)
+        with action_runner(
+            description="Downloading static files, this might take a while"
+        ):
+            run_cli_command(
+                "aws", "s3", "sync", f"s3://{bucket_name}/{path}", destination
+            )
 
 
 if __name__ == "__main__":

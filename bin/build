@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
+from utils.decorators import not_in_dev
 from utils.executables import run_cli_command
 from utils.managers import action_runner
 
 
+@not_in_dev
 def main() -> None:
     # Install required dependencies accoring to pyproject.toml.
     with action_runner(description="Installing poetry dependencies"):
