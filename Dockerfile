@@ -34,4 +34,5 @@ COPY --chown=aria aria/ /app/aria/
 RUN poetry run python manage.py collectstatic --noinput
 
 COPY --chown=aria docker-entrypoint.sh /app
+RUN chmod +x docker-entrypoint.sh
 ENTRYPOINT ["./docker-entrypoint.sh"]
