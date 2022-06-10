@@ -15,6 +15,7 @@ from aria.api.exceptions import PageOutOfBoundsError
 class PageNumberSetPagination(PaginationBase):
     def __init__(self, page_size: int, **kwargs: Any) -> None:
         self.page_size = page_size
+        self.request: Any = None
         super().__init__(**kwargs)
 
     class Input(Schema):

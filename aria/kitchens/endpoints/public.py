@@ -1,3 +1,4 @@
+from django.http import HttpRequest
 from django.utils.translation import gettext as _
 
 from ninja import Router
@@ -17,14 +18,14 @@ router = Router(tags=["Kitchens"])
     response={200: list[KitchenListOutput]},
     summary="List all available kitchens",
 )
-def kitchen_list_api(request):
+def kitchen_list_api(request: HttpRequest) -> list[KitchenListOutput]:
     """
     Retrieves a list of all kitchens with status available.
     """
 
     available_kitchens = kitchen_available_list()
 
-    return available_kitchens
+    return [KitchenListOutput(**kitchen.dict()) for kitchen in available_kitchens]
 
 
 @api(
@@ -34,7 +35,9 @@ def kitchen_list_api(request):
     response={200: KitchenDetailOutput},
     summary="Get information about a single kitchen instance",
 )
-def kitchen_detail_api(request, kitchen_slug: str):
+def kitchen_detail_api(
+    request: HttpRequest, kitchen_slug: str
+) -> tuple[int, KitchenDetailOutput]:
     """
     Retrieve a single kitchen instance based on kitchen slug.
     """
@@ -46,4 +49,4 @@ def kitchen_detail_api(request, kitchen_slug: str):
             _("Kitchen with provided slug does not exist"), status_code=404
         )
 
-    return 200, kitchen
+    return 200, KitchenDetailOutput(**kitchen.dict())

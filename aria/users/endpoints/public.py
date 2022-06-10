@@ -1,3 +1,4 @@
+from django.http import HttpRequest
 from django.utils.translation import gettext as _
 
 from ninja import Router
@@ -26,7 +27,7 @@ router = Router(tags=["Users"])
     response={201: None},
     summary="Creates a user",
 )
-def user_create_api(request, payload: UserCreateInput) -> int:
+def user_create_api(request: HttpRequest, payload: UserCreateInput) -> int:
     """
     Creates a single user instance.
     """
@@ -43,7 +44,7 @@ def user_create_api(request, payload: UserCreateInput) -> int:
     summary="Sends verification email",
 )
 def user_account_verification_api(
-    request, payload: UserAccountVerificationInput
+    request: HttpRequest, payload: UserAccountVerificationInput
 ) -> int:
     """
     Sends verification email to a specific email (user) for them to verify the account.
@@ -67,7 +68,7 @@ def user_account_verification_api(
     summary="Validate email tokens to confirm account",
 )
 def user_account_verification_confirm_api(
-    request, payload: UserAccountVerificationConfirmInput
+    request: HttpRequest, payload: UserAccountVerificationConfirmInput
 ) -> int:
     """
     Takes uid and token present in verification email, validates them, and updates email to confirmed.
@@ -84,7 +85,9 @@ def user_account_verification_confirm_api(
     response={200: None, codes_40x: ExceptionResponse},
     summary="Send a reset password email",
 )
-def user_password_reset_api(request, payload: UserPasswordResetInput) -> int:
+def user_password_reset_api(
+    request: HttpRequest, payload: UserPasswordResetInput
+) -> int:
     """
     Sends a password reset email to provided email, if user exist.
     """
@@ -107,7 +110,7 @@ def user_password_reset_api(request, payload: UserPasswordResetInput) -> int:
     summary="Send a reset password email",
 )
 def user_password_reset_confirm_api(
-    request, payload: UserPasswordResetConfirmInput
+    request: HttpRequest, payload: UserPasswordResetConfirmInput
 ) -> int:
     """
     Sets a password if provided uid and token is valid.
