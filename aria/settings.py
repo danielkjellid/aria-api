@@ -32,7 +32,7 @@ BASE_DIR = (pathlib.Path(__file__).parent / "..").resolve()
 
 DEBUG = env.bool("DEBUG", default=False)
 
-OPENAPI_AUTO_GENERATE = env.bool("OPENAPI_AUTO_GENERATE", default=True)
+OPENAPI_AUTO_GENERATE = env.bool("OPENAPI_AUTO_GENERATE", default=False)
 OPENAPI_SCHEMA_PATH = env.str("OPENAPI_SCHEMA_PATH", default=None)
 
 #################
