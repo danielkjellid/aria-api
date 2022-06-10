@@ -18,7 +18,7 @@ class Kitchen(BaseModel, BaseHeaderImageModel, BaseListImageModel):
     def kitchen_image_directory(self) -> str:
         return f"media/kitchens/{slugify(self.name)}"
 
-    UPLOAD_PATH = kitchen_image_directory
+    UPLOAD_PATH = kitchen_image_directory  # type: ignore
 
     name = models.CharField(_("Kitchen name"), max_length=255, unique=True)
     supplier = models.ForeignKey(
@@ -77,7 +77,7 @@ class Kitchen(BaseModel, BaseHeaderImageModel, BaseListImageModel):
         "kitchens.TrendColor", related_name="kitchens", blank=True
     )
 
-    objects = _KitchenManager()
+    objects = _KitchenManager()  # type: ignore
 
     class Meta:
         verbose_name = _("Kitchen")
@@ -172,7 +172,7 @@ class ExclusiveColor(models.Model):
         verbose_name = _("Exclusive color")
         verbose_name_plural = _("Exclusive colors")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 

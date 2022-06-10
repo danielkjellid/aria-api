@@ -1,11 +1,11 @@
-import typing
+from typing import TYPE_CHECKING
 
 from django.db.models import Exists, IntegerField, OuterRef, Prefetch, Value
 
 from mptt.managers import TreeManager
 from mptt.querysets import TreeQuerySet
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from aria.categories import models
 
 

@@ -1,7 +1,10 @@
+from typing import Any
+
 from django.db.models import Q
 
 from django_filters import FilterSet, filters
 
+from aria.core.models import BaseQuerySet
 from aria.products.models import Product
 
 
@@ -16,10 +19,14 @@ class ProductSearchFilter(FilterSet):
         model = Product
         fields = ["search"]
 
-    def query_products(self, queryset, name, value):
-        return queryset.filter(
+    @staticmethod
+    def query_products(
+        queryset: BaseQuerySet[Product], name: Any, value: Any
+    ) -> BaseQuerySet[Product]:
+        qs: BaseQuerySet[Product] = queryset.filter(
             Q(name__icontains=value)
             | Q(search_keywords__icontains=value)
             | Q(supplier__name__icontains=value)
             | Q(materials__icontains=value)
         )
+        return qs

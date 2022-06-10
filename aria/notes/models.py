@@ -24,7 +24,7 @@ class NoteEntry(BaseModel):
     content_object = GenericForeignKey("content_type", "object_id")
     note = models.TextField()
 
-    objects = _NoteEntryManager()
+    objects = _NoteEntryManager()  # type: ignore
 
     class Meta:
         verbose_name = "Note"

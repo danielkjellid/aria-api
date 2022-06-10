@@ -7,14 +7,17 @@ from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
 
 from aria.core.models import BaseImageModel, BaseModel
+from aria.suppliers.managers import SupplierQuerySet
+
+_SupplierManager = models.Manager.from_queryset(SupplierQuerySet)
 
 
 class Supplier(BaseModel, BaseImageModel):
     @property
-    def supplier_image_directory(self):
+    def supplier_image_directory(self) -> str:
         return f"media/suppliers/logo/{slugify(self.name)}"
 
-    UPLOAD_PATH = supplier_image_directory
+    UPLOAD_PATH = supplier_image_directory  # type: ignore
 
     name = models.CharField(_("Supplier name"), max_length=255, unique=True)
     contact_first_name = models.CharField(
@@ -32,7 +35,7 @@ class Supplier(BaseModel, BaseImageModel):
         blank=True,
         help_text=_("Supplier discount in percent. E.g. 0.2 = 20%"),
     )
-    origin_country = CountryField()
+    origin_country = CountryField()  # type: ignore
     is_active = models.BooleanField(
         _("Active"),
         default=True,
@@ -41,12 +44,12 @@ class Supplier(BaseModel, BaseImageModel):
     sites = models.ManyToManyField(Site, related_name="suppliers", blank=True)
     website_link = models.CharField(max_length=255)
 
-    objects = models.Manager()
+    objects = _SupplierManager()  # type: ignore
     on_site = CurrentSiteManager()
 
     class Meta:
         verbose_name = _("supplier")
         verbose_name_plural = _("suppliers")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name

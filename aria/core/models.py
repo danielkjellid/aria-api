@@ -1,3 +1,5 @@
+from typing import TypeVar
+
 from django.db import models
 from django.db.models.expressions import Case, When
 from django.utils.translation import gettext_lazy as _
@@ -8,13 +10,15 @@ from imagekit.processors import ResizeToFill
 
 from aria.core.utils import get_static_asset_upload_path
 
+T = TypeVar("T", bound=models.Model)
+
 
 class BaseManager(models.Manager):
     pass
 
 
-class BaseQuerySet(models.QuerySet):
-    def order_by_ids(self, ids: list[int]) -> models.QuerySet["models.Model"]:
+class BaseQuerySet(models.QuerySet[T]):
+    def order_by_ids(self, ids: list[int]) -> models.QuerySet[T]:
         if not ids:
             return self
 

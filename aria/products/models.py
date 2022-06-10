@@ -3,7 +3,6 @@ from decimal import Decimal
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 from django.db import models
-from django.db.models import Min
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
@@ -89,7 +88,7 @@ class Size(models.Model):
             )
         ]
 
-    def __str__(self):
+    def __str__(self) -> str:
         if (
             self.depth is not None
             and self.width is not None
@@ -113,12 +112,12 @@ class Size(models.Model):
         return self.__str__()
 
     @staticmethod
-    def convert_to_self_repr(n):
+    def convert_to_self_repr(n: Decimal | None) -> str | None:
         """
-        Returns a whole number is decimals is .0
+        Returns a whole number if decimals is .0
         """
 
-        return str(round(n, 1) if n % 1 else int(n))
+        return str(round(n, 1) if n % 1 else int(n)) if n else None
 
 
 _VariantManager = models.Manager.from_queryset(VariantQuerySet)
@@ -131,10 +130,10 @@ class Variant(BaseThumbnailImageModel):
     """
 
     @property
-    def variant_upload_path(self):
+    def variant_upload_path(self) -> str:
         return f"media/products/variants/{self.id}-{slugify(self.name)}/"
 
-    UPLOAD_PATH = variant_upload_path
+    UPLOAD_PATH = variant_upload_path  # type: ignore
 
     name = models.CharField(
         "product variant name",
@@ -158,7 +157,7 @@ class Variant(BaseThumbnailImageModel):
         verbose_name = "Variant"
         verbose_name_plural = "Variants"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -176,7 +175,7 @@ class Color(models.Model):
 
     objects = _ColorManager()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
     class Meta:
@@ -193,16 +192,16 @@ class Shape(BaseImageModel):
     """
 
     @property
-    def shape_upload_path(self):
+    def shape_upload_path(self) -> str:
         return f"media/products/sizes/{slugify(self.name)}/"
 
-    UPLOAD_PATH = shape_upload_path
+    UPLOAD_PATH = shape_upload_path  # type: ignore
 
     name = models.CharField("name", max_length=30, unique=True)
 
     objects = _ShapeManager()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
     class Meta:
@@ -220,12 +219,12 @@ class Product(BaseModel, BaseThumbnailImageModel):
     """
 
     @property
-    def product_directory(self):
+    def product_directory(self) -> str:
         return (
             f"media/products/{slugify(self.supplier.name)}/{slugify(self.name)}/images"
         )
 
-    UPLOAD_PATH = product_directory
+    UPLOAD_PATH = product_directory  # type: ignore
 
     name = models.CharField("product name", max_length=255, unique=False)
     supplier = models.ForeignKey(
@@ -306,7 +305,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
     #     "shipping cost", decimal_places=2, max_digits=10, default=0.0
     # )
 
-    objects = _ProductManager()
+    objects = _ProductManager()  # type: ignore
 
     class Meta:
         verbose_name = "Product"
@@ -318,19 +317,16 @@ class Product(BaseModel, BaseThumbnailImageModel):
             ("has_product_delete", "Can delete a single product instance"),
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
     @property
-    def materials_display(self) -> list[str]:
+    def materials_display(self) -> list[dict[str, str] | None]:
         return get_array_field_labels(self.materials, enums.ProductMaterials)
 
     @property
-    def rooms_display(self) -> list[str]:
+    def rooms_display(self) -> list[dict[str, str] | None]:
         return get_array_field_labels(self.rooms, enums.ProductRooms)
-
-    def get_lowest_option_price(self) -> Decimal:
-        return self.options.all().aggregate(Min("gross_price"))["gross_price__min"]
 
 
 _ProductImageManager = models.Manager.from_queryset(ProductImageQuerySet)
@@ -344,10 +340,10 @@ class ProductImage(BaseHeaderImageModel):
     """
 
     @property
-    def product_image_directory(self):
+    def product_image_directory(self) -> str:
         return f"media/products/{slugify(self.product.supplier.name)}/{slugify(self.product.name)}/images"
 
-    UPLOAD_PATH = product_image_directory
+    UPLOAD_PATH = product_image_directory  # type: ignore
 
     product = models.ForeignKey(
         "products.Product",
@@ -372,10 +368,10 @@ class ProductFile(BaseFileModel):
     """
 
     @property
-    def product_file_directory(self):
+    def product_file_directory(self) -> str:
         return f"media/products/{slugify(self.product.supplier.name)}/{slugify(self.product.name)}/files"
 
-    UPLOAD_PATH = product_file_directory
+    UPLOAD_PATH = product_file_directory  # type: ignore
 
     product = models.ForeignKey(
         Product,
@@ -384,13 +380,13 @@ class ProductFile(BaseFileModel):
     )
     name = models.CharField("product file name", max_length=255, unique=False)
 
-    objects = _ProductFileManager()
+    objects = _ProductFileManager()  # type: ignore
 
     class Meta:
         verbose_name = "Product file"
         verbose_name_plural = "Product files"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -430,7 +426,7 @@ class ProductSiteState(BaseModel):
     )
     supplier_shipping_cost = models.FloatField(_("Shipping cost"), default=0.0)
 
-    objects = _ProductSiteStateManager()
+    objects = _ProductSiteStateManager()  # type: ignore
     on_site = CurrentSiteManager()
 
     class Meta:
@@ -471,7 +467,7 @@ class ProductOption(BaseModel):
         default=enums.ProductStatus.AVAILABLE,
     )
 
-    objects = _ProductOptionManager()
+    objects = _ProductOptionManager()  # type: ignore
 
     class Meta:
         verbose_name = "Product option"
@@ -484,8 +480,8 @@ class ProductOption(BaseModel):
         ]
 
     @property
-    def vat(self):
-        return self.gross_price * self.product.vat_rate
+    def vat(self) -> Decimal:
+        return Decimal(self.gross_price * Decimal(self.product.vat_rate))
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.product} - {self.variant} - {self.size}"
