@@ -341,7 +341,7 @@ tests = ["coverage", "mock-django"]
 
 [[package]]
 name = "django-ninja"
-version = "0.17.0"
+version = "0.18.0"
 description = "Django Ninja - Fast Django REST framework"
 category = "main"
 optional = false
@@ -352,8 +352,9 @@ Django = ">=2.2"
 pydantic = ">=1.6,<2.0.0"
 
 [package.extras]
+dev = ["pre-commit"]
 doc = ["mkdocs", "mkdocs-material", "markdown-include"]
-test = ["pytest", "pytest-cov", "pytest-django", "pytest-asyncio", "black", "isort", "flake8", "mypy (==0.930)", "django-stubs"]
+test = ["pytest", "pytest-cov", "pytest-django", "pytest-asyncio", "psycopg2-binary", "black", "isort", "flake8", "mypy (==0.931)", "django-stubs"]
 
 [[package]]
 name = "django-redis"
@@ -1215,7 +1216,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "3.10.2"
-content-hash = "620798e5b9a87aa92206e30af84f525712b2baf0a5aebb0f32096272f65fb7cf"
+content-hash = "cdbe01c43d3abaf3b137f1103e4f1b211e0badcc8c4a9bf59f7f4c9752e97e0e"
 
 [metadata.files]
 appnope = [
@@ -1391,8 +1392,8 @@ django-mptt = [
     {file = "django_mptt-0.13.4-py3-none-any.whl", hash = "sha256:75745b621ae31d97957ed924155a750dfa8cacd9543799ada2d713fd6bc3f5c7"},
 ]
 django-ninja = [
-    {file = "django-ninja-0.17.0.tar.gz", hash = "sha256:f6e80cbfd67de0c6fbf8fa2948f194a1ac375b67c43d6a79808d325abba94eb5"},
-    {file = "django_ninja-0.17.0-py3-none-any.whl", hash = "sha256:31a5c040a36c620deb4c20731c094540e3245a7b885a7f9d28e85098886595fc"},
+    {file = "django-ninja-0.18.0.tar.gz", hash = "sha256:e8b9edfa731580d49bdd85dc12570bb48bfbad4f2fb97218d00496b470ec5830"},
+    {file = "django_ninja-0.18.0-py3-none-any.whl", hash = "sha256:ea3fc210a6475ebdfacb3ca858207b4dd16afb7dc2807833506c6a32d70150ac"},
 ]
 django-redis = [
     {file = "django-redis-5.2.0.tar.gz", hash = "sha256:8a99e5582c79f894168f5865c52bd921213253b7fd64d16733ae4591564465de"},
