@@ -19,6 +19,7 @@ services:
     name: aria-api-prod
     env: docker
     dockerCommand: "./docker-entrypoint.sh gunicorn"
+    autoDeploy: false
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -34,6 +35,7 @@ services:
     name: aria-api-staging
     env: docker
     dockerCommand: "./docker-entrypoint.sh gunicorn"
+    autoDeploy: false
     envVars:
       - key: DATABASE_URL
         fromDatabase:
