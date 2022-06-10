@@ -238,7 +238,9 @@ AUTH_PASSWORD_VALIDATORS = [
 #############
 
 DATABASES = {
-    "default": env.db(),
+    "default": env.db_url(
+        "DATABASE_URL", default="postgresql://aria:aria@localhost:5433/aria"
+    ),
 }
 
 LOG_SQL = env.bool("LOG_SQL", default=False)
