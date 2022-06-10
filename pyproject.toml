@@ -49,7 +49,7 @@ flake8-black = "^0.3.3"
 flake8-isort = "^4.1.1"
 isort = "^5.10.1"
 model-bakery = "^1.5.0"
-mypy = "0.960"
+mypy = "0.950"
 mypy-extensions = "0.4.3"
 pytest-django = "^4.5.2"
 pytest-env = "^0.6.2"
@@ -61,6 +61,7 @@ pytest-lazy-fixture = "^0.6.3"
 pytest-remove-stale-bytecode = "^5.0.1"
 pytest-xdist = "^2.5.0"
 typing-extensions = "4.2.0"
+django-stubs = "^1.11.0"
 
 [tool.black]
 target-version = ['py39']
@@ -75,6 +76,45 @@ skip_glob = "*migrations*"
 known_django = ["django"]
 sections = ["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 combine_as_imports = true
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main", "pydantic.mypy"]
+
+ignore_missing_imports = true
+
+disallow_any_generics = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+warn_unreachable = true
+
+no_implicit_optional = true
+no_implicit_reexport = true
+check_untyped_defs = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = "*.migrations.*"
+ignore_errors = "true"
+
+[[tool.mypy.overrides]]
+module = "*.tests.*"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "*.management.*"
+disallow_untyped_defs = false
+
+[tool.django-stubs]
+django_settings_module = "aria.settings"
+
 
 [tool.pytest.ini_options]
 minversion = "6.0"

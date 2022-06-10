@@ -1,9 +1,14 @@
 import functools
+from typing import Any, Callable, TypeVar
 
 from django.core.exceptions import PermissionDenied
 
+F = TypeVar("F", bound=Callable[..., Any])
 
-def permission_required(permissions: str | list[str] | set[str], *, all_required=True):
+
+def permission_required(
+    permissions: str | list[str] | set[str], *, all_required: bool = True
+) -> Callable[[F], F]:
     """
     Decorator that can be used alongside the any function to check if a user
     has a particular permission. Raises a PermissionDenied exception if user

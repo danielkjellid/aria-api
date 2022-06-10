@@ -1,5 +1,7 @@
 class ApplicationError(Exception):
-    def __init__(self, message, extra=None, status_code=400):
+    def __init__(
+        self, message: str, extra: dict[str, str] | None = None, status_code: int = 400
+    ) -> None:
         super().__init__(message)
 
         self.message = message

@@ -15,7 +15,7 @@ _KitchenManager = models.Manager.from_queryset(KitchenQuerySet)
 
 class Kitchen(BaseModel, BaseHeaderImageModel, BaseListImageModel):
     @property
-    def kitchen_image_directory(self):
+    def kitchen_image_directory(self) -> str:
         return f"media/kitchens/{slugify(self.name)}"
 
     UPLOAD_PATH = kitchen_image_directory
@@ -83,7 +83,7 @@ class Kitchen(BaseModel, BaseHeaderImageModel, BaseListImageModel):
         verbose_name = _("Kitchen")
         verbose_name_plural = _("Kitchens")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -96,13 +96,13 @@ class SilkColor(models.Model):
         verbose_name = _("Silk color")
         verbose_name_plural = _("Silk colors")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class Decor(models.Model):
     @property
-    def kitchen_decor_upload_path(self):
+    def kitchen_decor_upload_path(self) -> str:
         return f"media/kitchens/decors/{slugify(self.name)}"
 
     UPLOAD_PATH = kitchen_decor_upload_path
@@ -121,13 +121,13 @@ class Decor(models.Model):
         verbose_name = _("Decor")
         verbose_name_plural = _("Decors")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class Plywood(models.Model):
     @property
-    def kitchen_playwood_upload_path(self):
+    def kitchen_playwood_upload_path(self) -> str:
         return f"media/kitchens/plywoods/{slugify(self.name)}"
 
     UPLOAD_PATH = kitchen_playwood_upload_path
@@ -146,7 +146,7 @@ class Plywood(models.Model):
         verbose_name = _("Plywood")
         verbose_name_plural = _("Plywoods")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -159,7 +159,7 @@ class LaminateColor(models.Model):
         verbose_name = _("Laminate color")
         verbose_name_plural = _("Laminates colors")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -185,5 +185,5 @@ class TrendColor(models.Model):
         verbose_name = _("Trend color")
         verbose_name_plural = _("Trend colors")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
