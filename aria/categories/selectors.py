@@ -10,6 +10,7 @@ from aria.categories.schemas.records import (
     CategoryProductVariantRecord,
     CategoryRecord,
 )
+from aria.core.decorators import cached
 from aria.core.selectors import base_header_image_record, base_list_image_record
 from aria.products.enums import ProductUnit
 from aria.products.filters import ProductSearchFilter
@@ -126,7 +127,9 @@ def category_tree_active_list_for_product(*, product: Product) -> CategoryDetail
     return [category_detail_record(category=category) for category in active_categories]
 
 
-def category_related_product_list_by_category(*, category: Category, filters=None):
+def category_related_product_list_by_category(
+    *, category: Category, filters=None
+) -> list[CategoryProductRecord]:
     """
     Returns a filterable list of products belonging to the given category
     slug.
@@ -194,3 +197,19 @@ def category_related_product_list_by_category(*, category: Category, filters=Non
         )
         for product in filtered_qs
     ]
+
+
+def _category_related_product_list_cache_key(*, category: Category, filters=None):
+    return f"categories.category_id={category.id}.products.filters={filters}"
+
+
+@cached(key=_category_related_product_list_cache_key, timeout=5 * 60)
+def category_related_product_list_by_category_from_cache(
+    *, category: Category, filters=None
+) -> list[CategoryProductRecord]:
+    """
+    Returns a filterable list of products belonging to the given category
+    slug from cache.
+    """
+
+    return category_related_product_list_by_category(category=category, filters=filters)

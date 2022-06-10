@@ -312,6 +312,16 @@ LOGGING = {
 # Caches #
 ##########
 
+CACHES = {
+    "default": env.cache("CACHE_URL", default="redis://localhost:6379/"),
+}
+
+if CACHES["default"]["BACKEND"] == "django_redis.cache.RedisCache":
+    CACHES["default"]["OPTIONS"] = {
+        "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        "PARSER_CLASS": "redis.connection.HiredisParser",
+    }
+
 
 ################
 # API Auth JWT #

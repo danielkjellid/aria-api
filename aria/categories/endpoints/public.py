@@ -16,7 +16,7 @@ from aria.categories.selectors import (
     category_children_active_list_for_category,
     category_navigation_active_list,
     category_parent_active_list,
-    category_related_product_list_by_category,
+    category_related_product_list_by_category_from_cache,
 )
 
 router = Router(tags=["Categories"])
@@ -107,7 +107,7 @@ def category_products_list_api(
     Get a list of products related to a specific category.
     """
     category = get_object_or_404(Category, slug=category_slug)
-    products = category_related_product_list_by_category(
+    products = category_related_product_list_by_category_from_cache(
         category=category, filters=search.dict()
     )
 

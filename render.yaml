@@ -13,6 +13,17 @@ databases:
     postgresMajorVersion: 14
 
 services:
+
+  ################
+  ## Production ##
+  ################
+  - type: redis
+    region: frankfurt
+    plan: starter
+    name: aria-redis-prod
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: everywhere
   - type: web
     region: frankfurt
     plan: Starter Plus
@@ -29,9 +40,25 @@ services:
         value: production
       - key: WEB_CONCURRENCY
         value: 4
-  - type: web
+      - key: CACHE_URL
+        fromService:
+          - type: redis
+            name: aria-redis-prod
+            property: connectionString
+
+  #############
+  ## Staging ##
+  #############
+  - type: redis
     region: frankfurt
     plan: free
+    name: aria-redis-staging
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: everywhere
+  - type: web
+    region: frankfurt
+    plan: starter
     name: aria-api-staging
     env: docker
     dockerCommand: "./docker-entrypoint.sh gunicorn"
@@ -45,3 +72,8 @@ services:
         value: staging
       - key: WEB_CONCURRENCY
         value: 4
+      - key: CACHE_URL
+        fromService:
+          - type: redis
+            name: aria-redis-staging
+            property: connectionString
