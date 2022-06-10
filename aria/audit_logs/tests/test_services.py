@@ -7,7 +7,7 @@ pytestmark = pytest.mark.django_db
 
 
 class TestAuditLogsServices:
-    def test_log_entries_create(self, django_assert_max_num_queries):
+    def test_log_entries_create(self, django_assert_max_num_queries) -> None:
         """
         Test that the log_entries_create service validates input data, throws
         necessary exceptions and creates log within query limit.

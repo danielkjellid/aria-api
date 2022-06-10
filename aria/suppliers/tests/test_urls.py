@@ -2,7 +2,7 @@ from django.urls import reverse
 
 
 class TestPublicSuppliersUrls:
-    def test_url_supplier_list_api(self):
+    def test_url_supplier_list_api(self) -> None:
         """
         Test reverse match of supplier_list_api endpoint.
         """

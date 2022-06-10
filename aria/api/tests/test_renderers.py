@@ -4,7 +4,7 @@ from aria.api.renderers import CamelCaseRenderer, ORJSONRenderer
 
 
 class TestAPIRenderers:
-    def test_orjson_renderer(self):
+    def test_orjson_renderer(self) -> None:
         renderer = ORJSONRenderer()
         data = {"first_name": "Test", "last_name": "User", "is_active": True}
 
@@ -17,7 +17,7 @@ class TestAPIRenderers:
 
         assert actual_output == expected_output
 
-    def test_camel_case_renderer(self):
+    def test_camel_case_renderer(self) -> None:
         """
         Test that the camel case renderer renders content camel case.
         """

@@ -10,7 +10,9 @@ pytestmark = pytest.mark.django_db
 
 
 class TestProductsSelectors:
-    def test_product_options_list_for_product(self, django_assert_max_num_queries):
+    def test_product_options_list_for_product(
+        self, django_assert_max_num_queries
+    ) -> None:
         """
         Test that the product_options_list_for_product selector returns
         as expected, both with and without a prefetch.
@@ -41,7 +43,7 @@ class TestProductsSelectors:
 
         assert len(options) == 3
 
-    def test_product_detail(self, django_assert_max_num_queries):
+    def test_product_detail(self, django_assert_max_num_queries) -> None:
         """
         Test that the product_detail selector works as expected and does
         not use an obscene amount of queries. It's a big boy.

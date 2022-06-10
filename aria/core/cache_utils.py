@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Callable, Type, Union
+from typing import Any, Callable, Type, Union
 
 import dacite
 
@@ -57,14 +57,14 @@ def _is_optional_dataclass(type_annotation: Type) -> bool:
 
 
 def _dataclass_decoder(type_annotation: Type) -> Callable:
-    def decode_dataclass(value):
-        return dacite.from_dict(type_annotation, value) if value else None
+    def decode_dataclass(value: Any):  # type: ignore
+        return dacite.from_dict(type_annotation, value) if value else None  # type: ignore
 
     return decode_dataclass
 
 
 def _dataclass_encoder(type_annotation: Type) -> Callable:
-    def encode_dataclass(value):
+    def encode_dataclass(value: Any) -> dict[Any, Any] | None:
         return dataclasses.asdict(value) if value else None
 
     return encode_dataclass
@@ -74,14 +74,14 @@ def _dataclass_list_decoder(type_annotation: Type) -> Callable:
 
     decoder = _dataclass_decoder(type_annotation)
 
-    def decode_dataclass_list(value):
+    def decode_dataclass_list(value: list[Any]) -> list[Any]:
         return [decoder(item) for item in value] if value else value
 
     return decode_dataclass_list
 
 
 def _dataclass_list_encoder(type_annotation: Type) -> Callable:
-    def encode_dataclass_list(value):
+    def encode_dataclass_list(value: list[Any]) -> list[dict[str, Any] | None]:
         return (
             [dataclasses.asdict(item) if item else None for item in value]
             if value

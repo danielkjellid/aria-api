@@ -8,7 +8,7 @@ pytestmark = pytest.mark.django_db
 
 
 class TestKitchensSelectors:
-    def test_kitchen_available_list(self, django_assert_max_num_queries):
+    def test_kitchen_available_list(self, django_assert_max_num_queries) -> None:
         """
         Test the kitchen_available_list selector returns expected response
         within query limit.
@@ -35,7 +35,7 @@ class TestKitchensSelectors:
             kitchen.id for kitchen in sorted_available_kitchens
         ]
 
-    def test_kitchen_detail(self, django_assert_max_num_queries):
+    def test_kitchen_detail(self, django_assert_max_num_queries) -> None:
         """
         Test the kitchen_detail selector returns expected response
         within query limit for a specific kitchen.

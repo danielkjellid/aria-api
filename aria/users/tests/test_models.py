@@ -2,7 +2,7 @@ import pytest
 
 
 class TestUsersModels:
-    def test_create_user(self, django_user_model):
+    def test_create_user(self, django_user_model) -> None:
         """
         Test creation of users and check that all fields are
         set correctly.
@@ -26,7 +26,7 @@ class TestUsersModels:
                 email="", password="supersecretpassword"
             )
 
-    def test_create_superuser(self, django_user_model):
+    def test_create_superuser(self, django_user_model) -> None:
         """
         Test creation of superusers and check that all fields are
         set correctly.

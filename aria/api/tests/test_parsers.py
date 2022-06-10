@@ -6,7 +6,7 @@ from aria.api.parsers import CamelCaseParser, ORJSONParser
 
 
 class TestAPIParsers:
-    def test_orjson_parser(self):
+    def test_orjson_parser(self) -> None:
         """
         Test that data is parsed as expected with orjson.
         """
@@ -24,7 +24,7 @@ class TestAPIParsers:
         # Assert that nothing changed from payload to parsed data.
         assert parsed_data == data
 
-    def test_camel_case_parser(self):
+    def test_camel_case_parser(self) -> None:
         """
         Test that the parser parses data sent in as camelCase gets
         parsed as a python dict, and data sent in as snake_case only

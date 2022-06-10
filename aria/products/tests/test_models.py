@@ -9,7 +9,7 @@ pytestmark = pytest.mark.django_db
 
 
 class TestProductsModels:
-    def test_product_model_create(self):
+    def test_product_model_create(self) -> None:
         """
         Test creation of product instance.
         """
@@ -44,7 +44,7 @@ class TestProductsModels:
         assert product.absorption == 0.00
         assert product.is_imported_from_external_source is False  # False is default
 
-    def test_size_model_create(self):
+    def test_size_model_create(self) -> None:
         """
         Test creation of size instance.
         """
@@ -78,7 +78,7 @@ class TestProductsModels:
         assert product_3.depth is None
         assert product_3.circumference == 30
 
-    def test_variant_model_create(self):
+    def test_variant_model_create(self) -> None:
         """
         Test creation of variant instance.
         """
@@ -90,7 +90,7 @@ class TestProductsModels:
         assert variant.name == "Some Variant"
         assert variant.is_standard is False
 
-    def test_color_model_create(self):
+    def test_color_model_create(self) -> None:
         """
         Test creation of color instance.
         """
@@ -102,7 +102,7 @@ class TestProductsModels:
         assert color.name == "Red"
         assert color.color_hex == "#FFFFFF"
 
-    def test_shape_model_create(self):
+    def test_shape_model_create(self) -> None:
         """
         Test creation of shape instance.
         """
@@ -111,7 +111,7 @@ class TestProductsModels:
 
         assert shape.name == "Square"
 
-    def test_product_option_model_create(self):
+    def test_product_option_model_create(self) -> None:
         """
         Test creation of product option instance.
         """

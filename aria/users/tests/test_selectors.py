@@ -7,7 +7,7 @@ pytestmark = pytest.mark.django_db
 
 
 class TestUsersSelectors:
-    def test_user_list(self, django_assert_max_num_queries):
+    def test_user_list(self, django_assert_max_num_queries) -> None:
         """
         Test that the user_list selector returns appropriate results
         when filters are provided.

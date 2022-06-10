@@ -22,7 +22,7 @@ pytestmark = pytest.mark.django_db
 class TestUsersServices:
     def test_user_create_creates_user(
         self, unprivileged_user, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test that the user_create service creates a user.
         """
@@ -84,7 +84,7 @@ class TestUsersServices:
 
     def test_user_update_updates_user(
         self, unprivileged_user, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test that the user_update service updates a user and creates
         appropriate logs.
@@ -123,7 +123,7 @@ class TestUsersServices:
 
     def test_user_verify_account_verifies_account(
         self, unprivileged_user, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test that the user_verify_account sets has_confirmed_email = True.
         """
@@ -147,7 +147,7 @@ class TestUsersServices:
 
     def test_user_set_password_sets_new_password(
         self, unprivileged_user, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test that the user_set_password sets a new password, and that it is
         saved and hashed.

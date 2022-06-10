@@ -2,7 +2,7 @@ from django.urls import reverse
 
 
 class TestPublicCoreEndpoints:
-    def test_url_core_site_health_check_api(self):
+    def test_url_core_site_health_check_api(self) -> None:
         """
         Test reverse match of core_site_health_check_api endpoint.
         """

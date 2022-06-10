@@ -11,7 +11,9 @@ pytestmark = pytest.mark.django_db
 
 
 class TestNotesServices:
-    def test_note_entry_create(self, django_assert_max_num_queries, unprivileged_user):
+    def test_note_entry_create(
+        self, django_assert_max_num_queries, unprivileged_user
+    ) -> None:
         """
         Test that the note_entry_create service creates a note entry.
         """
@@ -36,7 +38,7 @@ class TestNotesServices:
         assert created_note.author_id == author.id
         assert created_note.note == "Test note"
 
-    def test_note_entry_update(self, django_assert_max_num_queries):
+    def test_note_entry_update(self, django_assert_max_num_queries) -> None:
         """
         Test that the note_entry_update service updates a note entry
         and creates appropriate logs.
@@ -77,7 +79,7 @@ class TestNotesServices:
         assert created_log_entry.change.old_value == old_note_content
         assert created_log_entry.change.new_value == updated_note.note
 
-    def test_note_entry_delete(self, django_assert_max_num_queries):
+    def test_note_entry_delete(self, django_assert_max_num_queries) -> None:
         """
         Test that the note_entry_delete service delete a note entry
         based on provided id.
