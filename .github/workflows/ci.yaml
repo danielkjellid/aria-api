@@ -55,6 +55,9 @@ jobs:
           POSTGRES_DB: aria
           POSTGRES_USER: aria
           POSTGRES_PASSWORD: aria
+      redis:
+        image: redis
+        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
@@ -86,6 +89,7 @@ jobs:
           PGPASSWORD: aria
           PGDATABASE: aria
           PGPORT: ${{ job.services.postgres.ports[5432] }}
+          CACHE_URL: redis
 
   python-missing-init:
     name: Missing __init__.py files
