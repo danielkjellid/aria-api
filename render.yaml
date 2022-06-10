@@ -17,9 +17,8 @@ services:
     region: frankfurt
     plan: Starter Plus
     name: aria-api-prod
-    env: python
-    buildCommand: "./bin/build"
-    startCommand: "gunicorn aria.wsgi:application"
+    env: docker
+    dockerCommand: "./docker-entrypoint.sh gunicorn"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -33,9 +32,8 @@ services:
     region: frankfurt
     plan: free
     name: aria-api-staging
-    env: python
-    buildCommand: "./bin/build"
-    startCommand: "gunicorn aria.wsgi:application"
+    env: docker
+    dockerCommand: "./docker-entrypoint.sh gunicorn"
     envVars:
       - key: DATABASE_URL
         fromDatabase:

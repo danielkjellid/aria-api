@@ -1,0 +1,16 @@
+.git
+docs/
+
+# .gitignore copy bellow this line
+
+*.pyc
+.DS_Store
+.awcache
+.coverage
+.mypy_cache/
+.pytest_cache/
+.python-version
+.venv/
+.venv
+var/
+.vscode/
