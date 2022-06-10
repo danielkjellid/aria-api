@@ -82,8 +82,6 @@ plugins = ["mypy_django_plugin.main", "pydantic.mypy"]
 
 ignore_missing_imports = true
 
-#disallow_any_generics = true
-disallow_subclassing_any = true
 disallow_untyped_calls = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true

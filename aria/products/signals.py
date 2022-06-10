@@ -36,9 +36,7 @@ def validate_category_being_added(sender, instance, *args, **kwargs):
 @receiver(post_delete, sender=ProductFile)
 @receiver(post_delete, sender=Variant)
 def delete_product_files(sender, instance, *args, **kwargs):
-    cleanup_files_from_deleted_instance(
-        sender=sender, instance=instance, *args, **kwargs
-    )
+    cleanup_files_from_deleted_instance(instance=instance)
 
 
 @receiver(pre_delete, sender=ProductOption)

@@ -1,7 +1,12 @@
+import typing
+
 from django.db.models import Exists, IntegerField, OuterRef, Prefetch, Value
 
 from mptt.managers import TreeManager
 from mptt.querysets import TreeQuerySet
+
+if typing.TYPE_CHECKING:
+    from aria.categories import models
 
 
 class CategoryManager(TreeManager):
@@ -9,7 +14,7 @@ class CategoryManager(TreeManager):
 
 
 class CategoryQueryset(TreeQuerySet):
-    def active(self):
+    def active(self) -> TreeQuerySet["models.Category"]:
         """
         Returns active categories.
         """
@@ -28,7 +33,7 @@ class CategoryQueryset(TreeQuerySet):
             )
         )
 
-    def primary(self):
+    def primary(self) -> TreeQuerySet["models.Category"]:
         """
         Returns all primary categories - note that we do not filter
         on active here, so only use backend.
@@ -36,7 +41,7 @@ class CategoryQueryset(TreeQuerySet):
 
         return self.filter(mptt_level=0)
 
-    def secondary(self):
+    def secondary(self) -> TreeQuerySet["models.Category"]:
         """
         Returns all secondary categories - meaning any category that
         is a child - note that we do not filter on active here, so
@@ -45,14 +50,14 @@ class CategoryQueryset(TreeQuerySet):
 
         return self.filter(mptt_level=1)
 
-    def primary_and_secondary(self):
+    def primary_and_secondary(self) -> TreeQuerySet["models.Category"]:
         """
         Returns all categories with their children.
         """
 
         return self.filter(mptt_level__in=[0, 1])
 
-    def with_active_children(self):
+    def with_active_children(self) -> TreeQuerySet["models.Category"]:
         """
         Prefetch one level of active children
         """

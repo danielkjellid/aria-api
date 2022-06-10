@@ -1,5 +1,6 @@
 import re
 from collections.abc import Mapping
+from typing import Any, Callable
 
 ACRONYM_RE = re.compile(r"([A-Z]+)$|([A-Z]+)(?=[A-Z0-9])")
 PASCAL_RE = re.compile(r"([^\-_\s]+)")
@@ -7,7 +8,9 @@ SPLIT_RE = re.compile(r"([\-_\s]*[A-Z]+?[^A-Z\-_\s]*[\-_\s]*)")
 UNDERSCORE_RE = re.compile(r"(?<=[^\-_\s])[\-_\s]+[^\-_\s]")
 
 
-def _is_none(_in):
+def _is_none(
+    _in: str | list[Any] | dict[str, Any] | None
+) -> str | list[Any] | dict[str, Any]:
     """
     Determine if the input is None.
     """
@@ -15,7 +18,7 @@ def _is_none(_in):
     return "" if _in is None else _in
 
 
-def _fix_abbreviations(string):
+def _fix_abbreviations(string: str) -> str:
     """
     Rewrite incorrectly cased acronyms, initialisms, and abbreviations,
     allowing them to be decamelized correctly. For example, given the string
@@ -26,7 +29,7 @@ def _fix_abbreviations(string):
     return ACRONYM_RE.sub(lambda m: m.group(0).title(), string)
 
 
-def _separate_words(string, separator="_"):
+def _separate_words(string: str, separator: str = "_") -> str:
     """
     Split words that are separated by case differentiation.
     """
@@ -34,7 +37,9 @@ def _separate_words(string, separator="_"):
     return separator.join(s for s in SPLIT_RE.split(string) if s)
 
 
-def _process_keys(str_or_iter, fn):
+def _process_keys(
+    str_or_iter: str | list[Any] | dict[str, Any], fn: Callable
+) -> str | list[Any] | dict[str, Any]:
     if isinstance(str_or_iter, list):
         return [_process_keys(k, fn) for k in str_or_iter]
     if isinstance(str_or_iter, Mapping):
@@ -42,23 +47,31 @@ def _process_keys(str_or_iter, fn):
     return str_or_iter
 
 
-def is_camelcase(str_or_iter):
+def is_camelcase(str_or_iter: str | list[Any] | dict[str, Any]) -> bool:
     """
     Determine if a string, dict, or list of dicts is camel case.
     """
 
-    return str_or_iter == camelize(str_or_iter)
+    if str_or_iter == camelize(str_or_iter):
+        return True
+
+    return False
 
 
-def is_snakecase(str_or_iter):
+def is_snakecase(str_or_iter: str | list[Any] | dict[str, Any]) -> bool:
     """
     Determine if a string, dict, or list of dicts is snake case.
     """
 
-    return str_or_iter == decamelize(str_or_iter)
+    if str_or_iter == decamelize(str_or_iter):
+        return True
+
+    return False
 
 
-def camelize(str_or_iter):
+def camelize(
+    str_or_iter: str | list[Any] | dict[str, Any]
+) -> str | list[Any] | dict[str, Any]:
     """
     Convert a string, dict, or list of dicts to camel case.
     """
@@ -78,7 +91,9 @@ def camelize(str_or_iter):
     return UNDERSCORE_RE.sub(lambda m: m.group(0)[-1].upper(), s)
 
 
-def decamelize(str_or_iter):
+def decamelize(
+    str_or_iter: str | list[Any] | dict[str, Any]
+) -> str | list[Any] | dict[str, Any]:
     """
     Convert a string, dict, or list of dicts to snake case.
     """

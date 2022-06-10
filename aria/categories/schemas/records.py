@@ -65,7 +65,7 @@ class CategoryProductRecord(BaseModel):
     slug: str
     unit: str
     supplier: CategoryProductSupplierRecord
-    thumbnail: str = None
+    thumbnail: str | None = None
     display_price: bool | None = False
     from_price: Decimal
     materials: list[BaseArrayFieldLabelRecord]

@@ -14,12 +14,15 @@ class BaseManager(models.Manager):
 
 
 class BaseQuerySet(models.QuerySet):
-    def order_by_ids(self, ids):  # TODO: add type annotation
+    def order_by_ids(self, ids: list[int]) -> models.QuerySet["models.Model"]:
         if not ids:
             return self
 
         preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(ids)])
         return self.order_by(preserved)
+
+
+_BaseManager = models.Manager.from_queryset(BaseQuerySet)
 
 
 class BaseModel(models.Model):
@@ -33,7 +36,7 @@ class BaseModel(models.Model):
     created_at = models.DateTimeField(_("created time"), auto_now_add=True)
     updated_at = models.DateTimeField(_("modified time"), auto_now=True)
 
-    objects = BaseManager.from_queryset(BaseQuerySet)()
+    objects = _BaseManager()
 
 
 class BaseImageModel(models.Model):
