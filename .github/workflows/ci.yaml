@@ -89,7 +89,7 @@ jobs:
           PGPASSWORD: aria
           PGDATABASE: aria
           PGPORT: ${{ job.services.postgres.ports[5432] }}
-          CACHE_URL: redis
+          CACHE_URL: redis://localhost:6379/
 
   python-missing-init:
     name: Missing __init__.py files
