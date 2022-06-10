@@ -42,9 +42,9 @@ services:
         value: 4
       - key: CACHE_URL
         fromService:
-          - type: redis
-            name: aria-redis-prod
-            property: connectionString
+          type: redis
+          name: aria-redis-prod
+          property: connectionString
 
   #############
   ## Staging ##
@@ -74,6 +74,6 @@ services:
         value: 4
       - key: CACHE_URL
         fromService:
-          - type: redis
-            name: aria-redis-staging
-            property: connectionString
+          type: redis
+          name: aria-redis-staging
+          property: connectionString
