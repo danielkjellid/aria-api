@@ -129,6 +129,22 @@ ignore_errors = "true"
 module = "aria.*.management.*"
 disallow_untyped_defs = false
 
+# Django-stubs currently has a bug where it throws the error
+# "error: Name "Optional" is not defined" in files where
+# CurrentSiteManager is imported.
+#
+# The three bellow will be removed as soon as possible.
+[[tool.mypy.overrides]]
+module = "aria.users.models"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "aria.products.models"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "aria.suppliers.models"
+ignore_errors = true
 
 [tool.pytest.ini_options]
 minversion = "6.0"
