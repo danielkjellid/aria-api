@@ -113,6 +113,10 @@ module = "aria.*.admin"
 ignore_errors = true
 
 [[tool.mypy.overrides]]
+module = "aria.conftest"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
 module = "aria.*.tests.*"
 ignore_errors = true
 

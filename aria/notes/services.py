@@ -5,6 +5,7 @@ from django.db import transaction
 from django.db.models import Model
 
 from aria.audit_logs.services import log_entries_create
+from aria.audit_logs.types import ChangeMessage
 from aria.core.services import model_update
 from aria.notes.models import NoteEntry
 from aria.notes.schemas.records import NoteEntryRecord
@@ -23,7 +24,7 @@ def note_entry_create(
     if note is None:
         raise ValueError("Note cannot be empty!")
 
-    created_note = NoteEntry.objects.create(
+    created_note = NoteEntry.objects.create(  # type: ignore
         author=author,
         content_type=content_type,
         object_id=id,
@@ -48,11 +49,11 @@ def note_entry_update(
     # the generation of for example other fields.
     non_side_effect_fields = ["author", "note"]
 
-    note_instance = NoteEntry.objects.get(id=note_id)
+    note_instance = NoteEntry.objects.get(id=note_id)  # type: ignore
 
     note_entry: NoteEntry
     has_updated: bool
-    updated_fields: list[dict[str, str]]
+    updated_fields: list[ChangeMessage]
 
     note_entry, has_updated, updated_fields = model_update(
         instance=note_instance, fields=non_side_effect_fields, data=data
@@ -64,7 +65,7 @@ def note_entry_update(
         )
 
     return NoteEntryRecord(
-        id=note_entry.id, author_id=note_entry.author_id, note=note_entry.note
+        id=note_entry.id, author_id=note_entry.author_id, note=note_entry.note  # type: ignore
     )
 
 
@@ -73,5 +74,5 @@ def note_entry_delete(*, id: int) -> None:
     Delete an existing note instance.
     """
 
-    note = NoteEntry.objects.get(id=id)
+    note = NoteEntry.objects.get(id=id)  # type: ignore
     note.delete()
