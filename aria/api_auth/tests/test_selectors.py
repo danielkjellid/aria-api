@@ -19,7 +19,7 @@ pytestmark = pytest.mark.django_db
 
 
 class TestAPIAuthSelectors:
-    def test__token_decode(self, refresh_token_payload, unprivileged_user):
+    def test__token_decode(self, refresh_token_payload, unprivileged_user) -> None:
         """
         Test that we're able to decode provided tokens, if it
         has a valid signature.
@@ -51,7 +51,7 @@ class TestAPIAuthSelectors:
 
     def test_refresh_token_is_valid(
         self, django_assert_max_num_queries, refresh_token_payload, unprivileged_user
-    ):
+    ) -> None:
         """
         Test that the refresh_token_is_valid returns true and decoded token when
         the token provided is valid.
@@ -78,7 +78,7 @@ class TestAPIAuthSelectors:
 
     def test_refresh_token_is_valid_invalid_token_type(
         self, django_assert_max_num_queries, access_token_payload, encode_token
-    ):
+    ) -> None:
         """
         Test that the refresh_token_is_valid returns false when the
         token type provided is not refresh.
@@ -97,7 +97,7 @@ class TestAPIAuthSelectors:
 
     def test_refresh_token_is_valid_expired_token(
         self, django_assert_max_num_queries, refresh_token_payload, encode_token
-    ):
+    ) -> None:
         """
         Test that the refresh_token_is_valid returns false when the
         token provided has expired.
@@ -120,7 +120,7 @@ class TestAPIAuthSelectors:
         refresh_token_payload,
         encode_token,
         unprivileged_user,
-    ):
+    ) -> None:
         """
         Test that the refresh_token_is_valid returns false when the
         token provided does not belong to the user.
@@ -146,7 +146,7 @@ class TestAPIAuthSelectors:
 
     def test_refresh_token_is_valid_blacklisted(
         self, django_assert_max_num_queries, refresh_token_payload, unprivileged_user
-    ):
+    ) -> None:
         """
         Test that the refresh_token_is_valid returns false when the
         token provided is already blacklisted.
@@ -171,7 +171,7 @@ class TestAPIAuthSelectors:
 
     def test_access_token_is_valid_invalid_token_type(
         self, django_assert_max_num_queries, refresh_token_payload, encode_token
-    ):
+    ) -> None:
         """
         Test that the access_token_is_valid returns false when the
         token type provided is not access.
@@ -188,7 +188,7 @@ class TestAPIAuthSelectors:
 
     def test_access_token_is_valid_invalid_expired_token(
         self, django_assert_max_num_queries, access_token_payload, encode_token
-    ):
+    ) -> None:
         """
         Test that the refresh_token_is_valid returns false when the
         token provided has expired.

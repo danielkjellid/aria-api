@@ -1,3 +1,4 @@
+from django.http import HttpRequest
 from django.utils.translation import gettext as _
 
 from ninja import Router
@@ -17,7 +18,9 @@ router = Router(tags=["Products"])
     response={200: ProductDetailOutput},
     summary="Get information about a single product instance",
 )
-def product_detail_api(request, product_slug: str) -> tuple[int, ProductDetailOutput]:
+def product_detail_api(
+    request: HttpRequest, product_slug: str
+) -> tuple[int, ProductDetailOutput]:
     """
     Retrieve a single product instance based on product slug.
     """
@@ -29,4 +32,4 @@ def product_detail_api(request, product_slug: str) -> tuple[int, ProductDetailOu
             _("Product with provided slug does not exist"), status_code=404
         )
 
-    return 200, product
+    return 200, ProductDetailOutput(**product.dict())

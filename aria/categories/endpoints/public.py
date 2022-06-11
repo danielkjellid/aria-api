@@ -1,3 +1,4 @@
+from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 
 from ninja import Query, Router
@@ -29,7 +30,7 @@ router = Router(tags=["Categories"])
     response={200: list[CategoryListOutput]},
     summary="List all active categories and children",
 )
-def category_list_api(request):
+def category_list_api(request: HttpRequest) -> list[CategoryListOutput]:
     """
     Retrieves a list of all primary and secondary categories, primarily
     used for routing in the frontend navbar.
@@ -37,7 +38,7 @@ def category_list_api(request):
 
     categories = category_navigation_active_list()
 
-    return categories
+    return [CategoryListOutput(**category.dict()) for category in categories]
 
 
 @api(
@@ -47,13 +48,15 @@ def category_list_api(request):
     response={200: list[CategoryParentListOutput]},
     summary="List all active primary categories",
 )
-def category_parent_list_api(request):
+def category_parent_list_api(request: HttpRequest) -> list[CategoryParentListOutput]:
     """
     Retrives a list of all primary categories.
     """
     parent_categories = category_parent_active_list()
 
-    return parent_categories
+    return [
+        CategoryParentListOutput(**category.dict()) for category in parent_categories
+    ]
 
 
 @api(
@@ -63,14 +66,16 @@ def category_parent_list_api(request):
     response={200: CategoryDetailOutput},
     summary="Retrieve a specific category",
 )
-def category_detail_api(request, category_slug: str):
+def category_detail_api(
+    request: HttpRequest, category_slug: str
+) -> tuple[int, CategoryDetailOutput]:
     """
     Retrieve details of a specific category, parent
     or child.
     """
     category = get_object_or_404(Category, slug=category_slug)
 
-    return 200, category
+    return 200, CategoryDetailOutput.from_orm(category)
 
 
 @api(
@@ -80,7 +85,9 @@ def category_detail_api(request, category_slug: str):
     response={200: list[CategoryChildrenListOutput]},
     summary="List all active children categories bellonging to a parent",
 )
-def category_children_list_api(request, category_slug: str):
+def category_children_list_api(
+    request: HttpRequest, category_slug: str
+) -> list[CategoryChildrenListOutput]:
     """
     Retrives a list of all choldren categories connected to a
     specific parent.
@@ -90,7 +97,7 @@ def category_children_list_api(request, category_slug: str):
         category=parent_category
     )
 
-    return children_categories
+    return [CategoryChildrenListOutput(**child.dict()) for child in children_categories]
 
 
 @api(
@@ -101,8 +108,10 @@ def category_children_list_api(request, category_slug: str):
     summary="List all active children categories bellonging to a parent",
 )
 def category_products_list_api(
-    request, category_slug: str, search: CategoryProductListFilters = Query(...)
-):
+    request: HttpRequest,
+    category_slug: str,
+    search: CategoryProductListFilters = Query(...),
+) -> list[CategoryProductListOutput]:
     """
     Get a list of products related to a specific category.
     """
@@ -111,4 +120,4 @@ def category_products_list_api(
         category=category, filters=search.dict()
     )
 
-    return products
+    return [CategoryProductListOutput(**product.dict()) for product in products]

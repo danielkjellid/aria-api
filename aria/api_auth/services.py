@@ -1,8 +1,9 @@
-from typing import Union
+from typing import Any, Union
 from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import AbstractBaseUser
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -22,7 +23,7 @@ ACCESS_TOKEN_LIFESPAN = settings.JWT_ACCESS_TOKEN_LIFETIME
 REFRESH_TOKEN_LIFESPAN = settings.JWT_REFRESH_TOKEN_LIFETIME
 
 
-def _refresh_token_create_and_encode(payload: dict[str, Union[str, int]]) -> str:
+def _refresh_token_create_and_encode(payload: Any) -> str:
     """
     Encode a refresh token, and store properties in the database.
     """
@@ -49,7 +50,7 @@ def _refresh_token_create_and_encode(payload: dict[str, Union[str, int]]) -> str
     return encoded_refresh_token
 
 
-def _access_token_create_and_encode(payload: dict[str, Union[str, int]]) -> str:
+def _access_token_create_and_encode(payload: Any) -> str:
     """
     Encode a access token.
     """
@@ -65,7 +66,7 @@ def _access_token_create_and_encode(payload: dict[str, Union[str, int]]) -> str:
     return encoded_access_token
 
 
-def token_pair_obtain_for_user(user: User) -> JWTPair:
+def token_pair_obtain_for_user(user: Union[User, AbstractBaseUser]) -> JWTPair:
     """
     Create a token par of both refresh and access tokens for a
     spcific user.
@@ -77,7 +78,7 @@ def token_pair_obtain_for_user(user: User) -> JWTPair:
         "iat": timezone.now(),
         "jti": None,
         "iss": ISSUER,
-        "user_id": user.id,
+        "user_id": user.pk,
     }
 
     encoded_refresh_token = _refresh_token_create_and_encode(payload)
@@ -118,6 +119,9 @@ def token_pair_obtain_new_from_refresh_token(token: str) -> JWTPair:
     if not token_is_valid:
         raise TokenError(_("Refresh token provided is invalid."))
 
+    if token_payload is None:
+        raise TokenError(_("Token payload is invalid."))
+
     try:
         user = User.objects.get(id=token_payload.user_id)
     except User.DoesNotExist as exc:
@@ -136,6 +140,9 @@ def refresh_token_blacklist(token: str) -> None:
 
     if not token_is_valid:
         raise TokenError(_("Refresh token provided is invalid."))
+
+    if token_payload is None:
+        raise TokenError(_("Token payload is invalid."))
 
     try:
         token_instance = OutstandingToken.objects.get(

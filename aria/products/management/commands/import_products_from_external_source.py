@@ -1,6 +1,6 @@
 from decimal import Decimal
 from tempfile import NamedTemporaryFile
-from typing import Tuple
+from typing import Any, Optional, Tuple
 
 from django.core.files import File
 from django.core.management.base import BaseCommand, CommandParser
@@ -52,7 +52,7 @@ class Command(BaseCommand):
             help="Indicates that the operation should be executed",
         )
 
-    def handle(self, *args, **options) -> None:
+    def handle(self, *args: Any, **options: Any) -> None:
         # Get given parameteres
         supplier_id = options["supplier_id"]
         source = options["source"]
@@ -64,7 +64,7 @@ class Command(BaseCommand):
         products_data = products_data_url.json()
 
         # Common variables for all products in job
-        supplier = Supplier.objects.get(id=supplier_id)
+        supplier = Supplier.objects.get(id=supplier_id)  # type: ignore
 
         try:
             # Wrap entire process in transaction block, that way, if there
@@ -150,7 +150,7 @@ class Command(BaseCommand):
         except ProductImportException:
             pass
 
-    def _split_and_convert_sizes(self, sizes_list):
+    def _split_and_convert_sizes(self, sizes_list: list[str]) -> list[dict[str, Any]]:
         """
         Convert list to dict with height/width keys
         """
@@ -170,17 +170,17 @@ class Command(BaseCommand):
             elif len(size_items) == 3:
                 sizes.append(
                     {
-                        "height": Decimal(size_items[0]),
-                        "width": Decimal(size_items[1]),
-                        "depth": Decimal(size_items[2]),
+                        "height": Decimal(size_items[0]),  # type: ignore
+                        "width": Decimal(size_items[1]),  # type: ignore
+                        "depth": Decimal(size_items[2]),  # type: ignore
                         "circumference": None,
                     }
                 )
             else:
                 sizes.append(
                     {
-                        "height": Decimal(size_items[0]),
-                        "width": Decimal(size_items[1]),
+                        "height": Decimal(size_items[0]),  # type: ignore
+                        "width": Decimal(size_items[1]),  # type: ignore
                         "depth": None,
                         "circumference": None,
                     }
@@ -188,11 +188,14 @@ class Command(BaseCommand):
 
         return sizes
 
-    def _get_remote_asset(self, url, filename):
+    def _get_remote_asset(self, url: Optional[str], filename: Optional[str]) -> File:
         """
         Get a remote asset through an url, create a temporary file, and upload
         asset locally.
         """
+
+        if url is None or filename is None:
+            raise ValueError("Both url and filename must be defined.")
 
         session = requests.Session()
         session.headers[
@@ -217,7 +220,7 @@ class Command(BaseCommand):
         return File(lf, f"{filename}.pdf")
 
     def _create_imported_product(
-        self, supplier: "Supplier", add_absorption: "bool", **kwargs
+        self, supplier: "Supplier", add_absorption: "bool", **kwargs: Any
     ) -> Tuple["Product", list]:
         """
         Create the product itself, and manipulate size list (need to check if special
@@ -241,18 +244,18 @@ class Command(BaseCommand):
 
         # Convert sizes from list to string, splitting on ","
         # and removing whitespace
-        sizes_list = [size.strip() for size in sizes.split(",")]
+        sizes_list = [size.strip() for size in sizes.split(",")] if sizes else []
 
         # Handle if product comes in special sizes
         if "*" in sizes_list:
             is_special_size = True
             sizes_list.remove("*")
 
-        created_product = Product.objects.create(
-            name=product_name.title(),
+        created_product = Product.objects.create(  # type: ignore
+            name=product_name.title() if product_name else None,
             supplier=supplier,
             status=ProductStatus.DRAFT,
-            slug=f"{slugify(supplier.name)}-{slugify(product_name)}",
+            slug=f"{slugify(supplier.name)}-{slugify(product_name)}",  # type: ignore
             short_description=short_description,
             description=description,
             available_in_special_sizes=is_special_size,
@@ -269,7 +272,7 @@ class Command(BaseCommand):
         return created_product, sizes_dict_list
 
     def _create_product_category_rels(
-        self, categories: "list[str]", product: "Product"
+        self, categories: str, product: "Product"
     ) -> None:
         splitted_category_slugs = [
             category.strip() for category in categories.split(",")
@@ -277,10 +280,10 @@ class Command(BaseCommand):
 
         for slug in splitted_category_slugs:
             cat = Category.objects.get(slug=slug)
-            product.category.add(cat)
+            product.categories.add(cat)
 
     def _create_product_files(
-        self, files: "list", product: "Product", confirm: "bool"
+        self, files: list[dict[str, str]], product: "Product", confirm: "bool"
     ) -> None:
         """
         Create file instance belloning to product.
@@ -295,7 +298,7 @@ class Command(BaseCommand):
                 "file_url"
             ], "Key file_url in files list does not exist, but is required"
 
-            ProductFile.objects.create(
+            ProductFile.objects.create(  # type: ignore
                 product=product,
                 name=file["name"],
                 file=self._get_remote_asset(file["file_url"], file["name"])
@@ -306,7 +309,7 @@ class Command(BaseCommand):
         self.stdout.write("All files created.")
 
     def _create_and_get_product_variants_to_link(
-        self, variants: "list", confirm: "bool"
+        self, variants: list[dict[str, str]], confirm: "bool"
     ) -> "list":
         """
         Create appropriate variants and append them to a list to link
@@ -342,22 +345,24 @@ class Command(BaseCommand):
                 # If image_url exists, we create a new variant with correct
                 # properties.
                 created_variant = Variant.objects.create(
-                    name=name.title(),
+                    name=name.title()  # type: ignore
                 )
 
                 # Since the file needs the id to be created, save the thumbnail after
                 # creation.
                 if confirm:
                     file = self._get_remote_asset(image_url, name)
-                    created_variant.thumbnail.save(f"{slugify(name)}", file)
+                    created_variant.thumbnail.save(f"{slugify(name)}", file)  # type: ignore
 
                 variants_to_link.append(created_variant)
-                self.stdout.write(f"Variant {name.title()} added.")
+                self.stdout.write(f"Variant {name.title()} added.")  # type: ignore
         self.stdout.write("All variants gotten/created and ready to link.")
 
         return variants_to_link
 
-    def _create_and_get_sizes_to_link(self, sizes: "list") -> "list":
+    def _create_and_get_sizes_to_link(
+        self, sizes: list[dict[str, Any]]
+    ) -> list[tuple[Size, bool]]:
         """
         Create or get appropriate sizes and append them to a list to link
         it and variants later.
@@ -373,7 +378,11 @@ class Command(BaseCommand):
         return sizes_to_link
 
     def _get_and_link_sizes_variants(
-        self, variants: "list", sizes: "list", product: "Product", price: "Decimal"
+        self,
+        variants: list[Variant],
+        sizes: list[tuple[Size, bool]],
+        product: "Product",
+        price: "Decimal",
     ) -> None:
         """
         Create product options by combining variants with sizes.
@@ -382,7 +391,7 @@ class Command(BaseCommand):
         if len(sizes) > 0 and len(variants) > 0:
             for variant in variants:
                 for size, _ in sizes:
-                    ProductOption.objects.create(
+                    ProductOption.objects.create(  # type: ignore
                         product=product,
                         variant=variant,
                         size=size,
@@ -392,7 +401,7 @@ class Command(BaseCommand):
 
         if len(sizes) > 0 and len(variants) <= 0:
             for size, _ in sizes:
-                ProductOption.objects.create(
+                ProductOption.objects.create(  # type: ignore
                     product=product,
                     variant=None,
                     size=size,
@@ -402,7 +411,7 @@ class Command(BaseCommand):
 
         if len(variants) > 0 and len(sizes) <= 0:
             for variant in variants:
-                ProductOption.objects.create(
+                ProductOption.objects.create(  # type: ignore
                     product=product,
                     variant=variant,
                     size=None,

@@ -69,7 +69,7 @@ def log_entries_create(
                 author=author,
                 content_type=content_type,
                 content_object=instance,
-                object_id=instance.id,
+                object_id=instance.pk,
                 change=change_message,
                 created_at=timezone.now(),
             )
@@ -83,7 +83,7 @@ def log_entries_create(
     return [
         LogEntryRecord(
             id=entry.id,
-            author_id=entry.author_id,
+            author_id=entry.author_id,  # type: ignore
             change=LogEntryChangeRecord(
                 field=entry.change["field"],
                 old_value=entry.change["old_value"],

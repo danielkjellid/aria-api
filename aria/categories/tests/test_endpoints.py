@@ -15,7 +15,7 @@ class TestPublicCategoriesEndpoints:
 
     def test_anonymous_request_category_list_api(
         self, anonymous_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test listing categories from an anonymous client returns
         a valid response.
@@ -79,7 +79,7 @@ class TestPublicCategoriesEndpoints:
 
     def test_anonymous_request_category_parent_list_api(
         self, anonymous_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test listing parent categories from an anonymous client returns
         a valid response.
@@ -138,7 +138,7 @@ class TestPublicCategoriesEndpoints:
 
     def test_anonymous_request_category_children_list_api(
         self, anonymous_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test listing parent categories from an anonymous client returns
         a valid response.
@@ -196,7 +196,7 @@ class TestPublicCategoriesEndpoints:
 
     def test_anonymous_request_category_products_list_api(
         self, anonymous_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         cat_1 = create_category(name="Main cat 1")
         subcat_1 = create_category(name="Sub cat 1", parent=cat_1)
         products = create_product(quantity=20)
@@ -282,7 +282,7 @@ class TestPublicCategoriesEndpoints:
 
     def test_anonymous_request_category_detail_api(
         self, anonymous_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test retrieving a specific category from an anonymous client returns
         a valid response.

@@ -12,7 +12,7 @@ from aria.core.decorators import (
 
 
 class TestCoreDecorators:
-    def test_not_in_production_decorator(self, settings):
+    def test_not_in_production_decorator(self, settings) -> None:
 
         settings.PRODUCTION = False
         settings.ENVIRONMENT = "dev"
@@ -47,7 +47,7 @@ class TestCoreDecorators:
         with pytest.raises(NotAllowedInProductionException):
             func_a()
 
-    def test_cached_decorator(self):
+    def test_cached_decorator(self) -> None:
         @dataclass(frozen=True, eq=True)
         class MyDataClass:
             id: int

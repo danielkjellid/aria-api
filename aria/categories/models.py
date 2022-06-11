@@ -15,12 +15,12 @@ class Category(MPTTModel, BaseModel, BaseHeaderImageModel, BaseListImageModel):
     """
 
     @property
-    def category_image_directory_path(self):
+    def category_image_directory_path(self) -> str:
         if self.parent is not None:
             return f"media/categories/{slugify(self.parent)}/subcategories/{slugify(self.name)}"
         return f"media/categories/{slugify(self.name)}"
 
-    UPLOAD_PATH = category_image_directory_path
+    UPLOAD_PATH = category_image_directory_path  # type: ignore
 
     name = models.CharField(max_length=100, unique=False)
     slug = models.SlugField(
@@ -67,14 +67,14 @@ class Category(MPTTModel, BaseModel, BaseHeaderImageModel, BaseListImageModel):
         tree_id_attr = "mptt_tree_id"
         order_insertion_by = ["ordering"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             self.get_category_display()
             if self.is_active
             else f"{self.get_category_display()} (Inactive)"
         )
 
-    def get_category_display(self):
+    def get_category_display(self) -> str:
         return (
             f"{self.parent.get_category_display()} > {self.name}"
             if self.parent
@@ -83,15 +83,21 @@ class Category(MPTTModel, BaseModel, BaseHeaderImageModel, BaseListImageModel):
 
     @property
     def is_primary(self) -> bool:
-        return self.mptt_level == 0
+        if self.mptt_level == 0:
+            return True
+        return False
 
     @property
     def is_secondary(self) -> bool:
-        return self.mptt_level == 1
+        if self.mptt_level == 1:
+            return True
+        return False
 
     @property
     def is_new(self) -> bool:
-        return self.promotion_type == PromotionType.NEW
+        if self.promotion_type == PromotionType.NEW:
+            return True
+        return False
 
     @property
     def images(self) -> BaseHeaderImageRecord:

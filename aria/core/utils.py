@@ -1,4 +1,5 @@
 import os
+from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
 from django.core.exceptions import FieldDoesNotExist
@@ -8,8 +9,13 @@ from django.utils.text import slugify
 from django_s3_storage.storage import S3Storage
 from imagekit.models import ProcessedImageField
 
+from aria.core.schemas.records import BaseArrayFieldLabelRecord
 
-def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
+if TYPE_CHECKING:
+    from aria.core import models as core_models
+
+
+def cleanup_files_from_deleted_instance(instance: Model) -> None:
     """
     Function to fire when a model instance is deleted, and we need to cleanup
     dangling associated files - deleting them from the system.
@@ -18,7 +24,9 @@ def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
     if instance is None:
         raise AttributeError("No instance sent from signal.")
 
-    def _cleanup_folders(parent_dir: str = None, storage_key: str = None) -> None:
+    def _cleanup_folders(
+        parent_dir: str | None = None, storage_key: str | None = None
+    ) -> None:
         # Since we use AWS in prod and a normal file structure in the media folder
         # in development, check if debug is active and if parent key is sent in.
         if settings.DEBUG and parent_dir:
@@ -92,7 +100,9 @@ def cleanup_files_from_deleted_instance(sender, instance, *args, **kwargs):
     _cleanup_file(instance=instance, meta_field="file")
 
 
-def get_static_asset_upload_path(instance: "Model", filename: str) -> str:
+def get_static_asset_upload_path(
+    instance: "core_models.BaseImageModel", filename: str
+) -> str:
     """
     Get the path of which to upload the image.
     """
@@ -110,12 +120,19 @@ def get_static_asset_upload_path(instance: "Model", filename: str) -> str:
     return f"{path}/{slugify(name)}{extension}"
 
 
-def get_array_field_labels(field, enum):
+def get_array_field_labels(
+    choices: Any | None, enum: Any
+) -> list[BaseArrayFieldLabelRecord]:
     """
     Return a list of human readable labels for ArrayChoiceFields
     """
 
-    if field is None:
+    if choices is None:
         return []
 
-    return [{"name": item.label} for item in enum for f in field if item.value == f]
+    return [
+        BaseArrayFieldLabelRecord(name=item.label)
+        for item in enum
+        for choice in choices
+        if item.value == choice and item.label
+    ]

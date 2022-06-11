@@ -11,7 +11,9 @@ pytestmark = pytest.mark.django_db
 
 
 class TestProductsServices:
-    def test_variant_create_creates_variant(self, django_assert_max_num_queries):
+    def test_variant_create_creates_variant(
+        self, django_assert_max_num_queries
+    ) -> None:
         """
         Test that variants are created using the variant_create service.
         """
@@ -27,7 +29,7 @@ class TestProductsServices:
 
     def test_product_option_delete_related_variants_deletes_variants(
         self, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test that we delete dangling variants after deleting the parent
         product option.

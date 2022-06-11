@@ -52,8 +52,8 @@ class Command(BaseCommand):
 
                 # Only encrypt password once
                 user = User.objects.first()
-                user.set_password(password)
-                user.save()
+                user.set_password(password)  # type: ignore
+                user.save()  # type: ignore
 
                 # Set the password for all users once encrypted
                 raw_sql = """
@@ -69,7 +69,7 @@ class Command(BaseCommand):
                 random_string = get_random_string(length=20)
 
                 cursor = connection.cursor()
-                cursor.execute(raw_sql, [user.password, random_string])
+                cursor.execute(raw_sql, [user.password, random_string])  # type: ignore
 
                 self.stdout.write("Personal data scrubbed.")
 

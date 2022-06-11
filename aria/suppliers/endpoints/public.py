@@ -1,3 +1,5 @@
+from django.http import HttpRequest
+
 from ninja import Router
 
 from aria.api.decorators import api
@@ -14,7 +16,7 @@ router = Router(tags=["Suppliers"])
     response={200: list[SupplierListOutput]},
     summary="Lists all active suppliers",
 )
-def supplier_list_api(request) -> tuple[int, list[SupplierListOutput]]:
-    suppliers = list(Supplier.objects.filter(is_active=True))
+def supplier_list_api(request: HttpRequest) -> tuple[int, list[SupplierListOutput]]:
+    suppliers = Supplier.objects.filter(is_active=True)  # type: ignore
 
-    return 200, suppliers
+    return 200, [SupplierListOutput.from_orm(supplier) for supplier in suppliers]

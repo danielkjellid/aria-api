@@ -7,7 +7,7 @@ pytestmark = pytest.mark.django_db
 
 
 class TestCategoriesModels:
-    def test_parent_category_create(self):
+    def test_parent_category_create(self) -> None:
         """
         Test creation of primary category instances
         """
@@ -31,7 +31,7 @@ class TestCategoriesModels:
         # Assert that category is a "parent"
         assert category.is_primary is True
 
-    def test_child_category_create(self):
+    def test_child_category_create(self) -> None:
         """
         Test creation of secondary category instances
         """

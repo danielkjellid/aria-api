@@ -20,7 +20,7 @@ class TestAPIAuthPublicEndpoints:
         anonymous_client,
         django_assert_max_num_queries,
         unprivileged_user,
-    ):
+    ) -> None:
         """
         Test obtaining tokens from endpoint.
         """
@@ -63,7 +63,7 @@ class TestAPIAuthPublicEndpoints:
         refresh_token_payload,
         encode_token,
         unprivileged_user,
-    ):
+    ) -> None:
         """
         Test obtaining a new token pair by using a valid refresh token.
         """
@@ -108,7 +108,7 @@ class TestAPIAuthPublicEndpoints:
         refresh_token_payload,
         unprivileged_user,
         decode_token,
-    ):
+    ) -> None:
         """
         Test blackliting a provided valid token.
         """

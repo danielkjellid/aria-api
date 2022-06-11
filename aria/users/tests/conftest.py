@@ -33,14 +33,14 @@ def create_user_with_permissions(django_user_model, site):
             **defaults,
         )[0]
 
-        parsed_perms = []
+        parsed_perms: list[Permission] = []
 
         for perm in perms:
             parsed_perm = Permission.objects.filter(codename=perm)
 
             # If multiple codenames are found, add them all.
             if len(parsed_perm) > 1:
-                parsed_perm = list(parsed_perm)
+                parsed_perm = list(parsed_perm)  # type: ignore
                 parsed_perms.extend(parsed_perm)
             else:
                 parsed_perms.append(parsed_perm[0])

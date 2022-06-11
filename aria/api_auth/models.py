@@ -20,7 +20,7 @@ class OutstandingToken(models.Model):
         verbose_name = "Outstanding token"
         verbose_name_plural = "Outstanding tokens"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Token for {self.user} ({self.jti})"
 
 
@@ -36,5 +36,5 @@ class BlacklistedToken(models.Model):
         verbose_name = "Blacklisted token"
         verbose_name_plural = "Blacklisted tokens"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Blacklisted token for {self.token.user}"

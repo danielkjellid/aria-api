@@ -26,7 +26,7 @@ pytestmark = pytest.mark.django_db
 class TestAPIAuthServices:
     def test__refresh_token_create_and_encode(
         self, django_assert_max_num_queries, unprivileged_user
-    ):
+    ) -> None:
         """
         Test that the _refresh_token_create_and_encode service replaces
         needed default, encodes a token, and creates an entry in the
@@ -68,7 +68,7 @@ class TestAPIAuthServices:
 
     def test__access_token_create_and_encode(
         self, django_assert_max_num_queries, unprivileged_user
-    ):
+    ) -> None:
         """
         Test that the _access_token_create_and_encode service replaces
         needed default and encodes a token.
@@ -103,7 +103,7 @@ class TestAPIAuthServices:
 
     def test_token_pair_obtain_for_user(
         self, django_assert_max_num_queries, mocker, unprivileged_user
-    ):
+    ) -> None:
         """
         Test that token_pair_obtain_for_user calls the needed
         services to produce a valid access and refresh token
@@ -136,7 +136,7 @@ class TestAPIAuthServices:
 
     def test_token_pair_obtain_for_unauthenticated_user(
         self, django_assert_max_num_queries, mocker, unprivileged_user
-    ):
+    ) -> None:
         user = unprivileged_user
         user.set_password("supersecretpassword")
         user.save()
@@ -176,7 +176,7 @@ class TestAPIAuthServices:
         refresh_token_payload,
         unprivileged_user,
         encode_token,
-    ):
+    ) -> None:
         """
         Test how the token_pair_obtain_new_from_refresh_token service
         reacts to getting an invalid token.
@@ -224,7 +224,7 @@ class TestAPIAuthServices:
         settings,
         refresh_token_payload,
         encode_token,
-    ):
+    ) -> None:
         """
         Test how token_pair_obtain_new_from_refresh_token responds
         to getting a valid token, but with a jti that does not bellong
@@ -274,7 +274,7 @@ class TestAPIAuthServices:
         mocker,
         refresh_token_payload,
         unprivileged_user,
-    ):
+    ) -> None:
         """
         Test that the token_pair_obtain_new_from_refresh_token returns
         a new valid token pair when provided a valid refresh token.
@@ -322,7 +322,7 @@ class TestAPIAuthServices:
         mocker,
         unprivileged_user,
         encode_token,
-    ):
+    ) -> None:
         """
         Test that the refresh_token_blacklist service raises an
         exception appropriately.
@@ -367,7 +367,7 @@ class TestAPIAuthServices:
         mocker,
         refresh_token_payload,
         unprivileged_user,
-    ):
+    ) -> None:
         """
         Test that the refresh_token_blacklist blacklists refresh
         token on valid token provided.

@@ -14,7 +14,7 @@ class TestPublicProductsEndpoints:
 
     def test_anonymous_request_product_detail_api(
         self, anonymous_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test retrieving a singular product from an anonymous client returns
         a valid response.

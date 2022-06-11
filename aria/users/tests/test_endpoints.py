@@ -19,7 +19,7 @@ class TestPublicUsersEndpoints:
 
     def test_anonymous_request_user_create_api(
         self, anonymous_client, django_assert_max_num_queries, mocker
-    ):
+    ) -> None:
         """
         Test creating a user from the endpoint.
         """
@@ -59,7 +59,7 @@ class TestPublicUsersEndpoints:
 
     def test_anonymous_request_user_verify_account_api(
         self, anonymous_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test initiating the account verification process.
         """
@@ -94,7 +94,7 @@ class TestPublicUsersEndpoints:
 
     def test_anonymous_request_user_verify_account_confirm_api(
         self, anonymous_client, django_assert_max_num_queries, mocker
-    ):
+    ) -> None:
         """
         Test actually verifying the account
         """
@@ -126,7 +126,7 @@ class TestPublicUsersEndpoints:
 
     def test_anonymous_request_user_password_reset_api(
         self, anonymous_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test initiating reset password process.
         """
@@ -159,7 +159,7 @@ class TestPublicUsersEndpoints:
 
     def test_anonymous_request_user_password_reset_confirm_api(
         self, anonymous_client, django_assert_max_num_queries, mocker
-    ):
+    ) -> None:
         """
         Test validating created tokens and setting new password.
         """
@@ -205,7 +205,7 @@ class TestProtectedUsersEndpoints:
 
     def test_anonymous_client_users_list(
         self, anonymous_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test that unauthenticated users gets a 401 unauthorized on listing
         all users in the application.
@@ -220,7 +220,7 @@ class TestProtectedUsersEndpoints:
         self,
         n_authenticated_unprivileged_client,
         django_assert_max_num_queries,
-    ):
+    ) -> None:
         """
         Test that authenticated, unprivileged, users gets a 403 forbidden on
         listing all users in the application.
@@ -235,15 +235,15 @@ class TestProtectedUsersEndpoints:
     @pytest.mark.parametrize("test_permissions", ["has_users_list"], indirect=True)
     def test_authenticated_privileged_client_users_list(
         self, n_authenticated_privileged_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test that privileged users gets a valid response on listing all users in
         the application.
         """
 
-        users = create_user(quantity=3)
-
-        print(users)
+        create_user(email="user_1@example.com")
+        create_user(email="user_2@example.com")
+        create_user(email="user_3@example.com")
 
         # Uses 5 queries: 1 for getting request user, 2 for checking permissions,
         # 2 for getting users and pagination data.
@@ -264,7 +264,7 @@ class TestProtectedUsersEndpoints:
 
     def test_anonymous_client_user_detail_api(
         self, anonymous_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test that unauthenticated users gets a 401 unauthorized on
         user retrieval.
@@ -281,7 +281,7 @@ class TestProtectedUsersEndpoints:
         self,
         n_authenticated_unprivileged_client,
         django_assert_max_num_queries,
-    ):
+    ) -> None:
         """
         Test that authenticated, unprivileged, users gets a 403 forbidden on
         user retrieval.
@@ -302,7 +302,7 @@ class TestProtectedUsersEndpoints:
         self,
         n_authenticated_privileged_client,
         django_assert_max_num_queries,
-    ):
+    ) -> None:
         """
         Test that authenticated privileged users gets a valid response on retriving a
         single user instance.
@@ -362,7 +362,7 @@ class TestProtectedUsersEndpoints:
 
     def test_anonymous_client_user_update_api(
         self, anonymous_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test that unauthenticated users gets a 401 unauthorized on
         full update of another user instance.
@@ -393,7 +393,7 @@ class TestProtectedUsersEndpoints:
 
     def test_authenticated_unprivileged_client_user_update_api(
         self, n_authenticated_unprivileged_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test that authenticated, unprivileged, users gets a 403 forbidden
         on full update of another user instance.
@@ -428,7 +428,7 @@ class TestProtectedUsersEndpoints:
     @pytest.mark.parametrize("test_permissions", ["has_user_edit"], indirect=True)
     def test_authenticated_privileged_client_user_update_api(
         self, n_authenticated_privileged_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test that privileged users gets a valid response on
         full update of another user instance.
@@ -475,7 +475,7 @@ class TestProtectedUsersEndpoints:
 
     def test_anonymous_client_user_partial_update_api(
         self, anonymous_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test that unauthenticated users gets a 401 unauthorized upon partial update.
         """
@@ -493,7 +493,7 @@ class TestProtectedUsersEndpoints:
 
     def test_authenticated_unprivileged_client_user_update_api_partial(
         self, n_authenticated_unprivileged_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test that authenticated, unprivileged, users gets a 403 forbidden
         on partial update of another user instance.
@@ -516,7 +516,7 @@ class TestProtectedUsersEndpoints:
     @pytest.mark.parametrize("test_permissions", ["has_user_edit"], indirect=True)
     def test_authenticated_privileged_client_user_update_api_partial(
         self, n_authenticated_privileged_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test that privileged users gets a valid response on
         partial update of another user instance.

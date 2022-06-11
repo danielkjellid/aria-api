@@ -82,7 +82,7 @@ def product_detail(
     """
 
     product = (
-        Product.objects.filter(Q(id=product_id) | Q(slug=product_slug))
+        Product.objects.filter(Q(id=product_id) | Q(slug=product_slug))  # type: ignore
         .preload_for_list()
         .with_active_categories()
         .with_available_options()

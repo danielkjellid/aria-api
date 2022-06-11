@@ -1,4 +1,4 @@
-from aria.core.models import BaseHeaderImageModel
+from aria.core.models import BaseHeaderImageModel, BaseListImageModel
 from aria.core.schemas.records import BaseHeaderImageRecord, BaseListImageRecord
 
 
@@ -20,7 +20,7 @@ def base_header_image_record(
     )
 
 
-def base_list_image_record(*, instance: BaseListImageRecord) -> BaseListImageRecord:
+def base_list_image_record(*, instance: BaseListImageModel) -> BaseListImageRecord:
     """
     Utiltiy for quickly populating the BaseListImageRecord.
     """

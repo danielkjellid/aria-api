@@ -1,7 +1,13 @@
+from typing import TYPE_CHECKING
+
 from django.db.models import F, Prefetch
 
 from aria.core.models import BaseQuerySet
 from aria.products.enums import ProductStatus
+
+if TYPE_CHECKING:
+    from aria.categories import models as category_models
+    from aria.products import models
 
 
 class SizeQuerySet(BaseQuerySet):
@@ -20,8 +26,8 @@ class ShapeQuerySet(BaseQuerySet):
     pass
 
 
-class ProductQuerySet(BaseQuerySet):
-    def with_active_categories(self):
+class ProductQuerySet(BaseQuerySet["models.Product"]):
+    def with_active_categories(self) -> BaseQuerySet["models.Product"]:
         """
         Prefetches active categories connected to a product.
 
@@ -45,11 +51,11 @@ class ProductQuerySet(BaseQuerySet):
 
         return self.prefetch_related(prefetched_categories)
 
-    def with_available_options(self):
+    def with_available_options(self) -> BaseQuerySet["models.Product"]:
 
         from aria.products.models import ProductOption
 
-        available_product_options = ProductOption.objects.available()
+        available_product_options = ProductOption.objects.available()  # type: ignore
 
         available_product_options = available_product_options.select_related(
             "variant", "size"
@@ -61,7 +67,7 @@ class ProductQuerySet(BaseQuerySet):
 
         return self.prefetch_related(prefetched_options)
 
-    def annotate_site_state_data(self):
+    def annotate_site_state_data(self) -> BaseQuerySet["models.Product"]:
 
         from aria.products.models import ProductSiteState
 
@@ -79,7 +85,7 @@ class ProductQuerySet(BaseQuerySet):
             can_be_purchased_online=option.values("can_be_purchased_online")[:1],
         )
 
-    def preload_for_list(self):
+    def preload_for_list(self) -> BaseQuerySet["models.Product"]:
         """
         Utility to avoid n+1 queries
         """
@@ -96,7 +102,9 @@ class ProductQuerySet(BaseQuerySet):
 
         return qs
 
-    def by_category(self, category, ordered: bool = True):
+    def by_category(
+        self, category: "category_models.Category", ordered: bool = True
+    ) -> BaseQuerySet["models.Product"]:
         # Prepare queryset and get active decendants
         categories = category.get_descendants(include_self=True).active()
 
@@ -124,8 +132,8 @@ class ProductSiteStateQuerySet(BaseQuerySet):
     pass
 
 
-class ProductOptionQuerySet(BaseQuerySet):
-    def available(self):
+class ProductOptionQuerySet(BaseQuerySet["models.ProductOption"]):
+    def available(self) -> BaseQuerySet["models.ProductOption"]:
         """
         Get available, sellable, product options.
         """

@@ -1,3 +1,4 @@
+from typing import Any
 from urllib.parse import urlparse
 
 from django.conf import settings
@@ -17,11 +18,11 @@ class DynamicSiteDomainMiddleware:
     on the site making the request.
     """
 
-    def __init__(self, get_response):
+    def __init__(self, get_response: Any) -> None:
         # one time configuration and initialization
         self.get_response = get_response
 
-    def __call__(self, request):
+    def __call__(self, request: HttpRequest) -> Any:
 
         if request.META.get("HTTP_REFERER") is not None:
             # get hostname from origin making the request
@@ -40,7 +41,7 @@ class DynamicSiteDomainMiddleware:
                     current_site = Site.objects.get(id=settings.DEFAULT_SITE_ID)
 
                 # set current site and site id to site based on hostname
-                request.current_site = current_site
+                request.current_site = current_site  # type: ignore
                 settings.SITE_ID = current_site.id
 
                 # process request
@@ -64,7 +65,7 @@ class QueryCountWarningMiddleware(MiddlewareMixin):
         # Get some debug data from the connection object
         query_count = len(connection.queries)
         query_duration = round(
-            sum(float(q.get("time")) for q in connection.queries) * 1000
+            sum(float(q.get("time")) for q in connection.queries) * 1000  # type: ignore
         )
 
         if settings.DEBUG:

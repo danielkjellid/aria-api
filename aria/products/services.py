@@ -4,7 +4,7 @@ from django.utils.text import slugify
 from aria.products.models import ProductOption, Variant
 
 
-def variant_create(*, name: str, thumbnail: File = None) -> Variant:
+def variant_create(*, name: str, thumbnail: File | None = None) -> Variant:
     """
     Creates a Variant with given fields.
     """
@@ -32,12 +32,13 @@ def product_option_delete_related_variants(*, instance: "ProductOption") -> None
     products.
     """
 
-    related_variant = instance.variant
+    related_variant: Variant | None = instance.variant
 
     # Check if there are other products thats linked to the same
     # variant while filtering out standards.
     if (
-        related_variant.is_standard is False
+        related_variant is not None
+        and related_variant.is_standard is False
         and len(related_variant.product_options.all()) == 1
     ):
         related_variant.delete()

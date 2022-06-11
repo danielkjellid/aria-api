@@ -1,3 +1,5 @@
+from django.http import HttpRequest
+
 from ninja import Router
 
 from aria.api.decorators import api
@@ -25,7 +27,9 @@ router = Router(tags=["Auth"])
     response={200: TokensObtainOutput, codes_40x: ExceptionResponse},
     summary="Obtain access and refresh token pair",
 )
-def auth_obtain_token_pair(request, payload: TokensObtainInput):
+def auth_obtain_token_pair(
+    request: HttpRequest, payload: TokensObtainInput
+) -> tuple[int, TokensObtainOutput]:
     """
     Authenticate user credentials and return access and refresh tokens.
     """
@@ -33,7 +37,7 @@ def auth_obtain_token_pair(request, payload: TokensObtainInput):
         email=payload.email, password=payload.password
     )
 
-    return 200, tokens
+    return 200, TokensObtainOutput(**tokens.dict())
 
 
 @api(
@@ -43,13 +47,15 @@ def auth_obtain_token_pair(request, payload: TokensObtainInput):
     response={200: TokensRefreshOutput, codes_40x: ExceptionResponse},
     summary="Obtain a new token pair",
 )
-def auth_refresh_token_pair(request, payload: TokensRefreshInput):
+def auth_refresh_token_pair(
+    request: HttpRequest, payload: TokensRefreshInput
+) -> tuple[int, TokensRefreshOutput]:
     """
     Obtain a new token pair based on valid refresh token.
     """
     tokens = token_pair_obtain_new_from_refresh_token(payload.refresh_token)
 
-    return 200, tokens
+    return 200, TokensRefreshOutput(**tokens.dict())
 
 
 @api(
@@ -59,7 +65,9 @@ def auth_refresh_token_pair(request, payload: TokensRefreshInput):
     response={200: None, codes_40x: ExceptionResponse},
     summary="Blacklists a refresh token",
 )
-def auth_log_out_and_blacklist_refresh_token(request, payload: TokenBlacklistInput):
+def auth_log_out_and_blacklist_refresh_token(
+    request: HttpRequest, payload: TokenBlacklistInput
+) -> int:
     """
     Blacklists a valid refresh token, typically done when a user logs out.
     """

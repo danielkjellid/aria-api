@@ -14,7 +14,7 @@ class TestPublicKitchensEndpoints:
 
     def test_anonymous_request_kitchen_list_api(
         self, anonymous_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test retrieving a list of available kitchens from an anonymous client returns
         a valid response.
@@ -75,7 +75,7 @@ class TestPublicKitchensEndpoints:
 
     def test_anonymous_request_kitchen_detail_api(
         self, anonymous_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test retrieving a single kitchen from an anonymous client returns
         a valid response.

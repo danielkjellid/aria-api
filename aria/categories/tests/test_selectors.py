@@ -18,7 +18,9 @@ pytestmark = pytest.mark.django_db
 
 
 class TestCategoriesSelectors:
-    def test_category_navigation_active_list(self, django_assert_max_num_queries):
+    def test_category_navigation_active_list(
+        self, django_assert_max_num_queries
+    ) -> None:
         """
         Test the selector category_navigation_active_list returns expected
         response within query limit.
@@ -43,7 +45,7 @@ class TestCategoriesSelectors:
         assert categories[1].id == main_cat_2.id
         assert categories[1].children[0].id == main_cat_2_sub_1.id
 
-    def test_category_parent_active_list(self, django_assert_max_num_queries):
+    def test_category_parent_active_list(self, django_assert_max_num_queries) -> None:
         """
         Test the category_parent_active_list selector returns expected
         response within query limit.
@@ -66,12 +68,12 @@ class TestCategoriesSelectors:
 
     def test_category_parents_active_list_for_category(
         self, django_assert_max_num_queries
-    ):
+    ) -> None:
         pass
 
     def test_category_children_active_list_for_category(
         self, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test the category_children_active_list_for_category
         selector returns expected response within query limit
@@ -104,7 +106,9 @@ class TestCategoriesSelectors:
         assert len(main_cat_2_children) == 1
         assert main_cat_2_children[0].id == main_cat_2_sub_1.id
 
-    def test_category_tree_active_list_for_product(self, django_assert_max_num_queries):
+    def test_category_tree_active_list_for_product(
+        self, django_assert_max_num_queries
+    ) -> None:
         """
         Test the category_tree_active_list_for_product selector returns
         expected response within query limit for a specific product.
@@ -149,7 +153,7 @@ class TestCategoriesSelectors:
 
     def test_category_related_product_list_by_category(
         self, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test the category_related_product_list_by_category
         selector returns expected response within query limit
@@ -229,7 +233,7 @@ class TestCategoriesSelectors:
         assert len(products_subcat_2_search) == 1
         assert products_subcat_2_search[0].id == products_subcat_2[0].id
 
-    def test_category_detail_record(self, django_assert_max_num_queries):
+    def test_category_detail_record(self, django_assert_max_num_queries) -> None:
         """
         Test the category_detail_record selector returns expected response
         within query limit for a specific category.

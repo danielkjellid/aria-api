@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 
 from aria.audit_logs.managers import LogEntryQuerySet
+from aria.audit_logs.types import ChangeMessage
 from aria.users.models import User
 
 _LogEntryManager = models.Manager.from_queryset(LogEntryQuerySet)
@@ -44,5 +45,6 @@ class LogEntry(models.Model):
 
     # property to parse and return the changed JSON
     @cached_property  # cached property is useful as it stops parsing the changes on every access
-    def changes_dict(self):
-        return json.loads(self.change)
+    def changes_dict(self) -> ChangeMessage:
+        message: ChangeMessage = json.loads(self.change)
+        return message

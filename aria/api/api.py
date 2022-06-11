@@ -1,4 +1,5 @@
 from django.core.exceptions import PermissionDenied
+from django.http import HttpRequest, HttpResponse
 
 from ninja import NinjaAPI
 
@@ -56,7 +57,7 @@ api.add_router("/users/", public_users_endpoints, auth=None)
 
 # Custom exception handler for Application errors.
 @api.exception_handler(ApplicationError)
-def application_error(request, exc: ApplicationError):
+def application_error(request: HttpRequest, exc: ApplicationError) -> HttpResponse:
     return api.create_response(
         request,
         ExceptionResponse(message=exc.message, extra=exc.extra),
@@ -66,20 +67,24 @@ def application_error(request, exc: ApplicationError):
 
 # Custom exception handler for Token errors.
 @api.exception_handler(TokenError)
-def token_error(request, exc: TokenError):
+def token_error(request: HttpRequest, exc: TokenError) -> HttpResponse:
     return api.create_response(
         request, ExceptionResponse(message=exc.message), status=401
     )
 
 
 @api.exception_handler(PermissionDenied)
-def permission_denied_error(request, exc: PermissionDenied):
+def permission_denied_error(
+    request: HttpRequest, exc: PermissionDenied
+) -> HttpResponse:
     return api.create_response(request, ExceptionResponse(message=str(exc)), status=403)
 
 
 # Custom exception handler for PageOutOfBounds errors.
 @api.exception_handler(PageOutOfBoundsError)
-def page_out_of_bounds_error(request, exc: PageOutOfBoundsError):
+def page_out_of_bounds_error(
+    request: HttpRequest, exc: PageOutOfBoundsError
+) -> HttpResponse:
     return api.create_response(
         request, ExceptionResponse(message=exc.message), status=404
     )

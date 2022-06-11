@@ -1,4 +1,5 @@
 import random
+from typing import Any
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
@@ -9,6 +10,7 @@ from django.core import signing
 from django.core.mail import send_mail
 from django.db import models
 from django.forms import ValidationError
+from django.http import HttpRequest
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
@@ -113,7 +115,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     site = models.ForeignKey(Site, on_delete=models.SET_NULL, null=True)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS: list[str] = []
 
     objects = _UserManager()
     on_site = CurrentSiteManager()
@@ -129,7 +131,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             ("has_user_delete", "Can delete a single user instance"),
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
 
     #################
@@ -219,7 +221,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         from aria.notes.models import NoteEntry
 
-        notes = NoteEntry.objects.filter(
+        notes = NoteEntry.objects.filter(  # type: ignore
             content_type=ContentType.objects.get_for_model(self), object_id=self.id
         )
 
@@ -263,13 +265,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     # Email #
     #########
 
-    def email_user(self, subject, message, from_email=None, **kwargs):
+    def email_user(
+        self, subject: str, message: str, from_email: str | None = None, **kwargs: Any
+    ) -> None:
         """
         Send an email to this user.
         """
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
-    def send_password_reset_email(self, *, request) -> None:
+    def send_password_reset_email(self, *, request: HttpRequest) -> None:
         from django.contrib.auth.forms import PasswordResetForm
 
         form = PasswordResetForm({"email": self.email})
@@ -286,15 +290,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         }
 
         if form.is_valid():
-            form.save(**email_options)
+            form.save(**email_options)  # type: ignore
 
-    def validate_uid(self, uid) -> bool:
+    def validate_uid(self, uid: str) -> bool:
         """
         Validates a given user uid.
         """
         decoded_uid = force_str(uid_decoder(uid))
 
-        if decoded_uid == self.id:
+        if decoded_uid == str(self.id):
             return True
 
         return False
@@ -306,7 +310,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         return signing.dumps({"email": self.email}, salt="users.email.verification")
 
-    def validate_verification_email_token(self, token) -> bool:
+    def validate_verification_email_token(self, token: str) -> bool:
         """
         Checks the email verification token provided by the user (included in an email).
         """
@@ -352,7 +356,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             html_message=user_verification_email,
         )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args: Any, **kwargs: Any) -> None:
         if not self.avatar_color:
             self.avatar_color = random.choice(AvatarColors.choices)[0]
 

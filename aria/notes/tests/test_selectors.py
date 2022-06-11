@@ -11,7 +11,7 @@ pytestmark = pytest.mark.django_db
 
 
 class TestNotesSelectors:
-    def test_note_entry_list_for_instance(self, django_assert_max_num_queries):
+    def test_note_entry_list_for_instance(self, django_assert_max_num_queries) -> None:
         """
         Test the note_entry_list_for_instance selector returns expected response
         within query limit for a specific instance.

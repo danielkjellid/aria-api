@@ -18,7 +18,7 @@ class TestPrivateNotesEndpoints:
 
     def test_anonymous_client_note_delete_api(
         self, anonymous_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test that unauthenticated users gets a 401 unauthorized on deleting
         notes.
@@ -37,7 +37,7 @@ class TestPrivateNotesEndpoints:
 
     def test_authenticated_unprivileged_client_note_delete_api(
         self, n_authenticated_unprivileged_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test that authenticated, unprivileged, users gets a 403 forbidden on
         deleting notes.
@@ -58,7 +58,7 @@ class TestPrivateNotesEndpoints:
     @pytest.mark.parametrize("test_permissions", ["has_note_delete"], indirect=True)
     def test_authenticated_privileged_client_note_delete_api(
         self, n_authenticated_privileged_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test that privileged users gets a valid response on deleting notes.
         """

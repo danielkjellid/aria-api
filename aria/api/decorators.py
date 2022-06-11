@@ -18,9 +18,9 @@ SUPPORTED_HTTP_METHODS = ["GET", "POST", "DELETE", "PATCH", "PUT"]
 
 def api(
     router: Router,
-    path,
+    path: str,
     *,
-    method: SUPPORTED_HTTP_METHODS,
+    method: str,
     response: Any,
     summary: Optional[str] = None,
     description: Optional[str] = None,
@@ -61,7 +61,12 @@ def api(
          in for example tests.
     """
 
-    def decorator(func):
+    def decorator(func: Any) -> Any:
+        if method not in SUPPORTED_HTTP_METHODS:
+            raise ValueError(
+                "Method not supported. Supported methods: %s", SUPPORTED_HTTP_METHODS
+            )
+
         # Get appropriate decorator based on router and method. This
         # is the same as doing @router.method(...) in the viewset.
         router_decorator = getattr(router, method.lower())
@@ -86,7 +91,7 @@ def api(
             **kwargs,
         )
         @functools.wraps(func)
-        def inner(*args, **kwargs):
+        def inner(*args: Any, **kwargs: Any) -> Any:
             try:
                 return func(*args, **kwargs)
             except ApplicationError:
@@ -97,7 +102,7 @@ def api(
     return decorator
 
 
-def _get_and_validate_router_tag(router: Router):
+def _get_and_validate_router_tag(router: Router) -> str:
     """
     Check that there is only a single tag provided.
     """
@@ -113,12 +118,10 @@ def _get_and_validate_router_tag(router: Router):
         if len(router_tag) > 1:
             raise ValueError("Router object must only have one tag!")
 
-        router_tag = router_tag[0].lower()
-
-    return router_tag
+    return router_tag[0].lower()
 
 
-def paginate(**paginator_params: DictStrAny) -> Callable:
+def paginate(**paginator_params: Any) -> Callable:
     """
     Paginate a response.
 

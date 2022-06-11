@@ -1,11 +1,11 @@
 from typing import Any, Dict, List, Tuple
 
-from django.db.models import Model
+from aria.audit_logs.types import ChangeMessage
 
 
 def model_update(
-    *, instance: Model, fields: List[str], data: Dict[str, Any]
-) -> Tuple[Model, bool, Dict[str, Any]]:
+    *, instance: Any, fields: List[str], data: Dict[str, Any]
+) -> Tuple[Any, bool, list[ChangeMessage]]:
     """
     Generic update service meant to be reused in local update services
     For example:
@@ -20,7 +20,7 @@ def model_update(
     """
 
     has_updated = False
-    updated_fields = []
+    updated_fields: list[ChangeMessage] = []
 
     for field in fields:
         # Skip if a field is not present in the actual data

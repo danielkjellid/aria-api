@@ -6,7 +6,7 @@ from django.forms import CheckboxSelectMultiple
 
 
 class ArraySelectMultiple(CheckboxSelectMultiple):
-    def value_omitted_from_data(
+    def value_omitted_from_data(  # type: ignore
         self, data: Dict[str, Any], files: Mapping[str, Iterable[Any]], name: str
     ) -> bool:
         return False
@@ -24,7 +24,7 @@ class ChoiceArrayField(ArrayField):
                                                     default=[...])
     """
 
-    def formfield(self, **kwargs) -> Any:
+    def formfield(self, **kwargs: Any) -> Any:  # type: ignore
 
         defaults = {
             "form_class": forms.TypedMultipleChoiceField,

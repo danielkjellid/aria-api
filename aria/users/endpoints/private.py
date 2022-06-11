@@ -1,3 +1,4 @@
+from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 
 from ninja import Query, Router
@@ -26,17 +27,17 @@ router = Router(tags=["Users"])
     },
     summary="Lists all users",
 )
-@paginate(page_size=18, order_by="-date_joined")
+@paginate(page_size=18)
 @permission_required("users.has_users_list")
 def user_list_api(
-    request, filters: UserListFilters = Query(...)
+    request: HttpRequest, filters: UserListFilters = Query(...)
 ) -> list[UserListOutput]:
     """
     Retrieve a list of all users in the application.
     """
 
     users = user_list(filters=filters.dict())
-    return users
+    return [UserListOutput(**user.dict()) for user in users]
 
 
 @api(
@@ -47,13 +48,13 @@ def user_list_api(
     summary="Retrieve a single user",
 )
 @permission_required("users.has_users_list")
-def user_detail_api(request, user_id: int) -> tuple[int, User]:
+def user_detail_api(request: HttpRequest, user_id: int) -> tuple[int, UserDetailOutput]:
     """
     Retrieve a single user based on user id.
     """
 
     user = get_object_or_404(User, pk=user_id)
-    return 200, user
+    return 200, UserDetailOutput.from_orm(user)
 
 
 @api(
@@ -64,7 +65,9 @@ def user_detail_api(request, user_id: int) -> tuple[int, User]:
     summary="Update a single user",
 )
 @permission_required("users.has_user_edit")
-def user_update_api(request, user_id: int, payload: UserUpdateInput) -> int:
+def user_update_api(
+    request: HttpRequest, user_id: int, payload: UserUpdateInput
+) -> int:
     """
     Update a specific user based on user id.
     """
@@ -76,6 +79,6 @@ def user_update_api(request, user_id: int, payload: UserUpdateInput) -> int:
         key: val for key, val in payload.dict().items() if val is not None
     }
 
-    user_update(user=user, data=cleaned_payload, author=request.auth, log_change=True)
+    user_update(user=user, data=cleaned_payload, author=request.auth, log_change=True)  # type: ignore
 
     return 200

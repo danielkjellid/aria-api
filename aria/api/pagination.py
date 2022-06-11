@@ -1,5 +1,5 @@
 import math
-from typing import Any
+from typing import Any, Optional
 from urllib import parse
 
 from django.db.models import QuerySet
@@ -15,14 +15,15 @@ from aria.api.exceptions import PageOutOfBoundsError
 class PageNumberSetPagination(PaginationBase):
     def __init__(self, page_size: int, **kwargs: Any) -> None:
         self.page_size = page_size
+        self.request: Any = None
         super().__init__(**kwargs)
 
     class Input(Schema):
         page: int = Field(1, gt=0)
 
     class Output(Schema):
-        next: str = None
-        previous: str = None
+        next: Optional[str] = None
+        previous: Optional[str] = None
         current_page: int
         total: int
         current_range: str
@@ -54,7 +55,7 @@ class PageNumberSetPagination(PaginationBase):
             "data": queryset[offset : offset + self.page_size],
         }
 
-    def _current_range(self, current_offset: int, total_items: int):
+    def _current_range(self, current_offset: int, total_items: int) -> str:
         """
         Get the current range of instaces being displayed. If page size is
         2, and we're on the first page, it will return 1-2. Will always return
@@ -70,13 +71,13 @@ class PageNumberSetPagination(PaginationBase):
 
         return f"{current_offset + 1} - {end_of_range}"
 
-    def _total_pages(self, total_items: int):
+    def _total_pages(self, total_items: int) -> int:
         """
         Get the total amount of pages and round up to nearest whole number.
         """
         return math.ceil(total_items / self.page_size)
 
-    def _get_next_link(self, current_page: int, total_pages: int):
+    def _get_next_link(self, current_page: int, total_pages: int) -> Optional[str]:
         """
         Get url for next page, if the current page is not the last page.
         """
@@ -87,7 +88,7 @@ class PageNumberSetPagination(PaginationBase):
         page_number = current_page + 1
         return self._replace_query_param(url, "page", page_number)
 
-    def _get_previous_link(self, current_page: int):
+    def _get_previous_link(self, current_page: int) -> Optional[str]:
         """
         Get url for the previous page, if the current page is not the first
         page.
@@ -100,7 +101,7 @@ class PageNumberSetPagination(PaginationBase):
         return self._replace_query_param(url, "page", page_number)
 
     @staticmethod
-    def _replace_query_param(url: str, key: str, val: str):
+    def _replace_query_param(url: str, key: str, val: str | int) -> str:
         """
         Given a URL and a key/val pair, set or replace an item in the query
         parameters of the URL, and return the new URL.

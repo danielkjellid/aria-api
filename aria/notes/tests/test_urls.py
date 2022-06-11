@@ -6,7 +6,7 @@ class TestPublicNotesUrls:
 
 
 class TestPrivateNotesUrls:
-    def test_url_note_delete_api(self):
+    def test_url_note_delete_api(self) -> None:
         """
         Test reverse match of note_delete_api endpoint.
         """

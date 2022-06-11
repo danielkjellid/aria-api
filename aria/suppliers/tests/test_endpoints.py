@@ -15,7 +15,7 @@ class TestPublicSuppliersEndpoints:
 
     def test_anonymous_request_supplier_list(
         self, anonymous_client, django_assert_max_num_queries
-    ):
+    ) -> None:
         """
         Test listing suppliers from an anonymous client returns
         a valid response.

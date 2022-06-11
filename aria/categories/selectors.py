@@ -1,6 +1,9 @@
+from typing import Any, Optional
+
 from django.db.models import Prefetch
 
 from aria.categories.models import Category
+from aria.categories.schemas.filters import CategoryProductListFilters
 from aria.categories.schemas.records import (
     CategoryDetailRecord,
     CategoryProductColorRecord,
@@ -105,7 +108,9 @@ def category_children_active_list_for_category(
     return [category_record(category=child) for child in children]
 
 
-def category_tree_active_list_for_product(*, product: Product) -> CategoryDetailRecord:
+def category_tree_active_list_for_product(
+    *, product: Product
+) -> list[CategoryDetailRecord]:
     """
     Get a full represenation of a nested category tree connected to
     a single product instance.
@@ -128,7 +133,9 @@ def category_tree_active_list_for_product(*, product: Product) -> CategoryDetail
 
 
 def category_related_product_list_by_category(
-    *, category: Category, filters=None
+    *,
+    category: Category,
+    filters: Optional[CategoryProductListFilters] | dict[str, Any] = None,
 ) -> list[CategoryProductRecord]:
     """
     Returns a filterable list of products belonging to the given category
@@ -139,11 +146,11 @@ def category_related_product_list_by_category(
 
     # Preload all needed values
     qs = (
-        Product.objects.by_category(category)
+        Product.objects.by_category(category)  # type: ignore
         .prefetch_related(
             Prefetch(
                 "options",
-                queryset=ProductOption.objects.select_related("variant").distinct(
+                queryset=ProductOption.objects.select_related("variant").distinct(  # type: ignore
                     "variant_id"
                 ),
             )
@@ -199,13 +206,19 @@ def category_related_product_list_by_category(
     ]
 
 
-def _category_related_product_list_cache_key(*, category: Category, filters=None):
+def _category_related_product_list_cache_key(
+    *,
+    category: Category,
+    filters: Optional[CategoryProductListFilters] | dict[str, Any] = None,
+) -> str:
     return f"categories.category_id={category.id}.products.filters={filters}"
 
 
 @cached(key=_category_related_product_list_cache_key, timeout=5 * 60)
 def category_related_product_list_by_category_from_cache(
-    *, category: Category, filters=None
+    *,
+    category: Category,
+    filters: Optional[CategoryProductListFilters] | dict[str, Any] = None,
 ) -> list[CategoryProductRecord]:
     """
     Returns a filterable list of products belonging to the given category

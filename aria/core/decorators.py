@@ -16,13 +16,13 @@ class NotAllowedInProductionException(Exception):
     pass
 
 
-def not_in_production(func):
+def not_in_production(func: Any) -> Callable[[F], F]:
     """
     Decorator that raises exception if run in production.
     Typically used for management commands that changes production data.
     """
 
-    def inner(*args, **kwargs):
+    def inner(*args: Any, **kwargs: Any) -> Any:
         if settings.PRODUCTION or settings.ENVIRONMENT == "production":
             raise NotAllowedInProductionException(
                 "This operation is not allowed in production!"
@@ -112,7 +112,7 @@ def cached(
             return value
 
         # Add the uncache helper as a attribute of the function
-        inner.uncache = uncache
+        inner.uncache = uncache  # type: ignore
 
         return cast(F, inner)
 
