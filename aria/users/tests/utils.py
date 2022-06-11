@@ -16,42 +16,33 @@ def create_user(
     is_active: bool = True,
     is_staff: bool = False,
     is_superuser: bool = False,
-    quantity: int = 1,
     **defaults: Any,
 ) -> User:
 
     if site is None:
         site = create_site()
 
-    created_users = []
-    for i in range(quantity):
+    user, _ = User.objects.update_or_create(
+        email=email,
+        password=password,
+        is_active=is_active,
+        is_staff=is_staff,
+        is_superuser=is_superuser,
+        **defaults,
+    )
 
-        user, _ = User.objects.update_or_create(
-            email=email if quantity == 1 else f"user_{i}@example.com",
-            password=password,
-            is_active=is_active,
-            is_staff=is_staff,
-            is_superuser=is_superuser,
-            **defaults,
-        )
+    parsed_perms = []
+    if perms:
+        content_type = ContentType.objects.get_for_model(User)
 
-        parsed_perms = []
-        if perms:
-            content_type = ContentType.objects.get_for_model(User)
+        for perm in perms:
+            parsed_perm = Permission.objects.get(
+                codename=perm, content_type=content_type
+            )
+            parsed_perms.append(parsed_perm)
 
-            for perm in perms:
-                parsed_perm = Permission.objects.get(
-                    codename=perm, content_type=content_type
-                )
-                parsed_perms.append(parsed_perm)
+    user.user_permissions.set(parsed_perms)
+    user.site = site
+    user.save()
 
-        user.user_permissions.set(parsed_perms)
-        user.site = site
-        user.save()
-
-        created_users.append(user)
-
-    if quantity == 1:
-        return created_users[0]
-
-    return created_users
+    return user

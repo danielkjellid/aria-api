@@ -16,6 +16,7 @@ from django.utils.http import urlsafe_base64_decode as uid_decoder
 from django.utils.translation import gettext as _
 
 from aria.audit_logs.services import log_entries_create
+from aria.audit_logs.types import ChangeMessage
 from aria.core.exceptions import ApplicationError
 from aria.core.services import model_update
 from aria.users.models import User
@@ -23,13 +24,16 @@ from aria.users.schemas.records import UserRecord
 from aria.users.selectors import user_record
 
 
-def _validate_email_and_password(email: str, password: str) -> tuple[str, str]:
+def _validate_email_and_password(email: str, password: str | None) -> tuple[str, str]:
     """
     Validate email and password for create operation
     """
 
     if not email:
         raise ValueError("Error when creating user, email cannot be none.")
+
+    if not password:
+        raise ValueError("Unable to validate email and password, password is none.")
 
     existing_user = User.objects.filter(email__iexact=email).exists()
 
@@ -98,7 +102,7 @@ def user_create(
 
 @transaction.atomic
 def user_update(
-    *, user: User, data, author: Optional[User] = None, log_change=True
+    *, user: User, data: Any, author: Optional[User] = None, log_change: bool = True
 ) -> UserRecord:
     """
     Updates an existing user instance.
@@ -128,18 +132,20 @@ def user_update(
         "is_staff",
     ]
 
-    user: User
+    updated_user: User
     has_updated: bool
-    updated_fields: list[dict[str, str]]
+    updated_fields: list[ChangeMessage]
 
-    user, has_updated, updated_fields = model_update(
+    updated_user, has_updated, updated_fields = model_update(
         instance=user, fields=non_side_effect_fields, data=data
     )
 
     if has_updated and author is not None and log_change:
-        log_entries_create(author=author, instance=user, change_messages=updated_fields)
+        log_entries_create(
+            author=author, instance=updated_user, change_messages=updated_fields
+        )
 
-    return user_record(user=user)
+    return user_record(user=updated_user)
 
 
 def user_verify_account(*, uid: str, token: str) -> UserRecord:

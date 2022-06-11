@@ -8,7 +8,7 @@ def user_record(*, user: User) -> UserRecord:
     """
     Get the record representation for a single user instance.
     """
-    print(user.__dict__)
+
     return UserRecord(
         id=user.id,
         email=user.email,
@@ -34,11 +34,13 @@ def user_record(*, user: User) -> UserRecord:
         is_active=user.is_active,
         is_staff=user.is_staff,
         is_superuser=user.is_superuser,
-        site=SiteRecord(name=user.site.name, domain=user.site.domain),
+        site=SiteRecord(name=user.site.name, domain=user.site.domain)
+        if user.site
+        else None,
     )
 
 
-def user_list(*, filters=None) -> list[UserRecord]:
+def user_list(*, filters: dict[str, str] | None = None) -> list[UserRecord]:
     """
     Returns a queryset of users based on given filters.
     """

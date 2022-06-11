@@ -38,8 +38,6 @@ class TestUsersSelectors:
             last_name="Person",
         )
 
-        print(user_1.site.name)
-
         # Test email filter
         with django_assert_max_num_queries(1):
             users = user_list(filters={"email": "user_1@example.com"})
