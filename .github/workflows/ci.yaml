@@ -14,6 +14,8 @@ jobs:
         include:
           - name: "Python lint: black"
             check: black aria --check --config=pyproject.toml
+          - name: "Python lint: mypy"
+            check: mypy aria
           - name: "Python lint: flake8"
             check: flake8 aria
           - name: "Python lint: isort"
