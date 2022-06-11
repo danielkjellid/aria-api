@@ -157,9 +157,7 @@ def product_record(product: Product) -> ProductRecord:
         available_in_special_sizes=product.available_in_special_sizes,
         absorption=product.absorption,
         is_imported_from_external_source=product.is_imported_from_external_source,
-        materials=product.materials_display
-        if len(product.materials_display) > 0
-        else None,
-        rooms=product.rooms_display if len(product.rooms_display) > 0 else None,
+        materials=product.materials_display,
+        rooms=product.rooms_display,
         thumbnail=product.thumbnail.url if product.thumbnail else None,
     )

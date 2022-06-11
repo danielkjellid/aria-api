@@ -78,8 +78,8 @@ class QueryCountWarningMiddleware(MiddlewareMixin):
 
         # Check if we've gone above the threshold, and log that's the case
         if (
-            query_count > settings.QUERY_COUNT_WARNING_THRESHOLD
-            or query_duration > settings.QUERY_DURATION_WARNING_THRESHOLD
+            query_count > settings.QUERY_COUNT_WARNING_THRESHOLD  # type: ignore
+            or query_duration > settings.QUERY_DURATION_WARNING_THRESHOLD  # type: ignore
         ):
             logger.warning("Query exceeding tresholds!")
             logger.warning(

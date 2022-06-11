@@ -241,9 +241,9 @@ class TestProtectedUsersEndpoints:
         the application.
         """
 
-        users = create_user(quantity=3)
-
-        print(users)
+        create_user(email="user_1@example.com")
+        create_user(email="user_2@example.com")
+        create_user(email="user_3@example.com")
 
         # Uses 5 queries: 1 for getting request user, 2 for checking permissions,
         # 2 for getting users and pagination data.

@@ -71,8 +71,8 @@ class ProductRecord(BaseModel):
     available_in_special_sizes: bool = False
     absorption: float | None = None
     is_imported_from_external_source: bool = False
-    rooms: list[BaseArrayFieldLabelRecord] | None = []
-    materials: list[BaseArrayFieldLabelRecord] | None = []
+    rooms: list[BaseArrayFieldLabelRecord] = []
+    materials: list[BaseArrayFieldLabelRecord] = []
     thumbnail: str | None
 
 
