@@ -245,11 +245,11 @@ DATABASES = {
 
 LOG_SQL = env.bool("LOG_SQL", default=False)
 
-if DEBUG:
-    QUERY_COUNT_WARNING_THRESHOLD = 20
-    QUERY_DURATION_WARNING_THRESHOLD = 300  # in ms
-    MIDDLEWARE = ["aria.core.middleware.QueryCountWarningMiddleware"] + MIDDLEWARE
+QUERY_COUNT_WARNING_THRESHOLD = 20
+QUERY_DURATION_WARNING_THRESHOLD = 300  # in ms
 
+if DEBUG:
+    MIDDLEWARE = ["aria.core.middleware.QueryCountWarningMiddleware"] + MIDDLEWARE
 
 ###########
 # Logging #
