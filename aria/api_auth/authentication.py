@@ -19,6 +19,9 @@ class JWTAuthRequired(HttpBearer):
             if not is_token_valid:
                 return False
 
+            if not decoded_access_token:
+                return False
+
             # Sanity check that user_id in decoded token actually exist.
             try:
                 user = User.objects.get(id=decoded_access_token.user_id)
