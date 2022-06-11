@@ -19,6 +19,7 @@ from aria.core.models import (
     BaseModel,
     BaseThumbnailImageModel,
 )
+from aria.core.schemas.records import BaseArrayFieldLabelRecord
 from aria.core.utils import get_array_field_labels
 from aria.products import enums
 from aria.products.managers import (
@@ -321,11 +322,11 @@ class Product(BaseModel, BaseThumbnailImageModel):
         return self.name
 
     @property
-    def materials_display(self) -> list[dict[str, str] | None]:
+    def materials_display(self) -> list[BaseArrayFieldLabelRecord]:
         return get_array_field_labels(self.materials, enums.ProductMaterials)
 
     @property
-    def rooms_display(self) -> list[dict[str, str] | None]:
+    def rooms_display(self) -> list[BaseArrayFieldLabelRecord]:
         return get_array_field_labels(self.rooms, enums.ProductRooms)
 
 

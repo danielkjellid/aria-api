@@ -1,5 +1,7 @@
+from typing import Optional
+
 from ninja import Schema
 
 
 class CategoryProductListFilters(Schema):
-    search: str = None
+    search: Optional[str] = None

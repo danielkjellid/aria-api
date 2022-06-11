@@ -82,7 +82,7 @@ def product_detail(
     """
 
     product = (
-        Product.objects.filter(Q(id=product_id) | Q(slug=product_slug))
+        Product.objects.filter(Q(id=product_id) | Q(slug=product_slug))  # type: ignore
         .preload_for_list()
         .with_active_categories()
         .with_available_options()
@@ -157,7 +157,9 @@ def product_record(product: Product) -> ProductRecord:
         available_in_special_sizes=product.available_in_special_sizes,
         absorption=product.absorption,
         is_imported_from_external_source=product.is_imported_from_external_source,
-        materials=product.materials_display,
-        rooms=product.rooms_display,
+        materials=product.materials_display
+        if len(product.materials_display) > 0
+        else None,
+        rooms=product.rooms_display if len(product.rooms_display) > 0 else None,
         thumbnail=product.thumbnail.url if product.thumbnail else None,
     )

@@ -1,6 +1,9 @@
+from typing import Any, Optional
+
 from aria.core.schemas.records import SiteRecord
 from aria.users.filters import UserFilter
 from aria.users.models import User
+from aria.users.schemas.filters import UserListFilters
 from aria.users.schemas.records import UserProfileRecord, UserRecord
 
 
@@ -40,7 +43,9 @@ def user_record(*, user: User) -> UserRecord:
     )
 
 
-def user_list(*, filters: dict[str, str] | None = None) -> list[UserRecord]:
+def user_list(
+    *, filters: Optional[UserListFilters] | dict[str, Any] = None
+) -> list[UserRecord]:
     """
     Returns a queryset of users based on given filters.
     """

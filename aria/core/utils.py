@@ -9,6 +9,8 @@ from django.utils.text import slugify
 from django_s3_storage.storage import S3Storage
 from imagekit.models import ProcessedImageField
 
+from aria.core.schemas.records import BaseArrayFieldLabelRecord
+
 if TYPE_CHECKING:
     from aria.core import models as core_models
 
@@ -120,7 +122,7 @@ def get_static_asset_upload_path(
 
 def get_array_field_labels(
     choices: Any | None, enum: Any
-) -> list[dict[str, str] | None]:
+) -> list[BaseArrayFieldLabelRecord]:
     """
     Return a list of human readable labels for ArrayChoiceFields
     """
@@ -129,7 +131,7 @@ def get_array_field_labels(
         return []
 
     return [
-        {"name": item.label}
+        BaseArrayFieldLabelRecord(name=item.label)
         for item in enum
         for choice in choices
         if item.value == choice and item.label
