@@ -61,7 +61,7 @@ pytest-lazy-fixture = "^0.6.3"
 pytest-remove-stale-bytecode = "^5.0.1"
 pytest-xdist = "^2.5.0"
 typing-extensions = "4.2.0"
-django-stubs = "^1.11.0"
+django-stubs = "1.10.1"
 
 [tool.black]
 target-version = ['py39']
@@ -99,9 +99,22 @@ no_implicit_reexport = true
 check_untyped_defs = true
 strict_equality = true
 
+[tool.django-stubs]
+django_settings_module = "aria.settings"
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+warn_untyped_fields = true
+
 # Admin files uses some patterns that are not easily typed
 [[tool.mypy.overrides]]
-module = "alma.*.admin"
+module = "aria.*.admin"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "aria.*.tests.*"
 ignore_errors = true
 
 [[tool.mypy.overrides]]
@@ -109,16 +122,8 @@ module = "*.migrations.*"
 ignore_errors = "true"
 
 [[tool.mypy.overrides]]
-module = "*.tests.*"
-disallow_untyped_defs = false
-disallow_incomplete_defs = false
-
-[[tool.mypy.overrides]]
 module = "*.management.*"
 disallow_untyped_defs = false
-
-[tool.django-stubs]
-django_settings_module = "aria.settings"
 
 
 [tool.pytest.ini_options]
