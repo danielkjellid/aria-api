@@ -1,7 +1,9 @@
 from datetime import date, datetime
+from typing import Optional
 
 from ninja import Schema
 
+from aria.users.models import User
 from aria.users.schemas.records import (
     UserAuditLogsRecord,
     UserNotesRecord,
@@ -22,11 +24,11 @@ class UserDetailOutput(Schema):
     last_name: str
     email: str
     phone_number: str
-    birth_date: date = None
+    birth_date: Optional[date] = None
     has_confirmed_email: bool
 
     # Account data
-    last_login: datetime = None
+    last_login: Optional[datetime] = None
     id: int
     profile: UserProfileRecord
     date_joined: datetime
@@ -39,7 +41,7 @@ class UserDetailOutput(Schema):
     zip_place: str
 
     # Marketing data
-    acquisition_source: str = None
+    acquisition_source: Optional[str] = None
     disabled_emails: bool
     subscribed_to_newsletter: bool
     allow_personalization: bool
@@ -50,9 +52,11 @@ class UserDetailOutput(Schema):
     logs: list[UserAuditLogsRecord] = []
 
     @staticmethod
-    def resolve_notes(user) -> list[UserNotesRecord]:
-        return user.get_notes()
+    def resolve_notes(user: User) -> list[UserNotesRecord]:
+        notes: list[UserNotesRecord] = user.get_notes()
+        return notes
 
     @staticmethod
-    def resolve_logs(user) -> list[UserAuditLogsRecord]:
-        return user.get_audit_logs()
+    def resolve_logs(user: User) -> list[UserAuditLogsRecord]:
+        audist_logs: list[UserAuditLogsRecord] = user.get_audit_logs()
+        return audist_logs

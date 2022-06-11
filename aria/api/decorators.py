@@ -18,7 +18,7 @@ SUPPORTED_HTTP_METHODS = ["GET", "POST", "DELETE", "PATCH", "PUT"]
 
 def api(
     router: Router,
-    path,
+    path: str,
     *,
     method: str,
     response: Any,
@@ -61,7 +61,7 @@ def api(
          in for example tests.
     """
 
-    def decorator(func) -> Callable[..., Any]:
+    def decorator(func: Any) -> Any:
         if method not in SUPPORTED_HTTP_METHODS:
             raise ValueError(
                 "Method not supported. Supported methods: %s", SUPPORTED_HTTP_METHODS
@@ -91,7 +91,7 @@ def api(
             **kwargs,
         )
         @functools.wraps(func)
-        def inner(*args: Any, **kwargs: Any) -> Callable[..., Any]:
+        def inner(*args: Any, **kwargs: Any) -> Any:
             try:
                 return func(*args, **kwargs)
             except ApplicationError:

@@ -256,7 +256,7 @@ if DEBUG:
 ###########
 
 log_renderer: Processor = (
-    structlog.dev.ConsoleRenderer(colors=True, sort_keys=True)
+    structlog.dev.ConsoleRenderer(colors=True, sort_keys=True)  # type: ignore
     if DEBUG
     else structlog.processors.JSONRenderer()
 )
