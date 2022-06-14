@@ -69,6 +69,19 @@ def category_navigation_active_list() -> list[CategoryDetailRecord]:
     return [category_detail_record(category=category) for category in categories]
 
 
+def _category_navigation_active_list_key() -> str:
+    return "categories"
+
+
+@cached(key=_category_navigation_active_list_key, timeout=5 * 60)
+def category_navigation_active_list_from_cache() -> list[CategoryDetailRecord]:
+    """
+    Returns a list of active navigation categories from cache.
+    """
+
+    return category_navigation_active_list()
+
+
 def category_parent_active_list() -> list[CategoryRecord]:
     """
     Returns a list of active first level categories (is_primary)
