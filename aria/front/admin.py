@@ -40,6 +40,7 @@ class OpeningHoursDeviationAdmin(admin.ModelAdmin):
         "active_to",
         "disable_appointment_bookings",
     )
+    inlines = [OpeningHoursTimeSlotInline]
 
 
 @admin.register(OpeningHoursDeviationTemplate)

@@ -75,9 +75,16 @@ class OpeningHoursTimeSlot(models.Model):
         null=True,
         blank=True,
     )
+    opening_hours_deviations = models.ForeignKey(
+        "front.OpeningHoursDeviation",
+        on_delete=models.SET_NULL,
+        related_name="time_slots",
+        null=True,
+        blank=True,
+    )
     weekday = models.CharField(choices=OpeningHoursWeekdays.choices, max_length=50)
-    open_at = models.TimeField("Opening time", blank=True, null=True)
-    close_at = models.TimeField("Closing time", blank=True, null=True)
+    opening_at = models.TimeField("Opening time", blank=True, null=True)
+    closing_at = models.TimeField("Closing time", blank=True, null=True)
     is_closed = models.BooleanField("Is closed on this day", default=False)
 
     objects = _OpeningHoursTimeSlotManager()
@@ -87,7 +94,7 @@ class OpeningHoursTimeSlot(models.Model):
 
     def __str__(self) -> str:
         return (
-            f"{self.get_weekday_display()}: {self.open_at} - {self.close_at}"
+            f"{self.get_weekday_display()}: {self.opening_at} - {self.closing_at}"
             if not self.is_closed
             else f"{self.get_weekday_display()}: Closed"
         )
@@ -143,7 +150,7 @@ class OpeningHoursDeviation(models.Model):
     objects = _OpeningHoursDeviationManager()
 
     def __str__(self) -> str:
-        return f"{self.opening_hours} deviation: {self.active_at - self.active_to}"
+        return f"{self.opening_hours} deviation: {self.active_at} - {self.active_to}"
 
     def save(
         self,

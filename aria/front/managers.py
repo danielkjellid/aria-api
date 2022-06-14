@@ -1,13 +1,31 @@
 from typing import TYPE_CHECKING
 
+from django.db.models import Prefetch
+from django.utils import timezone
+
 from aria.core.models import BaseQuerySet
 
 if TYPE_CHECKING:
-    pass
+    from aria.front import models
 
 
 class OpeningHoursQuerySet(BaseQuerySet["models.OpeningHours"]):
-    pass
+    def with_active_deviations(self) -> BaseQuerySet["models.OpeningHours"]:
+        from aria.front.models import OpeningHoursDeviation
+
+        active_deviations = (
+            OpeningHoursDeviation.objects.filter(
+                active_at__lte=timezone.now(), active_to__gt=timezone.now()
+            )
+            .select_related("template", "template__site_message")
+            .prefetch_related("time_slots", "template__site_message__locations")
+        )
+
+        prefetched_deviations = Prefetch(
+            "deviations", queryset=active_deviations, to_attr="active_deviations"
+        )
+
+        return self.prefetch_related(prefetched_deviations)
 
 
 class OpeningHoursTimeSlotQuerySet(BaseQuerySet["models.OpeningHoursTimeSlot"]):
