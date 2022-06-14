@@ -69,7 +69,7 @@ def category_navigation_active_list() -> list[CategoryDetailRecord]:
     return [category_detail_record(category=category) for category in categories]
 
 
-def _category_navigation_active_list_key():
+def _category_navigation_active_list_key() -> str:
     return "categories"
 
 
