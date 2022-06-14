@@ -15,7 +15,7 @@ from aria.categories.schemas.outputs import (
 )
 from aria.categories.selectors import (
     category_children_active_list_for_category,
-    category_navigation_active_list,
+    category_navigation_active_list_from_cache,
     category_parent_active_list,
     category_related_product_list_by_category_from_cache,
 )
@@ -36,7 +36,7 @@ def category_list_api(request: HttpRequest) -> list[CategoryListOutput]:
     used for routing in the frontend navbar.
     """
 
-    categories = category_navigation_active_list()
+    categories = category_navigation_active_list_from_cache()
 
     return [CategoryListOutput(**category.dict()) for category in categories]
 
