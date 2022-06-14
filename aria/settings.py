@@ -123,6 +123,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "aria.core.middleware.DynamicSiteDomainMiddleware",
+    "aria.core.middleware.GenericLoggingMiddleware",
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -158,6 +159,7 @@ PROJECT_APPS = [
     "aria.audit_logs",
     "aria.categories",
     "aria.core",
+    "aria.front",
     "aria.kitchens",
     "aria.notes",
     "aria.products",

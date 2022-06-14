@@ -87,3 +87,19 @@ class QueryCountWarningMiddleware(MiddlewareMixin):
             )
 
         return response
+
+
+class GenericLoggingMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        logger.new(path=request.path, method=request.method)
+
+        if hasattr(request, "user"):
+            logger.bind(user_id=request.user.id)
+
+        if hasattr(request, "auth"):
+            logger.bind(user_id=request.auth.id)
+
+        return self.get_response(request)
