@@ -1,17 +1,143 @@
 from django.utils import timezone
 
-from aria.front.models import OpeningHours
+from aria.front.models import OpeningHours, OpeningHoursTimeSlot
 from aria.front.records import (
     OpeningHoursDeviationRecord,
     OpeningHoursDeviationTemplateRecord,
     OpeningHoursRecord,
+    OpeningHoursTimeSlotHumanReadableRecord,
     OpeningHoursTimeSlotRecord,
     SiteMessageRecord,
 )
+from aria.front.types import TimeSlotByWeekdaysDict, WeekdaysByTimeSlotDict
 
 
 def site_message_active_list():
     pass
+
+
+def _opening_hours_weekdays_by_time_slot(
+    time_slots: OpeningHoursTimeSlot | OpeningHoursTimeSlotRecord,
+) -> list[WeekdaysByTimeSlotDict]:
+    weekdays_by_timeslot: list[WeekdaysByTimeSlotDict] = []
+
+    # Iterate over time slots matching them with all other time sliots in the list.
+    for time_slot in time_slots:
+        for ts in time_slots:
+            # Group on weekday and matching opening/closing hours, or if it's closed.
+            if (
+                time_slot.weekday == ts.weekday
+                and time_slot.opening_at is not None
+                and time_slot.closing_at is not None
+                and (
+                    time_slot.opening_at == ts.opening_at
+                    and time_slot.closing_at == ts.closing_at
+                )
+                and time_slot.is_closed is False
+                and ts.is_closed is False
+            ):
+
+                time_slot_to_human_readable = f"{time_slot.opening_at.strftime('%H:%M')} - {time_slot.closing_at.strftime('%H:%M')}"
+
+                # Iterate over the dict, getting the time_slot value.
+                existing_dict_instance = next(
+                    (
+                        d
+                        for i, d in enumerate(weekdays_by_timeslot)
+                        if time_slot_to_human_readable in d["time_slot"]
+                    ),
+                    None,
+                )
+
+                # If the dict does not already exist, create a new dict instance.
+                if existing_dict_instance is None:
+                    weekdays_by_timeslot.append(
+                        {
+                            "time_slot": time_slot_to_human_readable,
+                            "days": [time_slot.weekday],
+                            "is_closed": False,
+                        }
+                    )
+                    continue
+                # If it exist, append weekday to dict instance.
+                existing_dict_instance["days"].append(time_slot.weekday)
+
+            elif (
+                time_slot.weekday == ts.weekday and time_slot.is_closed == ts.is_closed
+            ):
+                existing_dict_instance = next(
+                    (
+                        d
+                        for i, d in enumerate(weekdays_by_timeslot)
+                        if d["is_closed"] is True
+                    ),
+                    None,
+                )
+
+                if existing_dict_instance is None:
+                    weekdays_by_timeslot.append(
+                        {
+                            "time_slot": None,
+                            "days": [time_slot.weekday],
+                            "is_closed": True,
+                        }
+                    )
+                    continue
+                # If it exist, append weekday to dict instance.
+                existing_dict_instance["days"].append(time_slot.weekday)
+    return weekdays_by_timeslot
+
+
+def _opening_hours_time_slot_by_weekdays(
+    *, weekdays_by_time_slots: list[WeekdaysByTimeSlotDict]
+) -> OpeningHoursTimeSlotHumanReadableRecord:
+    time_slot_by_weekday: list[TimeSlotByWeekdaysDict] = []
+    print(weekdays_by_time_slots)
+    for obj in weekdays_by_time_slots:
+        obj_days = obj["days"]
+        obj_days_len = len(obj_days)
+        time_slot = obj["time_slot"]
+        is_closed = obj["is_closed"]
+
+        first_day = f"{obj_days[0]}"
+
+        if obj_days_len > 1:
+            last_day = f"{obj_days[obj_days_len - 1]}"
+
+            time_slot_by_weekday.append(
+                {
+                    "days": f"{first_day} - {last_day}",
+                    "time_slot": f"{time_slot}",
+                    "is_closed": f"{is_closed}",
+                }
+            )
+        elif obj_days_len == 1:
+            time_slot_by_weekday.append(
+                {
+                    "days": f"{first_day}",
+                    "time_slot": time_slot,
+                    "is_closed": is_closed,
+                }
+            )
+
+    return [
+        OpeningHoursTimeSlotHumanReadableRecord(
+            days=obj["days"], time_slot=obj["time_slot"], is_closed=obj["is_closed"]
+        )
+        for obj in time_slot_by_weekday
+    ]
+
+
+def _opening_hours_time_slots_merge_to_human_readable(
+    time_slots: OpeningHoursTimeSlot | OpeningHoursTimeSlotRecord,
+):
+
+    weekdays_by_timeslot = _opening_hours_weekdays_by_time_slot(time_slots=time_slots)
+    time_slot_by_weekday = _opening_hours_time_slot_by_weekdays(
+        weekdays_by_time_slots=weekdays_by_timeslot
+    )
+
+    return time_slot_by_weekday
 
 
 def opening_hours_detail(site_id: int) -> OpeningHoursRecord:
@@ -34,83 +160,13 @@ def opening_hours_detail(site_id: int) -> OpeningHoursRecord:
                 if time_slot.weekday == deviation_time_slot.weekday:
                     oh_record.time_slots[i] = deviation_time_slot
 
+        oh_record.human_readable_time_slots = (
+            _opening_hours_time_slots_merge_to_human_readable(
+                time_slots=oh_record.time_slots
+            )
+        )
+
     return oh_record
-
-
-def opening_hours_detail_formatted(site_id: int):
-    record = opening_hours_detail(site_id=site_id)
-
-    # test = [val for i, time_slot in enumerate(record.time_slots) for val in time_slot]
-    test = []
-
-    for time_slot in record.time_slots:
-        for ts in record.time_slots:
-            if time_slot.weekday == ts.weekday and (
-                (
-                    time_slot.opening_at == ts.opening_at
-                    and time_slot.closing_at == ts.closing_at
-                )
-                or time_slot.is_closed == ts.is_closed
-            ):
-
-                time_slot_val = f"{time_slot.opening_at} - {time_slot.closing_at}"
-
-                dict_instance = next(
-                    (d for i, d in enumerate(test) if time_slot_val in d["time_slot"]),
-                    None,
-                )
-
-                if dict_instance is None:
-
-                    if (
-                        not time_slot.opening_at
-                        and not time_slot.closing_at
-                        and time_slot.is_closed
-                    ):
-                        test.append(
-                            {
-                                "time_slot": None,
-                                "days": [time_slot.weekday],
-                                "is_closed": True,
-                            }
-                        )
-                        continue
-                    test.append(
-                        {
-                            "time_slot": time_slot_val,
-                            "days": [time_slot.weekday],
-                            "is_closed": False,
-                        }
-                    )
-                    continue
-
-                dict_instance["days"].append(time_slot.weekday)
-
-    formatted_test = []
-
-    for t in test:
-        if len(t["days"]) > 1:
-            first_day = t["days"][0]
-            last_day = t["days"][len(t["days"]) - 1]
-
-            formatted_test.append(
-                {
-                    "days": f"{first_day} - {last_day}",
-                    "time_slot": t["time_slot"],
-                    "is_closed": t["is_closed"],
-                }
-            )
-        elif len(t["days"]) == 1:
-            day = t["days"][0]
-            formatted_test.append(
-                {
-                    "days": f"{day}",
-                    "time_slot": t["time_slot"],
-                    "is_closed": t["is_closed"],
-                }
-            )
-
-    return formatted_test
 
 
 def opening_hours_record(opening_hours: OpeningHours):
@@ -127,6 +183,9 @@ def opening_hours_record(opening_hours: OpeningHours):
             )
             for time_slot in opening_hours.time_slots.all()
         ],
+        human_readable_time_slots=_opening_hours_time_slots_merge_to_human_readable(
+            time_slots=opening_hours.time_slots.all()
+        ),
     )
 
 

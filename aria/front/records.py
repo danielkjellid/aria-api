@@ -24,16 +24,17 @@ class OpeningHoursTimeSlotRecord(BaseModel):
     is_closed: Optional[bool]
 
 
+class OpeningHoursTimeSlotHumanReadableRecord(BaseModel):
+    days: str
+    time_slot: Optional[str]
+    is_closed: bool
+
+
 class OpeningHoursRecord(BaseModel):
     id: int
     site_id: int
     time_slots: list[OpeningHoursTimeSlotRecord]
-
-
-class OpeningHoursFormattedRecord(BaseModel):
-    id: int
-    site_id: int
-    time_slots = list[str]
+    human_readable_time_slots: list[OpeningHoursTimeSlotHumanReadableRecord]
 
 
 class OpeningHoursDeviationTemplateRecord(BaseModel):
