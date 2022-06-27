@@ -1,5 +1,6 @@
 import os
 from tempfile import SpooledTemporaryFile
+from typing import Any
 
 from django_s3_storage.storage import S3Storage as _S3Storage
 
@@ -15,7 +16,7 @@ class S3Storage(_S3Storage):
     https://github.com/matthewwithanm/django-imagekit/issues/391
     """
 
-    def _save(self, name, content):
+    def _save(self, name: str, content: Any) -> Any:
         """
         We create a clone of the content file as when this is passed to
         boto3 it wrongly closes the file upon upload where as the storage
