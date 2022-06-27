@@ -2,7 +2,7 @@ import math
 from typing import Any, Optional
 from urllib import parse
 
-from django.db.models import QuerySet
+from django.db.models import Model, QuerySet
 from django.utils.encoding import force_str
 
 from ninja import Field, Schema
@@ -32,7 +32,7 @@ class PageNumberSetPagination(PaginationBase):
 
     def paginate_queryset(
         self,
-        queryset: QuerySet,
+        queryset: QuerySet["Model"],
         pagination: Any,
         **params: DictStrAny,
     ) -> Any:

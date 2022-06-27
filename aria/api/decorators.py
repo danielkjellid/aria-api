@@ -82,7 +82,7 @@ def api(
             if default_url_name.endswith("-"):
                 default_url_name = f"{default_url_name}index"
 
-        @router_decorator(
+        @router_decorator(  # type: ignore
             path,
             response=response,
             summary=summary,
@@ -121,7 +121,7 @@ def _get_and_validate_router_tag(router: Router) -> str:
     return router_tag[0].lower()
 
 
-def paginate(**paginator_params: Any) -> Callable:
+def paginate(**paginator_params: Any) -> Callable[[Callable[..., Any]], Any]:
     """
     Paginate a response.
 
@@ -130,16 +130,16 @@ def paginate(**paginator_params: Any) -> Callable:
     def my_view(request):
     """
 
-    def wrapper(func: Callable) -> Any:
+    def wrapper(func: Callable[..., Any]) -> Callable[..., Any]:
         return _inject_pagination(func, **paginator_params)
 
     return wrapper
 
 
 def _inject_pagination(
-    func: Callable,
+    func: Callable[..., Any],
     **paginator_params: Any,
-) -> Callable:
+) -> Callable[[Callable[..., Any]], Any]:
     """
     This utility is basically just copied from django ninja to
     inject the request in the paginator, so that it can be used
@@ -182,7 +182,7 @@ def _inject_pagination(
             make_response_paginated, paginator
         )
 
-    return view_with_pagination
+    return view_with_pagination  # type: ignore
 
 
 def make_response_paginated(paginator: PageNumberSetPagination, op: Operation) -> None:
