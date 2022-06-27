@@ -77,7 +77,7 @@ class Kitchen(BaseModel, BaseHeaderImageModel, BaseListImageModel):
         "kitchens.TrendColor", related_name="kitchens", blank=True
     )
 
-    objects = _KitchenManager()  # type: ignore
+    objects = _KitchenManager()
 
     class Meta:
         verbose_name = _("Kitchen")

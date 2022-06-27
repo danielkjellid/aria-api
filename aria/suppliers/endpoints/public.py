@@ -17,6 +17,6 @@ router = Router(tags=["Suppliers"])
     summary="Lists all active suppliers",
 )
 def supplier_list_api(request: HttpRequest) -> tuple[int, list[SupplierListOutput]]:
-    suppliers = Supplier.objects.filter(is_active=True)  # type: ignore
+    suppliers = Supplier.objects.filter(is_active=True)
 
     return 200, [SupplierListOutput.from_orm(supplier) for supplier in suppliers]

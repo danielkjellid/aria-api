@@ -18,7 +18,7 @@ def note_entry_list_for_instance(model: Model, *, id: int) -> list[NoteEntryReco
 
     content_type = ContentType.objects.get_for_model(model)
     notes = (
-        NoteEntry.objects.filter(content_type=content_type, object_id=id)  # type: ignore
+        NoteEntry.objects.filter(content_type=content_type, object_id=id)
         .prefetch_related("author", "content_object")
         .order_by("-created_at")
     )

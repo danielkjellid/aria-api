@@ -64,7 +64,7 @@ class Command(BaseCommand):
         products_data = products_data_url.json()
 
         # Common variables for all products in job
-        supplier = Supplier.objects.get(id=supplier_id)  # type: ignore
+        supplier = Supplier.objects.get(id=supplier_id)
 
         try:
             # Wrap entire process in transaction block, that way, if there
@@ -251,7 +251,7 @@ class Command(BaseCommand):
             is_special_size = True
             sizes_list.remove("*")
 
-        created_product = Product.objects.create(  # type: ignore
+        created_product = Product.objects.create(
             name=product_name.title() if product_name else None,
             supplier=supplier,
             status=ProductStatus.DRAFT,
@@ -298,7 +298,7 @@ class Command(BaseCommand):
                 "file_url"
             ], "Key file_url in files list does not exist, but is required"
 
-            ProductFile.objects.create(  # type: ignore
+            ProductFile.objects.create(
                 product=product,
                 name=file["name"],
                 file=self._get_remote_asset(file["file_url"], file["name"])

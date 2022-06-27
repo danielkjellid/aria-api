@@ -24,7 +24,7 @@ def note_entry_create(
     if note is None:
         raise ValueError("Note cannot be empty!")
 
-    created_note = NoteEntry.objects.create(  # type: ignore
+    created_note = NoteEntry.objects.create(
         author=author,
         content_type=content_type,
         object_id=id,
@@ -32,7 +32,9 @@ def note_entry_create(
     )
 
     return NoteEntryRecord(
-        id=created_note.id, author_id=created_note.author_id, note=created_note.note
+        id=created_note.id,
+        author_id=created_note.author_id if created_note.author_id else None,
+        note=created_note.note,
     )
 
 
@@ -49,7 +51,7 @@ def note_entry_update(
     # the generation of for example other fields.
     non_side_effect_fields = ["author", "note"]
 
-    note_instance = NoteEntry.objects.get(id=note_id)  # type: ignore
+    note_instance = NoteEntry.objects.get(id=note_id)
 
     note_entry: NoteEntry
     has_updated: bool
@@ -65,7 +67,7 @@ def note_entry_update(
         )
 
     return NoteEntryRecord(
-        id=note_entry.id, author_id=note_entry.author_id, note=note_entry.note  # type: ignore
+        id=note_entry.id, author_id=note_entry.author_id, note=note_entry.note
     )
 
 
@@ -74,5 +76,5 @@ def note_entry_delete(*, id: int) -> None:
     Delete an existing note instance.
     """
 
-    note = NoteEntry.objects.get(id=id)  # type: ignore
+    note = NoteEntry.objects.get(id=id)
     note.delete()

@@ -33,7 +33,7 @@ class KitchenRecord(BaseModel):
 
 class KitchenDetailRecord(KitchenRecord):
     description: str
-    extra_description: str
+    extra_description: str | None
     example_from_price: Decimal | None
     can_be_painted: bool
     silk_variants: list[KitchenVariantColorRecord]

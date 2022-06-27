@@ -1,7 +1,6 @@
 from django.utils import timezone
 
 from aria.core.decorators import cached
-from aria.core.models import BaseQuerySet
 from aria.front.enums import OpeningHoursWeekdays
 from aria.front.models import OpeningHours, OpeningHoursTimeSlot
 from aria.front.records import (
@@ -15,12 +14,8 @@ from aria.front.records import (
 from aria.front.types import TimeSlotByWeekdaysDict, WeekdaysByTimeSlotDict
 
 
-def site_messages_active_list():
-    pass
-
-
 def _opening_hours_weekdays_by_time_slots(
-    time_slots: BaseQuerySet[OpeningHoursTimeSlot] | list[OpeningHoursTimeSlotRecord],
+    time_slots: list[OpeningHoursTimeSlot] | list[OpeningHoursTimeSlotRecord],
 ) -> list[WeekdaysByTimeSlotDict]:
     """
     Utility function to take a set of opening hours time slots, either as a list of
@@ -46,7 +41,11 @@ def _opening_hours_weekdays_by_time_slots(
     weekdays = [weekday for weekday in OpeningHoursWeekdays]
     # Sort list according to OpeningHoursWeekdays order, e.g monday first, tuesday next
     # and so on.
-    sorted_time_slots = sorted(time_slots, key=lambda x: weekdays.index(x.weekday))
+    sorted_time_slots: list[OpeningHoursTimeSlot] | list[
+        OpeningHoursTimeSlotRecord
+    ] = sorted(
+        time_slots, key=lambda x: weekdays.index(x.weekday)
+    )  # type: ignore
 
     # Iterate over time slots matching them with all other time sliots in the list.
     for time_slot in sorted_time_slots:
@@ -65,7 +64,7 @@ def _opening_hours_weekdays_by_time_slots(
             ):
 
                 # We don't need the time slots seconds, so remove them
-                time_slot_to_human_readable = f"{time_slot.opening_at.strftime('%H:%M')} - {time_slot.closing_at.strftime('%H:%M')}"
+                time_slot_to_human_readable = f"{time_slot.opening_at.strftime('%H:%M')} - {time_slot.closing_at.strftime('%H:%M')}"  # type: ignore
 
                 # Iterate over the dict, based on the time_slot value.
                 existing_dict_instance = next(
@@ -128,7 +127,7 @@ def _opening_hours_weekdays_by_time_slots(
 
 def _opening_hours_time_slot_by_weekdays(
     *, weekdays_by_time_slots: list[WeekdaysByTimeSlotDict]
-) -> OpeningHoursTimeSlotHumanReadableRecord:
+) -> list[OpeningHoursTimeSlotHumanReadableRecord]:
     """
     Utility function to take a list of WeekdaysByTimeSlot dicts, and group the different
     instances based on weekdays.
@@ -148,9 +147,9 @@ def _opening_hours_time_slot_by_weekdays(
     """
 
     time_slot_by_weekday: list[TimeSlotByWeekdaysDict] = []
-    sorted_weekdays = [weekday.label for weekday in OpeningHoursWeekdays]  # type: ignore
+    sorted_weekdays = [weekday.label for weekday in OpeningHoursWeekdays]
 
-    def _is_in_sequence(days):
+    def _is_in_sequence(days: list[str]) -> bool:
         return all(days[i] == sorted_weekdays[i] for i in range(len(days)))
 
     for obj in weekdays_by_time_slots:
@@ -171,7 +170,7 @@ def _opening_hours_time_slot_by_weekdays(
                         if obj_days_len > 2
                         else f"{first_day} og {last_day}",
                         "time_slot": f"{time_slot}" if time_slot else None,
-                        "is_closed": f"{is_closed}",
+                        "is_closed": is_closed,
                     }
                 )
             else:
@@ -182,7 +181,7 @@ def _opening_hours_time_slot_by_weekdays(
                     {
                         "days": f"{unsequenced_weekdays} og {last_day}",
                         "time_slot": f"{time_slot}" if time_slot else None,
-                        "is_closed": f"{is_closed}",
+                        "is_closed": is_closed,
                     }
                 )
         elif obj_days_len == 1:
@@ -203,8 +202,8 @@ def _opening_hours_time_slot_by_weekdays(
 
 
 def _opening_hours_time_slots_merge_to_human_readable(
-    time_slots: OpeningHoursTimeSlot | OpeningHoursTimeSlotRecord,
-) -> list[TimeSlotByWeekdaysDict]:
+    time_slots: list[OpeningHoursTimeSlot] | list[OpeningHoursTimeSlotRecord],
+) -> list[OpeningHoursTimeSlotHumanReadableRecord]:
     """
     Utility function to first group time slots by time slots, and then aggregate
     results to a more human readable format.
@@ -231,10 +230,10 @@ def opening_hours_for_site(site_id: int) -> OpeningHoursRecord:
         .first()
     )
 
-    oh_record = opening_hours_record(opening_hours=opening_hours_obj)
+    oh_record = opening_hours_record(opening_hours=opening_hours_obj)  # type: ignore
 
     # Check if there are any active deviations.
-    if len(opening_hours_obj.active_deviations) > 0:
+    if opening_hours_obj and len(opening_hours_obj.active_deviations) > 0:  # type: ignore
         opening_hours_deviation_record = deviation_record_for_opening_hours(
             opening_hours=opening_hours_obj
         )

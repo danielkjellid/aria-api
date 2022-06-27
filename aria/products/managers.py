@@ -55,7 +55,7 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
 
         from aria.products.models import ProductOption
 
-        available_product_options = ProductOption.objects.available()  # type: ignore
+        available_product_options = ProductOption.objects.available()
 
         available_product_options = available_product_options.select_related(
             "variant", "size"

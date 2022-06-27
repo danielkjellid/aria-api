@@ -306,7 +306,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
     #     "shipping cost", decimal_places=2, max_digits=10, default=0.0
     # )
 
-    objects = _ProductManager()  # type: ignore
+    objects = _ProductManager()
 
     class Meta:
         verbose_name = "Product"
