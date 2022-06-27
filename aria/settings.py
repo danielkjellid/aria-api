@@ -194,7 +194,7 @@ AWS_S3_CUSTOM_DOMAIN = f"{AWS_S3_BUCKET_NAME}.s3.amazonaws.com"
 if ENVIRONMENT == "dev":
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 else:
-    DEFAULT_FILE_STORAGE = "django_s3_storage.storage.S3Storage"
+    DEFAULT_FILE_STORAGE = "aria.core.storage.S3Storage"
     STATICFILES_STORAGE = "django_s3_storage.storage.StaticS3Storage"
 
 PUBLIC_ROOT_PATH = BASE_DIR / "public"
