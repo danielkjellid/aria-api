@@ -203,11 +203,12 @@ class TestFrontSelectors:
         )
 
         # Uses 4 queries:
-        # - 1x for getting opening hour instance
-        # - 1x for getting time slots
-        # - 1x for getting deviations
-        # - 1x fro getting time slots for deviation
-        with django_assert_max_num_queries(4):
+        # - 1x for getting opening hour instance.
+        # - 1x for getting time slots.
+        # - 1x for getting deviations.
+        # - 1x for getting time slots for deviation.
+        # - 1x for getting site_message and location for deviation.
+        with django_assert_max_num_queries(5):
             oh_record_with_active_deviation_for_site = opening_hours_for_site(
                 site_id=site.id
             )

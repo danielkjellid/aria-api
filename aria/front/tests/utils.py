@@ -84,7 +84,7 @@ def create_opening_hours(
     if site is None:
         site = create_site()
 
-    opening_hours = OpeningHours.objects.create(site=site)
+    opening_hours, _created = OpeningHours.objects.get_or_create(site=site)
 
     if not time_slots:
         create_opening_hours_time_slot(

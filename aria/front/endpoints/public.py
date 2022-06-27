@@ -13,7 +13,7 @@ router = Router(tags=["Front"])
 
 @api(
     router,
-    "opening-hours/{site_id}",
+    "opening-hours/{site_id}/",
     method="GET",
     response={200: OpeningHoursOutputSchema},
     summary="Get opening hours for a site",
