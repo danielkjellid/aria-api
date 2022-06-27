@@ -385,7 +385,7 @@ django = ">=1.11"
 
 [[package]]
 name = "django-stubs"
-version = "1.11.0"
+version = "1.12.0"
 description = "Mypy stubs for Django"
 category = "dev"
 optional = false
@@ -394,11 +394,14 @@ python-versions = ">=3.7"
 [package.dependencies]
 django = "*"
 django-stubs-ext = ">=0.4.0"
-mypy = ">=0.930,<0.960"
+mypy = ">=0.930"
 tomli = "*"
 types-pytz = "*"
 types-PyYAML = "*"
 typing-extensions = "*"
+
+[package.extras]
+compatible-mypy = ["mypy (>=0.930,<0.970)"]
 
 [[package]]
 name = "django-stubs-ext"
@@ -1280,7 +1283,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "3.10.2"
-content-hash = "367c284bf0e68dc4c2ca4988a2936ca463b6bfb4acc36fc26362822b2615eff3"
+content-hash = "b5e184c872abc504aa6076c0a39919a8ee55ca6f15f8f3858aa16dd58ce6b461"
 
 [metadata.files]
 appnope = [
@@ -1468,8 +1471,8 @@ django-s3-storage = [
     {file = "django_s3_storage-0.13.6-py3-none-any.whl", hash = "sha256:63b3f662a896d894f2507131118f9d9723072e2cee91db453250722cff6ce82d"},
 ]
 django-stubs = [
-    {file = "django-stubs-1.11.0.tar.gz", hash = "sha256:11a4aa094d3da0108d268386dfd0b9a5bf73fe1ab5919b5a292607671329bc4b"},
-    {file = "django_stubs-1.11.0-py3-none-any.whl", hash = "sha256:e9362c0992414560fc6d2f91aa4dd8339b1cbbf7ddacc95b06cc219b1792d217"},
+    {file = "django-stubs-1.12.0.tar.gz", hash = "sha256:ea8b35d0da49f7b2ee99a79125f1943e033431dd114726d6643cc35de619230e"},
+    {file = "django_stubs-1.12.0-py3-none-any.whl", hash = "sha256:0dff8ec0ba3abe046450b3d8a29ce9e72629893d2c1ef679189cc2bfdb6d2f64"},
 ]
 django-stubs-ext = [
     {file = "django-stubs-ext-0.4.0.tar.gz", hash = "sha256:3104c4748c34bd741c310a3e6af90dffba46e41bccbe243896e38a708262876b"},
