@@ -123,6 +123,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "aria.core.middleware.DynamicSiteDomainMiddleware",
+    "aria.core.middleware.GenericLoggingMiddleware",
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -158,6 +159,7 @@ PROJECT_APPS = [
     "aria.audit_logs",
     "aria.categories",
     "aria.core",
+    "aria.front",
     "aria.kitchens",
     "aria.notes",
     "aria.products",
@@ -292,14 +294,29 @@ LOGGING = {
             "foreign_pre_chain": shared_log_processors,
         },
     },
+    "filters": {
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
+        }
+    },
     "handlers": {
         "default": {
             "formatter": "default",
             "class": "logging.StreamHandler",
             "stream": "ext://sys.stderr",
         },
+        "console": {
+            "filters": ["require_debug_true"],
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+        },
     },
     "loggers": {
+        "django.request": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
         "": {
             "handlers": ["default"],
             "level": "INFO",

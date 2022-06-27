@@ -163,7 +163,7 @@ def category_related_product_list_by_category(
         .prefetch_related(
             Prefetch(
                 "options",
-                queryset=ProductOption.objects.select_related("variant").distinct(  # type: ignore
+                queryset=ProductOption.objects.select_related("variant").distinct(
                     "variant_id"
                 ),
             )

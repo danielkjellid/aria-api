@@ -33,7 +33,7 @@ def kitchen_available_list() -> list[KitchenRecord]:
     Returns a list of active kitchens.
     """
 
-    kitchens = Kitchen.objects.available().select_related("supplier").order_by("-id")  # type: ignore
+    kitchens = Kitchen.objects.available().select_related("supplier").order_by("-id")
 
     return [kitchen_record(kitchen=kitchen) for kitchen in kitchens]
 
@@ -47,7 +47,7 @@ def kitchen_detail(
     """
 
     kitchen = (
-        Kitchen.objects.filter(Q(id=kitchen_id) | Q(slug=kitchen_slug))  # type: ignore
+        Kitchen.objects.filter(Q(id=kitchen_id) | Q(slug=kitchen_slug))
         .select_related("supplier")
         .prefetch_related(
             "silk_variants",

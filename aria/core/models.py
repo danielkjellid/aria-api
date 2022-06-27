@@ -26,9 +26,6 @@ class BaseQuerySet(models.QuerySet[T]):
         return self.order_by(preserved)
 
 
-_BaseManager = models.Manager.from_queryset(BaseQuerySet)
-
-
 class BaseModel(models.Model):
     """
     Keep track of created time and modified time in models.
@@ -39,8 +36,6 @@ class BaseModel(models.Model):
 
     created_at = models.DateTimeField(_("created time"), auto_now_add=True)
     updated_at = models.DateTimeField(_("modified time"), auto_now=True)
-
-    objects = _BaseManager()
 
 
 class BaseImageModel(models.Model):
