@@ -76,7 +76,7 @@ class TestCoreDecorators:
         assert func_b() == [MyDataClass(id=1, a_list=[1, 2])]
         assert cache.get("func_b") == [{"id": 1, "a_list": [1, 2]}]
         assert func_b() == [MyDataClass(id=1, a_list=[1, 2])]
-        assert func_a.num_times_called == 1
+        assert func_b.num_times_called == 1
 
         func_b.uncache()
         assert "func-b" not in cache

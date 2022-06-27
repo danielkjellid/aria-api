@@ -21,12 +21,12 @@ class OpeningHoursTimeSlotRecord(BaseModel):
     weekday: str
     opening_at: Optional[time]
     closing_at: Optional[time]
-    is_closed: Optional[bool]
+    is_closed: Optional[bool] = False
 
 
 class OpeningHoursTimeSlotHumanReadableRecord(BaseModel):
     days: str
-    time_slot: Optional[str]
+    time_slot: Optional[str] = None
     is_closed: bool
 
 

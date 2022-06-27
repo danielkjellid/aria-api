@@ -54,8 +54,9 @@ class OpeningHours(models.Model):
             update_fields=update_fields,
         )
 
-        # Uncache all opening hours.
-        cache.delete("opening_hours")
+        if self.site_id:
+            # Uncache all opening hours.
+            cache.delete(f"front.opening_hours.site_id={self.site_id}")
 
 
 _OpeningHoursTimeSlotManager = models.Manager.from_queryset(
@@ -75,7 +76,7 @@ class OpeningHoursTimeSlot(models.Model):
         null=True,
         blank=True,
     )
-    opening_hours_deviations = models.ForeignKey(
+    opening_hours_deviation = models.ForeignKey(
         "front.OpeningHoursDeviation",
         on_delete=models.SET_NULL,
         related_name="time_slots",
@@ -117,8 +118,9 @@ class OpeningHoursTimeSlot(models.Model):
             update_fields=update_fields,
         )
 
-        # Uncache all opening hours messages.
-        cache.delete("opening_hours")
+        if self.opening_hours and self.opening_hours.site_id:
+            # Uncache all opening hours.
+            cache.delete(f"front.opening_hours.site_id={self.opening_hours.site_id}")
 
 
 _OpeningHoursDeviationManager = models.Manager.from_queryset(
@@ -170,8 +172,9 @@ class OpeningHoursDeviation(models.Model):
             update_fields=update_fields,
         )
 
-        # Uncache all opening hours messages.
-        cache.delete("opening_hours")
+        if self.opening_hours and self.opening_hours.site_id:
+            # Uncache all opening hours.
+            cache.delete(f"front.opening_hours.site_id={self.opening_hours.site_id}")
 
 
 _OpeningHoursDeviationTemplateManager = models.Manager.from_queryset(
