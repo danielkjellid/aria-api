@@ -294,14 +294,29 @@ LOGGING = {
             "foreign_pre_chain": shared_log_processors,
         },
     },
+    "filters": {
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
+        }
+    },
     "handlers": {
         "default": {
             "formatter": "default",
             "class": "logging.StreamHandler",
             "stream": "ext://sys.stderr",
         },
+        "console": {
+            "filters": ["require_debug_true"],
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+        },
     },
     "loggers": {
+        "django.request": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
         "": {
             "handlers": ["default"],
             "level": "INFO",
