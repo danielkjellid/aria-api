@@ -27,6 +27,11 @@ WORKDIR /app
 COPY --chown=aria poetry.lock pyproject.toml poetry.toml manage.py .env.test setup.cfg /app/
 RUN poetry install --no-root --no-dev --no-interaction --no-ansi
 
+# Render needs a .ssh folder to make ssh tunneling work.
+RUN mkdir -p ./.ssh
+RUN chown aria:aria ./.ssh
+RUN chmod 700 ./.ssh
+
 # Copy application files
 COPY --chown=aria aria/ /app/aria/
 
