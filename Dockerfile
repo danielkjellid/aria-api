@@ -9,7 +9,7 @@ RUN groupadd -r aria && useradd --create-home aria -g aria
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     bash-completion \
-    openssh-server \
+#    openssh-server \
     less \
     lsof \
     vim \
