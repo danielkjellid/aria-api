@@ -12,8 +12,8 @@ class SiteMessageRecord(BaseModel):
     message_type: SiteMessageType
     locations: list[str]
     site_id: int
-    show_message_at: datetime
-    show_message_to: datetime
+    show_message_at: datetime | None
+    show_message_to: datetime | None
 
 
 class OpeningHoursTimeSlotRecord(BaseModel):
