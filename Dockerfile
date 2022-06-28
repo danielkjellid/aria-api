@@ -9,6 +9,7 @@ RUN addgroup --system aria && adduser --system --group aria
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     bash-completion \
+    openssh-server \
     less \
     lsof \
     vim \
@@ -28,8 +29,8 @@ COPY --chown=aria poetry.lock pyproject.toml poetry.toml manage.py .env.test set
 RUN poetry install --no-root --no-dev --no-interaction --no-ansi
 
 # Render needs a .ssh folder to make ssh tunneling work.
-RUN mkdir -p ./.ssh
-RUN chown aria:aria ./.ssh
+RUN mkdir ./.ssh
+RUN chown -R aria:aria ./.ssh
 RUN chmod 700 ./.ssh
 
 # Copy application files
