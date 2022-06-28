@@ -3,7 +3,6 @@ FROM python:3.10.2
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH /app/
 
-
 # Add app user
 RUN addgroup --system aria && adduser --system --group aria
 
@@ -22,9 +21,6 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache poetry
 
 # Render needs a .ssh folder to make ssh tunneling work.
-RUN mkdir -p /.ssh
-RUN chown aria:aria /.ssh
-RUN chmod 700 /.ssh
 
 # Set app user and working directory
 USER aria
