@@ -20,8 +20,6 @@ RUN apt-get update \
 RUN pip install --upgrade pip
 RUN pip install --no-cache poetry
 
-# Render needs a .ssh folder to make ssh tunneling work.
-
 # Set app user and working directory
 USER aria
 WORKDIR /app
