@@ -24,7 +24,7 @@ RUN pip install --no-cache poetry
 USER aria
 WORKDIR /app
 
-COPY --chown=aria poetry.lock pyproject.toml poetry.toml manage.py .env.test setup.cfg /app/
+COPY --chown=aria poetry.lock pyproject.toml poetry.toml manage.py .env.test setup.cfg .ssh /app/
 RUN poetry install --no-root --no-dev --no-interaction --no-ansi
 
 # Render needs a .ssh folder to make ssh tunneling work.
