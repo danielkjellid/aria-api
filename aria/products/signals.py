@@ -17,6 +17,10 @@ from aria.products.services import product_option_delete_related_variants
 
 
 def _validate_category(**kwargs: Any) -> None:
+    """
+    Validate that products are only added to a child category.
+    """
+
     action = kwargs.get("action", None)
     categories_pk_set = kwargs.get("pk_set", None)
 
@@ -25,14 +29,22 @@ def _validate_category(**kwargs: Any) -> None:
         for category in categories:
             if category.is_primary:
                 raise Exception(
-                    f"You can not add a primary category to categories. Tried to add {category.name}."
+                    f"You can not add a primary category to categories. "
+                    f"Tried to add {category.name}."
                 )
 
 
 @receiver(m2m_changed, sender=Product.categories.through)
 def validate_category_being_added(
-    sender: Model, instance: Model, *args: Any, **kwargs: Any
+    sender: Model,  # pylint: disable=unused-argument
+    instance: Model,  # pylint: disable=unused-argument
+    *args: Any,
+    **kwargs: Any,
 ) -> None:
+    """
+    Validate that products are only added to a child category.
+    """
+
     _validate_category(**kwargs)
 
 
@@ -41,13 +53,27 @@ def validate_category_being_added(
 @receiver(post_delete, sender=ProductFile)
 @receiver(post_delete, sender=Variant)
 def delete_product_files(
-    sender: Model, instance: Model, *args: Any, **kwargs: Any
+    sender: Model,  # pylint: disable=unused-argument
+    instance: Model,
+    *args: Any,
+    **kwargs: Any,
 ) -> None:
+    """
+    Delete static assets bellonging to deleted instance.
+    """
+
     cleanup_files_from_deleted_instance(instance=instance)
 
 
 @receiver(pre_delete, sender=ProductOption)
 def delete_related_product_variants(
-    sender: ProductOption, instance: ProductOption, *args: Any, **kwargs: Any
+    sender: ProductOption,  # pylint: disable=unused-argument
+    instance: ProductOption,
+    *args: Any,
+    **kwargs: Any,
 ) -> None:
+    """
+    Delete variants that does not bellong to other products.
+    """
+
     product_option_delete_related_variants(instance=instance)

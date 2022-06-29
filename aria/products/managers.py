@@ -6,8 +6,10 @@ from aria.core.models import BaseQuerySet
 from aria.products.enums import ProductStatus
 
 if TYPE_CHECKING:
-    from aria.categories import models as category_models
-    from aria.products import models
+    from aria.categories import (  # pylint: disable=import-outside-toplevel
+        models as category_models,
+    )
+    from aria.products import models  # pylint: disable=import-outside-toplevel
 
 
 class SizeQuerySet(BaseQuerySet["models.Size"]):
@@ -36,7 +38,9 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         by this manager method.
         """
 
-        from aria.categories.models import Category
+        from aria.categories.models import (  # pylint: disable=import-outside-toplevel
+            Category,
+        )
 
         active_categories = Category.objects.active()
 
@@ -52,8 +56,13 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         return self.prefetch_related(prefetched_categories)
 
     def with_available_options(self) -> BaseQuerySet["models.Product"]:
+        """
+        Prefetch related product options, variants and sizes.
+        """
 
-        from aria.products.models import ProductOption
+        from aria.products.models import (  # pylint: disable=import-outside-toplevel
+            ProductOption,
+        )
 
         available_product_options = ProductOption.objects.available()
 
@@ -68,8 +77,13 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         return self.prefetch_related(prefetched_options)
 
     def annotate_site_state_data(self) -> BaseQuerySet["models.Product"]:
+        """
+        Annotate site state data for product to avoid unneeded joins.
+        """
 
-        from aria.products.models import ProductSiteState
+        from aria.products.models import (  # pylint: disable=import-outside-toplevel
+            ProductSiteState,
+        )
 
         option = ProductSiteState.on_site.filter(product__in=self).values(
             "display_price",
@@ -105,7 +119,11 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
     def by_category(
         self, category: "category_models.Category", ordered: bool = True
     ) -> BaseQuerySet["models.Product"]:
-        # Prepare queryset and get active decendants
+        """
+        Get all products related to a specific category.
+        """
+
+        # Prepare queryset and get active descendants
         categories = category.get_descendants(include_self=True).active()
 
         products = self.filter(

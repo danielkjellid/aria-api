@@ -96,7 +96,11 @@ class Size(models.Model):
             and self.height is not None
             and self.circumference is None
         ):
-            return f"B{self.convert_to_self_repr(self.width)} x H{self.convert_to_self_repr(self.height)} x D{self.convert_to_self_repr(self.depth)}"
+            return (
+                f"B{self.convert_to_self_repr(self.width)} "
+                f"x H{self.convert_to_self_repr(self.height)} "
+                f"x D{self.convert_to_self_repr(self.depth)}"
+            )
 
         if (
             self.circumference is not None
@@ -106,19 +110,25 @@ class Size(models.Model):
         ):
             return f"Ø{self.convert_to_self_repr(self.circumference)}"
 
-        return f"B{self.convert_to_self_repr(self.width)} x H{self.convert_to_self_repr(self.height)}"
+        return (
+            f"B{self.convert_to_self_repr(self.width)} "
+            f"x H{self.convert_to_self_repr(self.height)}"
+        )
 
     @property
     def name(self) -> str:
-        return self.__str__()
+        """
+        Name of size, as string representation.
+        """
+        return self.__str__()  # pylint: disable=unnecessary-dunder-call
 
     @staticmethod
-    def convert_to_self_repr(n: Decimal | None) -> str | None:
+    def convert_to_self_repr(dec: Decimal | None) -> str | None:
         """
         Returns a whole number if decimals is .0
         """
 
-        return str(round(n, 1) if n % 1 else int(n)) if n else None
+        return str(round(dec, 1) if dec % 1 else int(dec)) if dec else None
 
 
 _VariantManager = models.Manager.from_queryset(VariantQuerySet)
@@ -132,6 +142,7 @@ class Variant(BaseThumbnailImageModel):
 
     @property
     def variant_upload_path(self) -> str:
+        """Path of which to upload static assets"""
         return f"media/products/variants/{self.id}-{slugify(self.name)}/"
 
     UPLOAD_PATH = variant_upload_path  # type: ignore
@@ -149,7 +160,11 @@ class Variant(BaseThumbnailImageModel):
     is_standard = models.BooleanField(
         "standard",
         default=False,
-        help_text="Designates if a variant should be treated as standard. This is to avoid multiple instances of the same variant. This field will also prevent cleanup deletion of these models.",
+        help_text=(
+            "Designates if a variant should be treated as standard. "
+            "This is to avoid multiple instances of the same variant. "
+            "This field will also prevent cleanup deletion of these models.",
+        ),
     )
 
     objects = _VariantManager()
@@ -167,7 +182,7 @@ _ColorManager = models.Manager.from_queryset(ColorQuerySet)
 
 class Color(models.Model):
     """
-    Color categories bellonging to products. Used for
+    Color categories belonging to products. Used for
     filtering frontend.
     """
 
@@ -189,11 +204,12 @@ _ShapeManager = models.Manager.from_queryset(ShapeQuerySet)
 
 class Shape(BaseImageModel):
     """
-    Shape bellonging to a product. Used for filtering frontend.
+    Shape belonging to a product. Used for filtering frontend.
     """
 
     @property
     def shape_upload_path(self) -> str:
+        """Path of which to upload static assets"""
         return f"media/products/sizes/{slugify(self.name)}/"
 
     UPLOAD_PATH = shape_upload_path  # type: ignore
@@ -221,6 +237,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
 
     @property
     def product_directory(self) -> str:
+        """Path of which to upload static assets"""
         return (
             f"media/products/{slugify(self.supplier.name)}/{slugify(self.name)}/images"
         )
@@ -240,7 +257,10 @@ class Product(BaseModel, BaseThumbnailImageModel):
     slug = models.SlugField(
         "slug",
         max_length=255,
-        help_text="A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.",
+        help_text=(
+            "A slug is a short label for something, containing only letters, "
+            "numbers, underscores or hyphens. They’re generally used in URLs.",
+        ),
     )
     search_keywords = models.CharField(
         "search keywords",
@@ -249,11 +269,16 @@ class Product(BaseModel, BaseThumbnailImageModel):
         blank=True,
         null=True,
     )
+    # Deprecated, use new_description instead
     short_description = models.TextField(
         "short description",
-        help_text="The short description will be displayed on the top part of the product, above the variant selection",
+        help_text=(
+            "The short description will be displayed on the top part "
+            "of the product, above the variant selection"
+        ),
         null=True,
     )
+    # Deprecated, use new_description instead
     description = models.TextField("description", null=True)
     new_description = models.TextField("new description")
     unit = models.IntegerField(
@@ -274,7 +299,10 @@ class Product(BaseModel, BaseThumbnailImageModel):
     materials = ChoiceArrayField(
         models.CharField(choices=enums.ProductMaterials.choices, max_length=50),
         null=True,
-        help_text="Material product is made of. Want to add more options? Reach out to Daniel.",
+        help_text=(
+            "Material product is made of. Want to add more options? "
+            "Reach out to Daniel.",
+        ),
     )
     rooms = ChoiceArrayField(
         models.CharField(choices=enums.ProductRooms.choices, max_length=50),
@@ -297,7 +325,8 @@ class Product(BaseModel, BaseThumbnailImageModel):
     # can_be_picked_up = models.BooleanField(
     #     "can be picked up",
     #     default=False,
-    #     help_text="Designates whether the product can be purchased and picked up in store",
+    #     help_text=("Designates whether the product can be purchased
+    #     and picked up in store"),
     # )
     # supplier_purchase_price = models.DecimalField(
     #     "supplier purchase price", decimal_places=2, max_digits=10, default=0.00
@@ -323,10 +352,22 @@ class Product(BaseModel, BaseThumbnailImageModel):
 
     @property
     def materials_display(self) -> list[BaseArrayFieldLabelRecord]:
+        """
+        Takes the array field and turns it into a list of dicts, with
+        key name and field value.
+
+        E.g. [{"name": val}, ...]
+        """
         return get_array_field_labels(self.materials, enums.ProductMaterials)
 
     @property
     def rooms_display(self) -> list[BaseArrayFieldLabelRecord]:
+        """
+        Takes the array field and turns it into a list of dicts, with
+        key name and field value.
+
+        E.g. [{"name": val}, ...]
+        """
         return get_array_field_labels(self.rooms, enums.ProductRooms)
 
 
@@ -335,14 +376,18 @@ _ProductImageManager = models.Manager.from_queryset(ProductImageQuerySet)
 
 class ProductImage(BaseHeaderImageModel):
     """
-    Images bellonging to a product. Inherits a image
+    Images belonging to a product. Inherits an image
     models, which creates all needed versions of the
     uploaded image.
     """
 
     @property
     def product_image_directory(self) -> str:
-        return f"media/products/{slugify(self.product.supplier.name)}/{slugify(self.product.name)}/images"
+        """Path of which to upload static assets"""
+        return (
+            f"media/products/{slugify(self.product.supplier.name)}"
+            f"/{slugify(self.product.name)}/images"
+        )
 
     UPLOAD_PATH = product_image_directory  # type: ignore
 
@@ -364,13 +409,17 @@ _ProductFileManager = models.Manager.from_queryset(ProductFileQuerySet)
 
 class ProductFile(BaseFileModel):
     """
-    A single file bellonging to a products. This is
+    A single file belonging to a products. This is
     typically a supplier catalog etc.
     """
 
     @property
     def product_file_directory(self) -> str:
-        return f"media/products/{slugify(self.product.supplier.name)}/{slugify(self.product.name)}/files"
+        """Path of which to upload static assets"""
+        return (
+            f"media/products/{slugify(self.product.supplier.name)}"
+            f"/{slugify(self.product.name)}/files"
+        )
 
     UPLOAD_PATH = product_file_directory  # type: ignore
 
@@ -397,7 +446,7 @@ _ProductSiteStateManager = models.Manager.from_queryset(ProductSiteStateQuerySet
 class ProductSiteState(BaseModel):
     """
     We support multiple sites from the same frontend. This
-    model allow for different settings based on site.
+    model allows for different settings based on site.
     """
 
     site = models.ForeignKey(Site, on_delete=models.PROTECT, related_name="states")
@@ -476,12 +525,15 @@ class ProductOption(BaseModel):
         constraints = [
             models.UniqueConstraint(
                 fields=["product", "variant", "size"],
-                name=("one_option_combo_per_variant_size"),
+                name="one_option_combo_per_variant_size",
             )
         ]
 
     @property
     def vat(self) -> Decimal:
+        """
+        Vat in amount of currency.
+        """
         return Decimal(self.gross_price * Decimal(self.product.vat_rate))
 
     def __str__(self) -> str:

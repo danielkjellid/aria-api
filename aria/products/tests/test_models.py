@@ -23,7 +23,7 @@ class TestProductsModels:
             "slug": "1-test-product",
             "short_description": "Testing",
             "description": "More testing",
-            "new_description": "Even more testing",  # TODO: Rename to description when migration is completed
+            "new_description": "Even more testing",  # TODO: Rename to description
             "unit": ProductUnit.PCS,
             "available_in_special_sizes": True,
             "absorption": 0.00,

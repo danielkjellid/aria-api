@@ -33,7 +33,7 @@ class TestPublicProductsEndpoints:
             "rooms": product.rooms_display,
             "available_in_special_sizes": product.available_in_special_sizes,
             "can_be_picked_up": product.site_states.first().can_be_picked_up,
-            "can_be_purchased_online": product.site_states.first().can_be_purchased_online,
+            "can_be_purchased_online": product.site_states.first().can_be_purchased_online,  # pylint: disable=line-too-long
             "display_price": product.site_states.first().display_price,
             "from_price": product.site_states.first().gross_price,
             "supplier": {

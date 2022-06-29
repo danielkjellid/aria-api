@@ -21,6 +21,9 @@ def create_site_state(
     can_be_purchased_online: bool = False,
     can_be_picked_up: bool = False,
 ) -> ProductSiteState:
+    """
+    Test util that creates a site state instance.
+    """
 
     if site is None:
         site = create_site()
@@ -49,6 +52,9 @@ def create_product(
     supplier: Supplier | None = None,
     quantity: int = 1,
 ) -> Product:
+    """
+    Test util that creates a product instance.
+    """
 
     # Validate that provided slug is unique.
     if slug is not None:
@@ -98,10 +104,15 @@ def create_variant(
     *,
     name: str = "Example variant",
 ) -> Variant:
+    """
+    Test util that creates a variant instance.
+    """
 
     variant = Variant.objects.create(name=name, is_standard=False)
 
-    variant.image = tempfile.NamedTemporaryFile(suffix=".jpg").name
+    with tempfile.NamedTemporaryFile(suffix=".jpg") as file:
+        variant.image = file.name
+
     variant.save()
 
     return variant
@@ -113,6 +124,9 @@ def create_size(
     depth: Decimal | None = None,
     circumference: Decimal | None = None,
 ) -> Size:
+    """
+    Test util that creates a size instance.
+    """
 
     if width and height and depth and circumference is None:
         raise ValueError("All args cannot be None!")
@@ -132,7 +146,9 @@ def create_product_option(
     gross_price: Decimal = Decimal(200.00),
     status: ProductStatus = ProductStatus.AVAILABLE,
 ) -> ProductOption:
-
+    """
+    Test util that creates a product option instance.
+    """
     if variant is None:
         variant = create_variant()
 
