@@ -163,7 +163,7 @@ class Variant(BaseThumbnailImageModel):
         help_text=(
             "Designates if a variant should be treated as standard. "
             "This is to avoid multiple instances of the same variant. "
-            "This field will also prevent cleanup deletion of these models.",
+            "This field will also prevent cleanup deletion of these models."
         ),
     )
 
