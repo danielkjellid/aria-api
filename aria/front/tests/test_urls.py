@@ -15,7 +15,7 @@ class TestPublicFrontUrls:
         Test reverse match of site_messages_active_list_api endpoint.
         """
         url = reverse(
-            "api-1.0.0:front-site-nessages-{site_id}-active", args=["site_id"]
+            "api-1.0.0:front-site-messages-{site_id}-active", args=["site_id"]
         )
 
         assert url == "/api/front/site-messages/site_id/active/"
