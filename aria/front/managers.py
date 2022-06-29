@@ -11,6 +11,9 @@ if TYPE_CHECKING:
 
 class OpeningHoursQuerySet(BaseQuerySet["models.OpeningHours"]):
     def with_active_deviations(self) -> BaseQuerySet["models.OpeningHours"]:
+        """
+        Prefetch active deviations related to an opening hours instance.
+        """
         from aria.front.models import OpeningHoursDeviation
 
         active_deviations = (
@@ -48,4 +51,8 @@ class SiteMessageLocationQuerySet(BaseQuerySet["models.SiteMessageLocation"]):
 
 class SiteMessageQuerySet(BaseQuerySet["models.SiteMessage"]):
     def with_locations(self) -> BaseQuerySet["models.SiteMessage"]:
+        """
+        Prefetch site message locations related to a site message. Sets the
+        prefetched values attribute as "related_locations"
+        """
         return self.prefetch_related(Prefetch("locations", to_attr="related_locations"))

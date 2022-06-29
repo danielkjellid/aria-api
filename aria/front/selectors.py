@@ -90,8 +90,8 @@ def _opening_hours_weekdays_by_time_slots(
     # List to store final result.
     weekdays_by_timeslot: list[WeekdaysByTimeSlotDict] = []
 
-    weekdays = [weekday for weekday in OpeningHoursWeekdays]
-    # Sort list according to OpeningHoursWeekdays order, e.g monday first, tuesday next
+    weekdays = list(OpeningHoursWeekdays)
+    # Sort list according to OpeningHoursWeekdays order, e.g. monday first, tuesday next
     # and so on.
     sorted_time_slots: list[OpeningHoursTimeSlot] | list[
         OpeningHoursTimeSlotRecord
@@ -99,7 +99,7 @@ def _opening_hours_weekdays_by_time_slots(
         time_slots, key=lambda x: weekdays.index(x.weekday)
     )  # type: ignore
 
-    # Iterate over time slots matching them with all other time sliots in the list.
+    # Iterate over time slots matching them with all other time slots in the list.
     for time_slot in sorted_time_slots:
         for ts in sorted_time_slots:
             # Group on weekday and matching opening/closing hours.
@@ -116,7 +116,10 @@ def _opening_hours_weekdays_by_time_slots(
             ):
 
                 # We don't need the time slots seconds, so remove them
-                time_slot_to_human_readable = f"{time_slot.opening_at.strftime('%H:%M')} - {time_slot.closing_at.strftime('%H:%M')}"  # type: ignore
+                time_slot_to_human_readable = (
+                    f"{time_slot.opening_at.strftime('%H:%M')} - "  # type: ignore
+                    f"{time_slot.closing_at.strftime('%H:%M')}"  # type: ignore
+                )
 
                 # Iterate over the dict, based on the time_slot value.
                 existing_dict_instance = next(
@@ -139,7 +142,7 @@ def _opening_hours_weekdays_by_time_slots(
                         }
                     )
                     continue
-                # If it exist, append weekday to dict instance.
+                # If it exists, append weekday to dict instance.
                 existing_dict_instance["days"].append(
                     OpeningHoursWeekdays(time_slot.weekday).label
                 )
@@ -169,7 +172,7 @@ def _opening_hours_weekdays_by_time_slots(
                         }
                     )
                     continue
-                # If it exist, append weekday to dict instance.
+                # If it exists, append weekday to dict instance.
                 existing_dict_instance["days"].append(
                     OpeningHoursWeekdays(time_slot.weekday).label
                 )
@@ -181,16 +184,20 @@ def _opening_hours_time_slot_by_weekdays(
     *, weekdays_by_time_slots: list[WeekdaysByTimeSlotDict]
 ) -> list[OpeningHoursTimeSlotHumanReadableRecord]:
     """
-    Utility function to take a list of WeekdaysByTimeSlot dicts, and group the different
-    instances based on weekdays.
+    Utility function to take a list of WeekdaysByTimeSlot dicts, and group the
+    different instances based on weekdays.
 
-    Be aware that this is purely to make opening hours time slots more human readable for
-    output frontend. This function should not be used in any data calculation or so on.
+    Be aware that this is purely to make opening hours time slots more human-readable
+    for output frontend. This function should not be used in any data calculation or
+    so on.
 
     E.g. given the list:
-        - {"time_slot": "09:00 - 17:00", days: ['Monday', 'Tuesday', 'Wednedsay', 'Thursday'], ...}
-        - {"time_slot": "09:00 - 16:00", days: ["Friday"], ...}
-        - {"time_slot": "10:00 - 15:00", days: ["Saturday"], ...}
+        - {
+            "time_slot": "09:00 - 17:00",
+            "days": ['Monday', 'Tuesday', 'Wednesday', 'Thursday'], ...
+        }
+        - {"time_slot": "09:00 - 16:00", "days": ["Friday"], ...}
+        - {"time_slot": "10:00 - 15:00", "days": ["Saturday"], ...}
 
     the output will be:
         - {"days": "Monday - Thursday", time_slot: "09:00 - 17:00" ...}
@@ -258,7 +265,7 @@ def _opening_hours_time_slots_merge_to_human_readable(
 ) -> list[OpeningHoursTimeSlotHumanReadableRecord]:
     """
     Utility function to first group time slots by time slots, and then aggregate
-    results to a more human readable format.
+    results to a more human-readable format.
     """
 
     weekdays_by_timeslot = _opening_hours_weekdays_by_time_slots(time_slots=time_slots)
@@ -271,8 +278,9 @@ def _opening_hours_time_slots_merge_to_human_readable(
 
 def opening_hours_for_site(site_id: int) -> OpeningHoursRecord:
     """
-    Retrieve opening hours connected to a single site. This selector will at all times
-    return current opening hours, with deviations taken into account.
+    Retrieve opening hours connected to a single site. This selector
+    will at all times return current opening hours, with deviations
+    taken into account.
     """
 
     opening_hours_obj = (
@@ -285,13 +293,16 @@ def opening_hours_for_site(site_id: int) -> OpeningHoursRecord:
     oh_record = opening_hours_record(opening_hours=opening_hours_obj)  # type: ignore
 
     # Check if there are any active deviations.
-    if opening_hours_obj and len(opening_hours_obj.active_deviations) > 0:  # type: ignore
+    if (
+        opening_hours_obj
+        and len(opening_hours_obj.active_deviations) > 0  # type: ignore
+    ):
         opening_hours_deviation_record = deviation_record_for_opening_hours(
             opening_hours=opening_hours_obj
         )
 
-        # Replace days/time slots affected by the deviation in the original opening hours
-        # record.
+        # Replace days/time slots affected by the deviation in the original
+        # opening hours record.
         for i, time_slot in enumerate(oh_record.time_slots):
             for deviation_time_slot in opening_hours_deviation_record.time_slots:
                 if time_slot.weekday == deviation_time_slot.weekday:
@@ -351,7 +362,7 @@ def deviation_record_for_opening_hours(
     """
     Get the record representation for a single instance of OpeningHoursDeviation.
 
-    Preferrably used with attached .with_active_deviations().
+    Preferably used with attached .with_active_deviations().
     """
 
     prefetched_active_deviations = getattr(opening_hours, "active_deviations", None)
