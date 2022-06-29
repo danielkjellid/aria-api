@@ -14,8 +14,13 @@ _KitchenManager = models.Manager.from_queryset(KitchenQuerySet)
 
 
 class Kitchen(BaseModel, BaseHeaderImageModel, BaseListImageModel):
+    """
+    A represention of a kitchen line we sell.
+    """
+
     @property
     def kitchen_image_directory(self) -> str:
+        """Path of which to upload static assets."""
         return f"media/kitchens/{slugify(self.name)}"
 
     UPLOAD_PATH = kitchen_image_directory  # type: ignore
@@ -33,7 +38,8 @@ class Kitchen(BaseModel, BaseHeaderImageModel, BaseListImageModel):
         _("Slug"),
         max_length=255,
         help_text=_(
-            "A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs."
+            "A slug is a short label for something, containing only letters, "
+            "numbers, underscores or hyphens. They’re generally used in URLs."
         ),
     )
     thumbnail_description = models.CharField(
@@ -88,6 +94,9 @@ class Kitchen(BaseModel, BaseHeaderImageModel, BaseListImageModel):
 
 
 class SilkColor(models.Model):
+    """
+    Silk colors is a range of different colors offered by our kitchen supplier.
+    """
 
     name = models.CharField(_("Kitchen silk name"), max_length=255, unique=False)
     color_hex = models.CharField(_("Color code"), max_length=7, unique=True)
@@ -101,8 +110,13 @@ class SilkColor(models.Model):
 
 
 class Decor(models.Model):
+    """
+    Plywood is a range of different color patterns offered by our kitchen supplier.
+    """
+
     @property
     def kitchen_decor_upload_path(self) -> str:
+        """Path of which to upload static assets."""
         return f"media/kitchens/decors/{slugify(self.name)}"
 
     UPLOAD_PATH = kitchen_decor_upload_path
@@ -126,8 +140,13 @@ class Decor(models.Model):
 
 
 class Plywood(models.Model):
+    """
+    Plywood is a range of different plywoods offered by our kitchen supplier.
+    """
+
     @property
     def kitchen_playwood_upload_path(self) -> str:
+        """Path of which to upload static assets."""
         return f"media/kitchens/plywoods/{slugify(self.name)}"
 
     UPLOAD_PATH = kitchen_playwood_upload_path
@@ -151,6 +170,9 @@ class Plywood(models.Model):
 
 
 class LaminateColor(models.Model):
+    """
+    Laminate colors is range of colors offered by the kitchen supplier.
+    """
 
     name = models.CharField(_("Kitchen laminate name"), max_length=255, unique=False)
     color_hex = models.CharField(_("Color code"), max_length=7, unique=True)
@@ -164,6 +186,9 @@ class LaminateColor(models.Model):
 
 
 class ExclusiveColor(models.Model):
+    """
+    Exclusive colors is a range of colors offered by the kitchen supplier.
+    """
 
     name = models.CharField(_("Kitchen exclusive name"), max_length=255, unique=False)
     color_hex = models.CharField(_("Color code"), max_length=7, unique=True)
@@ -177,6 +202,9 @@ class ExclusiveColor(models.Model):
 
 
 class TrendColor(models.Model):
+    """
+    Trend colors is a range of colors offered by the kitchen supplier.
+    """
 
     name = models.CharField(_("Kitchen trend name"), max_length=255, unique=False)
     color_hex = models.CharField(_("Color code"), max_length=7, unique=True)

@@ -14,6 +14,9 @@ def create_kitchen(
     supplier: Supplier | None = None,
     can_be_painted: bool = True,
 ) -> Kitchen:
+    """
+    Test utiltiy to create a kitchen instance.
+    """
 
     # Validate that provided slug is unique.
     if slug is not None:

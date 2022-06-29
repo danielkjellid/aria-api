@@ -4,6 +4,10 @@ version = "0.1.0"
 description = ""
 authors = ["danielkjellid <daniel.kjellid@gmail.com>"]
 
+################
+# Dependencies #
+################
+
 [tool.poetry.dependencies]
 python = "3.10.2"
 boto3 = "1.14.63"
@@ -44,6 +48,10 @@ hiredis = "^2.0.0"
 celery = "^5.2.7"
 pytest-celery = "^0.0.0"
 
+############################
+# Development dependencies #
+############################
+
 [tool.poetry.dev-dependencies]
 black = "^22.6"
 flake8 = "^4.0.1"
@@ -65,12 +73,22 @@ pytest-xdist = "^2.5.0"
 typing-extensions = "4.2.0"
 django-stubs = "1.11.0"
 types-requests = "^2.28.0"
+pylint = "^2.14.4"
+pylint-django = "^2.5.3"
+
+#########
+# Black #
+#########
 
 [tool.black]
 target-version = ['py39']
 include = '\.pyi?$'
 extend-exclude = 'migrations'
 safe = true
+
+#########
+# Isort #
+#########
 
 [tool.isort]
 profile = "black"
@@ -79,6 +97,10 @@ skip_glob = "*migrations*"
 known_django = ["django"]
 sections = ["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 combine_as_imports = true
+
+########
+# Mypy #
+########
 
 [tool.mypy]
 python_version = "3.10"
@@ -136,6 +158,100 @@ ignore_errors = true
 module = "aria.suppliers.models"
 ignore_errors = true
 
+##########
+# Pylint #
+##########
+
+[tool.pylint.master]
+persistent = "yes"
+ignore = ["migrations", "conftest.py"]
+load-plugins = "pylint_django"
+django-settings-module = "aria.settings"
+extension-pkg-whitelist = ["pydantic"]
+jobs = 1
+init-hook = "import sys; sys.path.append('./box_estimation');"
+
+[tool.pylint.messages_control]
+disable = [
+    "C0114", # C0114 Missing module docstring
+    "C0115", # C0115 Missing class docstring
+    "W0511", # W0511 Used when a warning note as FIXME or XXX is detected
+]
+
+[tool.pylint.basic]
+no-docstring-rgx = "__.*__|_.*"
+class-rgx = "[A-Z_][a-zA-Z0-9_]+$"
+function-rgx = "[a-zA_][a-zA-Z0-9_]{2,70}$"
+method-rgx = "[a-z_][a-zA-Z0-9_]{2,70}$"
+const-rgx = "(([A-Z_][A-Z0-9_]*)|([a-z_][a-z0-9_]*)|(__.*__)|register|urlpatterns)$"
+good-names = [
+    "_",
+    "i",
+    "j",
+    "qs",
+    "pk",
+    "User",
+]
+
+[tool.pylint.typecheck]
+# Tells whether missing members accessed in mixin class should be ignored. A
+# mixin class is detected if its name ends with "mixin" (case insensitive).
+ignore-mixin-members = "yes"
+
+# List of classes names for which member attributes should not be checked
+# (useful for classes with attributes dynamically set).
+ignored-classes = ["SQLObject", "WSGIRequest"]
+
+# List of members which are set dynamically and missed by pylint inference
+# system, and so shouldn't trigger E0201 when accessed.
+generated-members = [
+    "objects",
+    "DoesNotExist",
+    "id",
+    "pk",
+    "_meta",
+    "base_fields",
+    "context"
+]
+
+# List of method names used to declare (i.e. assign) instance attributes
+defining-attr-methods = [
+    "__init__",
+    "__new__",
+]
+
+[tool.pylint.variables]
+init-import = "no"
+dummy-variables-rgx = "_|dummy"
+
+[tool.pylint.similarities]
+min-similarity-lines = 6
+ignore-comments = "yes"
+ignore-docstrings = "yes"
+
+[tool.pylint.miscellaneous]
+notes = ["FIXME", "XXX", "TODO"]
+
+[tool.pylint.format]
+max-line-length = 88
+max-module-lines = 1000
+indent-string = "'    '"
+
+[tool.pylint.design]
+max-args = 10
+max-locals = 20
+max-returns = 10
+max-branches = 15
+max-statements = 50
+max-parents = 7
+max-attributes = 7
+min-public-methods = 0
+max-public-methods = 50
+
+##########
+# Pytest #
+##########
+
 [tool.pytest.ini_options]
 minversion = "6.0"
 testpaths = ["aria"]
@@ -151,6 +267,10 @@ junit_logging = "system-out"
 DJANGO_SETTINGS_MODULE = "aria.settings"
 # --- pytest-env settings
 env = ["ENV_PATH=.env.test"]
+
+###############
+# Poetry misc #
+###############
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
