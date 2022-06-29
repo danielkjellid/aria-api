@@ -17,7 +17,7 @@ services:
   ################
   ## Production ##
   ################
-  - type: celery
+  - type: worker # celery
     region: frankfurt
     plan: starter
     name: aria-celery-prod
@@ -64,7 +64,7 @@ services:
   ## Staging ##
   #############
   # TODO: Comment out when we actually use celery
-  #  - type: celery
+  #  - type: worker # celery
   #    region: frankfurt
   #    plan: starter
   #    name: aria-celery-staging
