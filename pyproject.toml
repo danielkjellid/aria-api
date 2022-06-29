@@ -194,6 +194,8 @@ good-names = [
     "j",
     "qs",
     "id",
+    "dt",
+    "ts",
     "pk",
     "User",
 ]
