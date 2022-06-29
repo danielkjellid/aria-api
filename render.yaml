@@ -63,6 +63,20 @@ services:
   #############
   ## Staging ##
   #############
+  # TODO: Comment out when we actually use celery
+  #  - type: celery
+  #    region: frankfurt
+  #    plan: starter
+  #    name: aria-celery-staging
+  #    env: docker
+  #    dockerCommand: "./docker-entrypoint.sh celery celery,important,newsletter,misc-tasks"
+  #    envCars:
+  #      - key: CELERY_BROKER_URL
+  #        fromService:
+  #          type: redis
+  #          name: aria-redis-staging
+  #          property: connectionString
+
   - type: redis
     region: frankfurt
     plan: free
