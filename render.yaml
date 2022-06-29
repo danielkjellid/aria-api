@@ -23,7 +23,7 @@ services:
     name: aria-celery-prod
     env: docker
     dockerCommand: "./docker-entrypoint.sh celery celery,important,newsletter,misc-tasks"
-    envCars:
+    envVars:
       - key: CELERY_BROKER_URL
         fromService:
           type: redis
@@ -70,7 +70,7 @@ services:
   #    name: aria-celery-staging
   #    env: docker
   #    dockerCommand: "./docker-entrypoint.sh celery celery,important,newsletter,misc-tasks"
-  #    envCars:
+  #    envVars:
   #      - key: CELERY_BROKER_URL
   #        fromService:
   #          type: redis
