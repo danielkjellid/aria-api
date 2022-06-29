@@ -1,6 +1,6 @@
 import os
 
-from celery import Celery
+from celery import Celery, Task
 
 # Set the default settings module fro celery.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "aria.settings")
@@ -14,5 +14,5 @@ app.autodiscover_tasks()
 
 
 @app.task(bind=True)  # type: ignore
-def debug_task(self) -> None:
+def debug_task(self: Task) -> None:
     print(f"Request: {self.request!r}")
