@@ -33,7 +33,7 @@ class TestCategoriesSelectors:
         main_cat_2 = create_category(name="Main cat 2")
         main_cat_2_sub_1 = create_category("Sub cat 2.1", parent=main_cat_2)
 
-        # Uses 3 queries: 1 for getting categorues, 1 for getting parents and
+        # Uses 3 queries: 1 for getting categories, 1 for getting parents and
         # 1 for getting children.
         with django_assert_max_num_queries(3):
             categories = category_navigation_active_list()
@@ -69,7 +69,12 @@ class TestCategoriesSelectors:
     def test_category_parents_active_list_for_category(
         self, django_assert_max_num_queries
     ) -> None:
-        pass
+        """
+        Test the category_parents_active_list_for_category
+        selector returns expected response within query limit
+        for a specific category.
+        """
+        # TODO: write test
 
     def test_category_children_active_list_for_category(
         self, django_assert_max_num_queries

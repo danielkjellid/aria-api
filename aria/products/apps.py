@@ -5,4 +5,4 @@ class ProductsConfig(AppConfig):
     name = "aria.products"
 
     def ready(self) -> None:
-        import aria.products.signals  # noqa: F401 pylint: disable=import-outside-toplevel, unused-import
+        import aria.products.signals  # noqa: F401 pylint: disable=unused-import
