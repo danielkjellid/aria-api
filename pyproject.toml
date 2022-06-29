@@ -41,6 +41,8 @@ django-countries = "^7.3.2"
 django-redis = "^5.2.0"
 dacite = "^1.6.0"
 hiredis = "^2.0.0"
+celery = "^5.2.7"
+pytest-celery = "^0.0.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.6"
