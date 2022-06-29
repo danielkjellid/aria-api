@@ -366,7 +366,6 @@ CELERY_TASK_DEFAULT_ROUTING_KEY = "celery"
 
 TASK_QUEUE_IMPORTANT = "important"
 TASK_QUEUE_NEWSLETTER = "newsletter"
-TASK_QUEUE_MEDIA = "media"
 
 ################
 # API Auth JWT #

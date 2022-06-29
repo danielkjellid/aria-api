@@ -17,6 +17,19 @@ services:
   ################
   ## Production ##
   ################
+  - type: celery
+    region: frankfurt
+    plan: starter
+    name: aria-celery-prod
+    env: docker
+    dockerCommand: "./docker-entrypoint.sh celery,important,newsletter,misc-tasks"
+    envCars:
+      - key: CELERY_BROKER_URL
+        fromService:
+          type: redis
+          name: aria-redis-prod
+          property: connectionString
+
   - type: redis
     region: frankfurt
     plan: starter
@@ -24,6 +37,7 @@ services:
     ipAllowList:
       - source: 0.0.0.0/0
         description: everywhere
+
   - type: web
     region: frankfurt
     plan: Starter Plus
@@ -56,6 +70,7 @@ services:
     ipAllowList:
       - source: 0.0.0.0/0
         description: everywhere
+
   - type: web
     region: frankfurt
     plan: starter
