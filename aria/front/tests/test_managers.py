@@ -4,8 +4,13 @@ from django.utils import timezone
 
 import pytest
 
-from aria.front.models import OpeningHours
-from aria.front.tests.utils import create_opening_hours, create_opening_hours_deviation
+from aria.front.models import OpeningHours, SiteMessage
+from aria.front.tests.utils import (
+    create_opening_hours,
+    create_opening_hours_deviation,
+    create_site_message,
+    create_site_message_location,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -40,3 +45,36 @@ class TestOpeningHoursQuerySetManager:
             )
 
         assert hasattr(opening_hours, "active_deviations")
+
+
+class TestSiteMessageQuerySetManager:
+
+    model = SiteMessage
+
+    def test_with_locations(self, django_assert_max_num_queries):
+        """
+        Test that the with_locations method returns expected values
+        within a given query limit.
+        """
+
+        locations = [
+            create_site_message_location(slug="location-1"),
+            create_site_message_location(slug="location-2"),
+            create_site_message_location(slug="location-3"),
+        ]
+        site_message_instance = create_site_message(
+            locations=locations,
+            show_message_at=timezone.now(),
+            show_message_to=timezone.now() + timedelta(minutes=10),
+        )
+
+        # Uses 2 queries: 1 for getting site messages and 1 for prefetching
+        # related locations.
+        with django_assert_max_num_queries(2):
+            site_message = (
+                self.model.objects.filter(id=site_message_instance.id)
+                .with_locations()
+                .first()
+            )
+
+        assert hasattr(site_message, "related_locations")

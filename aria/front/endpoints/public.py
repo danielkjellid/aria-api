@@ -36,7 +36,7 @@ def opening_hours_detail_api(
 
 @api(
     router,
-    "site-messages/{site_id}/",
+    "site-messages/{site_id}/active/",
     method="GET",
     response={200: list[SiteMessageOutputSchema]},
     summary="Get site messages for a site",

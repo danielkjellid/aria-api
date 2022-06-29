@@ -16,15 +16,23 @@ from aria.front.types import TimeSlotByWeekdaysDict, WeekdaysByTimeSlotDict
 
 def site_message_record(site_message: SiteMessage) -> SiteMessageRecord:
     """
-    Get the record representation for a site message. Please
-    make sure to prefetch locations if this is used in a loop.
+    Get the record representation for a site message. Preferably used
+    alongside the .with_locations() manager method, especially if run
+    in a loop.
     """
+
+    prefetched_related_locations = getattr(site_message, "related_locations", None)
+
+    if prefetched_related_locations is not None:
+        locations = prefetched_related_locations
+    else:
+        locations = site_message.locations.all()
 
     return SiteMessageRecord(
         id=site_message.id,
         text=site_message.text,
         message_type=SiteMessageType(site_message.message_type),
-        locations=[location.slug for location in site_message.locations.all()],
+        locations=[location.slug for location in locations],
         site_id=site_message.site_id,
         show_message_at=site_message.show_message_at,
         show_message_to=site_message.show_message_to,

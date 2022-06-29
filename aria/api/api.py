@@ -31,7 +31,7 @@ api = NinjaAPI(
 
 # API auth endpoints
 
-api.add_router("/ninja/auth/", public_auth_endpoints, auth=None)
+api.add_router("/auth/", public_auth_endpoints, auth=None)
 
 # Categories endpoints
 api.add_router("/categories/", public_categories_endpoints, auth=None)
