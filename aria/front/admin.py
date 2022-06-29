@@ -13,6 +13,7 @@ from aria.front.models import (
 @admin.register(SiteMessage)
 class SiteMessageAdmin(admin.ModelAdmin):
     list_display = ("message_type", "show_message_at", "show_message_to")
+    filter_horizontal = ("locations",)
 
 
 @admin.register(SiteMessageLocation)

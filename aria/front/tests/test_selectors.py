@@ -7,7 +7,8 @@ from django.utils import timezone
 import pytest
 
 from aria.core.tests.utils import create_site
-from aria.front.models import OpeningHours
+from aria.front.enums import SiteMessageType
+from aria.front.models import OpeningHours, SiteMessage
 from aria.front.records import (
     OpeningHoursDeviationRecord,
     OpeningHoursDeviationTemplateRecord,
@@ -23,14 +24,177 @@ from aria.front.selectors import (
     opening_hours_for_site,
     opening_hours_for_site_from_cache,
     opening_hours_record,
+    site_message_active_list,
+    site_message_active_list_from_cache,
+    site_message_record,
 )
-from aria.front.tests.utils import create_opening_hours, create_opening_hours_deviation
+from aria.front.tests.utils import (
+    create_opening_hours,
+    create_opening_hours_deviation,
+    create_site_message,
+)
 from aria.front.types import WeekdaysByTimeSlotDict
 
 pytestmark = pytest.mark.django_db
 
 
 class TestFrontSelectors:
+    def test_site_message_record(self, django_assert_max_num_queries) -> None:
+        """
+        Test the site_message_record selector returns expected response within
+        query limit for a specific site message.
+        """
+
+        start_time = timezone.now()
+        end_time = timezone.now() + timedelta(minutes=10)
+        site_message = create_site_message(
+            show_message_at=start_time, show_message_to=end_time
+        )
+
+        # Uses 1 query to get related locations.
+        with django_assert_max_num_queries(1):
+            sm_record = site_message_record(site_message)
+
+        assert sm_record == SiteMessageRecord(
+            id=site_message.id,
+            text=site_message.text,
+            message_type=SiteMessageType(site_message.message_type),
+            locations=["test-location"],
+            site_id=site_message.site_id,
+            show_message_at=start_time,
+            show_message_to=end_time,
+        )
+
+        site_message_with_locations = (
+            SiteMessage.objects.filter(id=site_message.id).with_locations().first()
+        )
+
+        # Should use already prefetched value, and not hit DB.
+        with django_assert_max_num_queries(0):
+            sm_record_with_prefetch = site_message_record(site_message_with_locations)
+
+        assert sm_record_with_prefetch == SiteMessageRecord(
+            id=site_message.id,
+            text=site_message.text,
+            message_type=SiteMessageType(site_message.message_type),
+            locations=["test-location"],
+            site_id=site_message.site_id,
+            show_message_at=start_time,
+            show_message_to=end_time,
+        )
+
+    def test_site_message_active_list(self, django_assert_max_num_queries) -> None:
+        """
+        Test that the site_message_active_list selector returns expected output
+        within query limit.
+        """
+        site = create_site()
+        site_message_1 = create_site_message(
+            site=site,
+            show_message_at=timezone.now(),
+            show_message_to=timezone.now() + timedelta(minutes=10),
+        )
+        site_message_2 = create_site_message(
+            site=site,
+            show_message_at=timezone.now(),
+            show_message_to=timezone.now() + timedelta(minutes=15),
+        )
+        # Expired message.
+        create_site_message(
+            site=site,
+            show_message_at=timezone.now() - timedelta(minutes=10),
+            show_message_to=timezone.now() - timedelta(minutes=5),
+        )
+
+        # Uses 2 queries: 1 for getting site messages, and 1 for getting related
+        # locations.
+        with django_assert_max_num_queries(2):
+            active_list = site_message_active_list(site_id=site.id)
+
+        assert len(active_list) == 2
+        assert sorted(active_list, key=lambda x: x.id) == [
+            SiteMessageRecord(
+                id=site_message_1.id,
+                text=site_message_1.text,
+                message_type=SiteMessageType(site_message_1.message_type),
+                locations=["test-location"],
+                site_id=site_message_1.site_id,
+                show_message_at=site_message_1.show_message_at,
+                show_message_to=site_message_1.show_message_to,
+            ),
+            SiteMessageRecord(
+                id=site_message_2.id,
+                text=site_message_2.text,
+                message_type=SiteMessageType(site_message_2.message_type),
+                locations=["test-location"],
+                site_id=site_message_2.site_id,
+                show_message_at=site_message_2.show_message_at,
+                show_message_to=site_message_2.show_message_to,
+            ),
+        ]
+
+    def test_site_message_active_list_from_cache(
+        self, django_assert_max_num_queries
+    ) -> None:
+        """
+        Test that the site_message_active_list_from_cache correctly returnes from
+        cache, and output is as expected, within query limits.
+        """
+
+        site = create_site()
+        site_message_1 = create_site_message(
+            site=site,
+            show_message_at=timezone.now(),
+            show_message_to=timezone.now() + timedelta(minutes=10),
+        )
+        site_message_2 = create_site_message(
+            site=site,
+            show_message_at=timezone.now(),
+            show_message_to=timezone.now() + timedelta(minutes=15),
+        )
+        # Expired message.
+        create_site_message(
+            site=site,
+            show_message_at=timezone.now() - timedelta(minutes=10),
+            show_message_to=timezone.now() - timedelta(minutes=5),
+        )
+
+        cache.delete(f"front.site_messages.site_id={site.id}")
+        assert f"front.site_messages.site_id={site.id}" not in cache
+
+        # Uses 2 queries: 1 for getting site messages, and 1 for getting related
+        # locations.
+        with django_assert_max_num_queries(2):
+            site_message_active_list_from_cache(site_id=site.id)
+
+        # After first hit, instance should have been added to cache.
+        assert f"front.site_messages.site_id={site.id}" in cache
+
+        # Should be cached, and no queries should hit db.
+        with django_assert_max_num_queries(0):
+            site_message_active_list_from_cache(site_id=site.id)
+
+        assert cache.get(f"front.site_messages.site_id={site.id}") == [
+            {
+                "id": site_message_1.id,
+                "text": site_message_1.text,
+                "message_type": site_message_1.message_type,
+                "locations": ["test-location"],
+                "site_id": site_message_1.site_id,
+                "show_message_at": site_message_1.show_message_at,
+                "show_message_to": site_message_1.show_message_to,
+            },
+            {
+                "id": site_message_2.id,
+                "text": site_message_2.text,
+                "message_type": site_message_2.message_type,
+                "locations": ["test-location"],
+                "site_id": site_message_2.site_id,
+                "show_message_at": site_message_2.show_message_at,
+                "show_message_to": site_message_2.show_message_to,
+            },
+        ]
+
     def test__opening_hours_weekdays_by_time_slots(
         self, django_assert_max_num_queries
     ) -> None:
@@ -309,7 +473,6 @@ class TestFrontSelectors:
 
         # After first hit, instance should have been added to cache.
         assert f"front.opening_hours.site_id={site.id}" in cache
-        print(cache.get(f"front.opening_hours.site_id={site.id}"))
 
         # Should be cached, and no queries should hit db.
         with django_assert_max_num_queries(0):

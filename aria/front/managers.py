@@ -47,4 +47,5 @@ class SiteMessageLocationQuerySet(BaseQuerySet["models.SiteMessageLocation"]):
 
 
 class SiteMessageQuerySet(BaseQuerySet["models.SiteMessage"]):
-    pass
+    def with_locations(self) -> BaseQuerySet["models.SiteMessage"]:
+        return self.prefetch_related(Prefetch("locations", to_attr="related_locations"))

@@ -18,9 +18,13 @@ from aria.front.models import (
 def create_site_message_location(
     *,
     name: str = "Test location",
-    slug: str = "test-location",
     description: str = "Test location for test purposes",
+    slug: str | None = None,
 ) -> SiteMessageLocation:
+
+    if not slug:
+        slug = "test-location"
+
     site_message_location, _created = SiteMessageLocation.objects.get_or_create(
         slug=slug, defaults={"name": name, "description": description}
     )

@@ -172,6 +172,14 @@ class OpeningHoursDeviation(models.Model):
             update_fields=update_fields,
         )
 
+        if self.template and self.template.site_message:
+            self.template.site_message.show_message_at = self.active_at
+            self.template.site_message.show_message_to = self.active_to
+            self.template.site_message.save()
+
+            # Uncache all site_messages.
+            cache.delete(f"front.site_messages.site_id={self.opening_hours.site_id}")
+
         if self.opening_hours and self.opening_hours.site_id:
             # Uncache all opening hours.
             cache.delete(f"front.opening_hours.site_id={self.opening_hours.site_id}")
@@ -277,5 +285,6 @@ class SiteMessage(BaseModel):
             update_fields=update_fields,
         )
 
-        # Uncache all site messages.
-        cache.delete("site_messages")
+        if self.site and self.site_id:
+            # Uncache all site_messages.
+            cache.delete(f"front.site_messages.site_id={self.site_id}")

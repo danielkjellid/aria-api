@@ -1,8 +1,8 @@
 from django.utils import timezone
 
 from aria.core.decorators import cached
-from aria.front.enums import OpeningHoursWeekdays
-from aria.front.models import OpeningHours, OpeningHoursTimeSlot
+from aria.front.enums import OpeningHoursWeekdays, SiteMessageType
+from aria.front.models import OpeningHours, OpeningHoursTimeSlot, SiteMessage
 from aria.front.records import (
     OpeningHoursDeviationRecord,
     OpeningHoursDeviationTemplateRecord,
@@ -12,6 +12,58 @@ from aria.front.records import (
     SiteMessageRecord,
 )
 from aria.front.types import TimeSlotByWeekdaysDict, WeekdaysByTimeSlotDict
+
+
+def site_message_record(site_message: SiteMessage) -> SiteMessageRecord:
+    """
+    Get the record representation for a site message. Preferably used
+    alongside the .with_locations() manager method, especially if run
+    in a loop.
+    """
+
+    prefetched_related_locations = getattr(site_message, "related_locations", None)
+
+    if prefetched_related_locations is not None:
+        locations = prefetched_related_locations
+    else:
+        locations = site_message.locations.all()
+
+    return SiteMessageRecord(
+        id=site_message.id,
+        text=site_message.text,
+        message_type=SiteMessageType(site_message.message_type),
+        locations=[location.slug for location in locations],
+        site_id=site_message.site_id,
+        show_message_at=site_message.show_message_at,
+        show_message_to=site_message.show_message_to,
+    )
+
+
+def site_message_active_list(site_id: int) -> list[SiteMessageRecord]:
+    """
+    Retrieve a list of active site messages.
+    """
+
+    site_messages = SiteMessage.objects.filter(
+        site_id=site_id,
+        show_message_at__lte=timezone.now(),
+        show_message_to__gt=timezone.now(),
+    ).prefetch_related("locations")
+
+    return [site_message_record(site_message) for site_message in site_messages]
+
+
+def _site_message_active_list_cache_key(site_id: int) -> str:
+    return f"front.site_messages.site_id={site_id}"
+
+
+@cached(key=_site_message_active_list_cache_key, timeout=24 * 60)
+def site_message_active_list_from_cache(site_id: int) -> list[SiteMessageRecord]:
+    """
+    Retrieve a list of active site messages from cache.
+    """
+
+    return site_message_active_list(site_id=site_id)
 
 
 def _opening_hours_weekdays_by_time_slots(
@@ -323,18 +375,7 @@ def deviation_record_for_opening_hours(
             id=active_deviation.template.id,
             name=active_deviation.template.name,
             description=active_deviation.template.description,
-            site_message=SiteMessageRecord(
-                id=active_deviation.template.site_message.id,
-                text=active_deviation.template.site_message.text,
-                message_type=active_deviation.template.site_message.message_type,
-                locations=[
-                    location.slug
-                    for location in active_deviation.template.site_message.locations.all()
-                ],
-                site_id=active_deviation.template.site_message.site_id,
-                show_message_at=active_deviation.template.site_message.show_message_at,
-                show_message_to=active_deviation.template.site_message.show_message_to,
-            )
+            site_message=site_message_record(active_deviation.template.site_message)
             if active_deviation.template.site_message
             else None,
         )

@@ -6,7 +6,11 @@ from django.utils import timezone
 import pytest
 
 from aria.core.tests.utils import create_site
-from aria.front.tests.utils import create_opening_hours, create_opening_hours_deviation
+from aria.front.tests.utils import (
+    create_opening_hours,
+    create_opening_hours_deviation,
+    create_site_message,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -17,7 +21,7 @@ class TestPublicFrontEndoints:
 
     def test_opening_hours_detail_api(
         self, django_assert_max_num_queries, anonymous_client
-    ):
+    ) -> None:
         """
         Test retrieving opening hours for a site from an anonymous client returns
         a valid response.
@@ -91,3 +95,60 @@ class TestPublicFrontEndoints:
 
         assert response.status_code == 200
         assert actual_deviation_response == expected_deviation_response
+
+    def test_site_messages_active_list_api(
+        self, django_assert_max_num_queries, anonymous_client
+    ) -> None:
+        """
+        Test retrieving active site messages for a site from an anonymous client
+        returns a valid response.
+        """
+
+        site = create_site()
+        site_message_1 = create_site_message(
+            site=site,
+            show_message_at=timezone.now(),
+            show_message_to=timezone.now() + timedelta(minutes=10),
+        )
+        site_message_2 = create_site_message(
+            site=site,
+            show_message_at=timezone.now(),
+            show_message_to=timezone.now() + timedelta(minutes=15),
+        )
+        # Expired message.
+        create_site_message(
+            site=site,
+            show_message_at=timezone.now() - timedelta(minutes=10),
+            show_message_to=timezone.now() - timedelta(minutes=5),
+        )
+
+        expected_response = [
+            {
+                "text": site_message_1.text,
+                "message_type": site_message_1.message_type,
+                "locations": ["test-location"],
+                "show_message_at": site_message_1.show_message_at.isoformat(),
+                "show_message_to": site_message_1.show_message_to.isoformat(),
+            },
+            {
+                "text": site_message_2.text,
+                "message_type": site_message_2.message_type,
+                "locations": ["test-location"],
+                "show_message_at": site_message_2.show_message_at.isoformat(),
+                "show_message_to": site_message_2.show_message_to.isoformat(),
+            },
+        ]
+
+        # Uses 3 queries:
+        # - 1x for getting the site.
+        # - 1x for getting active site messages.
+        # - 1x for getting related site message locations.
+        with django_assert_max_num_queries(3):
+            response = anonymous_client.get(
+                f"{self.BASE_ENDPOINT}/site-messages/{site.id}/active/"
+            )
+
+        actual_response = json.loads(response.content)
+
+        assert response.status_code == 200
+        assert actual_response == expected_response

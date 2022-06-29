@@ -11,9 +11,7 @@ pytestmark = pytest.mark.django_db
 
 class TestAPIAuthPublicEndpoints:
 
-    BASE_ENDPOINT = (
-        "/api/ninja/auth"  # TODO: Remove /ninja/ when drf migration is done.
-    )
+    BASE_ENDPOINT = "/api/auth"
 
     def test_auth_obtain_token_pair(
         self,
