@@ -18,7 +18,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
           running-workflow-name: "Deploy"
-          check-regexp: "(CI done|Python tests)"
+          check-regexp: "(CI done|tests)"
           allowed-conclusions: success
       - name: Deploy to staging
         env:
