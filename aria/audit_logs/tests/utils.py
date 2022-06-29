@@ -15,6 +15,9 @@ def create_log_entry(
     author: User | None = None,
     change_message: ChangeMessage,
 ) -> LogEntry:
+    """
+    Test utility for creating a log entry.
+    """
     content_type = ContentType.objects.get_for_model(model)
 
     if author is None:

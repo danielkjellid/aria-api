@@ -82,9 +82,7 @@ class TestUsersServices:
                 send_verification_email=False,
             )
 
-    def test_user_update_updates_user(
-        self, unprivileged_user, django_assert_max_num_queries
-    ) -> None:
+    def test_user_update_updates_user(self, django_assert_max_num_queries) -> None:
         """
         Test that the user_update service updates a user and creates
         appropriate logs.
@@ -108,7 +106,7 @@ class TestUsersServices:
                 user=user, data=updates, author=author, log_change=True
             )
 
-        created_log_entry = log_entry_list_for_instance(User, id=updated_user.id)[0]
+        created_log_entry = log_entry_list_for_instance(User, obj_id=updated_user.id)[0]
 
         # Assert change
         assert updated_user.email == "updatedemail@example.com"

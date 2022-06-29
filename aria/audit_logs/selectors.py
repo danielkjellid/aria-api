@@ -5,23 +5,23 @@ from aria.audit_logs.models import LogEntry
 from aria.audit_logs.schemas.records import LogEntryChangeRecord, LogEntryRecord
 
 
-def log_entry_list_for_instance(model: Model, *, id: int) -> list[LogEntryRecord]:
+def log_entry_list_for_instance(model: Model, *, obj_id: int) -> list[LogEntryRecord]:
     """
     Generic get service meant to be reused in local get services
     For example:
 
-    def some_serivce(*, user: User) -> None:
+    def some_service(*, user: User) -> None:
         ...
         logs = log_entry_list_for_instance(User, id=user.id)
         ...
         return
 
-    Return value: List of LogEntryRecords belloning to instance, if any.
+    Return value: List of LogEntryRecords belonging to instance, if any.
     """
 
     content_type = ContentType.objects.get_for_model(model)
     audit_logs = (
-        LogEntry.objects.filter(content_type=content_type, object_id=id)
+        LogEntry.objects.filter(content_type=content_type, object_id=obj_id)
         .prefetch_related("author", "content_object")
         .order_by("-created_at")
     )

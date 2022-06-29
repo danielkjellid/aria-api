@@ -11,9 +11,7 @@ pytestmark = pytest.mark.django_db
 
 
 class TestNotesServices:
-    def test_note_entry_create(
-        self, django_assert_max_num_queries, unprivileged_user
-    ) -> None:
+    def test_note_entry_create(self, django_assert_max_num_queries) -> None:
         """
         Test that the note_entry_create service creates a note entry.
         """
@@ -66,9 +64,9 @@ class TestNotesServices:
                 note_id=note.id, author=author, data=updates, log_change=True
             )
 
-        created_log_entry = log_entry_list_for_instance(NoteEntry, id=updated_note.id)[
-            0
-        ]
+        created_log_entry = log_entry_list_for_instance(
+            NoteEntry, obj_id=updated_note.id
+        )[0]
 
         assert updated_note.note == "Updated user note"
 
