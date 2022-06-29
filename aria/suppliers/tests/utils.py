@@ -12,7 +12,9 @@ def get_or_create_supplier(
     sites: list[Site] | None = None,
     website_link: str = "example.com",
 ) -> Supplier:
-
+    """
+    Test utility to create a user instance.
+    """
     supplier, _ = Supplier.objects.get_or_create(
         name=supplier_name,
         defaults={

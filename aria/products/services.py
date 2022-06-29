@@ -34,7 +34,7 @@ def product_option_delete_related_variants(*, instance: ProductOption) -> None:
 
     related_variant: Variant | None = instance.variant
 
-    # Check if there are other products thats linked to the same
+    # Check if there are other products that's linked to the same
     # variant while filtering out standards.
     if (
         related_variant is not None
