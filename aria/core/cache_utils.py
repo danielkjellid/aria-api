@@ -4,7 +4,9 @@ from typing import Any, Callable, Type, Union
 import dacite
 
 
-def get_codec(*, type_annotation: Type) -> tuple[Callable, Callable]:
+def get_codec(
+    *, type_annotation: Type[Any]
+) -> tuple[Callable[[Any], Any], Callable[[Any], Any]]:
     """
     Get an encoder and decoder for the given type. This is mainly to handle
     dataclasses, which we don't want to pickle when caching, because that can
@@ -30,7 +32,7 @@ def get_codec(*, type_annotation: Type) -> tuple[Callable, Callable]:
     return lambda value: value, lambda value: value
 
 
-def _is_list_with_dataclass(type_annotation: Type) -> bool:
+def _is_list_with_dataclass(type_annotation: Type[Any]) -> bool:
 
     origin = getattr(type_annotation, "__origin__", None)
     args = getattr(type_annotation, "__args__", None)
@@ -43,7 +45,7 @@ def _is_list_with_dataclass(type_annotation: Type) -> bool:
     )
 
 
-def _is_optional_dataclass(type_annotation: Type) -> bool:
+def _is_optional_dataclass(type_annotation: Type[Any]) -> bool:
 
     origin = getattr(type_annotation, "__origin__", None)
     args = getattr(type_annotation, "__args__", None)
@@ -56,21 +58,21 @@ def _is_optional_dataclass(type_annotation: Type) -> bool:
     )
 
 
-def _dataclass_decoder(type_annotation: Type) -> Callable:
+def _dataclass_decoder(type_annotation: Type[Any]) -> Callable[[Any], Any]:
     def decode_dataclass(value: Any):  # type: ignore
         return dacite.from_dict(type_annotation, value) if value else None  # type: ignore
 
     return decode_dataclass
 
 
-def _dataclass_encoder(type_annotation: Type) -> Callable:
+def _dataclass_encoder(type_annotation: Type[Any]) -> Callable[[Any], Any]:
     def encode_dataclass(value: Any) -> dict[Any, Any] | None:
         return dataclasses.asdict(value) if value else None
 
     return encode_dataclass
 
 
-def _dataclass_list_decoder(type_annotation: Type) -> Callable:
+def _dataclass_list_decoder(type_annotation: Type[Any]) -> Callable[[Any], Any]:
 
     decoder = _dataclass_decoder(type_annotation)
 
@@ -80,7 +82,7 @@ def _dataclass_list_decoder(type_annotation: Type) -> Callable:
     return decode_dataclass_list
 
 
-def _dataclass_list_encoder(type_annotation: Type) -> Callable:
+def _dataclass_list_encoder(type_annotation: Type[Any]) -> Callable[[Any], Any]:
     def encode_dataclass_list(value: list[Any]) -> list[dict[str, Any] | None]:
         return (
             [dataclasses.asdict(item) if item else None for item in value]

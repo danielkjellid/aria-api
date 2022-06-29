@@ -324,7 +324,7 @@ def opening_hours_record(opening_hours: OpeningHours) -> OpeningHoursRecord:
     Get the record representation for a single instance of OpeningHours.
     """
 
-    time_slots = list(opening_hours.time_slots.all())
+    time_slots = list(opening_hours.time_slots.all())  # type: ignore
 
     return OpeningHoursRecord(
         id=opening_hours.id,
@@ -360,7 +360,7 @@ def deviation_record_for_opening_hours(
         active_deviation = prefetched_active_deviations[0]
     else:
         active_deviation = (
-            opening_hours.deviations.filter(
+            opening_hours.deviations.filter(  # type: ignore
                 active_at__lte=timezone.now(), active_to__gt=timezone.now()
             )
             .prefetch_related("time_slots", "template__site_message__locations")

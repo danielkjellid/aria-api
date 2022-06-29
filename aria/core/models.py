@@ -13,10 +13,6 @@ from aria.core.utils import get_static_asset_upload_path
 T = TypeVar("T", bound=models.Model)
 
 
-class BaseManager(models.Manager):
-    pass
-
-
 class BaseQuerySet(models.QuerySet[T]):
     def order_by_ids(self, ids: list[int]) -> models.QuerySet[T]:
         if not ids:

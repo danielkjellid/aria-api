@@ -83,7 +83,7 @@ def log_entries_create(
     return [
         LogEntryRecord(
             id=entry.id,
-            author_id=entry.author_id,  # type: ignore
+            author_id=entry.author_id,
             change=LogEntryChangeRecord(
                 field=entry.change["field"],
                 old_value=entry.change["old_value"],
