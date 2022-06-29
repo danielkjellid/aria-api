@@ -176,11 +176,9 @@ class OpeningHoursDeviation(models.Model):
             self.template.site_message.show_message_at = self.active_at
             self.template.site_message.show_message_to = self.active_to
             self.template.site_message.save()
-            print(f"front.site_messages.site_id={self.opening_hours.site_id}" in cache)
-            print(self.opening_hours.site_id)
+
             # Uncache all site_messages.
             cache.delete(f"front.site_messages.site_id={self.opening_hours.site_id}")
-            print(f"front.site_messages.site_id={self.opening_hours.site_id}" in cache)
 
         if self.opening_hours and self.opening_hours.site_id:
             # Uncache all opening hours.

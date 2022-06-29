@@ -115,7 +115,8 @@ class TestPublicFrontEndoints:
             show_message_at=timezone.now(),
             show_message_to=timezone.now() + timedelta(minutes=15),
         )
-        _expired_site_message_1 = create_site_message(
+        # Expired message.
+        create_site_message(
             site=site,
             show_message_at=timezone.now() - timedelta(minutes=10),
             show_message_to=timezone.now() - timedelta(minutes=5),
