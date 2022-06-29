@@ -5,6 +5,10 @@ if [ "$1" = 'python' ]; then
     exec poetry run python ${*:2}
 fi
 
+if [ "$1" == "celery" ]; then
+    exec poetry run celery -A aria worker -Q ${*:2} --concurrency=4 --loglevel=DEBUG
+fi
+
 if [ "$1" = 'gunicorn' ]; then
     exec poetry run gunicorn aria.wsgi:application ${*:2}
 fi
