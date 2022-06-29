@@ -59,9 +59,11 @@ api.add_router("/users/", private_users_endpoints, auth=JWTAuthRequired())
 api.add_router("/users/", public_users_endpoints, auth=None)
 
 
-# Custom exception handler for Application errors.
 @api.exception_handler(ApplicationError)
 def application_error(request: HttpRequest, exc: ApplicationError) -> HttpResponse:
+    """
+    Exception handler for application errors.
+    """
     return api.create_response(
         request,
         ExceptionResponse(message=exc.message, extra=exc.extra),
@@ -69,9 +71,11 @@ def application_error(request: HttpRequest, exc: ApplicationError) -> HttpRespon
     )
 
 
-# Custom exception handler for Token errors.
 @api.exception_handler(TokenError)
 def token_error(request: HttpRequest, exc: TokenError) -> HttpResponse:
+    """
+    Exception handler for token errors.
+    """
     return api.create_response(
         request, ExceptionResponse(message=exc.message), status=401
     )
@@ -81,6 +85,9 @@ def token_error(request: HttpRequest, exc: TokenError) -> HttpResponse:
 def permission_denied_error(
     request: HttpRequest, exc: PermissionDenied
 ) -> HttpResponse:
+    """
+    Exception handler for permission denied errors.
+    """
     return api.create_response(request, ExceptionResponse(message=str(exc)), status=403)
 
 
@@ -89,6 +96,10 @@ def permission_denied_error(
 def page_out_of_bounds_error(
     request: HttpRequest, exc: PageOutOfBoundsError
 ) -> HttpResponse:
+    """
+    Exception handler for requesting a page that does not exist
+    in a paginated response.
+    """
     return api.create_response(
         request, ExceptionResponse(message=exc.message), status=404
     )

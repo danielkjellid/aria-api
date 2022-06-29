@@ -2,7 +2,7 @@ import math
 from typing import Any, Optional
 from urllib import parse
 
-from django.db.models import Model, QuerySet
+from django.db.models import Model, QuerySet  # pylint: disable=unused-import
 from django.utils.encoding import force_str
 
 from ninja import Field, Schema
@@ -57,9 +57,9 @@ class PageNumberSetPagination(PaginationBase):
 
     def _current_range(self, current_offset: int, total_items: int) -> str:
         """
-        Get the current range of instaces being displayed. If page size is
+        Get the current range of instances being displayed. If page size is
         2, and we're on the first page, it will return 1-2. Will always return
-        total_items count istead of end of range if end of range is more than
+        total_items count instead of end of range if end of range is more than
         total items.
         """
 
@@ -73,7 +73,7 @@ class PageNumberSetPagination(PaginationBase):
 
     def _total_pages(self, total_items: int) -> int:
         """
-        Get the total amount of pages and round up to nearest whole number.
+        Get the total amount of pages and round up to the nearest whole number.
         """
         return math.ceil(total_items / self.page_size)
 
