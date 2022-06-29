@@ -45,13 +45,15 @@ def log_entries_create(
 
         if field is None or old_value is None or new_value is None:
             raise ValueError(
-                "Error when creating logging instance, one of the required keys are none."
+                "Error when creating logging instance, "
+                "one of the required keys are none."
             )
 
         # Validate that there has actually been a loggable change.
         if new_value == old_value:
             raise ValueError(
-                f"Error when creating logging instance, old ({old_value}) and new ({new_value}) values are equal"
+                f"Error when creating logging instance, old "
+                f"({old_value}) and new ({new_value}) values are equal"
             )
 
         # Check if field actually exist on model, if not, continue to next

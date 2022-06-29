@@ -63,7 +63,7 @@ class TestAuditLogsSelectors:
         # Uses 3 queries: Getting notes (1), prefetching author (1) and
         # prefetching the content object (1) in question.
         with django_assert_max_num_queries(3):
-            user_1_log_entries = log_entry_list_for_instance(User, id=user_1.id)
+            user_1_log_entries = log_entry_list_for_instance(User, obj_id=user_1.id)
 
         assert len(user_1_log_entries) == 3
         assert user_1_log_entries[0].id == log_entry_3.id
@@ -84,7 +84,7 @@ class TestAuditLogsSelectors:
         # Uses 3 queries: Getting notes (1), prefetching author (1) and
         # prefetching the content object (1) in question.
         with django_assert_max_num_queries(3):
-            user_2_log_entries = log_entry_list_for_instance(User, id=user_2.id)
+            user_2_log_entries = log_entry_list_for_instance(User, obj_id=user_2.id)
 
         assert len(user_2_log_entries) == 1
         assert user_2_log_entries[0].id == log_entry_4.id

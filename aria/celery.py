@@ -15,4 +15,7 @@ app.autodiscover_tasks()
 
 @app.task(bind=True)  # type: ignore
 def debug_task(self: Task) -> None:
+    """
+    Task used for debugging purposes.
+    """
     print(f"Request: {self.request!r}")

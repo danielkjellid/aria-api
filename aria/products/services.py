@@ -4,16 +4,16 @@ from django.utils.text import slugify
 from aria.products.models import ProductOption, Variant
 
 
-def variant_create(*, name: str, thumbnail: File | None = None) -> Variant:  # type: ignore
+def variant_create(
+    *,
+    name: str,
+    thumbnail: File | None = None,  # type: ignore
+) -> Variant:
     """
     Creates a Variant with given fields.
     """
 
-    if not name:
-        raise ValueError(
-            "Not all fields necessary present. Got name: %s, status: %s, thumbnail: %s - ",
-            name,
-        )
+    assert name, "Name is required to create a variant."
 
     new_variant = Variant.objects.create(name=name.title())
 
@@ -26,7 +26,7 @@ def variant_create(*, name: str, thumbnail: File | None = None) -> Variant:  # t
     return new_variant
 
 
-def product_option_delete_related_variants(*, instance: "ProductOption") -> None:
+def product_option_delete_related_variants(*, instance: ProductOption) -> None:
     """
     Cleanup dangling variants that does not belong to other
     products.
@@ -34,7 +34,7 @@ def product_option_delete_related_variants(*, instance: "ProductOption") -> None
 
     related_variant: Variant | None = instance.variant
 
-    # Check if there are other products thats linked to the same
+    # Check if there are other products that's linked to the same
     # variant while filtering out standards.
     if (
         related_variant is not None

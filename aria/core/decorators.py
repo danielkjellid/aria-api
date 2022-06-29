@@ -19,7 +19,7 @@ class NotAllowedInProductionException(Exception):
 def not_in_production(func: Any) -> Callable[[F], F]:
     """
     Decorator that raises exception if run in production.
-    Typically used for management commands that changes production data.
+    Typically, used for management commands that changes production data.
     """
 
     def inner(*args: Any, **kwargs: Any) -> Any:
@@ -40,14 +40,15 @@ def cached(
     Caches the result of a method using a key, being a string or function,
     for an amount of seconds.
 
-    E.g:      @cached(key="my-key", timeout=(60 * 60))
-    or:       @cached(key=lambda instance: f"my-key.{instance.id}", timeout=(60 * 60))
+    E.g:  @cached(key="my-key", timeout=(60 * 60))
+    or:   @cached(key=lambda instance: f"my-key.{instance.id}", timeout=(60 * 60))
 
-    NOTE: The lambda/key function must accept exactly the same arguments (*args and **kwargs)
-    as the decorated function with same arguments are passed to the key function.
+    NOTE: The lambda/key function must accept exactly the same arguments
+    (*args and **kwargs) as the decorated function with same arguments are
+    passed to the key function.
 
     This supports safely caching dataclasses, but only if the return value of the
-    decorated function is properly typed. Eg.:
+    decorated function is properly typed. E.g.:
 
         @cached(key=lambda arg: f"my-key.{arg}")
         def my_function(*, arg: str) -> MyDataclass:
@@ -62,7 +63,9 @@ def cached(
     get_cache_key: Callable[..., str]
 
     if isinstance(key, str) and key:
-        get_cache_key = lambda *args, **kwargs: cast(str, key)  # noqa
+        get_cache_key = lambda *args, **kwargs: cast(  # noqa # pylint: disable=unnecessary-lambda-assignment
+            str, key
+        )
     elif callable(key):
         get_cache_key = key
     else:
@@ -91,8 +94,8 @@ def cached(
 
             try:
                 cached_value = cache.get(cache_key)
-            except Exception as exc:
-                logger.error(f"Cache read failed for key {cache_key}", exc_info=exc)
+            except Exception as exc:  # pylint: disable=broad-except
+                logger.error("Cache read failed for key %s", cache_key, exc_info=exc)
                 cached_value = None
 
             if cached_value is not None:
@@ -104,14 +107,14 @@ def cached(
 
                 try:
                     cache.set(cache_key, value_for_cache, timeout=timeout)
-                except Exception as exc:
+                except Exception as exc:  # pylint: disable=broad-except
                     logger.error(
-                        f"Cache write failed for key: {cache_key}", exc_info=exc
+                        "Cache write failed for key: %s", cache_key, exc_info=exc
                     )
 
             return value
 
-        # Add the uncache helper as a attribute of the function
+        # Add the uncache helper as an attribute of the function
         inner.uncache = uncache  # type: ignore
 
         return cast(F, inner)

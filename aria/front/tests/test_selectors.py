@@ -137,7 +137,7 @@ class TestFrontSelectors:
         self, django_assert_max_num_queries
     ) -> None:
         """
-        Test that the site_message_active_list_from_cache correctly returnes from
+        Test that the site_message_active_list_from_cache correctly returns from
         cache, and output is as expected, within query limits.
         """
 
@@ -460,7 +460,7 @@ class TestFrontSelectors:
         site = create_site()
         opening_hours = create_opening_hours(site=site)
 
-        # Make sure we're in a healty state before continuing.
+        # Make sure we're in a healthy state before continuing.
         cache.delete(f"front.opening_hours.site_id={site.id}")
         assert f"front.opening_hours.site_id={site.id}" not in cache
 
@@ -657,11 +657,11 @@ class TestFrontSelectors:
                     message_type=active_deviation.template.site_message.message_type,
                     locations=[
                         location.slug
-                        for location in active_deviation.template.site_message.locations.all()
+                        for location in active_deviation.template.site_message.locations.all()  # pylint: disable=line-too-long
                     ],
                     site_id=active_deviation.template.site_message.site_id,
-                    show_message_at=active_deviation.template.site_message.show_message_at,
-                    show_message_to=active_deviation.template.site_message.show_message_to,
+                    show_message_at=active_deviation.template.site_message.show_message_at,  # pylint: disable=line-too-long
+                    show_message_to=active_deviation.template.site_message.show_message_to,  # pylint: disable=line-too-long
                 )
                 if active_deviation.template.site_message
                 else None,
@@ -682,7 +682,7 @@ class TestFrontSelectors:
         )
 
         # Uses 3 queries:
-        # - 1x for geting opening hours' related deviation
+        # - 1x for getting opening hours' related deviation
         # - 1x for getting deviation time slots
         # - 1x for getting deviation template site message
         with django_assert_max_num_queries(3):

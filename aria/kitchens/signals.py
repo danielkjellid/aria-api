@@ -12,6 +12,12 @@ from aria.kitchens.models import Decor, Kitchen, Plywood
 @receiver(post_delete, sender=Plywood)
 @receiver(post_delete, sender=Decor)
 def delete_kitchen_files(
-    sender: Model, instance: Model, *args: Any, **kwargs: Any
+    sender: Model,  # pylint: disable=unused-argument
+    instance: Model,
+    *args: Any,
+    **kwargs: Any,
 ) -> None:
+    """
+    Signal that deletes related images when a kitchen is deleted.
+    """
     cleanup_files_from_deleted_instance(instance=instance)

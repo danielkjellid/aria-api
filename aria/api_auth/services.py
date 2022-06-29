@@ -100,7 +100,8 @@ def token_pair_obtain_for_unauthenticated_user(email: str, password: str) -> JWT
     if user is None:
         raise ApplicationError(
             _(
-                "Wrong username or password. Note that you have to separate between lowercase and uppercase characters."
+                "Wrong username or password. Note that you have to "
+                "separate between lowercase and uppercase characters."
             ),
             status_code=401,
         )

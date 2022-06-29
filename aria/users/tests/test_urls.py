@@ -54,5 +54,8 @@ class TestPrivateUsersUrls:
         assert url == "/api/users/user/user_id/"
 
     def test_url_user_update_api(self) -> None:
+        """
+        Test reverse match of user_update_api endpoint.
+        """
         url = reverse("api-1.0.0:users-user-{user_id}-update", args=["user_id"])
         assert url == "/api/users/user/user_id/update/"

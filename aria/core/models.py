@@ -15,6 +15,9 @@ T = TypeVar("T", bound=models.Model)
 
 class BaseQuerySet(models.QuerySet[T]):
     def order_by_ids(self, ids: list[int]) -> models.QuerySet[T]:
+        """
+        Order queryset by a fixed list of ids.
+        """
         if not ids:
             return self
 
@@ -55,7 +58,7 @@ class BaseImageModel(models.Model):
 
 class BaseHeaderImageModel(BaseImageModel):
     """
-    Generic model for storing and uploading all version needed for an header image.
+    Generic model for storing and uploading all version needed for a header image.
     To add this to a model, create a subclass with the UPLOAD_FILE_PATH
     attribute specified to the path where the image should be uploaded.
 
@@ -72,7 +75,8 @@ class BaseHeaderImageModel(BaseImageModel):
         _("Apply filter"),
         default=False,
         help_text=_(
-            "Apply filter to image if the image is light to maintain an acceptable contrast"
+            "Apply filter to image if the image is light to "
+            "maintain an acceptable contrast"
         ),
     )
     image_512x512 = ImageSpecField(

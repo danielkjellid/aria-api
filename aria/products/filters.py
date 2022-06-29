@@ -21,8 +21,14 @@ class ProductSearchFilter(FilterSet):
 
     @staticmethod
     def query_products(
-        queryset: BaseQuerySet[Product], name: Any, value: Any
+        queryset: BaseQuerySet[Product],
+        name: Any,  # pylint: disable=unused-argument
+        value: Any,
     ) -> BaseQuerySet[Product]:
+        """
+        Filter a queryset based on filter value.
+        """
+
         qs: BaseQuerySet[Product] = queryset.filter(
             Q(name__icontains=value)
             | Q(search_keywords__icontains=value)

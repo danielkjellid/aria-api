@@ -12,7 +12,7 @@ def permission_required(
     """
     Decorator that can be used alongside the any function to check if a user
     has a particular permission. Raises a PermissionDenied exception if user
-    does not have the approariate permission.
+    does not have the appropriate permission.
     """
 
     if not isinstance(permissions, (list, set)):
@@ -44,12 +44,12 @@ def permission_required(
                         )
 
                 return func(*args, **kwargs)
-            except AttributeError:
+            except AttributeError as exc:
                 raise AttributeError(
                     "Auth attribute on WSGIRequest does not exist. "
                     "Ensure that authentication for the endpoint is enabled "
                     "before using the permission_required decorator"
-                )
+                ) from exc
 
         return inner
 

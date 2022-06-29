@@ -22,11 +22,13 @@ class DynamicSiteDomainMiddleware:
         # one time configuration and initialization
         self.get_response = get_response
 
-    def __call__(self, request: HttpRequest) -> Any:
+    def __call__(  # pylint: disable=inconsistent-return-statements
+        self, request: HttpRequest
+    ) -> Any:
 
         if request.META.get("HTTP_REFERER") is not None:
             # get hostname from origin making the request
-            # if we use djangos built in get_host() it will always return
+            # if we use django's built in get_host() it will always return
             # the server ip/hostname
             # which is not what we want when using rest framework
             host = urlparse(request.META.get("HTTP_REFERER")).hostname
@@ -53,12 +55,14 @@ class DynamicSiteDomainMiddleware:
 class QueryCountWarningMiddleware(MiddlewareMixin):
     """
     Add message in console if number of queries on page load is above threshold.
-    Tresholds are set in settings.
+    Thresholds are set in settings.
     """
 
     @staticmethod
     def process_response(request: HttpRequest, response: HttpResponse) -> HttpResponse:
-
+        """
+        Process response by logging query details.
+        """
         if request.path.startswith(settings.STATIC_URL):
             return response
 
@@ -81,7 +85,7 @@ class QueryCountWarningMiddleware(MiddlewareMixin):
             query_count > settings.QUERY_COUNT_WARNING_THRESHOLD
             or query_duration > settings.QUERY_DURATION_WARNING_THRESHOLD
         ):
-            logger.warning("Query exceeding tresholds!")
+            logger.warning("Query exceeding thresholds!")
             logger.warning(
                 "Query warning", num_queries=query_count, duration=query_duration
             )

@@ -11,9 +11,7 @@ pytestmark = pytest.mark.django_db
 
 
 class TestNotesServices:
-    def test_note_entry_create(
-        self, django_assert_max_num_queries, unprivileged_user
-    ) -> None:
+    def test_note_entry_create(self, django_assert_max_num_queries) -> None:
         """
         Test that the note_entry_create service creates a note entry.
         """
@@ -23,14 +21,14 @@ class TestNotesServices:
 
         # Test that ValueError is raised if note is None
         with pytest.raises(ValueError):
-            note_entry_create(User, id=user.id, author=author, note=None)
+            note_entry_create(User, obj_id=user.id, author=author, note=None)
 
         assert NoteEntry.objects.count() == 0
 
         # Uses 1 query to create note entry.
         with django_assert_max_num_queries(1):
             created_note = note_entry_create(
-                User, id=user.id, author=author, note="Test note"
+                User, obj_id=user.id, author=author, note="Test note"
             )
 
         assert NoteEntry.objects.count() == 1
@@ -46,7 +44,7 @@ class TestNotesServices:
 
         user = create_user()
         author = create_user(email="author@example.com")
-        note = create_note_entry(User, id=user.id, author=author, note="User note")
+        note = create_note_entry(User, obj_id=user.id, author=author, note="User note")
 
         # Save "old" field to assert later.
         old_note_content = note.note
@@ -66,9 +64,9 @@ class TestNotesServices:
                 note_id=note.id, author=author, data=updates, log_change=True
             )
 
-        created_log_entry = log_entry_list_for_instance(NoteEntry, id=updated_note.id)[
-            0
-        ]
+        created_log_entry = log_entry_list_for_instance(
+            NoteEntry, obj_id=updated_note.id
+        )[0]
 
         assert updated_note.note == "Updated user note"
 
@@ -87,17 +85,17 @@ class TestNotesServices:
 
         user = create_user()
         author = create_user(email="author@example.com")
-        note = create_note_entry(User, id=user.id, author=author, note="User note")
+        note = create_note_entry(User, obj_id=user.id, author=author, note="User note")
 
         # Test that we raise exception if id does not exist.
         with pytest.raises(NoteEntry.DoesNotExist):
-            note_entry_delete(id=999)
+            note_entry_delete(note_id=999)
 
         assert NoteEntry.objects.count() == 1
 
         # Uses 2 queries: 1 for getting note, and 1 for deleting it.
         with django_assert_max_num_queries(2):
-            note_entry_delete(id=note.id)
+            note_entry_delete(note_id=note.id)
 
         # Assert that note is actually deleted.
         assert NoteEntry.objects.count() == 0

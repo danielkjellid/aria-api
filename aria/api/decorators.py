@@ -30,7 +30,7 @@ def api(
     """
     Defines an API view. This is basically just a wrapper around Django
     Ninjas @router.method decorator, to throw a custom exception for all
-    API views. The exceprion in question is raised in differenct services
+    API views. The exception in question is raised in different services
     and selectors, and provides user feedback when something goes wrong.
 
     * router:
@@ -46,7 +46,7 @@ def api(
         parameter at the time.
 
     * response:
-        Response format as a pydantic model. Usually just GenerictResponse.
+        Response format as a pydantic model. Usually just GenericResponse.
 
     * summary:
         Short summary about the viewset. For example "Creates a user". Will
@@ -64,7 +64,7 @@ def api(
     def decorator(func: Any) -> Any:
         if method not in SUPPORTED_HTTP_METHODS:
             raise ValueError(
-                "Method not supported. Supported methods: %s", SUPPORTED_HTTP_METHODS
+                ("Method not supported. Supported methods: %s", SUPPORTED_HTTP_METHODS)
             )
 
         # Get appropriate decorator based on router and method. This
@@ -94,8 +94,8 @@ def api(
         def inner(*args: Any, **kwargs: Any) -> Any:
             try:
                 return func(*args, **kwargs)
-            except ApplicationError:
-                raise
+            except ApplicationError as exc:
+                raise exc
 
         return inner
 
@@ -126,7 +126,7 @@ def paginate(**paginator_params: Any) -> Callable[[Callable[..., Any]], Any]:
     Paginate a response.
 
     @api(...)
-    @paginage(page_size=n)
+    @paginate(page_size=n)
     def my_view(request):
     """
 
@@ -165,7 +165,7 @@ def _inject_pagination(
         result = paginator.paginate_queryset(
             items, pagination=pagination_params, **kwargs
         )
-        if paginator.Output:
+        if paginator.Output:  # pylint: disable=using-constant-test
             result["data"] = list(result["data"])
         return result
 
@@ -177,7 +177,7 @@ def _inject_pagination(
         ),
     ]
 
-    if paginator.Output:
+    if paginator.Output:  # pylint: disable=using-constant-test
         view_with_pagination._ninja_contribute_to_operation = partial(  # type: ignore
             make_response_paginated, paginator
         )
@@ -192,14 +192,14 @@ def make_response_paginated(paginator: PageNumberSetPagination, op: Operation) -
         response=List[Some]
     will be changed to:
         response=PagedSome
-    where Paged some willbe a subclass of paginator.Output:
+    where Paged some will be a subclass of paginator.Output:
         class PagedSome:
             items: List[Some]
             count: int
     """
     status_code, item_schema = _find_collection_response(op)
 
-    # Swithcing schema to Output shcema
+    # Switching schema to Output schema
     try:
         new_name = f"Paged{item_schema.__name__}"
     except AttributeError:
@@ -216,7 +216,7 @@ def make_response_paginated(paginator: PageNumberSetPagination, op: Operation) -
 
     response = op._create_response_model(new_schema)
 
-    # chaging response model to newly created one
+    # changing response model to newly created one
     op.response_models[status_code] = response
 
 

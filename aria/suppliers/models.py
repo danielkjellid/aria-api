@@ -15,6 +15,7 @@ _SupplierManager = models.Manager.from_queryset(SupplierQuerySet)
 class Supplier(BaseModel, BaseImageModel):
     @property
     def supplier_image_directory(self) -> str:
+        """Path of which to upload static assets"""
         return f"media/suppliers/logo/{slugify(self.name)}"
 
     UPLOAD_PATH = supplier_image_directory  # type: ignore

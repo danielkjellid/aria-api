@@ -71,7 +71,8 @@ def cleanup_files_from_deleted_instance(instance: Model) -> None:
         except FieldDoesNotExist:
             pass
 
-        # Check if field meta exists, and that field is type Image, ProcessedImage or File
+        # Check if field meta exists, and that field is type Image,
+        # ProcessedImage or File
         if (
             field
             and instance_field
@@ -110,10 +111,10 @@ def get_static_asset_upload_path(
     # Each image model is required to specify where images should be uploaded
     try:
         path = instance.UPLOAD_PATH.lower()
-    except AttributeError:
+    except AttributeError as exc:
         raise RuntimeError(
             f"UPLOAD_PATH is not set on model: {instance.__class__.__name__}"
-        )
+        ) from exc
 
     name, extension = os.path.splitext(filename)
 

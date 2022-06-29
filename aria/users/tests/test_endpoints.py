@@ -89,7 +89,7 @@ class TestPublicUsersEndpoints:
                 content_type="application/json",
             )
 
-        # Assert that appropraite response is returned.
+        # Assert that appropriate response is returned.
         assert failed_response.status_code == 404
 
     def test_anonymous_request_user_verify_account_confirm_api(
@@ -154,7 +154,7 @@ class TestPublicUsersEndpoints:
                 content_type="application/json",
             )
 
-        # Assert that appropraite response is returned.
+        # Assert that appropriate response is returned.
         assert failed_response.status_code == 404
 
     def test_anonymous_request_user_password_reset_confirm_api(
@@ -226,7 +226,7 @@ class TestProtectedUsersEndpoints:
         listing all users in the application.
         """
 
-        # Uses 3 quieries: 1 for getting the user, 2 for checking permissions.
+        # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
         with django_assert_max_num_queries(3):
             response = n_authenticated_unprivileged_client.get(f"{self.BASE_ENDPOINT}/")
 
@@ -304,7 +304,7 @@ class TestProtectedUsersEndpoints:
         django_assert_max_num_queries,
     ) -> None:
         """
-        Test that authenticated privileged users gets a valid response on retriving a
+        Test that authenticated privileged users gets a valid response on retrieving a
         single user instance.
         """
 
@@ -341,8 +341,9 @@ class TestProtectedUsersEndpoints:
             "notes": [],
         }
 
-        # Uses 6 queries: 1 for getting request user, 2 for getting and checking permissions,
-        # 1 for getting notes associated with user, and 1 for getting audit logs.
+        # Uses 6 queries: 1 for getting request user, 2 for getting
+        # and checking permissions, 1 for getting notes associated with
+        # user, and 1 for getting audit logs.
         with django_assert_max_num_queries(6):
             response = n_authenticated_privileged_client.get(
                 f"{self.BASE_ENDPOINT}/user/{user.id}/"
@@ -358,7 +359,7 @@ class TestProtectedUsersEndpoints:
     ###################
 
     # The user update endpoint requires authorization and the permission
-    # has_user_edot for the user or user group.
+    # has_user_edit for the user or user group.
 
     def test_anonymous_client_user_update_api(
         self, anonymous_client, django_assert_max_num_queries
@@ -381,7 +382,7 @@ class TestProtectedUsersEndpoints:
             "disabled_emails": not user.disabled_emails,
             "subscribed_to_newsletter": not user.subscribed_to_newsletter,
             "allow_personalization": not user.allow_personalization,
-            "allow_third_party_personalization": not user.allow_third_party_personalization,
+            "allow_third_party_personalization": not user.allow_third_party_personalization,  # pylint: disable=line-too-long
         }
 
         with django_assert_max_num_queries(0):
@@ -412,7 +413,7 @@ class TestProtectedUsersEndpoints:
             "disabled_emails": not user.disabled_emails,
             "subscribed_to_newsletter": not user.subscribed_to_newsletter,
             "allow_personalization": not user.allow_personalization,
-            "allow_third_party_personalization": not user.allow_third_party_personalization,
+            "allow_third_party_personalization": not user.allow_third_party_personalization,  # pylint: disable=line-too-long
         }
 
         # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
@@ -448,7 +449,7 @@ class TestProtectedUsersEndpoints:
             "disabled_emails": not user.disabled_emails,
             "subscribed_to_newsletter": not user.subscribed_to_newsletter,
             "allow_personalization": not user.allow_personalization,
-            "allow_third_party_personalization": not user.allow_third_party_personalization,
+            "allow_third_party_personalization": not user.allow_third_party_personalization,  # pylint: disable=line-too-long
         }
 
         # Uses 11 queries: 1 for getting user, 2 for checking permissions,

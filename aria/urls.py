@@ -13,4 +13,4 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static("/media/", document_root=settings.MEDIA_ROOT)  # type: ignore
-    urlpatterns += static("/static/", document_root=settings.STATIC_ROOT)  # type: ignore
+    urlpatterns += static("/static/", document_root=settings.STATIC_ROOT)  # type: ignore # pylint: disable=line-too-long

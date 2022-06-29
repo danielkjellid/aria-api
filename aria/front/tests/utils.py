@@ -21,6 +21,9 @@ def create_site_message_location(
     description: str = "Test location for test purposes",
     slug: str | None = None,
 ) -> SiteMessageLocation:
+    """
+    Test utility to create a SiteMessageLocation instance.
+    """
 
     if not slug:
         slug = "test-location"
@@ -34,13 +37,16 @@ def create_site_message_location(
 
 def create_site_message(
     *,
-    text: str = "Tets site message",
+    text: str = "Test site message",
     message_type: SiteMessageType = SiteMessageType.INFO,
     locations: list[SiteMessageLocation] | None = None,
     site: Site | None = None,
     show_message_at: datetime,
     show_message_to: datetime,
 ) -> SiteMessage:
+    """
+    Test utility to create a SiteMessage instance.
+    """
 
     if not site:
         site = create_site()
@@ -70,6 +76,9 @@ def create_opening_hours_time_slot(
     closing_at=time | None,
     is_closed: bool = False,
 ) -> OpeningHoursTimeSlot:
+    """
+    Test utility to create a OpeningHoursTimeSlot instance.
+    """
     time_slot, _created = OpeningHoursTimeSlot.objects.get_or_create(
         opening_hours_id=opening_hours_id,
         opening_hours_deviation_id=opening_hours_deviation_id,
@@ -85,6 +94,9 @@ def create_opening_hours_time_slot(
 def create_opening_hours(
     *, site: Site | None = None, time_slots: list[OpeningHoursTimeSlot] | None = None
 ) -> OpeningHours:
+    """
+    Test utility to create an OpeningHours instance.
+    """
     if site is None:
         site = create_site()
 
@@ -158,6 +170,9 @@ def create_opening_hours_deviation(
     description: str = "Opening hours deviation",
     disable_appointment_bookings: bool = False,
 ) -> OpeningHoursDeviation:
+    """
+    Test utility to create a OpeningHoursDeviation instance.
+    """
 
     oh_deviation = OpeningHoursDeviation.objects.create(
         opening_hours_id=opening_hours_id,
@@ -185,6 +200,9 @@ def create_opening_hours_deviation_template(
     description: str = "Testing template",
     site_message: SiteMessage | None = None,
 ) -> OpeningHoursDeviationTemplate:
+    """
+    Test utility to create a OpeningHoursDeviationTemplate instance.
+    """
 
     if not site_message:
         site_message = create_site_message(

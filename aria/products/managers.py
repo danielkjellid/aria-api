@@ -52,6 +52,9 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         return self.prefetch_related(prefetched_categories)
 
     def with_available_options(self) -> BaseQuerySet["models.Product"]:
+        """
+        Prefetch related product options, variants and sizes.
+        """
 
         from aria.products.models import ProductOption
 
@@ -68,6 +71,9 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         return self.prefetch_related(prefetched_options)
 
     def annotate_site_state_data(self) -> BaseQuerySet["models.Product"]:
+        """
+        Annotate site state data for product to avoid unneeded joins.
+        """
 
         from aria.products.models import ProductSiteState
 
@@ -105,7 +111,11 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
     def by_category(
         self, category: "category_models.Category", ordered: bool = True
     ) -> BaseQuerySet["models.Product"]:
-        # Prepare queryset and get active decendants
+        """
+        Get all products related to a specific category.
+        """
+
+        # Prepare queryset and get active descendants
         categories = category.get_descendants(include_self=True).active()
 
         products = self.filter(

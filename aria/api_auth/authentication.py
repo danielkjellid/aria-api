@@ -25,10 +25,10 @@ class JWTAuthRequired(HttpBearer):
             # Sanity check that user_id in decoded token actually exist.
             try:
                 user = User.objects.get(id=decoded_access_token.user_id)
-            except User.DoesNotExist:
+            except User.DoesNotExist as exc:
                 raise ApplicationError(
                     "No user with provided id exist", status_code=404
-                )
+                ) from exc
 
             # Also check that the user is active before returning a valid
             # response.
@@ -39,6 +39,6 @@ class JWTAuthRequired(HttpBearer):
 
             # If all checks passes, return endpoint.
             return user  # 200 OK
-        # Any exception we want it to return False i.e 401
-        except Exception:
+        # Any exception we want it to return False i.e. 401
+        except Exception:  # pylint: disable=broad-except
             return False

@@ -50,7 +50,7 @@ class TestAPIAuthServices:
 
         decoded_token = _token_decode(encoded_refresh_token)
 
-        # Make sure serivce has changed defaults.
+        # Make sure service has changed defaults.
         assert decoded_token.token_type == "refresh"
         assert decoded_token.exp is not None
         assert decoded_token.jti is not None
@@ -92,7 +92,7 @@ class TestAPIAuthServices:
 
         decoded_token = _token_decode(encoded_access_token)
 
-        # Make sure serivce has changed defaults.
+        # Make sure service has changed defaults.
         assert decoded_token.token_type == "access"
         assert decoded_token.exp is not None
         assert decoded_token.jti is not None
@@ -137,6 +137,12 @@ class TestAPIAuthServices:
     def test_token_pair_obtain_for_unauthenticated_user(
         self, django_assert_max_num_queries, mocker, unprivileged_user
     ) -> None:
+        """
+        Test that token_pair_obtain_for_unauthenticated_user authenticates
+        the email and password, and then proceeds to the needed produce a
+        valid access and refresh token as well that it does not exceed max
+        allowed queries.
+        """
         user = unprivileged_user
         user.set_password("supersecretpassword")
         user.save()
@@ -221,13 +227,12 @@ class TestAPIAuthServices:
         self,
         django_assert_max_num_queries,
         mocker,
-        settings,
         refresh_token_payload,
         encode_token,
     ) -> None:
         """
         Test how token_pair_obtain_new_from_refresh_token responds
-        to getting a valid token, but with a jti that does not bellong
+        to getting a valid token, but with a jti that does not belong
         to the user.
         """
 
@@ -254,7 +259,7 @@ class TestAPIAuthServices:
             "aria.api_auth.services.token_pair_obtain_for_user"
         )
 
-        # Check that service throws exception if the user does not exist.
+        # Check that service throws' exception if the user does not exist.
         with pytest.raises(TokenError):
             with django_assert_max_num_queries(0):
                 token_pair_obtain_new_from_refresh_token(valid_token_invalid_user)
@@ -407,7 +412,7 @@ class TestAPIAuthServices:
         assert refresh_token_is_valid_mock.call_args_list[0].args[0] == valid_token
         # Check that we created an instance blacklisting the token,
         # and that the token we blacklisted is the one passed in to
-        # the serivce.
+        # the service.
         assert BlacklistedToken.objects.all().count() == 1
         assert (
             BlacklistedToken.objects.filter(

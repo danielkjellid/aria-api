@@ -18,7 +18,9 @@ def create_user(
     is_superuser: bool = False,
     **defaults: Any,
 ) -> User:
-
+    """
+    Test utility for creating a user instance.
+    """
     if site is None:
         site = create_site()
 

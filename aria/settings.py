@@ -222,7 +222,7 @@ AUTHENTICATION_BACKENDS = [
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",  # pylint: disable=line-too-long
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
@@ -416,7 +416,7 @@ if SENTRY_DSN is not None:
 #####################
 
 try:
-    import django_extensions  # noqa: 401
+    import django_extensions  # noqa: 401 # pylint: disable=unused-import
 except ImportError:
     DJANGO_EXTENSIONS_INSTALLED = False
 else:

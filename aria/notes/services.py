@@ -13,7 +13,7 @@ from aria.users.models import User
 
 
 def note_entry_create(
-    model: Model, *, id: int, note: str, author: User
+    model: Model, *, obj_id: int, note: str, author: User
 ) -> NoteEntryRecord:
     """
     Create a new note instance.
@@ -27,7 +27,7 @@ def note_entry_create(
     created_note = NoteEntry.objects.create(
         author=author,
         content_type=content_type,
-        object_id=id,
+        object_id=obj_id,
         note=note,
     )
 
@@ -71,10 +71,10 @@ def note_entry_update(
     )
 
 
-def note_entry_delete(*, id: int) -> None:
+def note_entry_delete(*, note_id: int) -> None:
     """
     Delete an existing note instance.
     """
 
-    note = NoteEntry.objects.get(id=id)
+    note = NoteEntry.objects.get(id=note_id)
     note.delete()

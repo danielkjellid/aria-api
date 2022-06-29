@@ -44,7 +44,11 @@ class LogEntry(models.Model):
         )
 
     # property to parse and return the changed JSON
-    @cached_property  # cached property is useful as it stops parsing the changes on every access
+    @cached_property  # cache to stop parsing the changes on every access
     def changes_dict(self) -> ChangeMessage:
+        """
+        Get change message as a dict.
+        """
+
         message: ChangeMessage = json.loads(self.change)
         return message

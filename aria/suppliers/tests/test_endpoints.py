@@ -24,8 +24,9 @@ class TestPublicSuppliersEndpoints:
         suppliers = baker.make(Supplier, _quantity=4)
 
         for supplier in suppliers:
-            supplier.image = tempfile.NamedTemporaryFile(suffix=".jpg").name
-            supplier.save()
+            with tempfile.NamedTemporaryFile(suffix=".jpg") as file:
+                supplier.image = file.name
+                supplier.save()
 
         suppliers[0].is_active = False
         suppliers[0].save()

@@ -130,7 +130,7 @@ _OpeningHoursDeviationManager = models.Manager.from_queryset(
 
 class OpeningHoursDeviation(models.Model):
     """
-    Deviation that affects normal opening hours, for example holidy.
+    Deviation that affects normal opening hours, for example holiday.
     """
 
     opening_hours = models.ForeignKey(
@@ -192,7 +192,7 @@ _OpeningHoursDeviationTemplateManager = models.Manager.from_queryset(
 
 class OpeningHoursDeviationTemplate(models.Model):
     """
-    A predefined template for deviations. For example easter, christmas,
+    A predefined template for deviations. For example easter, Christmas,
     etc.
     """
 
@@ -244,7 +244,10 @@ class SiteMessage(BaseModel):
     locations = models.ManyToManyField(
         "front.SiteMessageLocation",
         blank=True,
-        help_text="Locations to show this particular site message. Leave empty to display message at a global level.",
+        help_text=(
+            "Locations to show this particular site message. "
+            "Leave empty to display message at a global level."
+        ),
     )
     site = models.ForeignKey(
         Site, on_delete=models.CASCADE, related_name="site_messages"
@@ -253,19 +256,28 @@ class SiteMessage(BaseModel):
         "Show from",
         null=True,
         blank=True,
-        help_text="When the message should be visible from. Leave empty to display the message immediately.",
+        help_text=(
+            "When the message should be visible from. "
+            "Leave empty to display the message immediately."
+        ),
     )
     show_message_to = models.DateTimeField(
         "Show to",
         null=True,
         blank=True,
-        help_text="When the message should disappear. Leave emtpy to display the message indefinitely",
+        help_text=(
+            "When the message should disappear. "
+            "Leave emtpy to display the message indefinitely"
+        ),
     )
 
     objects = _SiteMessageManager()
 
     def __str__(self) -> str:
-        return f"{self.get_message_type_display()} {self.show_message_at} - {self.show_message_to}"
+        return (
+            f"{self.get_message_type_display()} {self.show_message_at} "
+            f"- {self.show_message_to}"
+        )
 
     def save(
         self,

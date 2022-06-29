@@ -29,7 +29,7 @@ class Command(BaseCommand):
             "--supplier_id",
             type=int,
             default=None,
-            help="Which supplier does the products bellong to?",
+            help="Which supplier does the products belong to?",
             required=True,
         )
         parser.add_argument(
@@ -53,7 +53,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
-        # Get given parameteres
+        # Get given parameters
         supplier_id = options["supplier_id"]
         source = options["source"]
         add_absorption = options["add_absorption"]
@@ -68,7 +68,7 @@ class Command(BaseCommand):
 
         try:
             # Wrap entire process in transaction block, that way, if there
-            # are errors, it cancelles the entire operation.
+            # are errors, it cancels the entire operation.
             with transaction.atomic():
 
                 if not confirm:
@@ -88,7 +88,8 @@ class Command(BaseCommand):
                     assert data["sizes"], "Key sizes is missing, but is required"
 
                     self.stdout.write(
-                        f"Currently processing {iteration + 1} of {len(products_data)} products"
+                        f"Currently processing {iteration + 1} "
+                        f"of {len(products_data)} products"
                     )
 
                     variants = data.get("variants", None)
@@ -150,7 +151,8 @@ class Command(BaseCommand):
         except ProductImportException:
             pass
 
-    def _split_and_convert_sizes(self, sizes_list: list[str]) -> list[dict[str, Any]]:
+    @staticmethod
+    def _split_and_convert_sizes(sizes_list: list[str]) -> list[dict[str, Any]]:
         """
         Convert list to dict with height/width keys
         """
@@ -188,9 +190,8 @@ class Command(BaseCommand):
 
         return sizes
 
-    def _get_remote_asset(
-        self, url: Optional[str], filename: Optional[str]
-    ) -> File[Any]:
+    @staticmethod
+    def _get_remote_asset(url: Optional[str], filename: Optional[str]) -> "File[Any]":
         """
         Get a remote asset through an url, create a temporary file, and upload
         asset locally.
@@ -200,26 +201,27 @@ class Command(BaseCommand):
             raise ValueError("Both url and filename must be defined.")
 
         session = requests.Session()
-        session.headers[
-            "User-Agent"
-        ] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.131 Safari/537.36"
+        session.headers["User-Agent"] = (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/34.0.1847.131 Safari/537.36"
+        )
         response = session.get(url, stream=True)
 
-        if response.status_code != requests.codes.ok:
+        if response.status_code != 200:
             raise RuntimeError(
                 f"Remote asset returned statuscode {response.status_code}"
             )
 
-        lf = NamedTemporaryFile()
+        with NamedTemporaryFile() as file:
+            for block in response.iter_content(1024 * 8):
 
-        for block in response.iter_content(1024 * 8):
+                if not block:
+                    break
 
-            if not block:
-                break
+                file.write(block)
 
-            lf.write(block)
-
-        return File(lf, f"{filename}.pdf")
+        return File(file, f"{filename}.pdf")
 
     def _create_imported_product(
         self, supplier: "Supplier", add_absorption: "bool", **kwargs: Any
@@ -273,9 +275,8 @@ class Command(BaseCommand):
 
         return created_product, sizes_dict_list
 
-    def _create_product_category_rels(
-        self, categories: str, product: "Product"
-    ) -> None:
+    @staticmethod
+    def _create_product_category_rels(categories: str, product: "Product") -> None:
         splitted_category_slugs = [
             category.strip() for category in categories.split(",")
         ]
@@ -288,7 +289,7 @@ class Command(BaseCommand):
         self, files: list[dict[str, str]], product: "Product", confirm: "bool"
     ) -> None:
         """
-        Create file instance belloning to product.
+        Create file instance belonging to product.
         """
 
         for file in files:
@@ -330,7 +331,7 @@ class Command(BaseCommand):
             # If image url is not specified, we assume to use an already
             # existing variant.
             if name is not None and image_url is None:
-                gotten_variant = None
+                gotten_variant: Variant
                 try:
                     gotten_variant = Variant.objects.get(name=name.title())
                     self.stdout.write(f"Existing variant {gotten_variant.name} added.")
@@ -354,7 +355,7 @@ class Command(BaseCommand):
                 # creation.
                 if confirm:
                     file = self._get_remote_asset(image_url, name)
-                    created_variant.thumbnail.save(f"{slugify(name)}", file)  # type: ignore
+                    created_variant.thumbnail.save(f"{slugify(name)}", file)  # type: ignore # pylint: disable=line-too-long
 
                 variants_to_link.append(created_variant)
                 self.stdout.write(f"Variant {name.title()} added.")  # type: ignore
@@ -401,7 +402,7 @@ class Command(BaseCommand):
                         status=ProductStatus.AVAILABLE,
                     )
 
-        if len(sizes) > 0 and len(variants) <= 0:
+        if len(sizes) > 0 >= len(variants):
             for size, _ in sizes:
                 ProductOption.objects.create(  # type: ignore
                     product=product,
@@ -411,7 +412,7 @@ class Command(BaseCommand):
                     status=ProductStatus.AVAILABLE,
                 )
 
-        if len(variants) > 0 and len(sizes) <= 0:
+        if len(variants) > 0 >= len(sizes):
             for variant in variants:
                 ProductOption.objects.create(  # type: ignore
                     product=product,

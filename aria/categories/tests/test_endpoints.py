@@ -197,6 +197,10 @@ class TestPublicCategoriesEndpoints:
     def test_anonymous_request_category_products_list_api(
         self, anonymous_client, django_assert_max_num_queries
     ) -> None:
+        """
+        Test listing products to a related category from an anonymous
+        client returns a valid response.
+        """
         cat_1 = create_category(name="Main cat 1")
         subcat_1 = create_category(name="Sub cat 1", parent=cat_1)
         products = create_product(quantity=20)
