@@ -246,7 +246,7 @@ class SiteMessage(BaseModel):
         blank=True,
         help_text=(
             "Locations to show this particular site message. "
-            "Leave empty to display message at a global level.",
+            "Leave empty to display message at a global level."
         ),
     )
     site = models.ForeignKey(
