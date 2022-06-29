@@ -7,13 +7,13 @@ from aria.products.models import ProductOption, Variant
 def variant_create(
     *,
     name: str,
-    thumbnail: File | None = None,
-) -> Variant:  # type: ignore
+    thumbnail: File | None = None,  # type: ignore
+) -> Variant:
     """
     Creates a Variant with given fields.
     """
 
-    assert name is not None, "Name is required to create a variant."
+    assert name, "Name is required to create a variant."
 
     new_variant = Variant.objects.create(name=name.title())
 

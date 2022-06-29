@@ -2,12 +2,12 @@ import os
 from tempfile import SpooledTemporaryFile
 from typing import Any
 
-from django.core.files import File
+from django.core.files import File  # pylint: disable=unused-import
 
 from django_s3_storage.storage import S3Storage as _S3Storage
 
 
-class S3Storage(_S3Storage):
+class S3Storage(_S3Storage):  # pylint: disable=abstract-method
     """
     This is our custom version of S3Boto3Storage that fixes a bug in
     boto3 where the passed in file is closed upon upload.
@@ -40,4 +40,4 @@ class S3Storage(_S3Storage):
 
             # Upload the object which will auto close the
             # content_autoclose instance
-            return super(S3Storage, self)._save(name, content_autoclose)
+            return super()._save(name, content_autoclose)

@@ -175,6 +175,10 @@ init-hook = "import sys; sys.path.append('./box_estimation');"
 disable = [
     "C0114", # C0114 Missing module docstring
     "C0115", # C0115 Missing class docstring
+    "C0415", # C0415 Import outside toplevel
+    "R0401", # R0401 Cyclic import
+    "R0801", # R0801 Similar lines in files
+    "W0212", # W0212 Access to a protected member %s of a client class
     "W0511", # W0511 Used when a warning note as FIXME or XXX is detected
 ]
 
@@ -189,6 +193,7 @@ good-names = [
     "i",
     "j",
     "qs",
+    "id",
     "pk",
     "User",
 ]

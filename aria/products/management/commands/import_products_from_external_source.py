@@ -355,7 +355,7 @@ class Command(BaseCommand):
                 # creation.
                 if confirm:
                     file = self._get_remote_asset(image_url, name)
-                    created_variant.thumbnail.save(f"{slugify(name)}", file)
+                    created_variant.thumbnail.save(f"{slugify(name)}", file)  # type: ignore # pylint: disable=line-too-long
 
                 variants_to_link.append(created_variant)
                 self.stdout.write(f"Variant {name.title()} added.")  # type: ignore

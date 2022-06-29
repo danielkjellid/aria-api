@@ -6,10 +6,8 @@ from aria.core.models import BaseQuerySet
 from aria.products.enums import ProductStatus
 
 if TYPE_CHECKING:
-    from aria.categories import (  # pylint: disable=import-outside-toplevel
-        models as category_models,
-    )
-    from aria.products import models  # pylint: disable=import-outside-toplevel
+    from aria.categories import models as category_models
+    from aria.products import models
 
 
 class SizeQuerySet(BaseQuerySet["models.Size"]):
@@ -38,9 +36,7 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         by this manager method.
         """
 
-        from aria.categories.models import (  # pylint: disable=import-outside-toplevel
-            Category,
-        )
+        from aria.categories.models import Category
 
         active_categories = Category.objects.active()
 
@@ -60,9 +56,7 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         Prefetch related product options, variants and sizes.
         """
 
-        from aria.products.models import (  # pylint: disable=import-outside-toplevel
-            ProductOption,
-        )
+        from aria.products.models import ProductOption
 
         available_product_options = ProductOption.objects.available()
 
@@ -81,9 +75,7 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         Annotate site state data for product to avoid unneeded joins.
         """
 
-        from aria.products.models import (  # pylint: disable=import-outside-toplevel
-            ProductSiteState,
-        )
+        from aria.products.models import ProductSiteState
 
         option = ProductSiteState.on_site.filter(product__in=self).values(
             "display_price",

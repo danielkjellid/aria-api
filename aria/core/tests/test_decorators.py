@@ -13,7 +13,10 @@ from aria.core.decorators import (
 
 class TestCoreDecorators:
     def test_not_in_production_decorator(self, settings) -> None:
-
+        """
+        Test that the @not_in_production decorator throws an
+        exception if decorated function is used in production.
+        """
         settings.PRODUCTION = False
         settings.ENVIRONMENT = "dev"
 
@@ -48,6 +51,10 @@ class TestCoreDecorators:
             func_a()
 
     def test_cached_decorator(self) -> None:
+        """
+        Test that the @cached decorator caches content.
+        """
+
         @dataclass(frozen=True, eq=True)
         class MyDataClass:
             id: int

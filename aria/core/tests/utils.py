@@ -8,7 +8,9 @@ def create_site(
     name: str = "Test site",
     domain: str = "example.com",
 ) -> Site:
-
+    """
+    Update or create site instance.
+    """
     site, _ = Site.objects.update_or_create(
         id=site_id, defaults={"name": name, "domain": domain}
     )

@@ -59,13 +59,15 @@ def _is_optional_dataclass(type_annotation: Type[Any]) -> bool:
 
 
 def _dataclass_decoder(type_annotation: Type[Any]) -> Callable[[Any], Any]:
-    def decode_dataclass(value: Any):  # type: ignore
-        return dacite.from_dict(type_annotation, value) if value else None  # type: ignore
+    def decode_dataclass(value: Any) -> Any:
+        return (dacite.from_dict(type_annotation, value)) if value else None  # type: ignore # pylint: disable=line-too-long
 
     return decode_dataclass
 
 
-def _dataclass_encoder(type_annotation: Type[Any]) -> Callable[[Any], Any]:
+def _dataclass_encoder(
+    type_annotation: Type[Any],  # pylint: disable=unused-argument
+) -> Callable[[Any], Any]:
     def encode_dataclass(value: Any) -> dict[Any, Any] | None:
         return dataclasses.asdict(value) if value else None
 
@@ -82,7 +84,9 @@ def _dataclass_list_decoder(type_annotation: Type[Any]) -> Callable[[Any], Any]:
     return decode_dataclass_list
 
 
-def _dataclass_list_encoder(type_annotation: Type[Any]) -> Callable[[Any], Any]:
+def _dataclass_list_encoder(
+    type_annotation: Type[Any],  # pylint: disable=unused-argument
+) -> Callable[[Any], Any]:
     def encode_dataclass_list(value: list[Any]) -> list[dict[str, Any] | None]:
         return (
             [dataclasses.asdict(item) if item else None for item in value]

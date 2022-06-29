@@ -26,10 +26,10 @@ class AuthBackend(ModelBackend):
             # the login request originates from
             if user.site != Site.objects.get(pk=settings.SITE_ID):
                 return None
-            else:
-                if user and password and user.check_password(password):
-                    return user
-                return None
+
+            if user and password and user.check_password(password):
+                return user
+            return None
         except User.DoesNotExist:
             return None
 
