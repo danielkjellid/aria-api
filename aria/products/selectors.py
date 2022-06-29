@@ -34,7 +34,7 @@ def product_options_list_for_product(product: Product) -> list[ProductOptionReco
         options = prefetched_product_options
     else:
         # If prefetched value does not exist, fall back to a queryset.
-        options = product.options.filter(status=ProductStatus.AVAILABLE).select_related(
+        options = product.options.filter(status=ProductStatus.AVAILABLE).select_related(  # type: ignore
             "variant", "size"
         )
 

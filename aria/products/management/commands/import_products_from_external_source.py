@@ -188,7 +188,9 @@ class Command(BaseCommand):
 
         return sizes
 
-    def _get_remote_asset(self, url: Optional[str], filename: Optional[str]) -> File:
+    def _get_remote_asset(
+        self, url: Optional[str], filename: Optional[str]
+    ) -> File[Any]:
         """
         Get a remote asset through an url, create a temporary file, and upload
         asset locally.
@@ -221,7 +223,7 @@ class Command(BaseCommand):
 
     def _create_imported_product(
         self, supplier: "Supplier", add_absorption: "bool", **kwargs: Any
-    ) -> Tuple["Product", list]:
+    ) -> Tuple["Product", list[dict[str, Any]]]:
         """
         Create the product itself, and manipulate size list (need to check if special
         character is present in sizes list).
@@ -310,7 +312,7 @@ class Command(BaseCommand):
 
     def _create_and_get_product_variants_to_link(
         self, variants: list[dict[str, str]], confirm: "bool"
-    ) -> "list":
+    ) -> list[Variant]:
         """
         Create appropriate variants and append them to a list to link
         it and sizes later.

@@ -12,6 +12,6 @@ class LogEntryChangeRecord(BaseModel):
 
 class LogEntryRecord(BaseModel):
     id: int
-    author_id: int
+    author_id: int | None
     change: LogEntryChangeRecord
     created_at: datetime

@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from aria.users import models
 
 
-class UserQuerySet(BaseQuerySet):
+class UserQuerySet(BaseQuerySet["models.User"]):
     """
     Custom user model manager where email is used as the unique identifier
     for authentication instead of usernames.

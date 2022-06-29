@@ -4,7 +4,7 @@ from django.utils.text import slugify
 from aria.products.models import ProductOption, Variant
 
 
-def variant_create(*, name: str, thumbnail: File | None = None) -> Variant:
+def variant_create(*, name: str, thumbnail: File | None = None) -> Variant:  # type: ignore
     """
     Creates a Variant with given fields.
     """

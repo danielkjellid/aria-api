@@ -38,7 +38,7 @@ def _separate_words(string: str, separator: str = "_") -> str:
 
 
 def _process_keys(
-    str_or_iter: str | list[Any] | dict[str, Any], fn: Callable
+    str_or_iter: str | list[Any] | dict[str, Any], fn: Callable[[Any], Any]
 ) -> str | list[Any] | dict[str, Any]:
     if isinstance(str_or_iter, list):
         return [_process_keys(k, fn) for k in str_or_iter]

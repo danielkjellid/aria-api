@@ -29,7 +29,7 @@ def log_entry_list_for_instance(model: Model, *, id: int) -> list[LogEntryRecord
     return [
         LogEntryRecord(
             id=log.id,
-            author_id=log.author_id,
+            author_id=log.author_id if log.author_id else None,
             change=LogEntryChangeRecord(
                 field=log.change["field"],
                 old_value=log.change["old_value"],

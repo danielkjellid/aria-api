@@ -12,7 +12,7 @@ class ArraySelectMultiple(CheckboxSelectMultiple):
         return False
 
 
-class ChoiceArrayField(ArrayField):
+class ChoiceArrayField(ArrayField):  # type: ignore
     """
     Implementation from here: https://gist.github.com/danni/f55c4ce19598b2b345ef
     A field that allows us to store an array of choices.

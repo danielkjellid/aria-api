@@ -10,19 +10,19 @@ if TYPE_CHECKING:
     from aria.products import models
 
 
-class SizeQuerySet(BaseQuerySet):
+class SizeQuerySet(BaseQuerySet["models.Size"]):
     pass
 
 
-class VariantQuerySet(BaseQuerySet):
+class VariantQuerySet(BaseQuerySet["models.Variant"]):
     pass
 
 
-class ColorQuerySet(BaseQuerySet):
+class ColorQuerySet(BaseQuerySet["models.Color"]):
     pass
 
 
-class ShapeQuerySet(BaseQuerySet):
+class ShapeQuerySet(BaseQuerySet["models.Shape"]):
     pass
 
 
@@ -120,15 +120,15 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         return products
 
 
-class ProductImageQuerySet(BaseQuerySet):
+class ProductImageQuerySet(BaseQuerySet["models.ProductImage"]):
     pass
 
 
-class ProductFileQuerySet(BaseQuerySet):
+class ProductFileQuerySet(BaseQuerySet["models.ProductFile"]):
     pass
 
 
-class ProductSiteStateQuerySet(BaseQuerySet):
+class ProductSiteStateQuerySet(BaseQuerySet["models.ProductSiteState"]):
     pass
 
 
