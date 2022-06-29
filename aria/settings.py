@@ -364,6 +364,8 @@ CELERY_TASK_DEFAULT_EXCHANGE = "celery"
 CELERY_TASK_DEFAULT_EXCHANGE_TYPE = "direct"
 CELERY_TASK_DEFAULT_ROUTING_KEY = "celery"
 
+# Adding new task queues? Make sure to aslo include them in render.yaml celery
+# definitions for all environtments.
 CELERY_TASK_QUEUE_IMPORTANT = "important"
 CELERY_TASK_QUEUE_NEWSLETTER = "newsletter"
 
