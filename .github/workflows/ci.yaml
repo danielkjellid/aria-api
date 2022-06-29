@@ -12,14 +12,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "Python lint: black"
+          - name: "black"
             check: black aria --check --config=pyproject.toml
-          - name: "Python lint: mypy"
+          - name: "mypy"
             check: mypy aria
-          - name: "Python lint: flake8"
+          - name: "flake8"
             check: flake8 aria
-          - name: "Python lint: isort"
+          - name: "isort"
             check: isort -c aria --check-only --diff
+          - name: "pylint"
+            check: pylint aria  --output-format=parseable --reports=no
     name: ${{ matrix.name }}
     steps:
       - uses: actions/checkout@v3
