@@ -5,7 +5,7 @@ if [ "$1" = 'python' ]; then
     exec poetry run python ${*:2}
 fi
 
-if [ "$2" == "celery" ]; then
+if [ "$1" == "celery" ]; then
     exec poetry run celery -A aria worker -Q ${*:2} --concurrency=4 --loglevel=DEBUG
 fi
 

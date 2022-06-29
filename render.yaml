@@ -22,7 +22,7 @@ services:
     plan: starter
     name: aria-celery-prod
     env: docker
-    dockerCommand: "./docker-entrypoint.sh celery,important,newsletter,misc-tasks"
+    dockerCommand: "./docker-entrypoint.sh celery celery,important,newsletter,misc-tasks"
     envCars:
       - key: CELERY_BROKER_URL
         fromService:
