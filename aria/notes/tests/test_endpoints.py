@@ -26,7 +26,7 @@ class TestPrivateNotesEndpoints:
 
         user = create_user()
         author = create_user(email="author@example.com")
-        note = create_note_entry(User, id=user.id, author=author, note="Test note")
+        note = create_note_entry(User, obj_id=user.id, author=author, note="Test note")
 
         with django_assert_max_num_queries(0):
             response = anonymous_client.delete(
@@ -45,7 +45,7 @@ class TestPrivateNotesEndpoints:
 
         user = create_user()
         author = create_user(email="author@example.com")
-        note = create_note_entry(User, id=user.id, author=author, note="Test note")
+        note = create_note_entry(User, obj_id=user.id, author=author, note="Test note")
 
         # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
         with django_assert_max_num_queries(3):
@@ -65,7 +65,7 @@ class TestPrivateNotesEndpoints:
 
         user = create_user()
         author = create_user(email="author@example.com")
-        note = create_note_entry(User, id=user.id, author=author, note="Test note")
+        note = create_note_entry(User, obj_id=user.id, author=author, note="Test note")
 
         assert NoteEntry.objects.count() == 1
 
