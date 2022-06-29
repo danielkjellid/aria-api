@@ -71,7 +71,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         default=False,
         help_text=(
             "Decides if a user receives email from us. "
-            "Typically used if we do not want a user to receive marketing (competetors)."
+            "Typically used if we do not want a user to "
+            "receive marketing (competitors)."
         ),
     )
     subscribed_to_newsletter = models.BooleanField(
@@ -99,12 +100,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         default=True,
         help_text=(
             "Designates whether this user should be treated as active. "
-            "Unselect this instead of deleting accounts if you want to preserve the data."
+            "Unselect this instead of deleting accounts if you want to "
+            "preserve the data."
         ),
     )
     is_staff = models.BooleanField(
         default=False,
-        help_text=("Designates whether the user can log into this admin site."),
+        help_text="Designates whether the user can log into this admin site.",
     )
     is_superuser = models.BooleanField(
         default=False,
@@ -186,7 +188,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             return phonenumbers.format_number(
                 parsed_number, phonenumbers.PhoneNumberFormat.NATIONAL
             )
-        except Exception:
+        except phonenumbers.NumberParseException:
             # If we're unable to parse, return raw number.
             return self.phone_number
 
@@ -274,12 +276,16 @@ class User(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
     def send_password_reset_email(self, *, request: HttpRequest) -> None:
+        """
+        Send user an email to reset password.
+        """
+
         from django.contrib.auth.forms import PasswordResetForm
 
         form = PasswordResetForm({"email": self.email})
 
         if not self.has_confirmed_email and not self.is_active:
-            return None
+            return
 
         email_options = {
             "use_https": request.is_secure(),
@@ -360,4 +366,4 @@ class User(AbstractBaseUser, PermissionsMixin):
         if not self.avatar_color:
             self.avatar_color = random.choice(AvatarColors.choices)[0]
 
-        super(User, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)

@@ -79,6 +79,11 @@ def user_update_api(
         key: val for key, val in payload.dict().items() if val is not None
     }
 
-    user_update(user=user, data=cleaned_payload, author=request.auth, log_change=True)  # type: ignore
+    user_update(
+        user=user,
+        data=cleaned_payload,
+        author=request.auth,  # type: ignore
+        log_change=True,
+    )
 
     return 200

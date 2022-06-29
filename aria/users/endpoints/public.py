@@ -52,8 +52,8 @@ def user_account_verification_api(
 
     try:
         user = User.objects.get(email__iexact=payload.email, is_active=True)
-    except User.DoesNotExist:
-        raise ApplicationError(_("User does not exist."), status_code=404)
+    except User.DoesNotExist as exc:
+        raise ApplicationError(_("User does not exist."), status_code=404) from exc
 
     user.send_verification_email()
 
@@ -71,7 +71,8 @@ def user_account_verification_confirm_api(
     request: HttpRequest, payload: UserAccountVerificationConfirmInput
 ) -> int:
     """
-    Takes uid and token present in verification email, validates them, and updates email to confirmed.
+    Takes uid and token present in verification email, validates them,
+    and updates email to confirmed.
     """
 
     user_verify_account(uid=payload.uid, token=payload.token)
@@ -94,8 +95,10 @@ def user_password_reset_api(
 
     try:
         user = User.objects.get(email__iexact=payload.email, is_active=True)
-    except User.DoesNotExist:
-        raise ApplicationError(message=_("User does not exist."), status_code=404)
+    except User.DoesNotExist as exc:
+        raise ApplicationError(
+            message=_("User does not exist."), status_code=404
+        ) from exc
 
     user.send_password_reset_email(request=request)
 

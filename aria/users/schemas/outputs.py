@@ -53,10 +53,16 @@ class UserDetailOutput(Schema):
 
     @staticmethod
     def resolve_notes(user: User) -> list[UserNotesRecord]:
+        """
+        Retrieve a list of notes belonging to the user
+        """
         notes: list[UserNotesRecord] = user.get_notes()
         return notes
 
     @staticmethod
     def resolve_logs(user: User) -> list[UserAuditLogsRecord]:
-        audist_logs: list[UserAuditLogsRecord] = user.get_audit_logs()
-        return audist_logs
+        """
+        Retrieve a list of audit logs belonging to the user
+        """
+        audit_logs: list[UserAuditLogsRecord] = user.get_audit_logs()
+        return audit_logs
