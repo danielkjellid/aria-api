@@ -106,7 +106,7 @@ class TestUsersServices:
                 user=user, data=updates, author=author, log_change=True
             )
 
-        created_log_entry = log_entry_list_for_instance(User, obj_id=updated_user.id)[0]
+        created_log_entry = log_entry_list_for_instance(User, pk=updated_user.id)[0]
 
         # Assert change
         assert updated_user.email == "updatedemail@example.com"

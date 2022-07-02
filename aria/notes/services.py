@@ -13,7 +13,7 @@ from aria.users.models import User
 
 
 def note_entry_create(
-    model: Model, *, obj_id: int, note: str, author: User
+    model: Model, *, pk: int, note: str, author: User
 ) -> NoteEntryRecord:
     """
     Create a new note instance.
@@ -27,7 +27,7 @@ def note_entry_create(
     created_note = NoteEntry.objects.create(
         author=author,
         content_type=content_type,
-        object_id=obj_id,
+        object_id=pk,
         note=note,
     )
 
@@ -46,7 +46,7 @@ def note_entry_update(
     Updates an existing note instance.
     """
 
-    # Non side effect fields are field that does not have
+    # Non-side effect fields are field that does not have
     # any dependencies. E.g. fields that are not used in
     # the generation of for example other fields.
     non_side_effect_fields = ["author", "note"]

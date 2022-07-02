@@ -37,7 +37,7 @@ class TestNotesSelectors:
         # Uses 3 queries: Getting notes (1), prefetching author (1) and
         # prefetching the content object (1) in question.
         with django_assert_max_num_queries(3):
-            user_notes = note_entry_list_for_instance(User, obj_id=user.id)
+            user_notes = note_entry_list_for_instance(User, pk=user.id)
 
         assert len(user_notes) == 3
         assert user_notes[0].id == note_3.id
@@ -50,7 +50,7 @@ class TestNotesSelectors:
         # Uses 3 queries: Getting notes (1), prefetching author (1) and
         # prefetching the content object (1) in question.
         with django_assert_max_num_queries(3):
-            product_notes = note_entry_list_for_instance(Product, obj_id=product.id)
+            product_notes = note_entry_list_for_instance(Product, pk=product.id)
 
         assert len(product_notes) == 1
         assert product_notes[0].id == note_4.id
