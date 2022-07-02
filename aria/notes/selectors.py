@@ -5,7 +5,7 @@ from aria.notes.models import NoteEntry
 from aria.notes.schemas.records import NoteEntryRecord
 
 
-def note_entry_list_for_instance(model: Model, *, obj_id: int) -> list[NoteEntryRecord]:
+def note_entry_list_for_instance(model: Model, *, pk: int) -> list[NoteEntryRecord]:
     """
     Generic get service meant to be reused in local get services
     For example:
@@ -18,7 +18,7 @@ def note_entry_list_for_instance(model: Model, *, obj_id: int) -> list[NoteEntry
 
     content_type = ContentType.objects.get_for_model(model)
     notes = (
-        NoteEntry.objects.filter(content_type=content_type, object_id=obj_id)
+        NoteEntry.objects.filter(content_type=content_type, object_id=pk)
         .prefetch_related("author", "content_object")
         .order_by("-created_at")
     )

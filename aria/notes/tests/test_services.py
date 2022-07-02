@@ -21,14 +21,14 @@ class TestNotesServices:
 
         # Test that ValueError is raised if note is None
         with pytest.raises(ValueError):
-            note_entry_create(User, obj_id=user.id, author=author, note=None)
+            note_entry_create(User, pk=user.id, author=author, note=None)
 
         assert NoteEntry.objects.count() == 0
 
         # Uses 1 query to create note entry.
         with django_assert_max_num_queries(1):
             created_note = note_entry_create(
-                User, obj_id=user.id, author=author, note="Test note"
+                User, pk=user.id, author=author, note="Test note"
             )
 
         assert NoteEntry.objects.count() == 1
@@ -64,9 +64,9 @@ class TestNotesServices:
                 note_id=note.id, author=author, data=updates, log_change=True
             )
 
-        created_log_entry = log_entry_list_for_instance(
-            NoteEntry, obj_id=updated_note.id
-        )[0]
+        created_log_entry = log_entry_list_for_instance(NoteEntry, pk=updated_note.id)[
+            0
+        ]
 
         assert updated_note.note == "Updated user note"
 
