@@ -96,7 +96,12 @@ def category_parents_active_list_for_category(
     category: Category,
 ) -> list[CategoryRecord]:
     """
-    Get a list of active parents for a single category instance.
+    Get a list of active parents for a single category instance. The
+    .get_cached_trees() manager utility will only return nodes based
+    on the highest node level from the queryset it is passed. E.g. if
+    a primary category is a part of the returned queryset, only associated
+    primary categories will be passed, and child nodes, even though they
+    technically are parents of passed category, will be dropped.
     """
 
     parents = category.get_ancestors().active().get_cached_trees()

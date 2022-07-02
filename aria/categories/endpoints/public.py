@@ -89,7 +89,7 @@ def category_children_list_api(
     request: HttpRequest, category_slug: str
 ) -> list[CategoryChildrenListOutput]:
     """
-    Retrives a list of all choldren categories connected to a
+    Retrives a list of all children categories connected to a
     specific parent.
     """
     parent_category = get_object_or_404(Category, slug=category_slug)
