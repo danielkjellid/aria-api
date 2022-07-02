@@ -6,6 +6,7 @@ from aria.categories.selectors import (
     category_detail_record,
     category_navigation_active_list,
     category_parent_active_list,
+    category_parents_active_list_for_category,
     category_related_product_list_by_category,
     category_tree_active_list_for_product,
 )
@@ -74,7 +75,38 @@ class TestCategoriesSelectors:
         selector returns expected response within query limit
         for a specific category.
         """
-        # TODO: write test
+
+        main_cat_1 = create_category(name="Category 1")
+        main_cat_1_sub_cat_1 = create_category("Category 1.1", parent=main_cat_1)
+        main_cat_1_sub_cat_2 = create_category("Category 1.2", parent=main_cat_1)
+
+        main_cat_1_sub_cat_2_child_cat_1 = create_category(
+            "Category 1.2.1", parent=main_cat_1_sub_cat_2
+        )
+
+        # Uses 1 query to get categories and parents.
+        with django_assert_max_num_queries(1):
+            parents_main_cat_1_sub_cat_1 = category_parents_active_list_for_category(
+                category=main_cat_1_sub_cat_1
+            )
+
+        assert len(parents_main_cat_1_sub_cat_1) == 1
+        assert parents_main_cat_1_sub_cat_1[0].id == main_cat_1.id
+
+        # Uses 1 query to get categories and parents.
+        with django_assert_max_num_queries(1):
+            parents_main_cat_1_sub_cat_2_child_cat_1 = (
+                category_parents_active_list_for_category(
+                    category=main_cat_1_sub_cat_2_child_cat_1
+                )
+            )
+
+        # parents_main_cat_1_sub_cat_2_child_cat_1 should both get immediate parent for
+        # main_cat_2_sub_cat_1, which is main_cat_1_sub_cat_2, and parent's parent,
+        # which is main_cat_1.
+        assert len(parents_main_cat_1_sub_cat_2_child_cat_1) == 2
+        assert parents_main_cat_1_sub_cat_2_child_cat_1[0].id == main_cat_1_sub_cat_2.id
+        assert parents_main_cat_1_sub_cat_2_child_cat_1[1].id == main_cat_1.id
 
     def test_category_children_active_list_for_category(
         self, django_assert_max_num_queries
