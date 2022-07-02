@@ -49,8 +49,8 @@ class Supplier(BaseModel, BaseImageModel):
     on_site = CurrentSiteManager()
 
     class Meta:
-        verbose_name = _("supplier")
-        verbose_name_plural = _("suppliers")
+        verbose_name = "supplier"
+        verbose_name_plural = "suppliers"
 
     def __str__(self) -> str:
         return self.name

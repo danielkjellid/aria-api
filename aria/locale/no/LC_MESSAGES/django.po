@@ -1,0 +1,299 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-07-02 13:22+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: aria/api_auth/services.py:103
+msgid ""
+"Wrong username or password. Note that you have to separate between lowercase "
+"and uppercase characters."
+msgstr ""
+"Feil brukernavn eller passord. Merk at du må skille mellom store og små "
+"bokstaver."
+
+#: aria/api_auth/services.py:121 aria/api_auth/services.py:143
+msgid "Refresh token provided is invalid."
+msgstr ""
+
+#: aria/api_auth/services.py:124 aria/api_auth/services.py:146
+msgid "Token payload is invalid."
+msgstr ""
+
+#: aria/api_auth/services.py:129
+msgid "Issued user in refresh token does not exist."
+msgstr ""
+
+#: aria/api_auth/services.py:154
+msgid "Refresh token provided does not exist."
+msgstr ""
+
+#: aria/core/models.py:36
+msgid "created time"
+msgstr ""
+
+#: aria/core/models.py:37
+msgid "modified time"
+msgstr ""
+
+#: aria/core/models.py:52
+msgid "Image"
+msgstr "Bilde"
+
+#: aria/core/models.py:75
+msgid "Apply filter"
+msgstr "Legg til filter"
+
+#: aria/core/models.py:78
+msgid ""
+"Apply filter to image if the image is light to maintain an acceptable "
+"contrast"
+msgstr ""
+
+#: aria/core/models.py:167
+msgid "File"
+msgstr ""
+
+#: aria/kitchens/endpoints/public.py:49
+msgid "Kitchen with provided slug does not exist"
+msgstr ""
+
+#: aria/kitchens/models.py:28
+msgid "Kitchen name"
+msgstr ""
+
+#: aria/kitchens/models.py:33
+msgid "Status"
+msgstr ""
+
+#: aria/kitchens/models.py:38
+msgid "Slug"
+msgstr ""
+
+#: aria/kitchens/models.py:41
+msgid ""
+"A slug is a short label for something, containing only letters, numbers, "
+"underscores or hyphens. They’re generally used in URLs."
+msgstr ""
+
+#: aria/kitchens/models.py:46
+msgid "Thumbnail description"
+msgstr ""
+
+#: aria/kitchens/models.py:50
+msgid "Description"
+msgstr ""
+
+#: aria/kitchens/models.py:52
+msgid "Extra description"
+msgstr ""
+
+#: aria/kitchens/models.py:53
+msgid "Will be displayed bellow pricing example"
+msgstr ""
+
+#: aria/kitchens/models.py:61
+msgid "Can be painted"
+msgstr ""
+
+#: aria/kitchens/models.py:64
+msgid "Designates whether the product can be painted in suppliers 2000 colors"
+msgstr ""
+
+#: aria/kitchens/models.py:89
+msgid "Kitchen"
+msgstr ""
+
+#: aria/kitchens/models.py:90
+msgid "Kitchens"
+msgstr ""
+
+#: aria/kitchens/models.py:101
+msgid "Kitchen silk name"
+msgstr ""
+
+#: aria/kitchens/models.py:102 aria/kitchens/models.py:178
+#: aria/kitchens/models.py:194 aria/kitchens/models.py:210
+msgid "Color code"
+msgstr ""
+
+#: aria/kitchens/models.py:105
+msgid "Silk color"
+msgstr ""
+
+#: aria/kitchens/models.py:106
+msgid "Silk colors"
+msgstr ""
+
+#: aria/kitchens/models.py:132
+msgid "Kitchen decor name"
+msgstr ""
+
+#: aria/kitchens/models.py:135
+msgid "Decor"
+msgstr ""
+
+#: aria/kitchens/models.py:136
+msgid "Decors"
+msgstr ""
+
+#: aria/kitchens/models.py:162
+msgid "Kitchen playwood name"
+msgstr ""
+
+#: aria/kitchens/models.py:165
+msgid "Plywood"
+msgstr ""
+
+#: aria/kitchens/models.py:166
+msgid "Plywoods"
+msgstr ""
+
+#: aria/kitchens/models.py:177
+msgid "Kitchen laminate name"
+msgstr ""
+
+#: aria/kitchens/models.py:181
+msgid "Laminate color"
+msgstr ""
+
+#: aria/kitchens/models.py:182
+msgid "Laminates colors"
+msgstr ""
+
+#: aria/kitchens/models.py:193
+msgid "Kitchen exclusive name"
+msgstr ""
+
+#: aria/kitchens/models.py:197
+msgid "Exclusive color"
+msgstr ""
+
+#: aria/kitchens/models.py:198
+msgid "Exclusive colors"
+msgstr ""
+
+#: aria/kitchens/models.py:209
+msgid "Kitchen trend name"
+msgstr ""
+
+#: aria/kitchens/models.py:213
+msgid "Trend color"
+msgstr ""
+
+#: aria/kitchens/models.py:214
+msgid "Trend colors"
+msgstr ""
+
+#: aria/products/endpoints/public.py:32
+msgid "Product with provided slug does not exist"
+msgstr ""
+
+#: aria/products/models.py:456
+msgid "Gross price"
+msgstr ""
+
+#: aria/products/models.py:458
+msgid "Display price to customer"
+msgstr ""
+
+#: aria/products/models.py:460
+msgid "Designates whether the product price is displayed"
+msgstr ""
+
+#: aria/products/models.py:463
+msgid "Can be purchased online"
+msgstr ""
+
+#: aria/products/models.py:465
+msgid "Designates whether the product can be purchased and shipped"
+msgstr ""
+
+#: aria/products/models.py:468
+msgid "Can be picked up"
+msgstr ""
+
+#: aria/products/models.py:471
+msgid "Designates whether the product can be purchased and picked up in store"
+msgstr ""
+
+#: aria/products/models.py:475
+msgid "Supplier purchase price"
+msgstr ""
+
+#: aria/products/models.py:477
+msgid "Shipping cost"
+msgstr ""
+
+#: aria/products/models.py:483
+msgid "Product site state"
+msgstr ""
+
+#: aria/products/models.py:484
+msgid "Product site states"
+msgstr ""
+
+#: aria/suppliers/models.py:23
+msgid "Supplier name"
+msgstr ""
+
+#: aria/suppliers/models.py:25
+msgid "Contact first name"
+msgstr ""
+
+#: aria/suppliers/models.py:28
+msgid "Contact last name"
+msgstr ""
+
+#: aria/suppliers/models.py:31
+msgid "Contact email address"
+msgstr ""
+
+#: aria/suppliers/models.py:37
+msgid "Supplier discount in percent. E.g. 0.2 = 20%"
+msgstr ""
+
+#: aria/suppliers/models.py:41
+msgid "Active"
+msgstr ""
+
+#: aria/suppliers/models.py:43
+msgid "Designates whether the category should be treated as active."
+msgstr ""
+
+#: aria/users/endpoints/public.py:56 aria/users/endpoints/public.py:100
+msgid "User does not exist."
+msgstr ""
+
+#: aria/users/models.py:345
+msgid "Email is already verified, unable to send verification email."
+msgstr "Kontoen er allerede verifisert, kunne ikke sende verifiserings e-post."
+
+#: aria/users/services.py:41
+msgid "User with email already exists."
+msgstr "Det finnes allerede en konto med den e-posten."
+
+#: aria/users/services.py:162 aria/users/services.py:190
+msgid "Unable to find user with provided uid."
+msgstr "Fant ikke brukeren med gitt uid."
+
+#: aria/users/services.py:166
+msgid "Account is already verified."
+msgstr "Kontoen er allerede verifisert."
+
+#: aria/users/services.py:171 aria/users/services.py:196
+msgid "Token is invalid, please try again."
+msgstr "Nøkkelen er ugyldig, vennligst prøv igjen."
