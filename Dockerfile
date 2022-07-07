@@ -32,6 +32,7 @@ RUN mkdir ./.ssh && chmod 700 ./.ssh
 
 # Copy application files
 COPY --chown=aria aria/ /app/aria/
+COPY --chown=aria bin/ /app/bin/
 
 # Collect static files
 RUN poetry run python manage.py collectstatic --noinput
