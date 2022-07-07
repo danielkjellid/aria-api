@@ -2,7 +2,6 @@ from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.text import slugify
-from django.utils.translation import gettext_lazy as _
 
 from django_countries.fields import CountryField
 
@@ -20,27 +19,27 @@ class Supplier(BaseModel, BaseImageModel):
 
     UPLOAD_PATH = supplier_image_directory  # type: ignore
 
-    name = models.CharField(_("Supplier name"), max_length=255, unique=True)
+    name = models.CharField("Supplier name", max_length=255, unique=True)
     contact_first_name = models.CharField(
-        _("Contact first name"), max_length=255, unique=False
+        "Contact first name", max_length=255, unique=False
     )
     contact_last_name = models.CharField(
-        _("Contact last name"), max_length=255, unique=False
+        "Contact last name", max_length=255, unique=False
     )
     contact_email = models.EmailField(
-        _("Contact email address"),
+        "Contact email address",
         unique=False,
     )
     supplier_discount = models.FloatField(
         null=True,
         blank=True,
-        help_text=_("Supplier discount in percent. E.g. 0.2 = 20%"),
+        help_text="Supplier discount in percent. E.g. 0.2 = 20%",
     )
     origin_country = CountryField()  # type: ignore
     is_active = models.BooleanField(
-        _("Active"),
+        "Active",
         default=True,
-        help_text=_("Designates whether the category should be treated as active."),
+        help_text="Designates whether the category should be treated as active.",
     )
     sites = models.ManyToManyField(Site, related_name="suppliers", blank=True)
     website_link = models.CharField(max_length=255)

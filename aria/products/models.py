@@ -4,7 +4,6 @@ from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.text import slugify
-from django.utils.translation import gettext_lazy as _
 
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
@@ -453,35 +452,33 @@ class ProductSiteState(BaseModel):
     product = models.ForeignKey(
         "products.Product", on_delete=models.CASCADE, related_name="site_states"
     )
-    gross_price = models.FloatField(_("Gross price"))
+    gross_price = models.FloatField("Gross price")
     display_price = models.BooleanField(
-        _("Display price to customer"),
+        "Display price to customer",
         default=True,
-        help_text=_("Designates whether the product price is displayed"),
+        help_text="Designates whether the product price is displayed",
     )
     can_be_purchased_online = models.BooleanField(
-        _("Can be purchased online"),
+        "Can be purchased online",
         default=False,
-        help_text=_("Designates whether the product can be purchased and shipped"),
+        help_text="Designates whether the product can be purchased and shipped",
     )
     can_be_picked_up = models.BooleanField(
-        _("Can be picked up"),
+        "Can be picked up",
         default=False,
-        help_text=_(
+        help_text=(
             "Designates whether the product can be purchased and picked up in store"
         ),
     )
-    supplier_purchase_price = models.FloatField(
-        _("Supplier purchase price"), default=0.0
-    )
-    supplier_shipping_cost = models.FloatField(_("Shipping cost"), default=0.0)
+    supplier_purchase_price = models.FloatField("Supplier purchase price", default=0.0)
+    supplier_shipping_cost = models.FloatField("Shipping cost", default=0.0)
 
     objects = _ProductSiteStateManager()  # type: ignore
     on_site = CurrentSiteManager()
 
     class Meta:
-        verbose_name = _("Product site state")
-        verbose_name_plural = _("Product site states")
+        verbose_name = "Product site state"
+        verbose_name_plural = "Product site states"
 
 
 _ProductOptionManager = models.Manager.from_queryset(ProductOptionQuerySet)

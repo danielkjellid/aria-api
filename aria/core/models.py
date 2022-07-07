@@ -2,7 +2,6 @@ from typing import TypeVar
 
 from django.db import models
 from django.db.models.expressions import Case, When
-from django.utils.translation import gettext_lazy as _
 
 from imagekit.models import ImageSpecField
 from imagekit.models.fields import ProcessedImageField
@@ -33,8 +32,8 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
-    created_at = models.DateTimeField(_("created time"), auto_now_add=True)
-    updated_at = models.DateTimeField(_("modified time"), auto_now=True)
+    created_at = models.DateTimeField("created time", auto_now_add=True)
+    updated_at = models.DateTimeField("modified time", auto_now=True)
 
 
 class BaseImageModel(models.Model):
@@ -49,7 +48,7 @@ class BaseImageModel(models.Model):
     UPLOAD_PATH: str
 
     image = models.ImageField(
-        _("Image"),
+        "Image",
         upload_to=get_static_asset_upload_path,
         blank=True,
         null=False,
@@ -72,9 +71,9 @@ class BaseHeaderImageModel(BaseImageModel):
     UPLOAD_PATH: str
 
     apply_filter = models.BooleanField(
-        _("Apply filter"),
+        "Apply filter",
         default=False,
-        help_text=_(
+        help_text=(
             "Apply filter to image if the image is light to "
             "maintain an acceptable contrast"
         ),
@@ -164,4 +163,4 @@ class BaseFileModel(BaseModel):
 
     UPLOAD_PATH: str
 
-    file = models.FileField(_("File"), upload_to=get_static_asset_upload_path)
+    file = models.FileField("File", upload_to=get_static_asset_upload_path)

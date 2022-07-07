@@ -108,12 +108,34 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           paths: aria
 
+  python-translations:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "make messages"
+            check: "python manage.py makemessages --locale=no"
+          - name: "missing translations"
+            check: "msgattrib --untranslated aria/locale/no/LC_MESSAGES/django.po"
+          - name: "compile translations"
+            check: "python manage.py compilemessages --locale=no"
+    name: ${{ matrix.name }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('.python-version', 'poetry.lock') }}
+      - run: poetry run ${{ matrix.check }}
+
   ci-done:
-    # Gather job which delpoy workflow can wait on.
+    # Gather job which deploy workflow can wait on.
     name: CI done
     needs:
     - python-lint
     - python-tests
+    - python-translations
     runs-on: ubuntu-20.04
     steps:
       - run: echo "CI done!"
