@@ -119,5 +119,6 @@ services:
     dockerCommand: "./docker-entrypoint.sh db_dump"
     envVars:
       - key: DATABASE_URL
-        fromDatabase: aria-db-prod
-        property: connectionString
+        fromDatabase:
+          name: aria-db-prod
+          property: connectionString
