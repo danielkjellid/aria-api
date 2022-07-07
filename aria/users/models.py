@@ -18,7 +18,6 @@ from django.utils.http import (
     urlsafe_base64_decode as uid_decoder,
     urlsafe_base64_encode as uid_encoder,
 )
-from django.utils.translation import gettext_lazy as _
 
 import phonenumbers
 
@@ -342,7 +341,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         if self.has_confirmed_email:
             raise ValidationError(
-                _("Email is already verified, unable to send verification email.")
+                "Email is already verified, unable to send verification email."
             )
 
         user_verification_email = render_to_string(

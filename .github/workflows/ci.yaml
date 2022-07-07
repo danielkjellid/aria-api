@@ -76,32 +76,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           paths: aria
 
-  python-translations:
-    runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: "make translations"
-            check: |
-              python manage.py makemessages --locale=no
-              git config --local user.email "test@github.com"
-              git config --local user.name "GitHub Action test"
-              git add ./aria/locale/no/LC_MESSAGES/django.po
-              git commit -m "Add updated translations file"
-              git push
-          - name: "missing translations"
-            check: "msgattrib --untranslated aria/locale/no/LC_MESSAGES/django.po"
-          - name: "compile translations"
-            check: "python manage.py compilemessages --locale=no"
-    name: ${{ matrix.name }}
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-      - name: Setup project
-        uses: ./.github/actions/setup
-      - run: poetry run ${{ matrix.check }}
-
   ci-done:
     # Gather job which deploy workflow can wait on.
     name: CI done

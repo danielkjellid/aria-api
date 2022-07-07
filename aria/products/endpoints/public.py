@@ -1,5 +1,4 @@
 from django.http import HttpRequest
-from django.utils.translation import gettext as _
 
 from ninja import Router
 
@@ -29,7 +28,7 @@ def product_detail_api(
 
     if product is None:
         raise ApplicationError(
-            _("Product with provided slug does not exist"), status_code=404
+            "Product with provided slug does not exist", status_code=404
         )
 
     return 200, ProductDetailOutput(**product.dict())

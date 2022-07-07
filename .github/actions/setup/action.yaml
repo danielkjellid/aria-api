@@ -18,10 +18,6 @@ runs:
         restore-keys: |
           pip-${{ runner.os }}-
 
-    - name: "Install gettext"
-      shell: bash
-      run: sudo apt-get update && sudo apt-get install -y gettext
-
     - name: "Install poetry"
       shell: bash
       run: pip install poetry==1.1.10  poetry-core==1.0.6

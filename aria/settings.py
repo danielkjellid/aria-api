@@ -69,8 +69,7 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 # Language code for this installation.
-LANGUAGE_CODE = "nb-NO"
-LOCALE_PATHS = ((APP_DIR / "locale"),)
+LANGUAGE_CODE = "en"
 
 # Local time zone for this installation.
 TIME_ZONE = "Europe/Oslo"

@@ -99,10 +99,8 @@ def token_pair_obtain_for_unauthenticated_user(email: str, password: str) -> JWT
 
     if user is None:
         raise ApplicationError(
-            _(
-                "Wrong username or password. Note that you have to "
-                "separate between lowercase and uppercase characters."
-            ),
+            "Wrong username or password. Note that you have to "
+            "separate between lowercase and uppercase characters.",
             status_code=401,
         )
 
@@ -118,17 +116,15 @@ def token_pair_obtain_new_from_refresh_token(token: str) -> JWTPair:
     token_is_valid, token_payload = refresh_token_is_valid(token)
 
     if not token_is_valid:
-        raise TokenError(_("Refresh token provided is invalid."))
+        raise TokenError("Refresh token provided is invalid.")
 
     if token_payload is None:
-        test = _("Test")
-        test2 = _("Test 2")
-        raise TokenError(_("Token payload is invalid."))
+        raise TokenError("Token payload is invalid.")
 
     try:
         user = User.objects.get(id=token_payload.user_id)
     except User.DoesNotExist as exc:
-        raise TokenError(_("Issued user in refresh token does not exist.")) from exc
+        raise TokenError("Issued user in refresh token does not exist.") from exc
 
     return token_pair_obtain_for_user(user)
 
@@ -142,10 +138,10 @@ def refresh_token_blacklist(token: str) -> None:
     token_is_valid, token_payload = refresh_token_is_valid(token)
 
     if not token_is_valid:
-        raise TokenError(_("Refresh token provided is invalid."))
+        raise TokenError("Refresh token provided is invalid.")
 
     if token_payload is None:
-        raise TokenError(_("Token payload is invalid."))
+        raise TokenError("Token payload is invalid.")
 
     try:
         token_instance = OutstandingToken.objects.get(
