@@ -128,10 +128,12 @@ services:
           property: connectionString
       - key: AWS_ACCESS_KEY_ID
         fromService:
+          type: web
           name: aria-api-prod
           envVarKey: AWS_ACCESS_KEY_ID
       - key: AWS_SECRET_ACCESS_KEY
         fromService:
+          type: web
           name: aria-api-prod
           envVarKey: AWS_SECRET_ACCESS_KEY
       - key: ENVIRONMENT
