@@ -83,7 +83,6 @@ jobs:
     - python-lint
     - python-tests
     - python-missing-init
-    - python-translations
     runs-on: ubuntu-20.04
     steps:
       - run: echo "CI done!"
