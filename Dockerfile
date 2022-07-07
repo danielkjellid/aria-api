@@ -13,8 +13,7 @@ RUN apt-get update \
     lsof \
     vim \
     curl \
-    postgresql-client \
-    postgresql \
+    postgresql-client-14 \
     awscli \
     && rm -rf /var/lib/apt/lists/*
 
