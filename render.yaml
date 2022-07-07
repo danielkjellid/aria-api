@@ -52,6 +52,8 @@ services:
           property: connectionString
       - key: ENVIRONMENT
         value: production
+      - key: PRODUCTION
+        value: true
       - key: WEB_CONCURRENCY
         value: 4
       - key: CACHE_URL
@@ -99,6 +101,8 @@ services:
           property: connectionString
       - key: ENVIRONMENT
         value: staging
+      - key: PRODUCTION
+        value: false
       - key: WEB_CONCURRENCY
         value: 4
       - key: CACHE_URL
@@ -124,3 +128,5 @@ services:
           property: connectionString
       - key: ENVIRONMENT
         value: production
+      - key: PRODUCTION
+        value: true
