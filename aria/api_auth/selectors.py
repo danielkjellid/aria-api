@@ -35,7 +35,7 @@ def _token_decode(token: str) -> TokenPayload:
     except jwt.ExpiredSignatureError as jwt_exc:
         raise jwt_exc
     except Exception as exc:
-        raise TokenError(("Unable to decode provided token: %s", exc)) from exc
+        raise TokenError(f"Unable to decode provided token: {exc}") from exc
 
 
 def refresh_token_is_valid(token: str) -> tuple[bool, TokenPayload | None]:
