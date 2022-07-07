@@ -29,6 +29,7 @@ PRODUCTION = env.bool("PRODUCTION", default=False)
 ENVIRONMENT = env.str("ENVIRONMENT", default="dev")
 
 BASE_DIR = (pathlib.Path(__file__).parent / "..").resolve()
+APP_DIR = pathlib.Path(__file__).parent.resolve()
 
 DEBUG = env.bool("DEBUG", default=False)
 
@@ -68,7 +69,7 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 # Language code for this installation.
-LANGUAGE_CODE = "nb-NO"
+LANGUAGE_CODE = "en"
 
 # Local time zone for this installation.
 TIME_ZONE = "Europe/Oslo"

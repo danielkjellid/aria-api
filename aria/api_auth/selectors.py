@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.utils.translation import gettext as _
 
 import jwt
 
@@ -36,7 +35,7 @@ def _token_decode(token: str) -> TokenPayload:
     except jwt.ExpiredSignatureError as jwt_exc:
         raise jwt_exc
     except Exception as exc:
-        raise TokenError(_(f"Unable to decode provided token: {exc}")) from exc
+        raise TokenError(f"Unable to decode provided token: {exc}") from exc
 
 
 def refresh_token_is_valid(token: str) -> tuple[bool, TokenPayload | None]:
@@ -99,7 +98,7 @@ def access_token_is_valid(token: str) -> tuple[bool, TokenPayload | None]:
         if token_type != "access":
             return False, None  # Unexpected token type.
 
-        # If we've sucessfully decoded token and passed all the checks above,
+        # If we've successfully decoded token and passed all the checks above,
         # the token is valid.
         return True, decoded_token
     except jwt.ExpiredSignatureError:

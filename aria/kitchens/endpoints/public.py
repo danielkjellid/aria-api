@@ -1,5 +1,4 @@
 from django.http import HttpRequest
-from django.utils.translation import gettext as _
 
 from ninja import Router
 
@@ -46,7 +45,7 @@ def kitchen_detail_api(
 
     if kitchen is None:
         raise ApplicationError(
-            _("Kitchen with provided slug does not exist"), status_code=404
+            "Kitchen with provided slug does not exist", status_code=404
         )
 
     return 200, KitchenDetailOutput(**kitchen.dict())

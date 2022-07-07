@@ -1,5 +1,4 @@
 from django.http import HttpRequest
-from django.utils.translation import gettext as _
 
 from ninja import Router
 
@@ -53,7 +52,7 @@ def user_account_verification_api(
     try:
         user = User.objects.get(email__iexact=payload.email, is_active=True)
     except User.DoesNotExist as exc:
-        raise ApplicationError(_("User does not exist."), status_code=404) from exc
+        raise ApplicationError("User does not exist.", status_code=404) from exc
 
     user.send_verification_email()
 
@@ -96,9 +95,7 @@ def user_password_reset_api(
     try:
         user = User.objects.get(email__iexact=payload.email, is_active=True)
     except User.DoesNotExist as exc:
-        raise ApplicationError(
-            message=_("User does not exist."), status_code=404
-        ) from exc
+        raise ApplicationError(message="User does not exist.", status_code=404) from exc
 
     user.send_password_reset_email(request=request)
 

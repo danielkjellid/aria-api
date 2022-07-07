@@ -24,26 +24,10 @@ jobs:
             check: pylint aria  --output-format=parseable --reports=no
     name: ${{ matrix.name }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: 3.10.2
-      - name: Cache pip downloads
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: pip-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            pip-${{ runner.os }}-
-      - run: pip install poetry==1.1.10  poetry-core==1.0.6
-      - name: Cache Python venv
-        id: cache-venv
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ hashFiles('.python-version', 'poetry.lock') }}
-      - run: poetry install
-        if: steps.cache-venv.outputs.cache-hit != 'true'
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Setup project
+        uses: ./.github/actions/setup
       - run: poetry run ${{ matrix.check }}
 
   python-tests:
@@ -65,26 +49,10 @@ jobs:
           - 6379:6379
         options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: 3.10.2
-      - name: Cache pip downloads
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: pip-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            pip-${{ runner.os }}-
-      - run: pip install poetry==1.1.10  poetry-core==1.0.6
-      - name: Cache Python venv
-        id: cache-venv
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ hashFiles('.python-version', 'poetry.lock') }}
-      - run: poetry install
-        if: steps.cache-venv.outputs.cache-hit != 'true'
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Setup project
+        uses: ./.github/actions/setup
       - name: Run tests
         run: poetry run pytest
         env:
@@ -98,22 +66,23 @@ jobs:
           CACHE_URL: redis://localhost:6379/
 
   python-missing-init:
-    name: Missing __init__.py files
+    name: missing __init__.py files
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
-      - name: Check for missing __init__.py files
+      - name: check for missing __init__.py files
         uses: ljodal/python-actions/check-for-missing-init@feature/check-for-missing-init
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           paths: aria
 
   ci-done:
-    # Gather job which delpoy workflow can wait on.
+    # Gather job which deploy workflow can wait on.
     name: CI done
     needs:
     - python-lint
     - python-tests
+    - python-missing-init
     runs-on: ubuntu-20.04
     steps:
       - run: echo "CI done!"
