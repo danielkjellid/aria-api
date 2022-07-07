@@ -27,7 +27,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
       - name: Setup project
-        uses: ./github/actions/setup
+        uses: ./.github/actions/setup
       - run: poetry run ${{ matrix.check }}
 
   python-tests:
@@ -93,7 +93,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
       - name: Setup project
-        uses: ./github/actions/setup
+        uses: ./.github/actions/setup
       - run: poetry run ${{ matrix.check }}
 
   ci-done:
