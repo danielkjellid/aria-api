@@ -106,3 +106,18 @@ services:
           type: redis
           name: aria-redis-staging
           property: connectionString
+
+  ###############
+  ## Cron jobs ##
+  ###############
+  - type: cron
+    schedule: 30 4 * * *
+    region: frankfurt
+    plan: Starter
+    name: aria-cron-dump-db
+    env: docker
+    dockerCommand: "./docker-entrypoint.sh db_dump"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase: aria-db-prod
+        property: connectionString

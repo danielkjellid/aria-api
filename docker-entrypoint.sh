@@ -29,4 +29,8 @@ if [ "$1" = 'dbshell' ]; then
     exec poetry run python manage.py dbshell ${*:2}
 fi
 
+if [ "$1" = 'db_dump' ]; then
+    exec poetry run ./bin/db-dump ${*:2}
+fi
+
 exec "$@"
