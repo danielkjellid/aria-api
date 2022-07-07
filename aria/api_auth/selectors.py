@@ -1,6 +1,5 @@
-from django.conf import settings
-
 import jwt
+from django.conf import settings
 
 from aria.api_auth.exceptions import TokenError
 from aria.api_auth.models import OutstandingToken
@@ -98,7 +97,7 @@ def access_token_is_valid(token: str) -> tuple[bool, TokenPayload | None]:
         if token_type != "access":
             return False, None  # Unexpected token type.
 
-        # If we've sucessfully decoded token and passed all the checks above,
+        # If we've successfully decoded token and passed all the checks above,
         # the token is valid.
         return True, decoded_token
     except jwt.ExpiredSignatureError:
