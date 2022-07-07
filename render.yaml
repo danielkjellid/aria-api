@@ -122,20 +122,7 @@ services:
     env: docker
     dockerCommand: "./docker-entrypoint.sh db_dump"
     envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: aria-db-prod
-          property: connectionString
-      - key: AWS_ACCESS_KEY_ID
-        fromService:
-          type: web
-          name: aria-api-prod
-          envVarKey: AWS_ACCESS_KEY_ID
-      - key: AWS_SECRET_ACCESS_KEY
-        fromService:
-          type: web
-          name: aria-api-prod
-          envVarKey: AWS_SECRET_ACCESS_KEY
+      - fromGroup: AWS
       - key: ENVIRONMENT
         value: production
       - key: PRODUCTION
