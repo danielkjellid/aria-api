@@ -66,10 +66,9 @@ def main() -> None:
     _sanity_checks()
 
     bucket_name = os.environ.get("AWS_S3_BUCKET_NAME")
+    database_url = os.environ.get("DATABASE_URL")
     dump_filename = f"aria-{date.today().strftime('%d-%m-%Y')}.dump"
     created_dump_path = PROJECT_ROOT / dump_filename
-
-    db_name = "aria"
 
     if not has_aws_cli():
         sys.exit(AWS_CLI_INSTALL_ERROR_MESSAGE)
@@ -80,11 +79,10 @@ def main() -> None:
     with action_runner(description="Creating dump"):
         run_postgres_command(
             "pg_dump",
+            database_url,
             "-Fc",
             "--no-acl",
             "--no-owner",
-            "--dbname",
-            db_name,
             "-f",
             PROJECT_ROOT / dump_filename,
             user=args.user,
