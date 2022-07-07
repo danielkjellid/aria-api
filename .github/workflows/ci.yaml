@@ -52,7 +52,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
       - name: Setup project
-        uses: ./github/actions/setup
+        uses: ./.github/actions/setup
       - name: Run tests
         run: poetry run pytest
         env:
@@ -82,7 +82,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "make messages"
+          - name: "make translations"
             check: "python manage.py makemessages --locale=no"
           - name: "missing translations"
             check: "msgattrib --untranslated aria/locale/no/LC_MESSAGES/django.po"
