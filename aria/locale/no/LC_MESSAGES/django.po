@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-07 16:29+0200\n"
+"POT-Creation-Date: 2022-07-07 16:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Daniel Kjellid <daniel@flis.no>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr ""
 "Feil brukernavn eller passord. Merk at du må skille mellom store og små "
 "bokstaver."
 
-#: aria/api_auth/services.py:121 aria/api_auth/services.py:144
+#: aria/api_auth/services.py:121 aria/api_auth/services.py:145
 msgid "Refresh token provided is invalid."
 msgstr "Oppdateringsnøkkelen gitt er ugyldig."
 
@@ -33,15 +33,19 @@ msgstr "Oppdateringsnøkkelen gitt er ugyldig."
 msgid "Test"
 msgstr ""
 
-#: aria/api_auth/services.py:125 aria/api_auth/services.py:147
+#: aria/api_auth/services.py:125
+msgid "Test 2"
+msgstr ""
+
+#: aria/api_auth/services.py:126 aria/api_auth/services.py:148
 msgid "Token payload is invalid."
 msgstr "Nøkkelens nyttelast er ugyldig."
 
-#: aria/api_auth/services.py:130
+#: aria/api_auth/services.py:131
 msgid "Issued user in refresh token does not exist."
 msgstr "Bruker i oppdateringsnøkkel eksisterer ikke."
 
-#: aria/api_auth/services.py:155
+#: aria/api_auth/services.py:156
 msgid "Refresh token provided does not exist."
 msgstr "Oppdateringsnøkkelen eksisterer ikke."
 
