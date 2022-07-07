@@ -122,3 +122,5 @@ services:
         fromDatabase:
           name: aria-db-prod
           property: connectionString
+      - key: ENVIRONMENT
+        value: production
