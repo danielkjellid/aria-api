@@ -14,6 +14,7 @@ RUN apt-get update \
     vim \
     curl \
     postgresql-client \
+    postgresql \
     awscli \
     && rm -rf /var/lib/apt/lists/*
 
