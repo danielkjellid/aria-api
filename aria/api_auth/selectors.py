@@ -1,5 +1,6 @@
-import jwt
 from django.conf import settings
+
+import jwt
 
 from aria.api_auth.exceptions import TokenError
 from aria.api_auth.models import OutstandingToken
