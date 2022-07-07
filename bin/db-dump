@@ -37,8 +37,8 @@ authenticated_aws_cli = functools.partial(
 def _sanity_checks() -> None:
     if not os.environ.get("AWS_S3_BUCKET_NAME"):
         sys.exit(
-            """Error: The AWS_S3_BUCKET_NAME environment variable is not set\n
-            This must be configured before you can download static files"""
+            "Error: The AWS_S3_BUCKET_NAME environment variable is not set. "
+            "This must be configured before you can download static files"
         )
     if not os.environ.get("DATABASE_URL"):
         sys.exit(
