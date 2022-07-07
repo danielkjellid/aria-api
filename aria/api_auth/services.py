@@ -122,6 +122,7 @@ def token_pair_obtain_new_from_refresh_token(token: str) -> JWTPair:
 
     if token_payload is None:
         test = _("Test")
+        test2 = _("Test 2")
         raise TokenError(_("Token payload is invalid."))
 
     try:

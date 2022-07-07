@@ -83,7 +83,13 @@ jobs:
       matrix:
         include:
           - name: "make translations"
-            check: "python manage.py makemessages --locale=no"
+            check: |
+              python manage.py makemessages --locale=no
+              git config --local user.email "test@github.com"
+              git config --local user.name "GitHub Action test"
+              git add ./aria/locale/no/LC_MESSAGES/django.po
+              git commit -m "Add updated translations file"
+              git push
           - name: "missing translations"
             check: "msgattrib --untranslated aria/locale/no/LC_MESSAGES/django.po"
           - name: "compile translations"
