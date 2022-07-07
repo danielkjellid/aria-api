@@ -6,6 +6,12 @@ ENV PYTHONPATH /app/
 # Add app user
 RUN groupadd -r aria && useradd --create-home aria -g aria
 
+# Get postgresql-14 package manually, as the official package version only supports
+# postgresql-13. These three lines can be removed once the official package is updated.
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y lsb-release
+RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     bash-completion \
@@ -13,7 +19,7 @@ RUN apt-get update \
     lsof \
     vim \
     curl \
-    postgresql-client \
+    postgresql-14 \
     awscli \
     && rm -rf /var/lib/apt/lists/*
 
