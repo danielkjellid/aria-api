@@ -63,8 +63,12 @@ def run_management_command(
     command: str,
     *command_args: Union[str, pathlib.Path],
     db_name: str,
-    env_vars: Dict[str, str] = {},
+    env_vars: Dict[str, str] | None = None,
 ):
+
+    if env_vars is None:
+        env_vars = {}
+
     if db_name:
         env_vars["POSTGRES_DB"] = db_name
 

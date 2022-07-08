@@ -1,5 +1,5 @@
 import pathlib
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 PROJECT_ROOT = pathlib.Path(__file__).parent.parent.parent
 
@@ -17,7 +17,7 @@ def postgres_env(
         env["POSTGRES_HOST"] = host
 
     if port:
-        env["POSTGRES_PORT"] = port
+        env["POSTGRES_PORT"] = str(port)
 
     if user:
         env["POSTGRES_USER"] = user
