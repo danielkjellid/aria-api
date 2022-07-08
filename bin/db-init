@@ -186,6 +186,7 @@ def main() -> None:
     elif not dump_path.exists():
         sys.exit(f"Error: {dump_path} path was not found.")
 
+    # TODO: Figure out using db_url instead of db_name
     db_name = "aria"
 
     # Temporary db names, one with dump data and one where the current db will be renamed to

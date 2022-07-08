@@ -115,7 +115,7 @@ services:
   ## Cron jobs ##
   ###############
   - type: cron
-    schedule: 30 4 * * *
+    schedule: 30 2 * * * # 02:30 UTC
     region: frankfurt
     plan: Starter
     name: aria-cron-dump-db
@@ -123,7 +123,29 @@ services:
     dockerCommand: "./docker-entrypoint.sh db_dump"
     envVars:
       - fromGroup: AWS
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aria-db-prod
+          property: connectionString
       - key: ENVIRONMENT
         value: production
       - key: PRODUCTION
         value: true
+
+  - type: cron
+    schedule: 30 3 * * * # 03:30 UTC
+    region: frankfurt
+    plan: Starter
+    name: aria-cron-restore-db
+    env: docker
+    dockerCommand: "./docker-entrypoint.sh restore_db"
+    envVars:
+      - fromGroup: AWS
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aria-db-staging
+          property: connectionString
+      - key: ENVIRONMENT
+        value: staging
+      - key: PRODUCTION
+        value: false
