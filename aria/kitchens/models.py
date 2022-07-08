@@ -113,7 +113,6 @@ class Decor(models.Model):
     Plywood is a range of different color patterns offered by our kitchen supplier.
     """
 
-    @property
     def kitchen_decor_upload_path(self) -> str:
         """Path of which to upload static assets."""
         return f"media/kitchens/decors/{slugify(self.name)}"
@@ -141,7 +140,6 @@ class Plywood(models.Model):
     Plywood is a range of different plywoods offered by our kitchen supplier.
     """
 
-    @property
     def kitchen_plywood_upload_path(self) -> str:
         """Path of which to upload static assets."""
         return f"media/kitchens/plywoods/{slugify(self.name)}"
