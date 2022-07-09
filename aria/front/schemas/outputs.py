@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from ninja import Schema
 
@@ -8,7 +7,7 @@ from aria.front.enums import SiteMessageType
 
 class OpeningHoursHumanReadableTimeSlotsOutputSchema(Schema):
     days: str
-    time_slot: Optional[str]
+    time_slot: str | None
     is_closed: bool
 
 
