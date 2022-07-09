@@ -138,7 +138,7 @@ services:
     plan: Starter
     name: aria-cron-restore-db
     env: docker
-    dockerCommand: "./docker-entrypoint.sh restore_db"
+    dockerCommand: "./docker-entrypoint.sh restore_db --no-swap-db"
     envVars:
       - fromGroup: AWS
       - key: DATABASE_URL

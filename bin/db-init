@@ -7,6 +7,7 @@ import subprocess
 import sys
 import time
 from typing import Optional
+from urllib.parse import unquote, urlsplit
 
 from utils.colors import red
 from utils.config import PROJECT_ROOT, postgres_env
@@ -141,11 +142,28 @@ def main() -> None:
     args = parser.parse_args()
 
     bucket_name = os.environ.get("AWS_S3_BUCKET_NAME")
+    db_url = os.environ.get("DATABASE_URL", None)
     dump_filename = args.file or "aria.dump"
     dump_path = args.file if args.file else PROJECT_ROOT / dump_filename
 
     # Check that we are in a good state before starting to download.
     _sanity_checks()
+
+    if db_url is not None:
+        db_config = urlsplit(db_url)
+        assert db_config.scheme == "postgresql"
+
+        db_name = db_config.path[1:]
+        pg_host = db_config.hostname
+        pg_user = db_config.username
+        pg_port = db_config.port
+        pg_password = unquote(db_config.password) if db_config.password else None
+    else:
+        db_name = "aria"
+        pg_host = args.host
+        pg_user = args.user
+        pg_port = args.port
+        pg_password = args.password
 
     if not args.file:
         if not has_aws_cli():
@@ -186,9 +204,6 @@ def main() -> None:
     elif not dump_path.exists():
         sys.exit(f"Error: {dump_path} path was not found.")
 
-    # TODO: Figure out using db_url instead of db_name
-    db_name = "aria"
-
     # Temporary db names, one with dump data and one where the current db will be renamed to
     # during swapping. Swapping is done to not corrup dev db if restore fails, then we can
     # just delete the temp one and start over.
@@ -199,10 +214,10 @@ def main() -> None:
             run_postgres_command(
                 "createdb",
                 db_name,
-                user=args.user,
-                host=args.host,
-                port=args.port,
-                password=args.password,
+                user=pg_user,
+                host=pg_host,
+                port=pg_port,
+                password=pg_password,
             )
 
     # Restore the dump to the specific database
@@ -217,30 +232,30 @@ def main() -> None:
             "--no-privileges",
             "--no-acl",
             PROJECT_ROOT / dump_filename,
-            user=args.user,
-            port=args.port,
-            host=args.host,
-            password=args.password,
+            user=pg_user,
+            host=pg_host,
+            port=pg_port,
+            password=pg_password,
         )
 
     if args.swap_db:
         with action_runner(description="Swapping databases"):
             old_db = None
             if database_exists(
-                "aria",
-                host=args.host,
-                port=args.port,
-                user=args.user,
-                password=args.password,
+                db_name,
+                user=pg_user,
+                host=pg_host,
+                port=pg_port,
+                password=pg_password,
             ):
                 old_db = f"aria_update_db_tmp_{int(time.time())}"
 
                 _kill_active_db_sessions(
-                    db_name="aria",
-                    host=args.host,
-                    port=args.port,
-                    user=args.user,
-                    password=args.password,
+                    db_name=db_name,
+                    user=pg_user,
+                    host=pg_host,
+                    port=pg_port,
+                    password=pg_password,
                 )
 
                 run_postgres_command(
@@ -250,18 +265,18 @@ def main() -> None:
                     "-qAt",
                     "-c",
                     f"ALTER DATABASE aria RENAME to {old_db}",
-                    host=args.host,
-                    port=args.port,
-                    user=args.user,
-                    password=args.password,
+                    user=pg_user,
+                    host=pg_host,
+                    port=pg_port,
+                    password=pg_password,
                 )
 
             _kill_active_db_sessions(
                 db_name=db_name,
-                host=args.host,
-                port=args.port,
-                user=args.user,
-                password=args.password,
+                user=pg_user,
+                host=pg_host,
+                port=pg_port,
+                password=pg_password,
             )
 
             run_postgres_command(
@@ -271,20 +286,20 @@ def main() -> None:
                 "-qAt",
                 "-c",
                 f"ALTER DATABASE {db_name} RENAME to aria",
-                host=args.host,
-                port=args.port,
-                user=args.user,
-                password=args.password,
+                user=pg_user,
+                host=pg_host,
+                port=pg_port,
+                password=pg_password,
             )
 
             if old_db:
                 run_postgres_command(
                     "dropdb",
                     old_db,
-                    host=args.host,
-                    port=args.port,
-                    user=args.user,
-                    password=args.password,
+                    user=pg_user,
+                    host=pg_host,
+                    port=pg_port,
+                    password=pg_password,
                 )
 
     # Run migrations against the restored database. This is required as we might
@@ -295,10 +310,10 @@ def main() -> None:
                 "migrate",
                 db_name=db_name,
                 env_vars=postgres_env(
-                    host=args.host,
-                    port=args.port,
-                    user=args.user,
-                    password=args.password,
+                    user=pg_user,
+                    host=pg_host,
+                    port=pg_port,
+                    password=pg_password,
                 ),
             )
     except subprocess.CalledProcessError:
@@ -310,10 +325,10 @@ def main() -> None:
             "--confirm",
             db_name=db_name,
             env_vars=postgres_env(
-                host=args.host,
-                port=args.port,
-                user=args.user,
-                password=args.password,
+                user=pg_user,
+                host=pg_host,
+                port=pg_port,
+                password=pg_password,
             ),
         )
 
