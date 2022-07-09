@@ -1,5 +1,5 @@
 from aria.core.models import BaseHeaderImageModel, BaseListImageModel
-from aria.core.schemas.records import BaseHeaderImageRecord, BaseListImageRecord
+from aria.core.records import BaseHeaderImageRecord, BaseListImageRecord
 
 
 def base_header_image_record(

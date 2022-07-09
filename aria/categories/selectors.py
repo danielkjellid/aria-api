@@ -3,8 +3,7 @@ from typing import Any, Optional
 from django.db.models import Prefetch
 
 from aria.categories.models import Category
-from aria.categories.schemas.filters import CategoryProductListFilters
-from aria.categories.schemas.records import (
+from aria.categories.records import (
     CategoryDetailRecord,
     CategoryProductColorRecord,
     CategoryProductRecord,
@@ -13,6 +12,7 @@ from aria.categories.schemas.records import (
     CategoryProductVariantRecord,
     CategoryRecord,
 )
+from aria.categories.schemas.filters import CategoryProductListFilters
 from aria.core.decorators import cached
 from aria.core.selectors import base_header_image_record, base_list_image_record
 from aria.products.enums import ProductUnit

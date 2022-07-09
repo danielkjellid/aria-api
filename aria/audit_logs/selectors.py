@@ -2,7 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model
 
 from aria.audit_logs.models import LogEntry
-from aria.audit_logs.schemas.records import LogEntryChangeRecord, LogEntryRecord
+from aria.audit_logs.records import LogEntryChangeRecord, LogEntryRecord
 
 
 def log_entry_list_for_instance(model: Model, *, pk: int) -> list[LogEntryRecord]:

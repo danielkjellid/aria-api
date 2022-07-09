@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from pydantic import BaseModel
 
-from aria.core.schemas.records import BaseHeaderImageRecord, BaseListImageRecord
+from aria.core.records import BaseHeaderImageRecord, BaseListImageRecord
 
 
 class KitchenVariantRecord(BaseModel):

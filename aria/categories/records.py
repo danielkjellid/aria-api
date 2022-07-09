@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from pydantic import BaseModel
 
-from aria.core.schemas.records import (
+from aria.core.records import (
     BaseArrayFieldLabelRecord,
     BaseHeaderImageRecord,
     BaseListImageRecord,

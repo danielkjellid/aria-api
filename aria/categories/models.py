@@ -6,7 +6,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 from aria.categories.enums import PromotionType
 from aria.categories.managers import CategoryManager, CategoryQueryset
 from aria.core.models import BaseHeaderImageModel, BaseListImageModel, BaseModel
-from aria.core.schemas.records import BaseHeaderImageRecord, BaseListImageRecord
+from aria.core.records import BaseHeaderImageRecord, BaseListImageRecord
 
 
 class Category(MPTTModel, BaseModel, BaseHeaderImageModel, BaseListImageModel):

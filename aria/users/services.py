@@ -19,7 +19,7 @@ from aria.audit_logs.types import ChangeMessage
 from aria.core.exceptions import ApplicationError
 from aria.core.services import model_update
 from aria.users.models import User
-from aria.users.schemas.records import UserRecord
+from aria.users.records import UserRecord
 from aria.users.selectors import user_record
 
 

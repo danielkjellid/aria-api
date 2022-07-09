@@ -1,6 +1,6 @@
 import pytest
 
-from aria.categories.schemas.records import CategoryDetailRecord, CategoryRecord
+from aria.categories.records import CategoryDetailRecord, CategoryRecord
 from aria.categories.selectors import (
     category_children_active_list_for_category,
     category_detail_record,
@@ -11,7 +11,7 @@ from aria.categories.selectors import (
     category_tree_active_list_for_product,
 )
 from aria.categories.tests.utils import create_category
-from aria.core.schemas.records import BaseHeaderImageRecord, BaseListImageRecord
+from aria.core.records import BaseHeaderImageRecord, BaseListImageRecord
 from aria.products.models import Product
 from aria.products.tests.utils import create_product
 

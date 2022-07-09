@@ -4,7 +4,7 @@ from aria.categories.selectors import category_tree_active_list_for_product
 from aria.core.selectors import base_header_image_record
 from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.models import Product
-from aria.products.schemas.records import (
+from aria.products.records import (
     ProductColorRecord,
     ProductDetailRecord,
     ProductFileRecord,

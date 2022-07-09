@@ -3,7 +3,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from aria.core.schemas.records import SiteRecord
+from aria.core.records import SiteRecord
 
 
 class UserProfileRecord(BaseModel):

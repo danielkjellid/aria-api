@@ -8,7 +8,7 @@ from aria.audit_logs.services import log_entries_create
 from aria.audit_logs.types import ChangeMessage
 from aria.core.services import model_update
 from aria.notes.models import NoteEntry
-from aria.notes.schemas.records import NoteEntryRecord
+from aria.notes.records import NoteEntryRecord
 from aria.users.models import User
 
 

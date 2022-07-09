@@ -1,6 +1,6 @@
 from ninja import Schema
 
-from aria.core.schemas.records import BaseArrayFieldLabelRecord, BaseHeaderImageRecord
+from aria.core.records import BaseArrayFieldLabelRecord, BaseHeaderImageRecord
 
 
 class ProductSupplierOutput(Schema):

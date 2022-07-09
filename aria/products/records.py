@@ -2,8 +2,8 @@ from decimal import Decimal
 
 from pydantic import BaseModel
 
-from aria.categories.schemas.records import CategoryDetailRecord
-from aria.core.schemas.records import BaseArrayFieldLabelRecord, BaseHeaderImageRecord
+from aria.categories.records import CategoryDetailRecord
+from aria.core.records import BaseArrayFieldLabelRecord, BaseHeaderImageRecord
 
 
 class ProductSupplierRecord(BaseModel):

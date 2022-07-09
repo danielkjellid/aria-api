@@ -1,10 +1,10 @@
 from typing import Any, Optional
 
-from aria.core.schemas.records import SiteRecord
+from aria.core.records import SiteRecord
 from aria.users.filters import UserFilter
 from aria.users.models import User
+from aria.users.records import UserProfileRecord, UserRecord
 from aria.users.schemas.filters import UserListFilters
-from aria.users.schemas.records import UserProfileRecord, UserRecord
 
 
 def user_record(*, user: User) -> UserRecord:
