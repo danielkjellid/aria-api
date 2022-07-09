@@ -4,11 +4,7 @@ from typing import Optional
 from ninja import Schema
 
 from aria.users.models import User
-from aria.users.schemas.records import (
-    UserAuditLogsRecord,
-    UserNotesRecord,
-    UserProfileRecord,
-)
+from aria.users.records import UserAuditLogsRecord, UserNotesRecord, UserProfileRecord
 
 
 class UserListOutput(Schema):

@@ -4,7 +4,7 @@ import jwt
 
 from aria.api_auth.exceptions import TokenError
 from aria.api_auth.models import OutstandingToken
-from aria.api_auth.schemas.records import TokenPayload
+from aria.api_auth.records import TokenPayload
 
 ISSUER = settings.JWT_ISSUER
 SIGNING_KEY = settings.JWT_SIGNING_KEY

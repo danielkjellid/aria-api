@@ -23,11 +23,7 @@ import phonenumbers
 
 from aria.users.enums import AvatarColors
 from aria.users.managers import UserQuerySet
-from aria.users.schemas.records import (
-    UserAuditLogsRecord,
-    UserNotesRecord,
-    UserProfileRecord,
-)
+from aria.users.records import UserAuditLogsRecord, UserNotesRecord, UserProfileRecord
 
 _UserManager = models.Manager.from_queryset(UserQuerySet)
 

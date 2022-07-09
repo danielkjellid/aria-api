@@ -1,6 +1,6 @@
 from ninja import Schema
 
-from aria.core.schemas.records import BaseHeaderImageRecord, BaseListImageRecord
+from aria.core.records import BaseHeaderImageRecord, BaseListImageRecord
 
 
 class KitchenListOutput(Schema):

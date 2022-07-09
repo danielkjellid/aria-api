@@ -11,7 +11,7 @@ import jwt
 
 from aria.api_auth.exceptions import TokenError
 from aria.api_auth.models import BlacklistedToken, OutstandingToken
-from aria.api_auth.schemas.records import JWTPair
+from aria.api_auth.records import JWTPair
 from aria.api_auth.selectors import refresh_token_is_valid
 from aria.core.exceptions import ApplicationError
 from aria.users.models import User

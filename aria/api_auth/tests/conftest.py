@@ -7,7 +7,7 @@ from django.utils import timezone
 import jwt
 import pytest
 
-from aria.api_auth.schemas.records import JWTPair
+from aria.api_auth.records import JWTPair
 
 
 @pytest.fixture

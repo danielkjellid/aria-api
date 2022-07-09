@@ -6,7 +6,7 @@ from django.db.models import ManyToOneRel, Model
 from django.utils import timezone
 
 from aria.audit_logs.models import LogEntry
-from aria.audit_logs.schemas.records import LogEntryChangeRecord, LogEntryRecord
+from aria.audit_logs.records import LogEntryChangeRecord, LogEntryRecord
 from aria.audit_logs.types import ChangeMessage
 from aria.users.models import User
 

@@ -2,7 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model
 
 from aria.notes.models import NoteEntry
-from aria.notes.schemas.records import NoteEntryRecord
+from aria.notes.records import NoteEntryRecord
 
 
 def note_entry_list_for_instance(model: Model, *, pk: int) -> list[NoteEntryRecord]:

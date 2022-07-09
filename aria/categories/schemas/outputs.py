@@ -2,7 +2,7 @@ from typing import List
 
 from ninja import Schema
 
-from aria.core.schemas.records import (
+from aria.core.records import (
     BaseArrayFieldLabelRecord,
     BaseHeaderImageRecord,
     BaseListImageRecord,

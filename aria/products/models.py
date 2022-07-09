@@ -18,7 +18,7 @@ from aria.core.models import (
     BaseModel,
     BaseThumbnailImageModel,
 )
-from aria.core.schemas.records import BaseArrayFieldLabelRecord
+from aria.core.records import BaseArrayFieldLabelRecord
 from aria.core.utils import get_array_field_labels
 from aria.products import enums
 from aria.products.managers import (

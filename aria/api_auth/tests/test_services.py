@@ -7,7 +7,7 @@ import pytest
 
 from aria.api_auth.exceptions import TokenError
 from aria.api_auth.models import BlacklistedToken, OutstandingToken
-from aria.api_auth.schemas.records import TokenPayload
+from aria.api_auth.records import TokenPayload
 from aria.api_auth.selectors import _token_decode
 from aria.api_auth.services import (
     _access_token_create_and_encode,

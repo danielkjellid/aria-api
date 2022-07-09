@@ -2,7 +2,7 @@ from django.db.models import Q
 
 from aria.core.selectors import base_header_image_record, base_list_image_record
 from aria.kitchens.models import Kitchen
-from aria.kitchens.schemas.records import (
+from aria.kitchens.records import (
     KitchenDetailRecord,
     KitchenRecord,
     KitchenSupplierRecord,
