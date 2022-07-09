@@ -1,10 +1,14 @@
 import pytest
-from model_bakery import baker
 
-from aria.products.models import Product, ProductOption, Variant
+from aria.products.models import Variant
 from aria.products.services import (
     product_option_delete_related_variants,
     variant_create,
+)
+from aria.products.tests.utils import (
+    create_product,
+    create_product_option,
+    create_variant,
 )
 
 pytestmark = pytest.mark.django_db
@@ -33,14 +37,14 @@ class TestProductsServices:
         product option.
         """
 
-        product = baker.make(Product)
+        product = create_product()
 
-        product_option_1 = baker.make(ProductOption, **{"product": product})
-        product_option_2 = baker.make(ProductOption, **{"product": product})
-        product_option_3 = baker.make(ProductOption, **{"product": product})
+        product_option_1 = create_product_option(product=product)
+        product_option_2 = create_product_option(product=product)
+        product_option_3 = create_product_option(product=product)
 
-        variant_1 = baker.make(Variant, **{"is_standard": False})
-        variant_2 = baker.make(Variant, **{"is_standard": False})
+        variant_1 = create_variant()
+        variant_2 = create_variant()
 
         # Create two product options with the same variant to test
         # that we do NOT delete variant_1. We do not want to delete

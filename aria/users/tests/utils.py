@@ -9,6 +9,8 @@ from aria.users.models import User
 
 
 def create_user(
+    first_name: str = "Test",
+    last_name: str = "User",
     email: str = "user@example.com",
     password: str = "supersecret",
     site: Site | None = None,
@@ -16,6 +18,10 @@ def create_user(
     is_active: bool = True,
     is_staff: bool = False,
     is_superuser: bool = False,
+    street_address: str = "Test street 1",
+    zip_code: str = "0172",
+    zip_place: str = "Oslo",
+    phone_number: str = "91812345",
     **defaults: Any,
 ) -> User:
     """
@@ -25,11 +31,17 @@ def create_user(
         site = create_site()
 
     user, _ = User.objects.update_or_create(
+        first_name=first_name,
+        last_name=last_name,
         email=email,
         password=password,
         is_active=is_active,
         is_staff=is_staff,
         is_superuser=is_superuser,
+        street_address=street_address,
+        zip_code=zip_code,
+        zip_place=zip_place,
+        phone_number=phone_number,
         **defaults,
     )
 
