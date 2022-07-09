@@ -1,5 +1,4 @@
 from datetime import date, datetime
-from typing import Optional
 
 from ninja import Schema
 
@@ -20,11 +19,11 @@ class UserDetailOutput(Schema):
     last_name: str
     email: str
     phone_number: str
-    birth_date: Optional[date] = None
+    birth_date: date | None = None
     has_confirmed_email: bool
 
     # Account data
-    last_login: Optional[datetime] = None
+    last_login: datetime | None = None
     id: int
     profile: UserProfileRecord
     date_joined: datetime
@@ -37,7 +36,7 @@ class UserDetailOutput(Schema):
     zip_place: str
 
     # Marketing data
-    acquisition_source: Optional[str] = None
+    acquisition_source: str | None = None
     disabled_emails: bool
     subscribed_to_newsletter: bool
     allow_personalization: bool

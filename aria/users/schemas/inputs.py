@@ -1,5 +1,3 @@
-from typing import Optional
-
 from ninja import Schema
 
 
@@ -37,15 +35,15 @@ class UserPasswordResetConfirmInput(Schema):
 
 
 class UserUpdateInput(Schema):
-    email: Optional[str]
-    first_name: Optional[str]
-    last_name: Optional[str]
-    phone_number: Optional[str]
-    has_confirmed_email: Optional[bool]
-    street_address: Optional[str]
-    zip_code: Optional[str]
-    zip_place: Optional[str]
-    disabled_emails: Optional[bool]
-    subscribed_to_newsletter: Optional[bool]
-    allow_personalization: Optional[bool]
-    allow_third_party_personalization: Optional[bool]
+    email: str | None
+    first_name: str | None
+    last_name: str | None
+    phone_number: str | None
+    has_confirmed_email: bool | None
+    street_address: str | None
+    zip_code: str | None
+    zip_place: str | None
+    disabled_emails: bool | None
+    subscribed_to_newsletter: bool | None
+    allow_personalization: bool | None
+    allow_third_party_personalization: bool | None

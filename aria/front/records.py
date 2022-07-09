@@ -1,5 +1,4 @@
 from datetime import datetime, time
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -19,14 +18,14 @@ class SiteMessageRecord(BaseModel):
 class OpeningHoursTimeSlotRecord(BaseModel):
     id: int
     weekday: str
-    opening_at: Optional[time]
-    closing_at: Optional[time]
-    is_closed: Optional[bool] = False
+    opening_at: time | None
+    closing_at: time | None
+    is_closed: bool | None = False
 
 
 class OpeningHoursTimeSlotHumanReadableRecord(BaseModel):
     days: str
-    time_slot: Optional[str] = None
+    time_slot: str | None = None
     is_closed: bool
 
 
@@ -41,13 +40,13 @@ class OpeningHoursDeviationTemplateRecord(BaseModel):
     id: int
     name: str
     description: str
-    site_message: Optional[SiteMessageRecord]
+    site_message: SiteMessageRecord | None
 
 
 class OpeningHoursDeviationRecord(BaseModel):
     id: int
     opening_hours_id: int
-    template: Optional[OpeningHoursDeviationTemplateRecord]
+    template: OpeningHoursDeviationTemplateRecord | None
     active_at: datetime
     active_to: datetime
     description: str

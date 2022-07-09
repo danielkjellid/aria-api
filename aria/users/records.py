@@ -1,5 +1,4 @@
 from datetime import date, datetime
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -33,7 +32,7 @@ class UserRecord(BaseModel):
     is_active: bool = True
     is_staff: bool = False
     is_superuser: bool = False
-    site: Optional[SiteRecord] = None
+    site: SiteRecord | None = None
 
 
 class UserNotesRecord(BaseModel):
