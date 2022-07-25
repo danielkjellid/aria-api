@@ -102,7 +102,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
-      - name: Check for missing __init__.py files
+      - name: check for missing __init__.py files
         uses: ljodal/python-actions/check-for-missing-init@feature/check-for-missing-init
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -114,6 +114,7 @@ jobs:
     needs:
     - python-lint
     - python-tests
+    - python-missing-init
     runs-on: ubuntu-20.04
     steps:
       - run: echo "CI done!"
