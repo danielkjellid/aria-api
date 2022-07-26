@@ -2,9 +2,8 @@ import json
 import tempfile
 
 import pytest
-from model_bakery import baker
 
-from aria.suppliers.models import Supplier
+from aria.suppliers.tests.utils import get_or_create_supplier
 
 pytestmark = pytest.mark.django_db
 
@@ -21,15 +20,17 @@ class TestPublicSuppliersEndpoints:
         a valid response.
         """
 
-        suppliers = baker.make(Supplier, _quantity=4)
+        suppliers = [
+            get_or_create_supplier(supplier_name="Supplier 1"),
+            get_or_create_supplier(supplier_name="Supplier 2"),
+            get_or_create_supplier(supplier_name="Supplier 3"),
+            get_or_create_supplier(supplier_name="Supplier 4", is_active=False),
+        ]
 
         for supplier in suppliers:
             with tempfile.NamedTemporaryFile(suffix=".jpg") as file:
                 supplier.image = file.name
                 supplier.save()
-
-        suppliers[0].is_active = False
-        suppliers[0].save()
 
         with django_assert_max_num_queries(1):
             response = anonymous_client.get(f"{self.BASE_ENDPOINT}/")

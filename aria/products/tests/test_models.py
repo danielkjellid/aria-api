@@ -1,9 +1,9 @@
 import pytest
-from model_bakery import baker
 
 from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.models import Color, Product, ProductOption, Shape, Size, Variant
-from aria.suppliers.models import Supplier
+from aria.products.tests.utils import create_product, create_size, create_variant
+from aria.suppliers.tests.utils import get_or_create_supplier
 
 pytestmark = pytest.mark.django_db
 
@@ -14,7 +14,7 @@ class TestProductsModels:
         Test creation of product instance.
         """
 
-        supplier = baker.make(Supplier)
+        supplier = get_or_create_supplier()
 
         options = {
             "name": "Test product",
@@ -116,9 +116,9 @@ class TestProductsModels:
         Test creation of product option instance.
         """
 
-        product = baker.make(Product)
-        variant = baker.make(Variant)
-        size = baker.make(Size)
+        product = create_product()
+        variant = create_variant()
+        size = create_size()
 
         options = {
             "product": product,

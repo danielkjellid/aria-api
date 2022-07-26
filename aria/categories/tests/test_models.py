@@ -1,7 +1,7 @@
 import pytest
-from model_bakery import baker
 
 from aria.categories.models import Category
+from aria.categories.tests.utils import create_category
 
 pytestmark = pytest.mark.django_db
 
@@ -36,11 +36,11 @@ class TestCategoriesModels:
         Test creation of secondary category instances
         """
 
-        parent_category = baker.make(Category)
+        parent_category = create_category()
 
         options = {
-            "name": "Child",
-            "slug": "child",
+            "name": "Chairs",
+            "slug": "chairs",
             "parent": parent_category,
             "description": "Some basic description",
             "is_active": True,
@@ -49,11 +49,11 @@ class TestCategoriesModels:
         category = Category.objects.create(**options)
 
         # Assert model fields
-        assert category.name == "Child"
-        assert category.slug == "child"
+        assert category.name == "Chairs"
+        assert category.slug == "chairs"
         assert category.description == "Some basic description"
         assert category.ordering == 0  # Default
         assert category.is_active is True
 
-        # Assert that category is not a "parent"
+        # Assert that category is not a "parent" (e.g. has a parent)
         assert category.parent is not None

@@ -1,6 +1,6 @@
 from typing import Any
 
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 
@@ -60,3 +60,26 @@ def create_user(
     user.save()
 
     return user
+
+
+def create_group(name: str = "Test group", perms: list[str] | None = None) -> Group:
+    """
+    Test utility for creating a group.
+    """
+
+    group, _created = Group.objects.update_or_create(name=name)
+
+    parsed_perms = []
+    if perms:
+        content_type = ContentType.objects.get_for_model(User)
+
+        for perm in perms:
+            parsed_perm = Permission.objects.get(
+                codename=perm, content_type=content_type
+            )
+            parsed_perms.append(parsed_perm)
+
+    group.permissions.set(parsed_perms)
+    group.save()
+
+    return group
