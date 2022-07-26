@@ -28,7 +28,7 @@ class TestPublicCategoriesEndpoints:
         main_cat_2 = create_category(name="Main cat 2")
         main_cat_2_sub_1 = create_category("Sub cat 2.1", parent=main_cat_2)
 
-        expected_payload = [
+        expected_response = [
             {
                 "id": main_cat_1.id,
                 "name": main_cat_1.name,
@@ -75,7 +75,9 @@ class TestPublicCategoriesEndpoints:
 
         assert response.status_code == 200
         assert len(actual_response) == 2
-        assert actual_response == expected_payload
+        assert sorted(actual_response, key=lambda x: x["id"]) == sorted(
+            expected_response, key=lambda x: x["id"]
+        )
 
     def test_anonymous_request_category_parent_list_api(
         self, anonymous_client, django_assert_max_num_queries

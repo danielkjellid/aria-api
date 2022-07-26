@@ -11,6 +11,7 @@ def get_or_create_supplier(
     origin_country: str = "no",
     sites: list[Site] | None = None,
     website_link: str = "example.com",
+    is_active: bool = True,
 ) -> Supplier:
     """
     Test utility to create a user instance.
@@ -24,6 +25,7 @@ def get_or_create_supplier(
             "supplier_discount": supplier_discount,
             "website_link": website_link,
             "origin_country": origin_country,
+            "is_active": is_active,
         },
     )
 

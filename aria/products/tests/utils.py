@@ -101,14 +101,13 @@ def create_product(
 
 
 def create_variant(
-    *,
-    name: str = "Example variant",
+    *, name: str = "Example variant", is_standard: bool = False
 ) -> Variant:
     """
     Test util that creates a variant instance.
     """
 
-    variant = Variant.objects.create(name=name, is_standard=False)
+    variant = Variant.objects.create(name=name, is_standard=is_standard)
 
     with tempfile.NamedTemporaryFile(suffix=".jpg") as file:
         variant.image = file.name

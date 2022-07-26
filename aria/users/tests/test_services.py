@@ -1,10 +1,8 @@
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.sites.models import Site
 
 import pytest
-from model_bakery import baker
 
 from aria.audit_logs.selectors import log_entry_list_for_instance
 from aria.core.exceptions import ApplicationError
@@ -15,6 +13,7 @@ from aria.users.services import (
     user_update,
     user_verify_account,
 )
+from aria.users.tests.utils import create_group, create_user
 
 pytestmark = pytest.mark.django_db
 
@@ -28,7 +27,7 @@ class TestUsersServices:
         """
 
         existing_user = unprivileged_user
-        group = baker.make(Group)
+        group = create_group()
 
         # Check if user exist (1), create user (1), get site (1),  add group (1)
         with django_assert_max_num_queries(4):
@@ -88,9 +87,8 @@ class TestUsersServices:
         appropriate logs.
         """
 
-        author = baker.make(User)
-        site = baker.make(Site)
-        user = baker.make(User, **{"site": site})
+        author = create_user(email="author@example.com")
+        user = create_user()
 
         # Save "old" fields to assert later
         old_user_email = user.email

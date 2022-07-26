@@ -2,12 +2,9 @@ import json
 from datetime import datetime
 
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.sites.models import Site
 
 import pytest
-from model_bakery import baker
 
-from aria.users.models import User
 from aria.users.tests.utils import create_user
 
 pytestmark = pytest.mark.django_db
@@ -24,20 +21,18 @@ class TestPublicUsersEndpoints:
         Test creating a user from the endpoint.
         """
 
-        user = baker.prepare(User)
-
         payload_json = {
-            "email": user.email,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "phone_number": user.phone_number,
-            "street_address": user.street_address,
-            "zip_code": user.zip_code,
-            "zip_place": user.zip_place,
-            "subscribed_to_newsletter": user.subscribed_to_newsletter,
-            "allow_personalization": user.allow_personalization,
-            "allow_third_party_personalization": user.allow_third_party_personalization,
-            "password": user.password,
+            "email": "someone.special@example.com",
+            "first_name": "Someone",
+            "last_name": "Special",
+            "phone_number": "91812345",
+            "street_address": "Example street 1",
+            "zip_code": "0172",
+            "zip_place": "Oslo",
+            "subscribed_to_newsletter": False,
+            "allow_personalization": True,
+            "allow_third_party_personalization": True,
+            "password": "supersecret",
         }
 
         service_mock = mocker.patch("aria.users.endpoints.public.user_create")
@@ -66,7 +61,7 @@ class TestPublicUsersEndpoints:
 
         # Create a user to test that we are able to find
         # a user, and send a confirmation email.
-        user = baker.make(User)
+        user = create_user()
 
         payload_json = {"email": user.email}
 
@@ -99,7 +94,7 @@ class TestPublicUsersEndpoints:
         Test actually verifying the account
         """
 
-        user = baker.make(User)
+        user = create_user()
         user_uid = user.uid
         user_token = user.generate_verification_email_token()
 
@@ -131,7 +126,7 @@ class TestPublicUsersEndpoints:
         Test initiating reset password process.
         """
 
-        user = baker.make(User)
+        user = create_user()
 
         payload_json = {"email": user.email}
 
@@ -164,7 +159,7 @@ class TestPublicUsersEndpoints:
         Test validating created tokens and setting new password.
         """
 
-        user = baker.make(User)
+        user = create_user()
         user_uid = user.uid
         user_token = default_token_generator.make_token(user)
 
@@ -270,7 +265,7 @@ class TestProtectedUsersEndpoints:
         user retrieval.
         """
 
-        user = baker.make("users.User")
+        user = create_user()
 
         with django_assert_max_num_queries(0):
             response = anonymous_client.get(f"{self.BASE_ENDPOINT}/user/{user.id}/")
@@ -287,7 +282,7 @@ class TestProtectedUsersEndpoints:
         user retrieval.
         """
 
-        user = baker.make("users.User")
+        user = create_user()
 
         # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
         with django_assert_max_num_queries(3):
@@ -308,7 +303,7 @@ class TestProtectedUsersEndpoints:
         single user instance.
         """
 
-        user = baker.make("users.User")
+        user = create_user()
         user.date_joined = datetime.fromisoformat("1970-01-01 21:00:00")
         user.save()
 
@@ -369,7 +364,7 @@ class TestProtectedUsersEndpoints:
         full update of another user instance.
         """
 
-        user = baker.make("users.User")
+        user = create_user()
 
         payload_json = {
             "email": "newtestuser@example,com",
@@ -400,7 +395,7 @@ class TestProtectedUsersEndpoints:
         on full update of another user instance.
         """
 
-        user = baker.make("users.User")
+        user = create_user()
 
         payload_json = {
             "email": "newtestuser@example,com",
@@ -435,8 +430,7 @@ class TestProtectedUsersEndpoints:
         full update of another user instance.
         """
 
-        site = baker.make(Site)
-        user = baker.make("users.User", **{"site": site})
+        user = create_user()
 
         payload_json = {
             "email": "newtestuser@example.com",
@@ -481,7 +475,7 @@ class TestProtectedUsersEndpoints:
         Test that unauthenticated users gets a 401 unauthorized upon partial update.
         """
 
-        user = baker.make("users.User")
+        user = create_user()
 
         payload_json = {"email": "somenewemail@example.com"}
 
@@ -500,7 +494,7 @@ class TestProtectedUsersEndpoints:
         on partial update of another user instance.
         """
 
-        user = baker.make("users.User")
+        user = create_user()
 
         payload_json = {"email": "somenewemail@example.com"}
 
@@ -523,8 +517,7 @@ class TestProtectedUsersEndpoints:
         partial update of another user instance.
         """
 
-        site = baker.make(Site)
-        user = baker.make("users.User", **{"site": site})
+        user = create_user()
 
         payload_json = {"email": "newtestuser@example.com"}
 

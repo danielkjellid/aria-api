@@ -47,6 +47,13 @@ class UserDetailOutput(Schema):
     logs: list[UserAuditLogsRecord] = []
 
     @staticmethod
+    def resolve_phone_number(user: User) -> str:
+        """
+        Return formatted phone number.
+        """
+        return user.formatted_phone_number
+
+    @staticmethod
     def resolve_notes(user: User) -> list[UserNotesRecord]:
         """
         Retrieve a list of notes belonging to the user
