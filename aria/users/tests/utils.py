@@ -8,7 +8,7 @@ from aria.core.tests.utils import create_site
 from aria.users.models import User
 
 
-def create_user(
+def create_user(  # pylint: disable=too-many-arguments
     first_name: str = "Test",
     last_name: str = "User",
     email: str = "user@example.com",

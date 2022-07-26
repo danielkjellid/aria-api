@@ -48,6 +48,9 @@ class UserDetailOutput(Schema):
 
     @staticmethod
     def resolve_phone_number(user: User) -> str:
+        """
+        Return formatted phone number.
+        """
         return user.formatted_phone_number
 
     @staticmethod
