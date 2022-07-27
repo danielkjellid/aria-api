@@ -160,6 +160,7 @@ PROJECT_APPS = [
     "aria.audit_logs",
     "aria.categories",
     "aria.core",
+    "aria.employees",
     "aria.front",
     "aria.kitchens",
     "aria.notes",
