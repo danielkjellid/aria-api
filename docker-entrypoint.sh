@@ -35,5 +35,6 @@ fi
 
 if  [ "$1" = 'restore_db' ]; then
     exec poetry run ./bin/db-init ${*:2}
+fi
 
 exec "$@"
