@@ -4,6 +4,7 @@ import functools
 import os
 import sys
 from datetime import date
+from urllib.parse import unquote, urlsplit
 
 from utils.colors import red
 from utils.config import PROJECT_ROOT
@@ -50,10 +51,12 @@ def _sanity_checks() -> None:
 @not_in_dev
 def main() -> None:
     parser = argparse.ArgumentParser(description="Upload db dump to AWS")
+
     parser.add_argument("--host", help="Host to connect to PostgreSQL on")
     parser.add_argument("--port", type=int, help="Port to connect to PostgreSQL on")
     parser.add_argument("--user", help="User to connect to PostgreSQL with")
     parser.add_argument("--password", help="Password to connect to PostgreSQL with")
+
     parser.add_argument(
         "--keep-dump",
         action="store_true",
@@ -66,9 +69,25 @@ def main() -> None:
     _sanity_checks()
 
     bucket_name = os.environ.get("AWS_S3_BUCKET_NAME")
-    database_url = os.environ.get("DATABASE_URL")
+    db_url = os.environ.get("DATABASE_URL", None)
     dump_filename = f"aria-{date.today().strftime('%d-%m-%Y')}.dump"
     created_dump_path = PROJECT_ROOT / dump_filename
+
+    if db_url is not None:
+        db_config = urlsplit(db_url)
+        assert db_config.scheme == "postgresql"
+
+        db_name = db_config.path[1:]
+        pg_host = db_config.hostname
+        pg_user = db_config.username
+        pg_port = db_config.port
+        pg_password = unquote(db_config.password) if db_config.password else None
+    else:
+        db_name = "aria"
+        pg_host = args.host
+        pg_user = args.user
+        pg_port = args.port
+        pg_password = args.password
 
     if not has_aws_cli():
         sys.exit(AWS_CLI_INSTALL_ERROR_MESSAGE)
@@ -79,16 +98,17 @@ def main() -> None:
     with action_runner(description="Creating dump"):
         run_postgres_command(
             "pg_dump",
-            database_url,
             "-Fc",
             "--no-acl",
             "--no-owner",
+            "--dbname",
+            db_name,
             "-f",
             PROJECT_ROOT / dump_filename,
-            user=args.user,
-            port=args.port,
-            host=args.host,
-            password=args.password,
+            user=pg_user,
+            port=pg_port,
+            host=pg_host,
+            password=pg_password,
         )
 
     with action_runner(description="Uploading dump to AWS"):
