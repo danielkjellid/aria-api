@@ -131,6 +131,8 @@ services:
         value: production
       - key: PRODUCTION
         value: true
+      - key: DJANGO_SETTINGS_MODULE
+        value: aria.settings
 
   - type: cron
     schedule: 30 3 * * 0 # 03:30 UTC every sunday
@@ -149,3 +151,5 @@ services:
         value: staging
       - key: PRODUCTION
         value: false
+      - key: DJANGO_SETTINGS_MODULE
+        value: aria.settings
