@@ -115,7 +115,7 @@ services:
   ## Cron jobs ##
   ###############
   - type: cron
-    schedule: 30 2 * * * # 02:30 UTC
+    schedule: 30 2 * * 0 # 02:30 UTC every sunday
     region: frankfurt
     plan: Starter
     name: aria-cron-dump-db
@@ -133,7 +133,7 @@ services:
         value: true
 
   - type: cron
-    schedule: 30 3 * * * # 03:30 UTC
+    schedule: 30 3 * * 0 # 03:30 UTC every sunday
     region: frankfurt
     plan: Starter
     name: aria-cron-restore-db
@@ -143,7 +143,7 @@ services:
       - fromGroup: AWS
       - key: DATABASE_URL
         fromDatabase:
-          name: aria-db-staging
+          name: aria-db-staging # This db property must never change to anything production like.
           property: connectionString
       - key: ENVIRONMENT
         value: staging
