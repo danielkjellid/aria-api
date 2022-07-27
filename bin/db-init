@@ -151,7 +151,7 @@ def main() -> None:
 
     if db_url is not None:
         db_config = urlsplit(db_url)
-        assert db_config.scheme == "postgresql"
+        assert db_config.scheme == "postgresql" or db_config.scheme == "postgres"
 
         db_name = db_config.path[1:]
         pg_host = db_config.hostname
