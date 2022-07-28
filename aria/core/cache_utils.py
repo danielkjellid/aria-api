@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Any, Callable, Type, Union
+from typing import Any, Callable, Optional, Type, Union
 
 import dacite
 
@@ -68,7 +68,7 @@ def _dataclass_decoder(type_annotation: Type[Any]) -> Callable[[Any], Any]:
 def _dataclass_encoder(
     type_annotation: Type[Any],  # pylint: disable=unused-argument
 ) -> Callable[[Any], Any]:
-    def encode_dataclass(value: Any) -> dict[Any, Any] | None:
+    def encode_dataclass(value: Any) -> Optional[dict[Any, Any]]:
         return dataclasses.asdict(value) if value else None
 
     return encode_dataclass
@@ -87,7 +87,7 @@ def _dataclass_list_decoder(type_annotation: Type[Any]) -> Callable[[Any], Any]:
 def _dataclass_list_encoder(
     type_annotation: Type[Any],  # pylint: disable=unused-argument
 ) -> Callable[[Any], Any]:
-    def encode_dataclass_list(value: list[Any]) -> list[dict[str, Any] | None]:
+    def encode_dataclass_list(value: list[Any]) -> list[Optional[dict[str, Any]]]:
         return (
             [dataclasses.asdict(item) if item else None for item in value]
             if value
