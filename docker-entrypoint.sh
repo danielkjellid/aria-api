@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+if [ "$1" = 'start' ]; then
+  exec bash -c "poetry run ./bin/build && poetry run gunicorn aria.wsgi:application ${*:2}"
+fi
+
 if [ "$1" = 'python' ]; then
     exec poetry run python ${*:2}
 fi

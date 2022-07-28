@@ -43,7 +43,7 @@ services:
     plan: Starter Plus
     name: aria-api-prod
     env: docker
-    dockerCommand: "./docker-entrypoint.sh gunicorn"
+    dockerCommand: "./docker-entrypoint.sh start"
     autoDeploy: false
     envVars:
       - key: DATABASE_URL
@@ -92,7 +92,7 @@ services:
     plan: starter
     name: aria-api-staging
     env: docker
-    dockerCommand: "./docker-entrypoint.sh gunicorn"
+    dockerCommand: "./docker-entrypoint.sh start"
     autoDeploy: false
     envVars:
       - key: DATABASE_URL
