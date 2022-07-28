@@ -10,6 +10,9 @@ def create_employee_info(
     display_in_team_section: bool = True,
     is_active: bool = True,
 ) -> EmployeeInfo:
+    """
+    Create employee info for a user used for testing purposes.
+    """
 
     employee, _created = EmployeeInfo.objects.update_or_create(
         user=user,

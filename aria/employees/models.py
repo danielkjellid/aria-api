@@ -54,7 +54,7 @@ class EmployeeInfo(models.Model):
         verbose_name = "employee info"
         verbose_name_plural = "employee info"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             f"{self.first_name} {self.last_name}"
             if self.first_name and self.last_name
@@ -86,5 +86,5 @@ class EmployeeInfo(models.Model):
             update_fields=update_fields,
         )
 
-        if self.user.site_id:
+        if self.user and self.user.site_id:
             cache.delete(f"employees.employee_list.site_id={self.user.site_id}")

@@ -87,7 +87,7 @@ def _dataclass_list_decoder(type_annotation: Type[Any]) -> Callable[[Any], Any]:
 def _dataclass_list_encoder(
     type_annotation: Type[Any],  # pylint: disable=unused-argument
 ) -> Callable[[Any], Any]:
-    def encode_dataclass_list(value: list[Any]) -> Optional[list[dict[str, Any]]]:
+    def encode_dataclass_list(value: list[Any]) -> list[Optional[dict[str, Any]]]:
         return (
             [dataclasses.asdict(item) if item else None for item in value]
             if value
