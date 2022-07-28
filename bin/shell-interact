@@ -92,6 +92,8 @@ def main() -> None:
         run_cli_command(
             "ssh",
             f"{service['id']}@ssh.{service['serviceDetails']['region']}.render.com",
+            "-t",
+            "cd /app; bash --login",
             command_to_exec,
             capture=False,
         )
