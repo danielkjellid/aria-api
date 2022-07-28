@@ -1,3 +1,4 @@
+from aria.core.decorators import cached
 from aria.core.records import SiteRecord
 from aria.employees.models import EmployeeInfo
 from aria.employees.records import EmployeeInfoRecord
@@ -31,3 +32,16 @@ def employees_list_for_site(site_id: int) -> list[EmployeeInfoRecord]:
         )
         for employee in employees
     ]
+
+
+def _employees_list_for_site_cache_key(*, site_id: int) -> str:
+    return f"employees.site_id={site_id}"
+
+
+@cached(key=_employees_list_for_site_cache_key, timeout=24 * 60)
+def employees_list_for_site_from_cache(site_id: int) -> list[EmployeeInfoRecord]:
+    """
+    Get a list of employees associated with a certain site from the cache.
+    """
+
+    return employees_list_for_site(site_id=site_id)

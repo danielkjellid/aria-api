@@ -1,4 +1,7 @@
+from typing import Iterable
+
 from django.contrib.sites.models import Site
+from django.core.cache import cache
 from django.db import models
 
 from imagekit.models.fields import ProcessedImageField
@@ -69,3 +72,24 @@ class EmployeeInfo(models.Model):
         Get the full name representation of an employee
         """
         return f"{self.first_name} {self.last_name}"
+
+    def save(
+        self,
+        force_insert: bool = False,
+        force_update: bool = False,
+        using: str | None = None,
+        update_fields: Iterable[str] | None = None,
+    ) -> None:
+        """
+        Uncache employees list upon save.
+        """
+
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+        )
+
+        if self.site_id:
+            cache.delete(f"employees.site_id={self.site_id}")
