@@ -1,9 +1,8 @@
 from pydantic import BaseModel
 
-from aria.core.records import SiteRecord
-
 
 class EmployeeInfoRecord(BaseModel):
+    id: int
     user_id: int
 
     first_name: str
@@ -14,5 +13,4 @@ class EmployeeInfoRecord(BaseModel):
 
     offers_appointments: bool
     display_in_team_section: bool
-
-    site: SiteRecord
+    is_active: bool

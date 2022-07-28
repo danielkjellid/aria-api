@@ -1,6 +1,5 @@
 from typing import Iterable
 
-from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.db import models
 
@@ -45,12 +44,8 @@ class EmployeeInfo(models.Model):
     display_in_team_section = models.BooleanField(
         default=True, help_text="Display employee under 'Our team' frontend"
     )
-
-    site = models.ForeignKey(
-        Site,
-        related_name="employee_info",
-        blank=True,
-        on_delete=models.PROTECT,
+    is_active = models.BooleanField(
+        default=True, help_text="Designates if this is a current employee"
     )
 
     objects = _EmployeeInfoManager()
@@ -91,5 +86,5 @@ class EmployeeInfo(models.Model):
             update_fields=update_fields,
         )
 
-        if self.site_id:
-            cache.delete(f"employees.site_id={self.site_id}")
+        if self.user.site_id:
+            cache.delete(f"employees.employee_list.site_id={self.user.site_id}")

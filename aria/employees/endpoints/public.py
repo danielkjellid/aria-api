@@ -4,7 +4,7 @@ from ninja import Router
 
 from aria.api.decorators import api
 from aria.employees.schemas.outputs import EmployeeListOutput
-from aria.employees.selectors import employees_list_for_site_from_cache
+from aria.employees.selectors import employees_active_list_for_site_from_cache
 
 router = Router(tags=["Employees"])
 
@@ -21,6 +21,6 @@ def employee_list_api(request: HttpRequest, site_id: int) -> list[EmployeeListOu
     Endpoint for listing team employees related to site.
     """
 
-    employees = employees_list_for_site_from_cache(site_id=site_id)
+    employees = employees_active_list_for_site_from_cache(site_id=site_id)
 
     return [EmployeeListOutput(**employee.dict()) for employee in employees]
