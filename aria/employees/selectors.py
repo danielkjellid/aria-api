@@ -8,11 +8,15 @@ def employees_active_list_for_site(site_id: int) -> list[EmployeeInfoRecord]:
     Get a list of employees associated with a certain site.
     """
 
-    employees = EmployeeInfo.objects.filter(
-        is_active=True,
-        display_in_team_section=True,
-        user__site_id=site_id,
-    ).select_related("user")
+    employees = (
+        EmployeeInfo.objects.filter(
+            is_active=True,
+            display_in_team_section=True,
+            user__site_id=site_id,
+        )
+        .select_related("user")
+        .order_by("id")
+    )
 
     return [
         EmployeeInfoRecord(

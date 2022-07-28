@@ -125,32 +125,32 @@ class TestEmployeesSelectors:
             employees_active_list_for_site_from_cache(site_id=site_1.id)
 
         assert cache.get(f"employees.employee_list.site_id={site_1.id}") == [
-            {
-                "id": user_1_employee.id,
-                "user_id": user_1_employee.user_id,
-                "first_name": user_1_employee.first_name,
-                "last_name": user_1_employee.last_name,
-                "full_name": user_1_employee.full_name,
-                "company_email": user_1_employee.company_email,
-                "profile_picture": user_1_employee.profile_picture.url
+            EmployeeInfoRecord(
+                id=user_1_employee.id,
+                user_id=user_1_employee.user_id,
+                first_name=user_1.first_name,
+                last_name=user_1.last_name,
+                full_name=user_1_employee.full_name,
+                company_email=user_1_employee.company_email,
+                profile_picture=user_1_employee.profile_picture.url
                 if user_1_employee.profile_picture
                 else None,
-                "offers_appointments": user_1_employee.offers_appointments,
-                "display_in_team_section": user_1_employee.display_in_team_section,
-                "is_active": user_1_employee.is_active,
-            },
-            {
-                "id": user_2_employee.id,
-                "user_id": user_2_employee.user_id,
-                "first_name": user_2_employee.first_name,
-                "last_name": user_2_employee.last_name,
-                "full_name": user_2_employee.full_name,
-                "company_email": user_2_employee.company_email,
-                "profile_picture": user_2_employee.profile_picture.url
+                offers_appointments=user_1_employee.offers_appointments,
+                display_in_team_section=user_1_employee.display_in_team_section,
+                is_active=user_1_employee.is_active,
+            ),
+            EmployeeInfoRecord(
+                id=user_2_employee.id,
+                user_id=user_2_employee.user_id,
+                first_name=user_2.first_name,
+                last_name=user_2.last_name,
+                full_name=user_2_employee.full_name,
+                company_email=user_2_employee.company_email,
+                profile_picture=user_2_employee.profile_picture.url
                 if user_2_employee.profile_picture
                 else None,
-                "offers_appointments": user_2_employee.offers_appointments,
-                "display_in_team_section": user_2_employee.display_in_team_section,
-                "is_active": user_2_employee.is_active,
-            },
+                offers_appointments=user_2_employee.offers_appointments,
+                display_in_team_section=user_2_employee.display_in_team_section,
+                is_active=user_2_employee.is_active,
+            ),
         ]
