@@ -1,5 +1,7 @@
 from django.test import Client
 
+import pytest  # noqa
+
 from aria.api_auth.services import token_pair_obtain_for_user
 from aria.users.tests.conftest import *  # noqa: F403, F401
 
