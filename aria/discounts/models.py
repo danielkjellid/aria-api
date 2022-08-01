@@ -3,8 +3,6 @@ from django.db import models
 from aria.core.models import BaseModel
 from aria.discounts.managers import ProductDiscountQuerySet
 
-# Create your models here.
-
 _ProductDiscountManager = models.Manager.from_queryset(ProductDiscountQuerySet)
 
 
