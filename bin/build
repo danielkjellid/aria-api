@@ -6,7 +6,7 @@ from utils.managers import action_runner
 def main() -> None:
     # Install required dependencies accoring to pyproject.toml.
     with action_runner(description="Installing poetry dependencies"):
-        run_cli_command("poetry", "install")
+        run_cli_command("poetry", "install", "--no-dev")
 
     # Collect static files.
     with action_runner(description="Collecting static files"):
