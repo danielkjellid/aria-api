@@ -54,6 +54,12 @@ class ProductFileOutput(Schema):
     file: str | None
 
 
+class ProductCategoryOutput(Schema):
+    name: str
+    slug: str
+    parents: list["ProductCategoryOutput"] | None = []
+
+
 class ProductDetailOutput(Schema):
     id: int
     status: str
@@ -69,6 +75,7 @@ class ProductDetailOutput(Schema):
     rooms: list[BaseArrayFieldLabelRecord] | None = []
     available_in_special_sizes: bool = False
     supplier: ProductSupplierOutput
+    categories: list[ProductCategoryOutput] = []
     images: list[BaseHeaderImageRecord] = []
     options: list[ProductOptionOutput] = []
     colors: list[ProductColorOutput] = []
