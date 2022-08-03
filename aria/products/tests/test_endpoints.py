@@ -84,7 +84,9 @@ class TestPublicProductsEndpoints:
         # - 1 for preloading options,
         # - 1 for preloading files
         with django_assert_max_num_queries(8):
-            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/{subcat_1.slug}/")
+            response = anonymous_client.get(
+                f"{self.BASE_ENDPOINT}/category/{subcat_1.slug}/"
+            )
 
         actual_response = json.loads(response.content)
 
@@ -95,7 +97,7 @@ class TestPublicProductsEndpoints:
         # Uses 1 query by attempting to get category.
         with django_assert_max_num_queries(1):
             failed_response = anonymous_client.get(
-                f"{self.BASE_ENDPOINT}/does-not-exist/"
+                f"{self.BASE_ENDPOINT}/category/does-not-exist/"
             )
 
         assert failed_response.status_code == 404
