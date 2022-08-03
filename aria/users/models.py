@@ -20,10 +20,10 @@ from django.utils.http import (
 import phonenumbers
 
 from aria.users.enums import AvatarColors
-from aria.users.managers import UserQuerySet
+from aria.users.managers import UserManager, UserQuerySet
 from aria.users.records import UserAuditLogsRecord, UserNotesRecord, UserProfileRecord
 
-_UserManager = models.Manager.from_queryset(UserQuerySet)
+_UserManager = UserManager.from_queryset(UserQuerySet)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
