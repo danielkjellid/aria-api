@@ -217,7 +217,7 @@ IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = "imagekit.cachefiles.strategies.Optimistic
 AUTH_USER_MODEL = "users.User"
 
 AUTHENTICATION_BACKENDS = [
-    "aria.core.authentication.AuthBackend",
+    "django.contrib.auth.backends.ModelBackend",
 ]
 
 # Password validation

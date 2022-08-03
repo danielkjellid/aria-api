@@ -6,7 +6,7 @@ def base_header_image_record(
     *, instance: BaseHeaderImageModel
 ) -> BaseHeaderImageRecord:
     """
-    Utiltiy for quickly populating the BaseHeaderImageRecord.
+    Utility for quickly populating the BaseHeaderImageRecord.
     """
 
     return BaseHeaderImageRecord(
@@ -22,7 +22,7 @@ def base_header_image_record(
 
 def base_list_image_record(*, instance: BaseListImageModel) -> BaseListImageRecord:
     """
-    Utiltiy for quickly populating the BaseListImageRecord.
+    Utility for quickly populating the BaseListImageRecord.
     """
 
     return BaseListImageRecord(
