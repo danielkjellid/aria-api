@@ -177,8 +177,9 @@ def product_list_for_qs(
     filters: ProductListFilters | dict[str, Any] | None,
 ) -> list[ProductListRecord]:
     """
-    Returns a filterable list of products based on given queryset. The ProductListRecord is a
-    record of mutual properties for use whenever we show a list of products frontend.
+    Returns a filterable list of products based on given queryset. The
+    ProductListRecord is a record of mutual properties for use whenever we
+    show a list of products frontend.
     """
 
     filters = filters or {}
