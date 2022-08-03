@@ -5,10 +5,10 @@ from django.db.models import Prefetch, Q
 from aria.categories.models import Category
 from aria.categories.selectors import category_tree_active_list_for_product
 from aria.core.decorators import cached
+from aria.core.models import BaseQuerySet
 from aria.core.selectors import base_header_image_record
 from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.filters import ProductSearchFilter
-from aria.products.managers import ProductQuerySet
 from aria.products.models import Product, ProductOption
 from aria.products.records import (
     ProductColorRecord,
@@ -173,7 +173,7 @@ def product_detail(
 
 def product_list_for_qs(
     *,
-    products: ProductQuerySet,
+    products: BaseQuerySet["Product"],
     filters: ProductListFilters | dict[str, Any] | None,
 ) -> list[ProductListRecord]:
     """
@@ -186,7 +186,7 @@ def product_list_for_qs(
 
     # Preload all needed values
     qs = (
-        products.prefetch_related(
+        products.prefetch_related(  # type: ignore
             Prefetch(
                 "options",
                 queryset=ProductOption.objects.select_related("variant").distinct(
