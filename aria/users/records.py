@@ -2,8 +2,6 @@ from datetime import date, datetime
 
 from pydantic import BaseModel
 
-from aria.core.records import SiteRecord
-
 
 class UserProfileRecord(BaseModel):
     full_name: str
@@ -32,7 +30,6 @@ class UserRecord(BaseModel):
     is_active: bool = True
     is_staff: bool = False
     is_superuser: bool = False
-    site: SiteRecord | None = None
 
 
 class UserNotesRecord(BaseModel):

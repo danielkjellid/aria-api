@@ -1,11 +1,9 @@
 from typing import Any, Optional
 
-from django.conf import settings
 from django.contrib.auth import password_validation
 from django.contrib.auth.models import Group
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import validate_email
 from django.db import transaction
@@ -62,7 +60,6 @@ def user_create(
     request: Optional[HttpRequest] = None,
     is_staff: bool = False,
     is_active: bool = True,
-    site: Optional[Site] = None,
     **additional_fields: Any,
 ) -> UserRecord:
     """
@@ -71,9 +68,6 @@ def user_create(
 
     email, password = _validate_email_and_password(email=email, password=password)
 
-    if not site:
-        site = Site.objects.get(id=settings.SITE_ID)
-
     # Create the new user
     new_user = User(
         email=email,
@@ -81,7 +75,6 @@ def user_create(
         is_active=is_active,
         subscribed_to_newsletter=subscribed_to_newsletter,
         date_joined=timezone.now(),
-        site=site,
         **additional_fields,
     )
 
