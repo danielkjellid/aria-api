@@ -125,6 +125,7 @@ def product_detail(
         .preload_for_list()
         .with_active_categories()
         .with_available_options()
+        .annotate_site_state_data()
         .first()
     )
 
@@ -176,22 +177,25 @@ def product_list_for_qs(
     filters: ProductListFilters | dict[str, Any] | None,
 ) -> list[ProductListRecord]:
     """
-    Returns a filterable list of products based on given queryset. The
-    ProductListRecord is a record of mutual properties for use whenever we
-    show a list of products frontend.
+    Returns a filterable list of products based on given queryset. The ProductListRecord is a
+    record of mutual properties for use whenever we show a list of products frontend.
     """
 
     filters = filters or {}
 
     # Preload all needed values
-    qs = products.prefetch_related(  # type: ignore
-        Prefetch(
-            "options",
-            queryset=ProductOption.objects.select_related("variant").distinct(
-                "variant_id"
-            ),
+    qs = (
+        products.prefetch_related(
+            Prefetch(
+                "options",
+                queryset=ProductOption.objects.select_related("variant").distinct(
+                    "variant_id"
+                ),
+            )
         )
-    ).preload_for_list()
+        .preload_for_list()
+        .annotate_site_state_data()
+    )
 
     filtered_qs = ProductSearchFilter(filters, qs).qs
 
