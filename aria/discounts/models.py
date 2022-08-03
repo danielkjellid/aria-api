@@ -27,7 +27,7 @@ class Discount(BaseModel):
         blank=True,
         null=True,
         help_text=(
-            "The minimum product quantity for the discount to apply per orderline."
+            "The minimum product quantity for the discount to apply per orderline. "
             "E.g. take 3, pay for 2, the minimum quantity would be 3."
         ),
     )
@@ -35,7 +35,7 @@ class Discount(BaseModel):
         blank=True,
         null=True,
         help_text=(
-            "The maximum product quantity the discount applies to per orderline"
+            "The maximum product quantity the discount applies to per orderline "
             "E.g. max amount of 10 items per customer."
         ),
     )

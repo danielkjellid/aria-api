@@ -17,8 +17,8 @@ from aria.products.selectors import (
     product_detail,
     product_list_by_category,
     product_list_by_category_from_cache,
-    product_list_for_qs,
     product_options_list_for_product,
+    products_for_sale_list_for_qs,
 )
 from aria.products.tests.utils import create_product, create_product_option
 
@@ -79,7 +79,7 @@ class TestProductsSelectors:
         assert len(fetched_product.shapes) == len(product.shapes.all())
         assert len(fetched_product.colors) == len(product.colors.all())
 
-    def test_product_list_for_qs(self, django_assert_max_num_queries) -> None:
+    def test_products_for_sale_list_for_qs(self, django_assert_max_num_queries) -> None:
         """
         Test that the product_list_for_qs selector returns expected response
         within query limit.
@@ -109,7 +109,7 @@ class TestProductsSelectors:
         # - 1 for preloading options,
         # - 1 for preloading files
         with django_assert_max_num_queries(7):
-            products_by_subcat_1 = product_list_for_qs(
+            products_by_subcat_1 = products_for_salelist_for_qs(
                 products=products_by_category_subcat_1, filters=None
             )
 
@@ -128,7 +128,7 @@ class TestProductsSelectors:
         # - 1 for preloading options,
         # - 1 for preloading files
         with django_assert_max_num_queries(7):
-            products_by_subcat_2 = product_list_for_qs(
+            products_by_subcat_2 = products_for_sale_list_for_qs(
                 products=products_by_category_subcat_2, filters=None
             )
 
@@ -150,7 +150,7 @@ class TestProductsSelectors:
         # - 1 for preloading options,
         # - 1 for preloading files
         with django_assert_max_num_queries(7):
-            filtered_products_by_subcat_2 = product_list_for_qs(
+            filtered_products_by_subcat_2 = products_for_sale_list_for_qs(
                 products=products_by_category_subcat_2, filters={"search": "awesome"}
             )
 

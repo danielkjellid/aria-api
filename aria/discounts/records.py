@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from pydantic import BaseModel
 
-from aria.products.records import ProductRecord
+from aria.products.records import ProductListRecord
 
 
 class DiscountRecord(BaseModel):
@@ -12,7 +12,7 @@ class DiscountRecord(BaseModel):
     description: str | None
     slug: str | None
 
-    products: list[ProductRecord]
+    products: list[ProductListRecord]
 
     minimum_quantity: int | None
     maximum_quantity: int | None

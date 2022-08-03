@@ -70,6 +70,21 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
 
         return self.prefetch_related(prefetched_options)
 
+    def with_active_discounts(self) -> BaseQuerySet["models.Product"]:
+        """
+        Prefetch related active discounts.
+        """
+
+        from aria.discounts.models import Discount
+
+        active_discounts = Discount.objects.active()
+
+        prefetched_discounts = Prefetch(
+            "discounts", queryset=active_discounts, to_attr="active_discounts"
+        )
+
+        return self.prefetch_related(prefetched_discounts)
+
     def annotate_site_state_data(self) -> BaseQuerySet["models.Product"]:
         """
         Annotate site state data for product to avoid unneeded joins.
@@ -96,14 +111,18 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         Utility to avoid n+1 queries
         """
 
-        qs = self.select_related("supplier").prefetch_related(
-            "categories",
-            "colors",
-            "shapes",
-            "images",
-            "shapes",
-            "options",
-            "files",
+        qs = (
+            self.select_related("supplier")
+            .prefetch_related(
+                "colors",
+                "shapes",
+                "images",
+                "shapes",
+                "options",
+                "files",
+            )
+            .with_active_categories()
+            .with_active_discounts()
         )
 
         return qs

@@ -1,23 +1,13 @@
 from ninja import Schema
 
-
-class DiscountProductVariantOutput(Schema):
-    pass
+from aria.products.schemas.outputs import ProductListOutput
 
 
-class DiscountProductSupplierOutput(Schema):
-    name: str
-    origin_country: str
-    origin_country_flag: str
-
-
-class DiscountProductListOutput(Schema):
+class DiscountsListOutput(Schema):
     id: int
     name: str
-    slug: str
-    unit: str
-    supplier: DiscountProductSupplierOutput
-    thumbnail: str | None
-    display_price: bool
-    from_price: float
-    colors: list
+    slug: str | None
+
+    products: list[ProductListOutput]
+
+    ordering: int

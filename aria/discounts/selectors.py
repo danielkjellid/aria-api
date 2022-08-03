@@ -1,23 +1,16 @@
-from django.db.models import F, Q
-from django.utils import timezone
+from decimal import Decimal
 
 from aria.discounts.models import Discount
 from aria.discounts.records import DiscountRecord
-from aria.products.enums import ProductStatus
-from aria.products.selectors import product_record
+from aria.products.models import Product
+from aria.products.records import ProductListRecord
+from aria.products.selectors import products_for_sale_list_for_qs
 
 
 def discount_record(discount_product: Discount) -> DiscountRecord:
     """
     Get the record representation for a single discount product instance.
     """
-
-    prefetched_products = getattr(discount_product, "discounted_products", None)
-
-    if prefetched_products is not None:
-        products = prefetched_products
-    else:
-        products = discount_product.products.filter(status=ProductStatus.AVAILABLE)
 
     return DiscountRecord(
         id=discount_product.id,
@@ -26,7 +19,9 @@ def discount_record(discount_product: Discount) -> DiscountRecord:
         if discount_product.description
         else None,
         slug=discount_product.slug if discount_product.slug else None,
-        products=[product_record(product=product) for product in products],
+        products=products_for_sale_list_for_qs(
+            products=discount_product.products.all(), filters=None
+        ),
         minimum_quantity=discount_product.minimum_quantity
         if discount_product.minimum_quantity
         else None,
@@ -52,24 +47,22 @@ def discount_record(discount_product: Discount) -> DiscountRecord:
     )
 
 
-def discounted_products_active_list() -> list[DiscountProductRecord]:
+def discounted_products_active_list() -> list[ProductListRecord]:
     """
     Get a list of
     """
 
-    datetime_now = timezone.now()
-
-    discount_products = Discount.objects.filter(
-        # Discounts can optionally have a start and/or end time set.
-        Q(active_at__isnull=True) | Q(active_at__lte=datetime_now),
-        Q(active_to__isnull=True) | Q(active_to__gte=datetime_now),
-        # If the discount has a maximum sold quantity set, filter out those
-        # discounts that have passed the limit.
-        Q(maximum_sold_quantity__isnull=True)
-        | Q(maximum_sold_quantity__gt=F("total_sold_quantity")),
-    ).with_products()
+    discount_products = Discount.objects.active()
 
     return [
         discount_record(discount_product=discount_product)
         for discount_product in discount_products
     ]
+
+
+def discount_calculate_product_price(
+    *, product: Product, discount: Discount
+) -> Decimal:
+
+    if not discount:
+        return None

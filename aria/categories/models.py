@@ -139,6 +139,7 @@ class Category(MPTTModel, BaseModel, BaseHeaderImageModel, BaseListImageModel):
             image_2048x1150=self.image_2048x1150.url,
         )
 
+    @property
     def list_images(self) -> BaseListImageRecord:
         """
         Get category list images.
