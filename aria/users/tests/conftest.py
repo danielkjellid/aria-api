@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AnonymousUser, Permission
-from django.contrib.sites.models import Site
 
 import pytest
 
@@ -14,14 +13,7 @@ def test_permissions(request):
 
 
 @pytest.fixture
-def site(settings):
-    site, _ = Site.objects.get_or_create(domain="test.example.com", name="Test site")
-    settings.SITE_ID = site.id
-    return site
-
-
-@pytest.fixture
-def create_user_with_permissions(django_user_model, site):
+def create_user_with_permissions(django_user_model):
     """
     Returns a factory creating users given permissions.
     """
@@ -46,7 +38,6 @@ def create_user_with_permissions(django_user_model, site):
                 parsed_perms.append(parsed_perm[0])
 
         user.user_permissions.set(parsed_perms)
-        user.site = site
         user.save()
 
         return user

@@ -48,7 +48,7 @@ def user_list(
 
     filters = filters or {}
 
-    qs = User.objects.all().select_related("site")
+    qs = User.objects.all()
     filtered_qs = UserFilter(filters, qs).qs.order_by("id")
 
     return [user_record(user=user) for user in filtered_qs]
