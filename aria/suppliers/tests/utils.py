@@ -1,6 +1,3 @@
-from django.contrib.sites.models import Site
-
-from aria.core.tests.utils import create_site
 from aria.suppliers.models import Supplier
 
 
@@ -9,7 +6,6 @@ def get_or_create_supplier(
     supplier_name: str = "Example supplier",
     supplier_discount: float = 0.2,
     origin_country: str = "no",
-    sites: list[Site] | None = None,
     website_link: str = "example.com",
     is_active: bool = True,
 ) -> Supplier:
@@ -28,10 +24,5 @@ def get_or_create_supplier(
             "is_active": is_active,
         },
     )
-
-    if sites is None:
-        sites = [create_site()]
-
-    supplier.sites.set(sites)
 
     return supplier
