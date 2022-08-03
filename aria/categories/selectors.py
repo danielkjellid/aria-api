@@ -115,7 +115,7 @@ def category_tree_active_list_for_product(
     *, product: Product
 ) -> list[CategoryDetailRecord]:
     """
-    Get a full represenation of a nested category tree connected to
+    Get a full representation of a nested category tree connected to
     a single product instance.
 
     If possible, use the manager method with_active_categories()
