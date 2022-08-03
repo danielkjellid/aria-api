@@ -6,6 +6,7 @@ from aria.core.records import BaseArrayFieldLabelRecord, BaseHeaderImageRecord
 class ProductSupplierOutput(Schema):
     name: str
     origin_country: str
+    origin_country_flag: str
 
 
 class ProductVariantOutput(Schema):
@@ -29,11 +30,13 @@ class ProductOptionOutput(Schema):
 
 
 class ProductColorOutput(Schema):
+    id: int
     name: str
     color_hex: str
 
 
 class ProductShapeOutput(Schema):
+    id: int
     name: str
     image: str | None
 
@@ -63,3 +66,19 @@ class ProductDetailOutput(Schema):
     colors: list[ProductColorOutput] = []
     shapes: list[ProductShapeOutput] = []
     files: list[ProductFileOutput] = []
+
+
+class ProductListOutput(Schema):
+    id: int
+    name: str
+    slug: str
+    unit: str
+    supplier: ProductSupplierOutput
+    thumbnail: str | None
+    display_price: bool
+    from_price: float
+    colors: list[ProductColorOutput]
+    shapes: list[ProductShapeOutput]
+    materials: list[BaseArrayFieldLabelRecord]
+    rooms: list[BaseArrayFieldLabelRecord]
+    variants: list[ProductVariantOutput]

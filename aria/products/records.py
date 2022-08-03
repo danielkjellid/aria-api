@@ -87,3 +87,19 @@ class ProductDetailRecord(ProductRecord):
     options: list[ProductOptionRecord] = []
     images: list[BaseHeaderImageRecord] = []
     files: list[ProductFileRecord] = []
+
+
+class ProductListRecord(BaseModel):
+    id: int
+    name: str
+    slug: str
+    unit: str
+    supplier: ProductSupplierRecord
+    thumbnail: str | None = None
+    display_price: bool
+    from_price: Decimal
+    materials: list[BaseArrayFieldLabelRecord]
+    rooms: list[BaseArrayFieldLabelRecord]
+    colors: list[ProductColorRecord]
+    shapes: list[ProductShapeRecord]
+    variants: list[ProductVariantRecord]

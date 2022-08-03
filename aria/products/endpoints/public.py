@@ -1,13 +1,38 @@
 from django.http import HttpRequest
+from django.shortcuts import get_object_or_404
 
-from ninja import Router
+from ninja import Query, Router
 
 from aria.api.decorators import api
+from aria.categories.models import Category
 from aria.core.exceptions import ApplicationError
-from aria.products.schemas.outputs import ProductDetailOutput
-from aria.products.selectors import product_detail
+from aria.products.schemas.filters import ProductListFilters
+from aria.products.schemas.outputs import ProductDetailOutput, ProductListOutput
+from aria.products.selectors import product_detail, product_list_by_category_from_cache
 
 router = Router(tags=["Products"])
+
+
+@api(
+    router,
+    "{category_slug}/",
+    method="GET",
+    response={200: list[ProductListOutput]},
+    summary="List all products belonging to a certain category",
+)
+def product_list_by_category_api(
+    request: HttpRequest, category_slug: str, search: ProductListFilters = Query(...)
+) -> list[ProductListOutput]:
+    """
+    Get a list of products related to a specific category.
+    """
+
+    category = get_object_or_404(Category, slug=category_slug)
+    products = product_list_by_category_from_cache(
+        category=category, filters=search.dict()
+    )
+
+    return [ProductListOutput(**product.dict()) for product in products]
 
 
 @api(

@@ -369,6 +369,13 @@ class Product(BaseModel, BaseThumbnailImageModel):
         """
         return get_array_field_labels(self.rooms, enums.ProductRooms)
 
+    @property
+    def unit_display(self) -> str:
+        """
+        Get human representation of unit label.
+        """
+        return enums.ProductUnit(self.unit).label
+
 
 _ProductImageManager = models.Manager.from_queryset(ProductImageQuerySet)
 
