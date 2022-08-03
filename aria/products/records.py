@@ -56,6 +56,13 @@ class ProductShapeRecord(BaseModel):
     image: str | None
 
 
+class ProductDiscountRecord(BaseModel):
+    is_discounted: bool
+    discounted_gross_price: Decimal
+    maximum_sold_quantity: int | None
+    remaining_quantity: int | None
+
+
 class ProductRecord(BaseModel):
     id: int
     name: str
@@ -81,6 +88,7 @@ class ProductDetailRecord(ProductRecord):
     display_price: float
     can_be_picked_up: bool
     can_be_purchased_online: bool
+    discount: ProductDiscountRecord | None
     colors: list[ProductColorRecord] = []
     shapes: list[ProductShapeRecord] = []
     categories: list[CategoryDetailRecord]
@@ -103,3 +111,4 @@ class ProductListRecord(BaseModel):
     colors: list[ProductColorRecord]
     shapes: list[ProductShapeRecord]
     variants: list[ProductVariantRecord]
+    discount: ProductDiscountRecord | None

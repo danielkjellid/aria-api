@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from ninja import Schema
 
 from aria.core.records import BaseArrayFieldLabelRecord, BaseHeaderImageRecord
@@ -46,6 +48,13 @@ class ProductFileOutput(Schema):
     file: str | None
 
 
+class ProductDiscountOutput(Schema):
+    is_discounted: bool
+    discounted_gross_price: Decimal
+    maximum_sold_quantity: int | None
+    remaining_quantity: int | None
+
+
 class ProductDetailOutput(Schema):
     id: int
     status: str
@@ -57,6 +66,7 @@ class ProductDetailOutput(Schema):
     display_price: float
     can_be_picked_up: bool
     can_be_purchased_online: bool
+    discounts: ProductDiscountOutput | None
     materials: list[BaseArrayFieldLabelRecord] | None = []
     rooms: list[BaseArrayFieldLabelRecord] | None = []
     available_in_special_sizes: bool = False

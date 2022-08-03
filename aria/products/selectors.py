@@ -1,3 +1,4 @@
+from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
 from django.db.models import Prefetch, Q
@@ -13,6 +14,7 @@ from aria.products.models import Product, ProductOption
 from aria.products.records import (
     ProductColorRecord,
     ProductDetailRecord,
+    ProductDiscountRecord,
     ProductFileRecord,
     ProductListRecord,
     ProductOptionRecord,
@@ -116,15 +118,15 @@ def product_detail(
     id or slug, although one of them has to be provided.
 
     Be careful to not run this in a loop unless absolutely needed. It
-    already does quite a few queries, and will to that amount per loop
+    already does quite a few queries, and will do that amount per loop
     iteration.
     """
 
     product = (
         Product.objects.filter(Q(id=product_id) | Q(slug=product_slug))  # type: ignore
         .preload_for_list()
-        .with_active_categories()
         .with_available_options()
+        .annotate_site_state_data()
         .first()
     )
 
@@ -143,6 +145,7 @@ def product_detail(
         display_price=product.display_price,
         can_be_picked_up=product.can_be_picked_up,
         can_be_purchased_online=product.can_be_purchased_online,
+        discount=product_get_discount(product=product),
         colors=[
             ProductColorRecord(id=color.id, name=color.name, color_hex=color.color_hex)
             for color in product.colors.all()
@@ -170,28 +173,75 @@ def product_detail(
     return record
 
 
-def product_list_for_qs(
+def product_get_discount(*, product: Product) -> ProductDiscountRecord:
+
+    # As of now, from_price is an annotated value and is crucial for
+    # discounts.
+    # if not hasattr(product, "from_price"):
+    #     return None
+
+    prefetched_active_discounts = getattr(product, "active_discounts", None)
+
+    if prefetched_active_discounts is not None:
+        active_discounts = prefetched_active_discounts
+    else:
+        active_discounts = product.discounts.active()
+
+    if len(active_discounts) == 0:
+        return None
+
+    discount = active_discounts[0]
+
+    if discount.discount_gross_price:
+        discounted_gross_price = discount.discount_gross_price
+    elif discount.discount_gross_percentage:
+        discounted_gross_price = Decimal(product.from_price) * (
+            Decimal(1) - discount.discount_gross_percentage
+        )
+
+    discounted_gross_price = discounted_gross_price.quantize(
+        Decimal(".01"), rounding=ROUND_HALF_UP
+    )
+
+    return ProductDiscountRecord(
+        is_discounted=True,
+        discounted_gross_price=discounted_gross_price,
+        maximum_sold_quantity=discount.maximum_sold_quantity
+        if discount.maximum_sold_quantity
+        else None,
+        remaining_quantity=(
+            discount.maximum_sold_quantity - discount.total_sold_quantity
+        ),
+    )
+
+
+def products_for_sale_list_for_qs(
     *,
     products: BaseQuerySet["Product"],
     filters: ProductListFilters | dict[str, Any] | None,
 ) -> list[ProductListRecord]:
     """
-    Returns a filterable list of products based on given queryset. The
-    ProductListRecord is a record of mutual properties for use whenever we
-    show a list of products frontend.
+    Returns a filterable list of products based on given queryset. The ProductListRecord is a
+    record of mutual properties for use whenever we show a list of products frontend.
     """
 
     filters = filters or {}
 
-    # Preload all needed values
-    qs = products.prefetch_related(  # type: ignore
-        Prefetch(
-            "options",
-            queryset=ProductOption.objects.select_related("variant").distinct(
-                "variant_id"
-            ),
+    # Preload all needed values.
+    # TODO: include discount data
+    qs = (
+        products.filter(status=ProductStatus.AVAILABLE)
+        .prefetch_related(
+            Prefetch(
+                "options",
+                queryset=ProductOption.objects.select_related("variant").distinct(
+                    "variant_id"
+                ),
+            )
         )
-    ).preload_for_list()
+        .preload_for_list()
+        .annotate_site_state_data()
+    )
 
     filtered_qs = ProductSearchFilter(filters, qs).qs
 
@@ -235,6 +285,7 @@ def product_list_for_qs(
                 for option in product.options.all()
                 if option.variant
             ],
+            discount=product_get_discount(product=product),
         )
         for product in filtered_qs
     ]
@@ -249,9 +300,7 @@ def product_list_by_category(
 
     products_by_category = Product.objects.by_category(category)
 
-    qs = product_list_for_qs(products=products_by_category, filters=filters)
-    print(qs)
-    return qs
+    return products_for_sale_list_for_qs(products=products_by_category, filters=filters)
 
 
 def _product_list_by_category_cache_key(
