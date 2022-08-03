@@ -34,13 +34,3 @@ class TestPublicCategoriesUrls:
             args=["category_slug"],
         )
         assert url == "/api/categories/category/category_slug/children/"
-
-    def test_url_category_products_list_api(self) -> None:
-        """
-        Test reverse match of category_detail_api endpoint.
-        """
-        url = reverse(
-            "api-1.0.0:categories-category-{category_slug}-products",
-            args=["category_slug"],
-        )
-        assert url == "/api/categories/category/category_slug/products/"

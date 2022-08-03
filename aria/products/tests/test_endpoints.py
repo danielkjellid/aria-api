@@ -74,9 +74,8 @@ class TestPublicProductsEndpoints:
             for product in products
         ]
 
-        # Uses 9 queries:
+        # Uses 8 queries:
         # - 1 for getting related category,
-        # - 1 for annotating display_price and from_price values,
         # - 1 for getting products,
         # - 1 for preloading product categories,
         # - 1 for preloading colors,
@@ -84,10 +83,8 @@ class TestPublicProductsEndpoints:
         # - 1 for preloading images,
         # - 1 for preloading options,
         # - 1 for preloading files
-        with django_assert_max_num_queries(9):
-            response = anonymous_client.get(
-                f"{self.BASE_ENDPOINT}/category/{subcat_1.slug}/products/"
-            )
+        with django_assert_max_num_queries(8):
+            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/{subcat_1.slug}/")
 
         actual_response = json.loads(response.content)
 
@@ -98,7 +95,7 @@ class TestPublicProductsEndpoints:
         # Uses 1 query by attempting to get category.
         with django_assert_max_num_queries(1):
             failed_response = anonymous_client.get(
-                f"{self.BASE_ENDPOINT}/category/does-not-exist/products/"
+                f"{self.BASE_ENDPOINT}/does-not-exist/"
             )
 
         assert failed_response.status_code == 404
@@ -111,7 +108,7 @@ class TestPublicProductsEndpoints:
         a valid response.
         """
 
-        product = ccreate_product()
+        product = create_product()
 
         expected_response = {
             "id": product.id,
@@ -130,6 +127,7 @@ class TestPublicProductsEndpoints:
             "supplier": {
                 "name": product.supplier.name,
                 "origin_country": product.supplier.origin_country.name,
+                "origin_country_flag": product.supplier.origin_country.unicode_flag,
             },
             "images": [
                 {
@@ -152,6 +150,7 @@ class TestPublicProductsEndpoints:
                         "id": option.variant.id,
                         "name": option.variant.name,
                         "image": option.variant.image.url,
+                        "is_standard": option.variant.is_standard,
                     }
                     if option.variant
                     else None,

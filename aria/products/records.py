@@ -96,7 +96,7 @@ class ProductListRecord(BaseModel):
     unit: str
     supplier: ProductSupplierRecord
     thumbnail: str | None = None
-    display_price: bool | None = False
+    display_price: bool
     from_price: Decimal
     materials: list[BaseArrayFieldLabelRecord]
     rooms: list[BaseArrayFieldLabelRecord]
