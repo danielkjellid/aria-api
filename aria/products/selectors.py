@@ -253,7 +253,9 @@ def product_list_by_category(
 
     products_by_category = Product.objects.by_category(category)
 
-    return product_list_for_qs(products=products_by_category, filters=filters)
+    qs = product_list_for_qs(products=products_by_category, filters=filters)
+    print(qs)
+    return qs
 
 
 def _product_list_by_category_cache_key(
