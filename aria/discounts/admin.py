@@ -1,11 +1,11 @@
 from django.contrib import admin
 
-from aria.discounts.models import DiscountProduct
+from aria.discounts.models import Discount
 
 
-@admin.register(DiscountProduct)
-class DiscountProductAdmin(admin.ModelAdmin):
-    model = DiscountProduct
+@admin.register(Discount)
+class DiscountAdmin(admin.ModelAdmin):
+    model = Discount
     list_display = (
         "name",
         "description",

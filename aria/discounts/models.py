@@ -1,19 +1,19 @@
 from django.db import models
 
 from aria.core.models import BaseModel
-from aria.discounts.managers import DiscountProductQuerySet
+from aria.discounts.managers import DiscountQuerySet
 
-_DiscountProductManager = models.Manager.from_queryset(DiscountProductQuerySet)
+_DiscountManager = models.Manager.from_queryset(DiscountQuerySet)
 
 
-class DiscountProduct(BaseModel):
+class Discount(BaseModel):
     """
     Sets the discount level for one or more products. Product discounts can
     be limited for specific products or time periods.
     """
 
     name = models.CharField(max_length=100)
-    description = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     slug = models.SlugField(null=True)
 
     products = models.ManyToManyField(
@@ -104,11 +104,11 @@ class DiscountProduct(BaseModel):
         ),
     )
 
-    objects = _DiscountProductManager()
+    objects = _DiscountManager()
 
     class Meta:
-        verbose_name = "product discount"
-        verbose_name_plural = "product discounts"
+        verbose_name = "Discount"
+        verbose_name_plural = "Discounts"
 
     def __str__(self) -> str:
         return self.name

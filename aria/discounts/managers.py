@@ -5,11 +5,11 @@ from aria.products.enums import ProductStatus
 from aria.products.models import Product
 
 if TYPE_CHECKING:
-    from aria.discounts.models import DiscountProduct
+    from aria.discounts.models import Discount
 
 
-class DiscountProductQuerySet(BaseQuerySet):
-    def with_products(self) -> BaseQuerySet["DiscountProduct"]:
+class DiscountQuerySet(BaseQuerySet):
+    def with_products(self) -> BaseQuerySet["Discount"]:
         """
         Prefetch products related to a discount product. Sets the
         prefetched values attribute as "discounted_products"

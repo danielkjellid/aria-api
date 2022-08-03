@@ -1,13 +1,13 @@
 from django.db.models import F, Q
 from django.utils import timezone
 
-from aria.discounts.models import DiscountProduct
-from aria.discounts.records import DiscountProductRecord
+from aria.discounts.models import Discount
+from aria.discounts.records import DiscountRecord
 from aria.products.enums import ProductStatus
 from aria.products.selectors import product_record
 
 
-def discount_product_record(discount_product: DiscountProduct) -> DiscountProductRecord:
+def discount_record(discount_product: Discount) -> DiscountRecord:
     """
     Get the record representation for a single discount product instance.
     """
@@ -19,7 +19,7 @@ def discount_product_record(discount_product: DiscountProduct) -> DiscountProduc
     else:
         products = discount_product.products.filter(status=ProductStatus.AVAILABLE)
 
-    return DiscountProductRecord(
+    return DiscountRecord(
         id=discount_product.id,
         name=discount_product.name,
         description=discount_product.description
@@ -53,10 +53,13 @@ def discount_product_record(discount_product: DiscountProduct) -> DiscountProduc
 
 
 def discounted_products_active_list() -> list[DiscountProductRecord]:
+    """
+    Get a list of
+    """
 
     datetime_now = timezone.now()
 
-    discount_products = DiscountProduct.objects.filter(
+    discount_products = Discount.objects.filter(
         # Discounts can optionally have a start and/or end time set.
         Q(active_at__isnull=True) | Q(active_at__lte=datetime_now),
         Q(active_to__isnull=True) | Q(active_to__gte=datetime_now),
@@ -67,6 +70,6 @@ def discounted_products_active_list() -> list[DiscountProductRecord]:
     ).with_products()
 
     return [
-        discount_product_record(discount_product=discount_product)
+        discount_record(discount_product=discount_product)
         for discount_product in discount_products
     ]

@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from aria.products.records import ProductRecord
 
 
-class DiscountProductRecord(BaseModel):
+class DiscountRecord(BaseModel):
     id: int
     name: str
     description: str | None
