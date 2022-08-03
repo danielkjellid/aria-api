@@ -15,7 +15,7 @@ router = Router(tags=["Products"])
 
 @api(
     router,
-    "{category_slug}/",
+    "category/{category_slug}/",
     method="GET",
     response={200: list[ProductListOutput]},
     summary="List all products belonging to a certain category",
