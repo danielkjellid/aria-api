@@ -1,12 +1,6 @@
-from decimal import Decimal
-
 from pydantic import BaseModel
 
-from aria.core.records import (
-    BaseArrayFieldLabelRecord,
-    BaseHeaderImageRecord,
-    BaseListImageRecord,
-)
+from aria.core.records import BaseHeaderImageRecord, BaseListImageRecord
 
 
 class CategoryRecord(BaseModel):
@@ -31,45 +25,3 @@ class CategoryDetailRecord(BaseModel):
     children: list[CategoryRecord]
     images: BaseHeaderImageRecord
     list_images: BaseListImageRecord
-
-
-class CategoryProductColorRecord(BaseModel):
-    id: int
-    name: str
-    color_hex: str
-
-
-class CategoryProductShapeRecord(BaseModel):
-    id: int
-    name: str
-    image: str | None
-
-
-class CategoryProductVariantRecord(BaseModel):
-    id: int
-    name: str
-    thumbnail: str | None
-    image: str | None
-
-
-class CategoryProductSupplierRecord(BaseModel):
-    id: int
-    name: str
-    origin_country: str
-    origin_country_flag: str
-
-
-class CategoryProductRecord(BaseModel):
-    id: int
-    name: str
-    slug: str
-    unit: str
-    supplier: CategoryProductSupplierRecord
-    thumbnail: str | None = None
-    display_price: bool | None = False
-    from_price: Decimal
-    materials: list[BaseArrayFieldLabelRecord]
-    rooms: list[BaseArrayFieldLabelRecord]
-    colors: list[CategoryProductColorRecord]
-    shapes: list[CategoryProductShapeRecord]
-    variants: list[CategoryProductVariantRecord]
