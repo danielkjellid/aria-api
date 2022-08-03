@@ -3,7 +3,7 @@ from ninja import Schema
 from aria.products.schemas.outputs import ProductListOutput
 
 
-class DiscountsListOutput(Schema):
+class DiscountsActiveListOutput(Schema):
     id: int
     name: str
     slug: str | None

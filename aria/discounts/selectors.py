@@ -1,10 +1,7 @@
-from decimal import Decimal
-
 from aria.discounts.models import Discount
 from aria.discounts.records import DiscountRecord
-from aria.products.models import Product
 from aria.products.records import ProductListRecord
-from aria.products.selectors import products_for_sale_list_for_qs
+from aria.products.selectors import product_list_for_qs
 
 
 def discount_record(discount_product: Discount) -> DiscountRecord:
@@ -19,7 +16,7 @@ def discount_record(discount_product: Discount) -> DiscountRecord:
         if discount_product.description
         else None,
         slug=discount_product.slug if discount_product.slug else None,
-        products=products_for_sale_list_for_qs(
+        products=product_list_for_qs(
             products=discount_product.products.all(), filters=None
         ),
         minimum_quantity=discount_product.minimum_quantity
@@ -47,9 +44,9 @@ def discount_record(discount_product: Discount) -> DiscountRecord:
     )
 
 
-def discounted_products_active_list() -> list[ProductListRecord]:
+def discount_active_list() -> list[ProductListRecord]:
     """
-    Get a list of
+    Get a list of currently active discounts.
     """
 
     discount_products = Discount.objects.active()
@@ -58,11 +55,3 @@ def discounted_products_active_list() -> list[ProductListRecord]:
         discount_record(discount_product=discount_product)
         for discount_product in discount_products
     ]
-
-
-def discount_calculate_product_price(
-    *, product: Product, discount: Discount
-) -> Decimal:
-
-    if not discount:
-        return None
