@@ -1,11 +1,9 @@
 from typing import TYPE_CHECKING
 
-from django.db.models import F, Prefetch, Q
+from django.db.models import F, Q
 from django.utils import timezone
 
 from aria.core.models import BaseQuerySet
-from aria.products.enums import ProductStatus
-from aria.products.models import Product
 
 if TYPE_CHECKING:
     pass
@@ -27,17 +25,3 @@ class DiscountQuerySet(BaseQuerySet):
             Q(maximum_sold_quantity__isnull=True)
             | Q(maximum_sold_quantity__gt=F("total_sold_quantity")),
         )
-
-    def with_products(self) -> BaseQuerySet["Discount"]:
-        """
-        Prefetch products related to a discount product. Sets the
-        prefetched values attribute as "discounted_products"
-        """
-
-        products_for_sale = Product.objects.filter(status=ProductStatus.AVAILABLE)
-
-        prefetched_products = Prefetch(
-            "products", queryset=products_for_sale, to_attr="discounted_products"
-        )
-
-        return self.prefetch_related(prefetched_products)

@@ -11,4 +11,7 @@ class DiscountAdmin(admin.ModelAdmin):
         "description",
         "slug",
     )
-    filter_horizontal = ("products",)
+    filter_horizontal = (
+        "products",
+        "product_options",
+    )

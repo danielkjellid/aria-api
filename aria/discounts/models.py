@@ -22,6 +22,12 @@ class Discount(BaseModel):
         related_name="discounts",
         blank=True,
     )
+    product_options = models.ManyToManyField(
+        "products.ProductOption",
+        verbose_name="product options",
+        related_name="discounts",
+        blank=True,
+    )
 
     minimum_quantity = models.PositiveIntegerField(
         blank=True,
