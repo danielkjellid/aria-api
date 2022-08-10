@@ -130,8 +130,8 @@ class TestPublicUsersEndpoints:
 
         payload_json = {"email": user.email}
 
-        # 1 query for getting, and 1 for updating.
-        with django_assert_max_num_queries(1):
+        # 1 query for getting user, 1 for getting site, and 1 for updating.
+        with django_assert_max_num_queries(3):
             response = anonymous_client.post(
                 f"{self.BASE_ENDPOINT}/password/reset/",
                 data=payload_json,
@@ -346,10 +346,10 @@ class TestProtectedUsersEndpoints:
                 f"{self.BASE_ENDPOINT}/user/{user.id}/"
             )
 
-        actual_json = json.loads(response.content)
+            actual_json = json.loads(response.content)
 
-        assert response.status_code == 200
-        assert actual_json == expected_json
+            assert response.status_code == 200
+            assert actual_json == expected_json
 
     ###################
     # Update endpoint #

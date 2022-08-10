@@ -133,9 +133,8 @@ class TestUsersServices:
 
         old_email_confirmed_value = user.has_confirmed_email
 
-        # Uses 3 queries: 1 for getting user, 1 for updating user, and
-        # 1 for getting site.
-        with django_assert_max_num_queries(3):
+        # Uses 2 queries: 1 for getting user, 1 for updating user
+        with django_assert_max_num_queries(2):
             updated_user = user_verify_account(uid=uid, token=token)
 
         assert updated_user.has_confirmed_email is True
@@ -152,9 +151,8 @@ class TestUsersServices:
         uid = user.uid
         token = default_token_generator.make_token(user)
 
-        # Uses 3 queries: 1 for getting user, 1 for setting password, and
-        # 1 for getting site.
-        with django_assert_max_num_queries(3):
+        # Uses 2 queries: 1 for getting user, 1 for setting password
+        with django_assert_max_num_queries(2):
             updated_user = user_set_password(
                 uid=uid, token=token, new_password="horsebatterystaple"
             )
