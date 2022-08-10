@@ -6,7 +6,6 @@ from django.utils import timezone
 
 import pytest
 
-from aria.core.tests.utils import create_site
 from aria.front.enums import SiteMessageType
 from aria.front.models import OpeningHours, SiteMessage
 from aria.front.records import (
@@ -21,8 +20,8 @@ from aria.front.selectors import (
     _opening_hours_time_slot_by_weekdays,
     _opening_hours_weekdays_by_time_slots,
     deviation_record_for_opening_hours,
-    opening_hours_for_site,
-    opening_hours_for_site_from_cache,
+    opening_hours_detail,
+    opening_hours_detail_from_cache,
     opening_hours_record,
     site_message_active_list,
     site_message_active_list_from_cache,
@@ -60,7 +59,6 @@ class TestFrontSelectors:
             text=site_message.text,
             message_type=SiteMessageType(site_message.message_type),
             locations=["test-location"],
-            site_id=site_message.site_id,
             show_message_at=start_time,
             show_message_to=end_time,
         )
@@ -78,7 +76,6 @@ class TestFrontSelectors:
             text=site_message.text,
             message_type=SiteMessageType(site_message.message_type),
             locations=["test-location"],
-            site_id=site_message.site_id,
             show_message_at=start_time,
             show_message_to=end_time,
         )
@@ -88,20 +85,17 @@ class TestFrontSelectors:
         Test that the site_message_active_list selector returns expected output
         within query limit.
         """
-        site = create_site()
+
         site_message_1 = create_site_message(
-            site=site,
             show_message_at=timezone.now(),
             show_message_to=timezone.now() + timedelta(minutes=10),
         )
         site_message_2 = create_site_message(
-            site=site,
             show_message_at=timezone.now(),
             show_message_to=timezone.now() + timedelta(minutes=15),
         )
         # Expired message.
         create_site_message(
-            site=site,
             show_message_at=timezone.now() - timedelta(minutes=10),
             show_message_to=timezone.now() - timedelta(minutes=5),
         )
@@ -109,7 +103,7 @@ class TestFrontSelectors:
         # Uses 2 queries: 1 for getting site messages, and 1 for getting related
         # locations.
         with django_assert_max_num_queries(2):
-            active_list = site_message_active_list(site_id=site.id)
+            active_list = site_message_active_list()
 
         assert len(active_list) == 2
         assert sorted(active_list, key=lambda x: x.id) == [
@@ -118,7 +112,6 @@ class TestFrontSelectors:
                 text=site_message_1.text,
                 message_type=SiteMessageType(site_message_1.message_type),
                 locations=["test-location"],
-                site_id=site_message_1.site_id,
                 show_message_at=site_message_1.show_message_at,
                 show_message_to=site_message_1.show_message_to,
             ),
@@ -127,7 +120,6 @@ class TestFrontSelectors:
                 text=site_message_2.text,
                 message_type=SiteMessageType(site_message_2.message_type),
                 locations=["test-location"],
-                site_id=site_message_2.site_id,
                 show_message_at=site_message_2.show_message_at,
                 show_message_to=site_message_2.show_message_to,
             ),
@@ -141,46 +133,41 @@ class TestFrontSelectors:
         cache, and output is as expected, within query limits.
         """
 
-        site = create_site()
         site_message_1 = create_site_message(
-            site=site,
             show_message_at=timezone.now(),
             show_message_to=timezone.now() + timedelta(minutes=10),
         )
         site_message_2 = create_site_message(
-            site=site,
             show_message_at=timezone.now(),
             show_message_to=timezone.now() + timedelta(minutes=15),
         )
         # Expired message.
         create_site_message(
-            site=site,
             show_message_at=timezone.now() - timedelta(minutes=10),
             show_message_to=timezone.now() - timedelta(minutes=5),
         )
 
-        cache.delete(f"front.site_messages.site_id={site.id}")
-        assert f"front.site_messages.site_id={site.id}" not in cache
+        cache.delete("front.site_messages")
+        assert "front.site_messages" not in cache
 
         # Uses 2 queries: 1 for getting site messages, and 1 for getting related
         # locations.
         with django_assert_max_num_queries(2):
-            site_message_active_list_from_cache(site_id=site.id)
+            site_message_active_list_from_cache()
 
         # After first hit, instance should have been added to cache.
-        assert f"front.site_messages.site_id={site.id}" in cache
+        assert "front.site_messages" in cache
 
         # Should be cached, and no queries should hit db.
         with django_assert_max_num_queries(0):
-            site_message_active_list_from_cache(site_id=site.id)
+            site_message_active_list_from_cache()
 
-        assert cache.get(f"front.site_messages.site_id={site.id}") == [
+        assert cache.get("front.site_messages") == [
             {
                 "id": site_message_1.id,
                 "text": site_message_1.text,
                 "message_type": site_message_1.message_type,
                 "locations": ["test-location"],
-                "site_id": site_message_1.site_id,
                 "show_message_at": site_message_1.show_message_at,
                 "show_message_to": site_message_1.show_message_to,
             },
@@ -189,7 +176,6 @@ class TestFrontSelectors:
                 "text": site_message_2.text,
                 "message_type": site_message_2.message_type,
                 "locations": ["test-location"],
-                "site_id": site_message_2.site_id,
                 "show_message_at": site_message_2.show_message_at,
                 "show_message_to": site_message_2.show_message_to,
             },
@@ -273,25 +259,23 @@ class TestFrontSelectors:
 
         assert time_slot_by_weekdays == expected_output
 
-    def test_opening_hours_for_site(self, django_assert_max_num_queries) -> None:
+    def test_opening_hours(self, django_assert_max_num_queries) -> None:
         """
-        Test that the opening_hours_for_site selector returns
+        Test that the opening_hours selector returns
         expected output both normally and with an active deviation.
         """
 
-        site = create_site()
-        opening_hours = create_opening_hours(site=site)
+        opening_hours = create_opening_hours()
 
         # Uses 3 queries:
         # - 1x for getting opening hour instance
         # - 1x for getting time slots
         # - 1x for getting deviations
         with django_assert_max_num_queries(3):
-            oh_record_for_site = opening_hours_for_site(site_id=site.id)
+            oh_record_for_site = opening_hours_detail()
 
         assert oh_record_for_site == OpeningHoursRecord(
             id=opening_hours.id,
-            site_id=site.id,
             time_slots=[
                 OpeningHoursTimeSlotRecord.construct(
                     id=ANY,
@@ -366,20 +350,17 @@ class TestFrontSelectors:
             active_to=timezone.now() + timedelta(minutes=10),
         )
 
-        # Uses 4 queries:
+        # Uses 5 queries:
         # - 1x for getting opening hour instance.
         # - 1x for getting time slots.
         # - 1x for getting deviations.
         # - 1x for getting time slots for deviation.
         # - 1x for getting site_message and location for deviation.
         with django_assert_max_num_queries(5):
-            oh_record_with_active_deviation_for_site = opening_hours_for_site(
-                site_id=site.id
-            )
+            oh_record_with_active_deviation_for_site = opening_hours_detail()
 
         assert oh_record_with_active_deviation_for_site == OpeningHoursRecord(
             id=opening_hours.id,
-            site_id=site.id,
             time_slots=[
                 OpeningHoursTimeSlotRecord.construct(
                     id=ANY,
@@ -457,31 +438,29 @@ class TestFrontSelectors:
         cache, and output is as expected.
         """
 
-        site = create_site()
-        opening_hours = create_opening_hours(site=site)
+        opening_hours = create_opening_hours()
 
         # Make sure we're in a healthy state before continuing.
-        cache.delete(f"front.opening_hours.site_id={site.id}")
-        assert f"front.opening_hours.site_id={site.id}" not in cache
+        cache.delete("front.opening_hours")
+        assert "front.opening_hours" not in cache
 
         # Uses 3 queries:
         # - 1x for getting opening hour instance
         # - 1x for getting time slots
         # - 1x for getting deviations
         with django_assert_max_num_queries(3):
-            opening_hours_for_site_from_cache(site_id=site.id)
+            opening_hours_detail_from_cache()
 
         # After first hit, instance should have been added to cache.
-        assert f"front.opening_hours.site_id={site.id}" in cache
+        assert "front.opening_hours" in cache
 
         # Should be cached, and no queries should hit db.
         with django_assert_max_num_queries(0):
-            opening_hours_for_site_from_cache(site_id=site.id)
+            opening_hours_detail_from_cache()
 
         # Assert that the object in cache is as expected.
-        assert cache.get(f"front.opening_hours.site_id={site.id}") == {
+        assert cache.get("front.opening_hours") == {
             "id": opening_hours.id,
-            "site_id": site.id,
             "time_slots": [
                 {
                     "id": ANY,
@@ -555,7 +534,6 @@ class TestFrontSelectors:
 
         expected_output = OpeningHoursRecord(
             id=opening_hours.id,
-            site_id=opening_hours.site.id,
             time_slots=[
                 OpeningHoursTimeSlotRecord.construct(
                     id=ANY,
@@ -659,7 +637,6 @@ class TestFrontSelectors:
                         location.slug
                         for location in active_deviation.template.site_message.locations.all()  # pylint: disable=line-too-long
                     ],
-                    site_id=active_deviation.template.site_message.site_id,
                     show_message_at=active_deviation.template.site_message.show_message_at,  # pylint: disable=line-too-long
                     show_message_to=active_deviation.template.site_message.show_message_to,  # pylint: disable=line-too-long
                 )

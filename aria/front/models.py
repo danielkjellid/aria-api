@@ -1,6 +1,5 @@
 from typing import Iterable, Optional
 
-from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.db import models
 
@@ -20,12 +19,8 @@ _OpeningHoursManager = models.Manager.from_queryset(OpeningHoursQuerySet)
 
 class OpeningHours(models.Model):
     """
-    Opening hours for a single site.
+    Opening hours.
     """
-
-    site = models.ForeignKey(
-        Site, on_delete=models.CASCADE, related_name="opening_hours"
-    )
 
     objects = _OpeningHoursManager()
 
@@ -34,7 +29,7 @@ class OpeningHours(models.Model):
         verbose_name_plural = "Opening hours"
 
     def __str__(self) -> str:
-        return self.site.name
+        return "Opening hours"
 
     def save(
         self,
@@ -54,9 +49,7 @@ class OpeningHours(models.Model):
             update_fields=update_fields,
         )
 
-        if self.site_id:
-            # Uncache all opening hours.
-            cache.delete(f"front.opening_hours.site_id={self.site_id}")
+        cache.delete("front.opening_hours")
 
 
 _OpeningHoursTimeSlotManager = models.Manager.from_queryset(
@@ -118,9 +111,9 @@ class OpeningHoursTimeSlot(models.Model):
             update_fields=update_fields,
         )
 
-        if self.opening_hours and self.opening_hours.site_id:
+        if self.opening_hours:
             # Uncache all opening hours.
-            cache.delete(f"front.opening_hours.site_id={self.opening_hours.site_id}")
+            cache.delete("front.opening_hours")
 
 
 _OpeningHoursDeviationManager = models.Manager.from_queryset(
@@ -178,11 +171,11 @@ class OpeningHoursDeviation(models.Model):
             self.template.site_message.save()
 
             # Uncache all site_messages.
-            cache.delete(f"front.site_messages.site_id={self.opening_hours.site_id}")
+            cache.delete("front.site_messages")
 
-        if self.opening_hours and self.opening_hours.site_id:
+        if self.opening_hours:
             # Uncache all opening hours.
-            cache.delete(f"front.opening_hours.site_id={self.opening_hours.site_id}")
+            cache.delete("front.opening_hours")
 
 
 _OpeningHoursDeviationTemplateManager = models.Manager.from_queryset(
@@ -249,9 +242,6 @@ class SiteMessage(BaseModel):
             "Leave empty to display message at a global level."
         ),
     )
-    site = models.ForeignKey(
-        Site, on_delete=models.CASCADE, related_name="site_messages"
-    )
     show_message_at = models.DateTimeField(
         "Show from",
         null=True,
@@ -297,6 +287,5 @@ class SiteMessage(BaseModel):
             update_fields=update_fields,
         )
 
-        if self.site and self.site_id:
-            # Uncache all site_messages.
-            cache.delete(f"front.site_messages.site_id={self.site_id}")
+        # Uncache all site_messages.
+        cache.delete("front.site_messages")

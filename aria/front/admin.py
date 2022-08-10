@@ -27,8 +27,6 @@ class OpeningHoursTimeSlotInline(admin.StackedInline):
 
 @admin.register(OpeningHours)
 class OpeningHoursAdmin(admin.ModelAdmin):
-    list_display = ("site",)
-    ordering = ("site",)
     inlines = [OpeningHoursTimeSlotInline]
 
 

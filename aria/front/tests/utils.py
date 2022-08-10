@@ -1,9 +1,7 @@
 from datetime import datetime, time
 
-from django.contrib.sites.models import Site
 from django.utils import timezone
 
-from aria.core.tests.utils import create_site
 from aria.front.enums import OpeningHoursWeekdays, SiteMessageType
 from aria.front.models import (
     OpeningHours,
@@ -40,7 +38,6 @@ def create_site_message(
     text: str = "Test site message",
     message_type: SiteMessageType = SiteMessageType.INFO,
     locations: list[SiteMessageLocation] | None = None,
-    site: Site | None = None,
     show_message_at: datetime,
     show_message_to: datetime,
 ) -> SiteMessage:
@@ -48,15 +45,11 @@ def create_site_message(
     Test utility to create a SiteMessage instance.
     """
 
-    if not site:
-        site = create_site()
-
     if not locations:
         locations = [create_site_message_location()]
 
     site_message, _created = SiteMessage.objects.update_or_create(
         text=text,
-        site=site,
         message_type=message_type,
         show_message_at=show_message_at,
         show_message_to=show_message_to,
@@ -92,15 +85,13 @@ def create_opening_hours_time_slot(
 
 
 def create_opening_hours(
-    *, site: Site | None = None, time_slots: list[OpeningHoursTimeSlot] | None = None
+    *, time_slots: list[OpeningHoursTimeSlot] | None = None
 ) -> OpeningHours:
     """
     Test utility to create an OpeningHours instance.
     """
-    if site is None:
-        site = create_site()
 
-    opening_hours, _created = OpeningHours.objects.get_or_create(site=site)
+    opening_hours, _created = OpeningHours.objects.get_or_create(id=1)
 
     if not time_slots:
         create_opening_hours_time_slot(
