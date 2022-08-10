@@ -27,11 +27,6 @@ class TestPublicProductsEndpoints:
         for product in products:
             product.categories.set([subcat_1])
 
-            for p in product.site_states.all():
-                p.display_price = False
-                p.gross_price = 500
-                p.save()
-
         expected_response = [
             {
                 "id": product.id,
@@ -44,8 +39,8 @@ class TestPublicProductsEndpoints:
                     "origin_country_flag": product.supplier.origin_country.unicode_flag,
                 },
                 "thumbnail": product.thumbnail.url if product.thumbnail else None,
-                "display_price": False,
-                "from_price": 500.0,
+                "display_price": True,
+                "from_price": 0.0,
                 "colors": [
                     {"id": color.id, "name": color.name, "color_hex": color.color_hex}
                     for color in product.colors.all()
@@ -77,21 +72,21 @@ class TestPublicProductsEndpoints:
         # Uses 8 queries:
         # - 1 for getting related category,
         # - 1 for getting products,
+        # - 1 for preloading options,
         # - 1 for preloading product categories,
         # - 1 for preloading colors,
         # - 1 for preloading shapes,
         # - 1 for preloading images,
-        # - 1 for preloading options,
         # - 1 for preloading files
         with django_assert_max_num_queries(8):
             response = anonymous_client.get(
                 f"{self.BASE_ENDPOINT}/category/{subcat_1.slug}/"
             )
 
-        actual_response = json.loads(response.content)
+            actual_response = json.loads(response.content)
 
-        assert response.status_code == 200
-        assert actual_response == expected_response
+            assert response.status_code == 200
+            assert actual_response == expected_response
 
         # Test that we fail gracefully by returning 404.
         # Uses 1 query by attempting to get category.
@@ -100,7 +95,7 @@ class TestPublicProductsEndpoints:
                 f"{self.BASE_ENDPOINT}/category/does-not-exist/"
             )
 
-        assert failed_response.status_code == 404
+            assert failed_response.status_code == 404
 
     def test_anonymous_request_product_detail_api(
         self, anonymous_client, django_assert_max_num_queries
@@ -122,10 +117,10 @@ class TestPublicProductsEndpoints:
             "materials": product.materials_display,
             "rooms": product.rooms_display,
             "available_in_special_sizes": product.available_in_special_sizes,
-            "can_be_picked_up": product.site_states.first().can_be_picked_up,
-            "can_be_purchased_online": product.site_states.first().can_be_purchased_online,  # pylint: disable=line-too-long
-            "display_price": product.site_states.first().display_price,
-            "from_price": product.site_states.first().gross_price,
+            "can_be_picked_up": product.can_be_picked_up,
+            "can_be_purchased_online": product.can_be_purchased_online,
+            "display_price": product.display_price,
+            "from_price": product.from_price,
             "supplier": {
                 "name": product.supplier.name,
                 "origin_country": product.supplier.origin_country.name,
@@ -180,15 +175,15 @@ class TestPublicProductsEndpoints:
         }
 
         # Test that we return a valid response on existing slug.
-        with django_assert_max_num_queries(12):
+        with django_assert_max_num_queries(11):
             response = anonymous_client.get(
                 f"{self.BASE_ENDPOINT}/product/{product.slug}/"
             )
 
-        actual_response = json.loads(response.content)
+            actual_response = json.loads(response.content)
 
-        assert response.status_code == 200
-        assert actual_response == expected_response
+            assert response.status_code == 200
+            assert actual_response == expected_response
 
         # Test that we fail when an invalid slug is passed.
         with django_assert_max_num_queries(1):
@@ -196,4 +191,4 @@ class TestPublicProductsEndpoints:
                 f"{self.BASE_ENDPOINT}/does-not-exist/"
             )
 
-        assert failed_response.status_code == 404
+            assert failed_response.status_code == 404

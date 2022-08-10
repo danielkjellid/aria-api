@@ -1,7 +1,5 @@
 from decimal import Decimal
 
-from django.contrib.sites.managers import CurrentSiteManager
-from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.text import slugify
 
@@ -27,7 +25,6 @@ from aria.products.managers import (
     ProductImageQuerySet,
     ProductOptionQuerySet,
     ProductQuerySet,
-    ProductSiteStateQuerySet,
     ShapeQuerySet,
     SizeQuerySet,
     VariantQuerySet,
@@ -309,24 +306,22 @@ class Product(BaseModel, BaseThumbnailImageModel):
         help_text="Rooms applicable to product.",
     )
     absorption = models.FloatField(null=True, blank=True)
-    sites = models.ManyToManyField(Site, related_name="products", blank=True)
     is_imported_from_external_source = models.BooleanField(default=False)
-    # display_price = models.BooleanField(
-    #     "display price to customer",
-    #     default=True,
-    #     help_text="Designates whether the product price is displayed",
-    # )
-    # can_be_purchased_online = models.BooleanField(
-    #     "can be purchased online",
-    #     default=False,
-    #     help_text="Designates whether the product can be purchased and shipped",
-    # )
-    # can_be_picked_up = models.BooleanField(
-    #     "can be picked up",
-    #     default=False,
-    #     help_text=("Designates whether the product can be purchased
-    #     and picked up in store"),
-    # )
+    display_price = models.BooleanField(
+        "display price to customer",
+        default=True,
+        help_text="Designates whether the product price is displayed",
+    )
+    can_be_purchased_online = models.BooleanField(
+        "can be purchased online",
+        default=False,
+        help_text="Designates whether the product can be purchased and shipped",
+    )
+    can_be_picked_up = models.BooleanField(
+        "can be picked up",
+        default=False,
+        help_text="Designates whether the product can be purchased and picked up in store",
+    )
     # supplier_purchase_price = models.DecimalField(
     #     "supplier purchase price", decimal_places=2, max_digits=10, default=0.00
     # )
@@ -375,6 +370,11 @@ class Product(BaseModel, BaseThumbnailImageModel):
         Get human representation of unit label.
         """
         return enums.ProductUnit(self.unit).label
+
+    @property
+    def from_price(self) -> Decimal:
+        # TODO: calculate from options
+        return Decimal(0)
 
 
 _ProductImageManager = models.Manager.from_queryset(ProductImageQuerySet)
@@ -444,48 +444,6 @@ class ProductFile(BaseFileModel):
 
     def __str__(self) -> str:
         return self.name
-
-
-_ProductSiteStateManager = models.Manager.from_queryset(ProductSiteStateQuerySet)
-
-
-class ProductSiteState(BaseModel):
-    """
-    We support multiple sites from the same frontend. This
-    model allows for different settings based on site.
-    """
-
-    site = models.ForeignKey(Site, on_delete=models.PROTECT, related_name="states")
-    product = models.ForeignKey(
-        "products.Product", on_delete=models.CASCADE, related_name="site_states"
-    )
-    gross_price = models.FloatField("Gross price")
-    display_price = models.BooleanField(
-        "Display price to customer",
-        default=True,
-        help_text="Designates whether the product price is displayed",
-    )
-    can_be_purchased_online = models.BooleanField(
-        "Can be purchased online",
-        default=False,
-        help_text="Designates whether the product can be purchased and shipped",
-    )
-    can_be_picked_up = models.BooleanField(
-        "Can be picked up",
-        default=False,
-        help_text=(
-            "Designates whether the product can be purchased and picked up in store"
-        ),
-    )
-    supplier_purchase_price = models.FloatField("Supplier purchase price", default=0.0)
-    supplier_shipping_cost = models.FloatField("Shipping cost", default=0.0)
-
-    objects = _ProductSiteStateManager()  # type: ignore
-    on_site = CurrentSiteManager()
-
-    class Meta:
-        verbose_name = "Product site state"
-        verbose_name_plural = "Product site states"
 
 
 _ProductOptionManager = models.Manager.from_queryset(ProductOptionQuerySet)
