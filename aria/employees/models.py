@@ -87,4 +87,4 @@ class EmployeeInfo(models.Model):
         )
 
         if self.user:
-            cache.delete(f"employees.employee_list")
+            cache.delete("employees.employee_list")

@@ -320,14 +320,10 @@ class Product(BaseModel, BaseThumbnailImageModel):
     can_be_picked_up = models.BooleanField(
         "can be picked up",
         default=False,
-        help_text="Designates whether the product can be purchased and picked up in store",
+        help_text=(
+            "Designates whether the product can be purchased and picked up in store"
+        ),
     )
-    # supplier_purchase_price = models.DecimalField(
-    #     "supplier purchase price", decimal_places=2, max_digits=10, default=0.00
-    # )
-    # supplier_shipping_cost = models.DecimalField(
-    #     "shipping cost", decimal_places=2, max_digits=10, default=0.0
-    # )
 
     objects = _ProductManager()
 
@@ -373,6 +369,9 @@ class Product(BaseModel, BaseThumbnailImageModel):
 
     @property
     def from_price(self) -> Decimal:
+        """
+        Get product from price.
+        """
         # TODO: calculate from options
         return Decimal(0)
 
