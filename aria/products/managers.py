@@ -27,6 +27,13 @@ class ShapeQuerySet(BaseQuerySet["models.Shape"]):
 
 
 class ProductQuerySet(BaseQuerySet["models.Product"]):
+    def available(self) -> BaseQuerySet["models.Product"]:
+        """
+        Get available, sellable, product options.
+        """
+
+        return self.filter(status=ProductStatus.AVAILABLE)
+
     def with_active_categories(self) -> BaseQuerySet["models.Product"]:
         """
         Prefetches active categories connected to a product.
@@ -78,7 +85,6 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         qs = self.select_related("supplier").prefetch_related(
             "categories",
             "colors",
-            "shapes",
             "images",
             "shapes",
             "options",

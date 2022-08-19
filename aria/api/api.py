@@ -13,6 +13,7 @@ from aria.api_auth.exceptions import TokenError
 from aria.categories.endpoints import public_endpoints as public_categories_endpoints
 from aria.core.endpoints import public_endpoints as public_core_endpoints
 from aria.core.exceptions import ApplicationError
+from aria.discounts.endpoints import public_endpoints as public_discount_endpoints
 from aria.employees.endpoints import public_endpoints as public_employees_endpoints
 from aria.front.endpoints import public_endpoints as public_front_endpoints
 from aria.kitchens.endpoints import public_endpoints as public_kitchens_endpoints
@@ -39,6 +40,9 @@ api.add_router("/categories/", public_categories_endpoints, auth=None)
 
 # Core endpoints
 api.add_router("/core/", public_core_endpoints, auth=None)
+
+# Discount endpoints
+api.add_router("/discounts/", public_discount_endpoints, auth=None)
 
 # Employees endpoints
 api.add_router("/employees/", public_employees_endpoints, auth=None)
