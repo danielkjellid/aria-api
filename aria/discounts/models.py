@@ -14,7 +14,7 @@ class Discount(BaseModel):
 
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
-    slug = models.SlugField(null=True)
+    slug = models.SlugField()
 
     products = models.ManyToManyField(
         "products.Product",

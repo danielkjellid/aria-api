@@ -10,7 +10,7 @@ class DiscountRecord(BaseModel):
     id: int
     name: str
     description: str | None
-    slug: str | None
+    slug: str
 
     products: list[ProductListRecord]
 
