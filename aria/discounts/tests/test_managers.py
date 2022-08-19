@@ -15,7 +15,12 @@ class TestDiscountQuerySetManager:
 
     model = Discount
 
-    def test_active(self, django_assert_max_num_queries) -> None:
+    def test_queryset_active(self, django_assert_max_num_queries) -> None:
+        """
+        Test that the .active() queryset filters out inactive discounts
+        withing query limits.
+        """
+
         discount_1 = create_discount(
             name="Discount 1",
             discount_gross_percentage=Decimal(0.20),

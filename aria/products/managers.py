@@ -6,7 +6,8 @@ from aria.core.models import BaseQuerySet
 from aria.products.enums import ProductStatus
 
 if TYPE_CHECKING:
-    pass
+    from aria.categories import models as category_models
+    from aria.products import models
 
 
 class SizeQuerySet(BaseQuerySet["models.Size"]):

@@ -64,18 +64,17 @@ class Discount(BaseModel):
         ),
     )
 
-    maximum_sold_quantity = models.DecimalField(
+    maximum_sold_quantity = models.PositiveIntegerField(
         blank=True,
         null=True,
-        max_digits=10,
-        decimal_places=2,
-        help_text="The maximum number of product discounts given before the discount is ended automatically.",
+        help_text=(
+            "The maximum number of product discounts given before the discount "
+            "is ended automatically."
+        ),
     )
-    total_sold_quantity = models.DecimalField(
+    total_sold_quantity = models.PositiveIntegerField(
         blank=True,
         null=True,
-        max_digits=10,
-        decimal_places=2,
         help_text="The amount of products this discount has been applied to.",
     )
     display_maximum_quantity = models.BooleanField(

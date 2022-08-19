@@ -26,7 +26,7 @@ def discount_record(discount_product: Discount) -> DiscountRecord:
         else None,
         slug=discount_product.slug if discount_product.slug else None,
         products=product_list_for_qs(
-            products=discount_product.products.all(), filters=None
+            products=discount_product.products.all(), filters=None  # type: ignore
         ),
         minimum_quantity=discount_product.minimum_quantity
         if discount_product.minimum_quantity
@@ -53,7 +53,7 @@ def discount_record(discount_product: Discount) -> DiscountRecord:
     )
 
 
-def discount_active_list() -> list[ProductListRecord]:
+def discount_active_list() -> list[DiscountRecord]:
     """
     Get a list of currently active discounts.
     """
@@ -99,10 +99,10 @@ def discount_active_list() -> list[ProductListRecord]:
     for discount_product in discount_products:
         aggregated_products = set()
 
-        for product in discount_product.available_products:
+        for product in discount_product.available_products:  # type: ignore
             aggregated_products.add(product)
 
-        for option in discount_product.available_options:
+        for option in discount_product.available_options:  # type: ignore
             aggregated_products.add(option.product)
 
         records.append(
@@ -122,7 +122,7 @@ def discount_active_list() -> list[ProductListRecord]:
                             id=product.supplier.id,
                             name=product.supplier.name,
                             origin_country=product.supplier.origin_country.name,
-                            origin_country_flag=product.supplier.origin_country.unicode_flag,
+                            origin_country_flag=product.supplier.origin_country.unicode_flag,  # pylint: disable=line-too-long
                         ),
                         thumbnail=product.thumbnail.url if product.thumbnail else None,
                         unit=product.unit_display,
@@ -159,7 +159,7 @@ def discount_active_list() -> list[ProductListRecord]:
                         ],
                     )
                     for product in sorted(
-                        aggregated_products, key=lambda product: product.created_at
+                        aggregated_products, key=lambda product: product.created_at  # type: ignore # pylint: disable=line-too-long
                     )
                 ],
                 minimum_quantity=discount_product.minimum_quantity

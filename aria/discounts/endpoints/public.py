@@ -21,4 +21,8 @@ def discount_active_list_api(request: HttpRequest) -> list[DiscountsActiveListOu
     Retrieve a list of currently active discounts.
     """
 
-    return discount_active_list()
+    active_discounts = discount_active_list()
+
+    return [
+        DiscountsActiveListOutput(**discount.dict()) for discount in active_discounts
+    ]

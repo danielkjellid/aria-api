@@ -6,11 +6,11 @@ from django.utils import timezone
 from aria.core.models import BaseQuerySet
 
 if TYPE_CHECKING:
-    pass
+    from aria.discounts import models
 
 
-class DiscountQuerySet(BaseQuerySet):
-    def active(self) -> BaseQuerySet["Discount"]:
+class DiscountQuerySet(BaseQuerySet["models.Discount"]):
+    def active(self) -> BaseQuerySet["models.Discount"]:
         """
         Return a list of currently active discounts.
         """

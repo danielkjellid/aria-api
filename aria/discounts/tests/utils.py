@@ -24,6 +24,10 @@ def create_discount(
     active_to: datetime | None = None,
     ordering: int | None = None,
 ) -> Discount:
+    """
+    Create a discount for products and/or product options used for testing
+    purposes.
+    """
 
     if not slug:
         slug = slugify(name)
