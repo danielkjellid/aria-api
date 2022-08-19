@@ -1,6 +1,5 @@
 from typing import Any, Optional
 
-from aria.core.records import SiteRecord
 from aria.users.filters import UserFilter
 from aria.users.models import User
 from aria.users.records import UserProfileRecord, UserRecord
@@ -37,9 +36,6 @@ def user_record(*, user: User) -> UserRecord:
         is_active=user.is_active,
         is_staff=user.is_staff,
         is_superuser=user.is_superuser,
-        site=SiteRecord(name=user.site.name, domain=user.site.domain)
-        if user.site
-        else None,
     )
 
 
@@ -52,7 +48,7 @@ def user_list(
 
     filters = filters or {}
 
-    qs = User.objects.all().select_related("site")
+    qs = User.objects.all()
     filtered_qs = UserFilter(filters, qs).qs.order_by("id")
 
     return [user_record(user=user) for user in filtered_qs]

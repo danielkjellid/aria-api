@@ -125,7 +125,6 @@ def product_detail(
         .preload_for_list()
         .with_active_categories()
         .with_available_options()
-        .annotate_site_state_data()
         .first()
     )
 
@@ -185,18 +184,14 @@ def product_list_for_qs(
     filters = filters or {}
 
     # Preload all needed values
-    qs = (
-        products.prefetch_related(  # type: ignore
-            Prefetch(
-                "options",
-                queryset=ProductOption.objects.select_related("variant").distinct(
-                    "variant_id"
-                ),
-            )
+    qs = products.prefetch_related(  # type: ignore
+        Prefetch(
+            "options",
+            queryset=ProductOption.objects.select_related("variant").distinct(
+                "variant_id"
+            ),
         )
-        .preload_for_list()
-        .annotate_site_state_data()
-    )
+    ).preload_for_list()
 
     filtered_qs = ProductSearchFilter(filters, qs).qs
 

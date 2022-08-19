@@ -10,7 +10,6 @@ class SiteMessageRecord(BaseModel):
     text: str
     message_type: SiteMessageType
     locations: list[str]
-    site_id: int
     show_message_at: datetime | None
     show_message_to: datetime | None
 
@@ -31,7 +30,6 @@ class OpeningHoursTimeSlotHumanReadableRecord(BaseModel):
 
 class OpeningHoursRecord(BaseModel):
     id: int
-    site_id: int
     time_slots: list[OpeningHoursTimeSlotRecord]
     human_readable_time_slots: list[OpeningHoursTimeSlotHumanReadableRecord]
 

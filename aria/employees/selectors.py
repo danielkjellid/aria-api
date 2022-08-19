@@ -3,7 +3,7 @@ from aria.employees.models import EmployeeInfo
 from aria.employees.records import EmployeeInfoRecord
 
 
-def employees_active_list_for_site(site_id: int) -> list[EmployeeInfoRecord]:
+def employees_active_list() -> list[EmployeeInfoRecord]:
     """
     Get a list of employees associated with a certain site.
     """
@@ -12,7 +12,6 @@ def employees_active_list_for_site(site_id: int) -> list[EmployeeInfoRecord]:
         EmployeeInfo.objects.filter(
             is_active=True,
             display_in_team_section=True,
-            user__site_id=site_id,
         )
         .select_related("user")
         .order_by("id")
@@ -37,14 +36,14 @@ def employees_active_list_for_site(site_id: int) -> list[EmployeeInfoRecord]:
     ]
 
 
-def _employees_active_list_for_site_cache_key(*, site_id: int) -> str:
-    return f"employees.employee_list.site_id={site_id}"
+def _employees_active_list_cache_key() -> str:
+    return "employees.employee_list"
 
 
-@cached(key=_employees_active_list_for_site_cache_key, timeout=24 * 60)
-def employees_active_list_for_site_from_cache(site_id: int) -> list[EmployeeInfoRecord]:
+@cached(key=_employees_active_list_cache_key, timeout=24 * 60)
+def employees_active_list_from_cache() -> list[EmployeeInfoRecord]:
     """
     Get a list of employees associated with a certain site from the cache.
     """
 
-    return employees_active_list_for_site(site_id=site_id)
+    return employees_active_list()

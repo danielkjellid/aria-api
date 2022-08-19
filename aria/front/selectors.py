@@ -33,19 +33,17 @@ def site_message_record(site_message: SiteMessage) -> SiteMessageRecord:
         text=site_message.text,
         message_type=SiteMessageType(site_message.message_type),
         locations=[location.slug for location in locations],
-        site_id=site_message.site_id,
         show_message_at=site_message.show_message_at,
         show_message_to=site_message.show_message_to,
     )
 
 
-def site_message_active_list(site_id: int) -> list[SiteMessageRecord]:
+def site_message_active_list() -> list[SiteMessageRecord]:
     """
     Retrieve a list of active site messages.
     """
 
     site_messages = SiteMessage.objects.filter(
-        site_id=site_id,
         show_message_at__lte=timezone.now(),
         show_message_to__gt=timezone.now(),
     ).prefetch_related("locations")
@@ -53,17 +51,17 @@ def site_message_active_list(site_id: int) -> list[SiteMessageRecord]:
     return [site_message_record(site_message) for site_message in site_messages]
 
 
-def _site_message_active_list_cache_key(site_id: int) -> str:
-    return f"front.site_messages.site_id={site_id}"
+def _site_message_active_list_cache_key() -> str:
+    return "front.site_messages"
 
 
 @cached(key=_site_message_active_list_cache_key, timeout=24 * 60)
-def site_message_active_list_from_cache(site_id: int) -> list[SiteMessageRecord]:
+def site_message_active_list_from_cache() -> list[SiteMessageRecord]:
     """
     Retrieve a list of active site messages from cache.
     """
 
-    return site_message_active_list(site_id=site_id)
+    return site_message_active_list()
 
 
 def _opening_hours_weekdays_by_time_slots(
@@ -276,15 +274,14 @@ def _opening_hours_time_slots_merge_to_human_readable(
     return time_slot_by_weekday
 
 
-def opening_hours_for_site(site_id: int) -> OpeningHoursRecord:
+def opening_hours_detail() -> OpeningHoursRecord:
     """
-    Retrieve opening hours connected to a single site. This selector
-    will at all times return current opening hours, with deviations
-    taken into account.
+    Retrieve opening hours. This selector will at all times return current
+    opening hours, with deviations taken into account.
     """
 
     opening_hours_obj = (
-        OpeningHours.objects.filter(site_id=site_id)
+        OpeningHours.objects.all()
         .prefetch_related("time_slots")
         .with_active_deviations()
         .first()
@@ -317,17 +314,17 @@ def opening_hours_for_site(site_id: int) -> OpeningHoursRecord:
     return oh_record
 
 
-def _opening_hours_for_site_cache_key(*, site_id: int) -> str:
-    return f"front.opening_hours.site_id={site_id}"
+def _opening_hours_detail_cache_key() -> str:
+    return "front.opening_hours"
 
 
-@cached(key=_opening_hours_for_site_cache_key, timeout=24 * 60)
-def opening_hours_for_site_from_cache(site_id: int) -> OpeningHoursRecord:
+@cached(key=_opening_hours_detail_cache_key, timeout=24 * 60)
+def opening_hours_detail_from_cache() -> OpeningHoursRecord:
     """
-    Retrieve opening hours connected to a single site from cache.
+    Retrieve opening hours from cache.
     """
 
-    return opening_hours_for_site(site_id=site_id)
+    return opening_hours_detail()
 
 
 def opening_hours_record(opening_hours: OpeningHours) -> OpeningHoursRecord:
@@ -339,7 +336,6 @@ def opening_hours_record(opening_hours: OpeningHours) -> OpeningHoursRecord:
 
     return OpeningHoursRecord(
         id=opening_hours.id,
-        site_id=opening_hours.site_id,
         time_slots=[
             OpeningHoursTimeSlotRecord(
                 id=time_slot.id,

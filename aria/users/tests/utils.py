@@ -2,9 +2,7 @@ from typing import Any
 
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.sites.models import Site
 
-from aria.core.tests.utils import create_site
 from aria.users.models import User
 
 
@@ -13,7 +11,6 @@ def create_user(  # pylint: disable=too-many-arguments
     last_name: str = "User",
     email: str = "user@example.com",
     password: str = "supersecret",
-    site: Site | None = None,
     perms: list[str] | None = None,
     is_active: bool = True,
     is_staff: bool = False,
@@ -27,8 +24,6 @@ def create_user(  # pylint: disable=too-many-arguments
     """
     Test utility for creating a user instance.
     """
-    if site is None:
-        site = create_site()
 
     user, _ = User.objects.update_or_create(
         first_name=first_name,
@@ -56,7 +51,6 @@ def create_user(  # pylint: disable=too-many-arguments
             parsed_perms.append(parsed_perm)
 
     user.user_permissions.set(parsed_perms)
-    user.site = site
     user.save()
 
     return user

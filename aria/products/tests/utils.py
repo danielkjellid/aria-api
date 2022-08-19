@@ -1,42 +1,14 @@
 import tempfile
 from decimal import Decimal
 
-from django.contrib.sites.models import Site
 from django.utils.text import slugify
 
 from aria.categories.models import Category
 from aria.categories.tests.utils import create_category
-from aria.core.tests.utils import create_site
 from aria.products.enums import ProductStatus, ProductUnit
-from aria.products.models import Product, ProductOption, ProductSiteState, Size, Variant
+from aria.products.models import Product, ProductOption, Size, Variant
 from aria.suppliers.models import Supplier
 from aria.suppliers.tests.utils import get_or_create_supplier
-
-
-def create_site_state(
-    *,
-    site: Site | None = None,
-    product: Product,
-    gross_price: Decimal = Decimal(500.00),
-    can_be_purchased_online: bool = False,
-    can_be_picked_up: bool = False,
-) -> ProductSiteState:
-    """
-    Test util that creates a site state instance.
-    """
-
-    if site is None:
-        site = create_site()
-
-    site_state = ProductSiteState.objects.create(
-        site=site,
-        product=product,
-        gross_price=gross_price,
-        can_be_purchased_online=can_be_purchased_online,
-        can_be_picked_up=can_be_picked_up,
-    )
-
-    return site_state
 
 
 def create_product(
@@ -48,7 +20,6 @@ def create_product(
     available_in_special_sizes: bool = True,
     category_name: str | None = None,
     category_parent: Category | None = None,
-    sites: list[Site] | None = None,
     supplier: Supplier | None = None,
     quantity: int = 1,
 ) -> Product:
@@ -63,9 +34,6 @@ def create_product(
     if supplier is None:
         supplier = get_or_create_supplier()
 
-    if sites is None:
-        sites = [create_site()]
-
     created_products = []
     for i in range(quantity):
         product = Product.objects.create(
@@ -79,9 +47,6 @@ def create_product(
             available_in_special_sizes=available_in_special_sizes,
         )
 
-        site_state = create_site_state(product=product)
-        product.site_states.set([site_state])
-
         if category_name is not None:
             if category_parent is None:
                 category_parent = create_category(name=f"Parent - {category_name}")
@@ -91,7 +56,6 @@ def create_product(
             category = create_category(parent=parent)
 
         product.categories.set([category])
-        product.sites.set(sites)
         created_products.append(product)
 
     if quantity == 1:

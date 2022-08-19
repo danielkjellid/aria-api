@@ -130,7 +130,7 @@ class TestPublicUsersEndpoints:
 
         payload_json = {"email": user.email}
 
-        # 1 query for getting, 1 for updating and 1 for getting site.
+        # 1 query for getting user, 1 for getting site, and 1 for updating.
         with django_assert_max_num_queries(3):
             response = anonymous_client.post(
                 f"{self.BASE_ENDPOINT}/password/reset/",
@@ -336,18 +336,20 @@ class TestProtectedUsersEndpoints:
             "notes": [],
         }
 
-        # Uses 6 queries: 1 for getting request user, 2 for getting
-        # and checking permissions, 1 for getting notes associated with
-        # user, and 1 for getting audit logs.
-        with django_assert_max_num_queries(6):
+        # Uses 7 queries:
+        # - 1 for getting user
+        # - 3 for getting and checking permissions
+        # - 2 for getting notes associated with user
+        # - 1 for getting audit logs for user
+        with django_assert_max_num_queries(7):
             response = authenticated_privileged_client.get(
                 f"{self.BASE_ENDPOINT}/user/{user.id}/"
             )
 
-        actual_json = json.loads(response.content)
+            actual_json = json.loads(response.content)
 
-        assert response.status_code == 200
-        assert actual_json == expected_json
+            assert response.status_code == 200
+            assert actual_json == expected_json
 
     ###################
     # Update endpoint #
@@ -446,12 +448,15 @@ class TestProtectedUsersEndpoints:
             "allow_third_party_personalization": not user.allow_third_party_personalization,  # pylint: disable=line-too-long
         }
 
-        # Uses 11 queries: 1 for getting user, 2 for checking permissions,
-        # 1 for getting user to update, 1 savepoint for atomic transaction,
-        # 1 for getting site, 2 for getting user + site, 1 for updating user,
-        # 1 for bulk creating log entries, 1 for getting site, and 1 for
-        # releasing savepoint.
-        with django_assert_max_num_queries(12):
+        # Uses 9 queries:
+        # - 1 for getting user
+        # - 3 for getting and checking permissions
+        # - 1 for getting user to update
+        # - 1 savepoint for atomic transaction
+        # - 1 for updating user
+        # - 1 for bulk creating log entries
+        # - 1 releasing savepoint
+        with django_assert_max_num_queries(9):
             response = authenticated_privileged_client.post(
                 f"{self.BASE_ENDPOINT}/user/{user.id}/update/",
                 data=payload_json,
@@ -521,12 +526,15 @@ class TestProtectedUsersEndpoints:
 
         payload_json = {"email": "newtestuser@example.com"}
 
-        # Uses 11 queries: 1 for getting user, 2 for checking permissions,
-        # 1 for getting user to update, 1 savepoint for atomic transaction,
-        # 1 for getting site, 2 for getting user + site, 1 for updating user,
-        # 1 for bulk creating log entries 1 for getting site, and 1 for
-        # releasing savepoint.
-        with django_assert_max_num_queries(12):
+        # Uses 9 queries:
+        # - 1 for getting user
+        # - 3 for getting and checking permissions
+        # - 1 for getting user to update
+        # - 1 savepoint for atomic transaction
+        # - 1 for updating user
+        # - 1 for bulk creating log entries
+        # - 1 releasing savepoint
+        with django_assert_max_num_queries(9):
             response = authenticated_privileged_client.post(
                 f"{self.BASE_ENDPOINT}/user/{user.id}/update/",
                 data=payload_json,

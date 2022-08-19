@@ -1,5 +1,3 @@
-from django.contrib.sites.managers import CurrentSiteManager
-from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.text import slugify
 
@@ -41,11 +39,9 @@ class Supplier(BaseModel, BaseImageModel):
         default=True,
         help_text="Designates whether the category should be treated as active.",
     )
-    sites = models.ManyToManyField(Site, related_name="suppliers", blank=True)
     website_link = models.CharField(max_length=255)
 
     objects = _SupplierManager()  # type: ignore
-    on_site = CurrentSiteManager()
 
     class Meta:
         verbose_name = "supplier"

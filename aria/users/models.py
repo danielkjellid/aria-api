@@ -4,8 +4,6 @@ from typing import Any
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.sites.managers import CurrentSiteManager
-from django.contrib.sites.models import Site
 from django.core import signing
 from django.core.mail import send_mail
 from django.db import models
@@ -22,15 +20,15 @@ from django.utils.http import (
 import phonenumbers
 
 from aria.users.enums import AvatarColors
-from aria.users.managers import UserQuerySet
+from aria.users.managers import UserManager, UserQuerySet
 from aria.users.records import UserAuditLogsRecord, UserNotesRecord, UserProfileRecord
 
-_UserManager = models.Manager.from_queryset(UserQuerySet)
+_UserManager = UserManager.from_queryset(UserQuerySet)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
     """
-    User model which inherits AbstractBaseuser. AbstractBaseUser provides the
+    User model which inherits AbstractBaseUser. AbstractBaseUser provides the
     core implementation of a user model.
     """
 
@@ -109,18 +107,15 @@ class User(AbstractBaseUser, PermissionsMixin):
             "Designates whether the user is automatically granted all permissions."
         ),
     )
-    site = models.ForeignKey(Site, on_delete=models.SET_NULL, null=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS: list[str] = []
 
     objects = _UserManager()
-    on_site = CurrentSiteManager()
 
     class Meta:
         verbose_name = "user"
         verbose_name_plural = "users"
-        unique_together = (("email", "site"),)
         permissions = (
             ("has_users_list", "Can list users"),
             ("has_user_edit", "Can edit a single user instance"),

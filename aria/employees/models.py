@@ -86,5 +86,5 @@ class EmployeeInfo(models.Model):
             update_fields=update_fields,
         )
 
-        if self.user and self.user.site_id:
-            cache.delete(f"employees.employee_list.site_id={self.user.site_id}")
+        if self.user:
+            cache.delete("employees.employee_list")
