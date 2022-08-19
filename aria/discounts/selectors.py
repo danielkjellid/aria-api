@@ -1,5 +1,6 @@
 from django.db.models import Prefetch
 
+from aria.core.decorators import cached
 from aria.discounts.models import Discount
 from aria.discounts.records import DiscountRecord
 from aria.products.models import Product, ProductOption
@@ -194,3 +195,16 @@ def discount_active_list() -> list[DiscountRecord]:
         )
 
     return records
+
+
+def _discount_active_list_key() -> str:
+    return "discounts.active"
+
+
+@cached(key=_discount_active_list_key, timeout=60 * 2)
+def discount_active_list_from_cache() -> list[DiscountRecord]:
+    """
+    Get a list of currently active discounts from cache.
+    """
+
+    return discount_active_list()
