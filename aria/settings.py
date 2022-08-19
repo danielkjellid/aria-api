@@ -48,8 +48,8 @@ SECRET_KEY = env.str("DJANGO_SECRET_KEY", default="dev-env-secret-9fprvf3c@7x4ur
 
 SILENCED_SYSTEM_CHECKS = env.list("SILENCED_SYSTEM_CHECKS", default=[])
 
-DEFAULT_SITE_ID = 1
-SITE_ID = DEFAULT_SITE_ID
+# DEFAULT_SITE_ID = 1
+# SITE_ID = DEFAULT_SITE_ID
 
 ROOT_URLCONF = "aria.urls"
 
