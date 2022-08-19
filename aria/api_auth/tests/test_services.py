@@ -153,9 +153,8 @@ class TestAPIAuthServices:
 
         # Service calls token_pair_obtain_for_user, which again
         # calls _refresh_token_create_and_encode which creates a
-        # db entry + 1 for looking up user and + 1 for looking up
-        # site.
-        with django_assert_max_num_queries(3):
+        # db entry + 1 for looking up user.
+        with django_assert_max_num_queries(2):
             token_pair = token_pair_obtain_for_unauthenticated_user(
                 email="testuser@example.com", password="supersecretpassword"
             )
