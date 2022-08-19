@@ -29,8 +29,8 @@ class TestUsersServices:
         existing_user = unprivileged_user
         group = create_group()
 
-        # Check if user exist (1), create user (1), get site (1),  add group (1)
-        with django_assert_max_num_queries(4):
+        # Check if user exist (1), create user (1), add group (1)
+        with django_assert_max_num_queries(3):
             new_user = user_create(
                 email="test@example.com",
                 password="supersecret",
@@ -97,9 +97,9 @@ class TestUsersServices:
 
         updates = {"email": "updatedemail@example.com"}
 
-        # Get user (1) + site (3), update user (1), create log (1) and since
+        # Get user (1), update user (1), create log (1) and since
         # transaction is atomic, it creates and releases savepoint (2)
-        with django_assert_max_num_queries(8):
+        with django_assert_max_num_queries(5):
             updated_user = user_update(
                 user=user, data=updates, author=author, log_change=True
             )

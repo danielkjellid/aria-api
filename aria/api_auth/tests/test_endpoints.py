@@ -27,8 +27,8 @@ class TestAPIAuthPublicEndpoints:
         user.set_password("supersecret1234")
         user.save()
 
-        # Getting user (1) and site (2) takes 3 queries.
-        with django_assert_max_num_queries(3):
+        # Getting user (1) query.
+        with django_assert_max_num_queries(1):
             failed_response = anonymous_client.post(
                 f"{self.BASE_ENDPOINT}/tokens/obtain/",
                 data={
@@ -40,9 +40,9 @@ class TestAPIAuthPublicEndpoints:
 
         assert failed_response.status_code == 401
 
-        # Getting user (1) and site (2) and creating refresh token (1)
-        # takes 4 queries.
-        with django_assert_max_num_queries(4):
+        # Getting user (1) creating refresh token (1)
+        # takes 2 queries.
+        with django_assert_max_num_queries(2):
             response = anonymous_client.post(
                 f"{self.BASE_ENDPOINT}/tokens/obtain/",
                 data={"email": "testuser@example.com", "password": "supersecret1234"},
