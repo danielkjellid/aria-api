@@ -25,7 +25,7 @@ def discount_record(discount_product: Discount) -> DiscountRecord:
         description=discount_product.description
         if discount_product.description
         else None,
-        slug=discount_product.slug if discount_product.slug else None,
+        slug=discount_product.slug,
         products=product_list_for_qs(
             products=discount_product.products.all(), filters=None  # type: ignore
         ),
@@ -113,7 +113,7 @@ def discount_active_list() -> list[DiscountRecord]:
                 description=discount_product.description
                 if discount_product.description
                 else None,
-                slug=discount_product.slug if discount_product.slug else None,
+                slug=discount_product.slug,
                 products=[
                     ProductListRecord(
                         id=product.id,
