@@ -8,6 +8,7 @@ class DiscountsActiveListOutput(Schema):
     name: str
     slug: str | None
 
-    products: list[ProductListOutput]
+    discount_gross_price: float | None
+    discount_gross_percentage: float | None
 
-    ordering: int
+    products: list[ProductListOutput]

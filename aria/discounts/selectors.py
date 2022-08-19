@@ -60,15 +60,31 @@ def discount_active_list() -> list[ProductListRecord]:
 
     prefetch_options = Prefetch(
         "product_options",
-        queryset=ProductOption.objects.available()
-        .select_related("product", "product__supplier")
-        .prefetch_related("product__colors", "product__shapes", "product__options"),
+        queryset=(
+            # This queryset might look a bit backwords as we're essentially
+            # prefetching in reverse order (from product to option), even
+            # though the queryset is on option level. This is because in
+            # the list view we want to show the _product_, and not the option
+            # which makes us do option.product.options.all() to comply with
+            # the product list record.
+            ProductOption.objects.available()
+            .select_related("product", "product__supplier", "variant")
+            .distinct("variant_id")
+            .prefetch_related(
+                "product__colors",
+                "product__shapes",
+                "product__options",
+                "product__options__variant",
+            )
+        ),
         to_attr="available_options",
     )
 
     prefetch_products = Prefetch(
         "products",
-        queryset=Product.objects.available().preload_for_list(),
+        queryset=Product.objects.available()
+        .select_related("supplier")
+        .prefetch_related("colors", "shapes", "options", "options__variant"),
         to_attr="available_products",
     )
 
@@ -109,6 +125,7 @@ def discount_active_list() -> list[ProductListRecord]:
                             origin_country_flag=product.supplier.origin_country.unicode_flag,
                         ),
                         thumbnail=product.thumbnail.url if product.thumbnail else None,
+                        unit=product.unit_display,
                         display_price=product.display_price,
                         from_price=product.from_price,
                         materials=product.materials_display,
@@ -141,7 +158,9 @@ def discount_active_list() -> list[ProductListRecord]:
                             if option.variant
                         ],
                     )
-                    for product in aggregated_products
+                    for product in sorted(
+                        aggregated_products, key=lambda product: product.created_at
+                    )
                 ],
                 minimum_quantity=discount_product.minimum_quantity
                 if discount_product.minimum_quantity
@@ -149,7 +168,7 @@ def discount_active_list() -> list[ProductListRecord]:
                 maximum_quantity=discount_product.maximum_quantity
                 if discount_product.maximum_quantity
                 else None,
-                discount_gross_pr=discount_product.discount_gross_price
+                discount_gross_price=discount_product.discount_gross_price
                 if discount_product.discount_gross_price
                 else None,
                 discount_gross_percentage=discount_product.discount_gross_percentage
