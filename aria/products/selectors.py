@@ -1,6 +1,7 @@
+from decimal import Decimal
 from typing import Any
 
-from django.db.models import Prefetch, Q
+from django.db.models import Min, Q
 
 from aria.categories.models import Category
 from aria.categories.selectors import category_tree_active_list_for_product
@@ -9,7 +10,7 @@ from aria.core.models import BaseQuerySet
 from aria.core.selectors import base_header_image_record
 from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.filters import ProductSearchFilter
-from aria.products.models import Product, ProductOption
+from aria.products.models import Product
 from aria.products.records import (
     ProductColorRecord,
     ProductDetailRecord,
@@ -56,7 +57,28 @@ def product_record(product: Product) -> ProductRecord:
     )
 
 
-def product_options_list_for_product(product: Product) -> list[ProductOptionRecord]:
+def product_get_price_from_options(*, product: Product) -> Decimal:
+    """
+    Get a product's from price based on lowest options price
+    available.
+    """
+
+    annotated_price = getattr(product, "annotated_from_price", None)
+
+    # If annotated value already exists, return that without taking
+    # a roundtrip to the db.
+    if annotated_price is not None:
+        return annotated_price
+
+    # Aggregate lowest gross price based on a product's options.
+    lowest_option_price = product.options.available().aggregate(Min("gross_price"))[
+        "gross_price__min"
+    ]
+
+    return lowest_option_price if lowest_option_price else Decimal("0.00")
+
+
+def product_options_list_for_product(*, product: Product) -> list[ProductOptionRecord]:
     """
     Get a full representation of a product options connected to
     a single product instance.
@@ -122,9 +144,12 @@ def product_detail(
 
     product = (
         Product.objects.filter(Q(id=product_id) | Q(slug=product_slug))  # type: ignore
-        .preload_for_list()
         .with_active_categories()
         .with_available_options()
+        .with_colors()
+        .with_shapes()
+        .with_files()
+        .annotate_from_price()
         .first()
     )
 
@@ -139,7 +164,7 @@ def product_detail(
     record = ProductDetailRecord(
         **product_base_record.dict(),
         categories=categories,
-        from_price=product.from_price,
+        from_price=product_get_price_from_options(product=product),
         display_price=product.display_price,
         can_be_picked_up=product.can_be_picked_up,
         can_be_purchased_online=product.can_be_purchased_online,
@@ -183,15 +208,7 @@ def product_list_for_qs(
 
     filters = filters or {}
 
-    # Preload all needed values
-    qs = products.prefetch_related(  # type: ignore
-        Prefetch(
-            "options",
-            queryset=ProductOption.objects.select_related("variant").distinct(
-                "variant_id"
-            ),
-        )
-    ).preload_for_list()
+    qs = products.preload_for_list()
 
     filtered_qs = ProductSearchFilter(filters, qs).qs
 
@@ -209,7 +226,7 @@ def product_list_for_qs(
             ),
             thumbnail=product.thumbnail.url if product.thumbnail else None,
             display_price=product.display_price,
-            from_price=product.from_price,
+            from_price=product_get_price_from_options(product=product),
             materials=product.materials_display,
             rooms=product.rooms_display,
             colors=[
@@ -232,7 +249,7 @@ def product_list_for_qs(
                     else None,
                     is_standard=option.variant.is_standard,
                 )
-                for option in product.options.all()
+                for option in product.available_options_unique_variants  # type: ignore
                 if option.variant
             ],
         )

@@ -8,7 +8,7 @@ from aria.categories.models import Category
 from aria.core.exceptions import ApplicationError
 from aria.products.schemas.filters import ProductListFilters
 from aria.products.schemas.outputs import ProductDetailOutput, ProductListOutput
-from aria.products.selectors import product_detail, product_list_by_category_from_cache
+from aria.products.selectors import product_detail, product_list_by_category
 
 router = Router(tags=["Products"])
 
@@ -28,9 +28,7 @@ def product_list_by_category_api(
     """
 
     category = get_object_or_404(Category, slug=category_slug)
-    products = product_list_by_category_from_cache(
-        category=category, filters=search.dict()
-    )
+    products = product_list_by_category(category=category, filters=search.dict())
 
     return [ProductListOutput(**product.dict()) for product in products]
 

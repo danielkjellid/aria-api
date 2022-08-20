@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from django.db.models import F, Prefetch
+from django.db.models import F, Min, Prefetch
 
 from aria.core.models import BaseQuerySet
 from aria.products.enums import ProductStatus
@@ -77,18 +77,75 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
 
         return self.prefetch_related(prefetched_options)
 
+    def with_available_options_unique_variants(self) -> BaseQuerySet["models.Product"]:
+        """
+        Prefetch a set of unique product variants.
+        """
+
+        from aria.products.models import ProductOption
+
+        available_product_options_variants = (
+            ProductOption.objects.available()
+            .select_related("variant")
+            .distinct("variant_id")
+        )
+
+        prefetched_unique_variants = Prefetch(
+            "options",
+            queryset=available_product_options_variants,
+            to_attr="available_options_unique_variants",
+        )
+
+        return self.prefetch_related(prefetched_unique_variants)
+
+    def with_images(self) -> BaseQuerySet["models.Product"]:
+        """
+        Prefetch a product's images.
+        """
+
+        return self.prefetch_related("images")
+
+    def with_colors(self) -> BaseQuerySet["models.Product"]:
+        """
+        Prefetch a product's colors.
+        """
+
+        return self.prefetch_related("colors")
+
+    def with_shapes(self) -> BaseQuerySet["models.Product"]:
+        """
+        Prefetch a product's shapes.
+        """
+
+        return self.prefetch_related("shapes")
+
+    def with_files(self) -> BaseQuerySet["models.Product"]:
+        """
+        Prefetch a product's files.
+        """
+
+        return self.prefetch_related("files")
+
+    def annotate_from_price(self) -> BaseQuerySet["models.Product"]:
+        """
+        Annotate a product's from price based on lowest options price
+        available.
+        """
+
+        return self.annotate(annotated_from_price=Min("options__gross_price"))
+
     def preload_for_list(self) -> BaseQuerySet["models.Product"]:
         """
         Utility to avoid n+1 queries
         """
 
-        qs = self.select_related("supplier").prefetch_related(
-            "categories",
-            "colors",
-            "images",
-            "shapes",
-            "options",
-            "files",
+        qs = (
+            self.select_related("supplier")
+            .with_active_categories()
+            .with_colors()
+            .with_shapes()
+            .with_available_options_unique_variants()
+            .annotate_from_price()
         )
 
         return qs
