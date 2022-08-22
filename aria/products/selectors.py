@@ -57,6 +57,63 @@ def product_record(product: Product) -> ProductRecord:
     )
 
 
+def product_list_record(product: Product) -> ProductListRecord:
+    """
+    Get the record representation for a list of products. Needs to be
+    used with a product preloaded for listing. E.g. with the
+    .preload_for_list() queryset manager method.
+    """
+
+    assert hasattr(
+        product, "available_options_unique_variants"
+    ), "Please use the product_list_record alongside prefetched values."
+
+    assert hasattr(
+        product, "annotated_from_price"
+    ), "Please use the product_list_record alongside prefetched values."
+
+    available_options = getattr(product, "available_options_unique_variants")
+
+    return ProductListRecord(
+        id=product.id,
+        name=product.name,
+        slug=product.slug,
+        unit=product.unit_display,
+        supplier=ProductSupplierRecord(
+            id=product.supplier.id,
+            name=product.supplier.name,
+            origin_country=product.supplier.origin_country.name,
+            origin_country_flag=product.supplier.origin_country.unicode_flag,
+        ),
+        thumbnail=product.thumbnail.url if product.thumbnail else None,
+        display_price=product.display_price,
+        from_price=product_get_price_from_options(product=product),
+        materials=product.materials_display,
+        rooms=product.rooms_display,
+        colors=[
+            ProductColorRecord(id=color.id, name=color.name, color_hex=color.color_hex)
+            for color in product.colors.all()
+        ],
+        shapes=[
+            ProductShapeRecord(id=shape.id, name=shape.name, image=shape.image.url)
+            for shape in product.shapes.all()
+        ],
+        variants=[
+            ProductVariantRecord(
+                id=option.variant.id,
+                name=option.variant.name,
+                image=option.variant.image.url if option.variant.image else None,
+                thumbnail=option.variant.thumbnail.url
+                if option.variant.thumbnail
+                else None,
+                is_standard=option.variant.is_standard,
+            )
+            for option in available_options
+            if option.variant
+        ],
+    )
+
+
 def product_get_price_from_options(*, product: Product) -> Decimal:
     """
     Get a product's from price based on lowest options price
@@ -68,14 +125,14 @@ def product_get_price_from_options(*, product: Product) -> Decimal:
     # If annotated value already exists, return that without taking
     # a roundtrip to the db.
     if annotated_price is not None:
-        return annotated_price
+        return Decimal(annotated_price)
 
     # Aggregate lowest gross price based on a product's options.
     lowest_option_price = product.options.available().aggregate(Min("gross_price"))[
         "gross_price__min"
     ]
 
-    return lowest_option_price if lowest_option_price else Decimal("0.00")
+    return Decimal(lowest_option_price) or Decimal("0.00")
 
 
 def product_options_list_for_product(*, product: Product) -> list[ProductOptionRecord]:
@@ -208,53 +265,11 @@ def product_list_for_qs(
 
     filters = filters or {}
 
-    qs = products.preload_for_list()
+    qs = products.preload_for_list().order_by("-created_at")
 
     filtered_qs = ProductSearchFilter(filters, qs).qs
 
-    return [
-        ProductListRecord(
-            id=product.id,
-            name=product.name,
-            slug=product.slug,
-            unit=ProductUnit(product.unit).label,
-            supplier=ProductSupplierRecord(
-                id=product.supplier.id,
-                name=product.supplier.name,
-                origin_country=product.supplier.origin_country.name,
-                origin_country_flag=product.supplier.origin_country.unicode_flag,
-            ),
-            thumbnail=product.thumbnail.url if product.thumbnail else None,
-            display_price=product.display_price,
-            from_price=product_get_price_from_options(product=product),
-            materials=product.materials_display,
-            rooms=product.rooms_display,
-            colors=[
-                ProductColorRecord(
-                    id=color.id, name=color.name, color_hex=color.color_hex
-                )
-                for color in product.colors.all()
-            ],
-            shapes=[
-                ProductShapeRecord(id=shape.id, name=shape.name, image=shape.image.url)
-                for shape in product.shapes.all()
-            ],
-            variants=[
-                ProductVariantRecord(
-                    id=option.variant.id,
-                    name=option.variant.name,
-                    image=option.variant.image.url if option.variant.image else None,
-                    thumbnail=option.variant.thumbnail.url
-                    if option.variant.thumbnail
-                    else None,
-                    is_standard=option.variant.is_standard,
-                )
-                for option in product.available_options_unique_variants  # type: ignore
-                if option.variant
-            ],
-        )
-        for product in filtered_qs
-    ]
+    return [product_list_record(product=product) for product in filtered_qs]
 
 
 def product_list_by_category(

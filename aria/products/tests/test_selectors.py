@@ -34,7 +34,7 @@ class TestProductsSelectors:
         as expected, both with and without a prefetch.
         """
 
-        product_1 = create_product(product_name="Product 1")
+        product_1 = create_product(product_name="Test Product 1", options=[])
         create_product_option(product=product_1)
         create_product_option(product=product_1, gross_price=Decimal(300.00))
         create_product_option(product=product_1, gross_price=Decimal(400.00))
@@ -113,9 +113,13 @@ class TestProductsSelectors:
                 products=products_by_category_subcat_1, filters=None
             )
 
+        print(products_by_subcat_1)
+        print(list(reversed(products_subcat_1)))
+
         assert len(products_by_subcat_1) == 20
-        assert products_by_subcat_1[0].id == products_subcat_1[0].id
-        assert products_by_subcat_1[19].id == products_subcat_1[19].id
+        # Qs is ordered by -created_at, so reverse list returned på util.
+        assert products_by_subcat_1[0].id == list(reversed(products_subcat_1))[0].id
+        assert products_by_subcat_1[19].id == list(reversed(products_subcat_1))[19].id
 
         products_by_category_subcat_2 = Product.objects.by_category(subcat_2)
 
@@ -134,8 +138,8 @@ class TestProductsSelectors:
 
         # Assert that only the products_subcat_2 is returned.
         assert len(products_by_subcat_2) == 15
-        assert products_by_subcat_2[0].id == products_subcat_2[0].id
-        assert products_by_subcat_2[14].id == products_subcat_2[14].id
+        assert products_by_subcat_2[0].id == list(reversed(products_subcat_2))[0].id
+        assert products_by_subcat_2[14].id == list(reversed(products_subcat_2))[14].id
 
         # Explicitly set name of first instance.
         products_subcat_2[0].name = "Awesome product"
@@ -193,8 +197,13 @@ class TestProductsSelectors:
 
         # Assert that only the products_subcat_1 is returned.
         assert len(filtered_products_subcat_1) == 20
-        assert filtered_products_subcat_1[0].id == products_subcat_1[0].id
-        assert filtered_products_subcat_1[19].id == products_subcat_1[19].id
+        assert (
+            filtered_products_subcat_1[0].id == list(reversed(products_subcat_1))[0].id
+        )
+        assert (
+            filtered_products_subcat_1[19].id
+            == list(reversed(products_subcat_1))[19].id
+        )
 
         # Then test getting products based on category subcat_2.
         # Uses 7 queries:
@@ -212,8 +221,13 @@ class TestProductsSelectors:
 
         # Assert that only the products_subcat_2 is returned.
         assert len(filtered_products_subcat_2) == 15
-        assert filtered_products_subcat_2[0].id == products_subcat_2[0].id
-        assert filtered_products_subcat_2[14].id == products_subcat_2[14].id
+        assert (
+            filtered_products_subcat_2[0].id == list(reversed(products_subcat_2))[0].id
+        )
+        assert (
+            filtered_products_subcat_2[14].id
+            == list(reversed(products_subcat_2))[14].id
+        )
 
         # Explicitly set name of first instance.
         products_subcat_2[0].name = "Awesome product"
@@ -279,49 +293,6 @@ class TestProductsSelectors:
         assert len(cache.get(f"products.category_id={subcat.id}.filters={None}")) == 2
         assert cache.get(f"products.category_id={subcat.id}.filters={None}") == [
             ProductListRecord(
-                id=product_1.id,
-                name=product_1.name,
-                slug=product_1.slug,
-                unit=product_1.unit_display,
-                supplier=ProductSupplierRecord(
-                    id=product_1.supplier.id,
-                    name=product_1.supplier.name,
-                    origin_country=product_1.supplier.origin_country.name,
-                    origin_country_flag=product_1.supplier.origin_country.unicode_flag,
-                ),
-                from_price=0.0,
-                display_price=True,
-                materials=product_1.materials_display,
-                rooms=product_1.rooms_display,
-                colors=[
-                    ProductColorRecord(
-                        id=color.id, name=color.name, color_hex=color.color_hex
-                    )
-                    for color in product_1.colors.all()
-                ],
-                shapes=[
-                    ProductShapeRecord(
-                        id=shape.id, name=shape.name, image=shape.image.url
-                    )
-                    for shape in product_1.shapes.all()
-                ],
-                variants=[
-                    ProductVariantRecord(
-                        id=option.variant.id,
-                        name=option.variant.name,
-                        image=option.variant.image.url
-                        if option.variant.image
-                        else None,
-                        thumbnail=option.variant.thumbnail.url
-                        if option.variant.thumbnail
-                        else None,
-                        is_standard=option.variant.is_standard,
-                    )
-                    for option in product_1.options.all()
-                    if option.variant
-                ],
-            ),
-            ProductListRecord(
                 id=product_2.id,
                 name=product_2.name,
                 slug=product_2.slug,
@@ -332,7 +303,7 @@ class TestProductsSelectors:
                     origin_country=product_2.supplier.origin_country.name,
                     origin_country_flag=product_2.supplier.origin_country.unicode_flag,
                 ),
-                from_price=0.0,
+                from_price=Decimal("200.00"),
                 display_price=True,
                 materials=product_2.materials_display,
                 rooms=product_2.rooms_display,
@@ -361,6 +332,49 @@ class TestProductsSelectors:
                         is_standard=option.variant.is_standard,
                     )
                     for option in product_2.options.all()
+                    if option.variant
+                ],
+            ),
+            ProductListRecord(
+                id=product_1.id,
+                name=product_1.name,
+                slug=product_1.slug,
+                unit=product_1.unit_display,
+                supplier=ProductSupplierRecord(
+                    id=product_1.supplier.id,
+                    name=product_1.supplier.name,
+                    origin_country=product_1.supplier.origin_country.name,
+                    origin_country_flag=product_1.supplier.origin_country.unicode_flag,
+                ),
+                from_price=Decimal("200.00"),
+                display_price=True,
+                materials=product_1.materials_display,
+                rooms=product_1.rooms_display,
+                colors=[
+                    ProductColorRecord(
+                        id=color.id, name=color.name, color_hex=color.color_hex
+                    )
+                    for color in product_1.colors.all()
+                ],
+                shapes=[
+                    ProductShapeRecord(
+                        id=shape.id, name=shape.name, image=shape.image.url
+                    )
+                    for shape in product_1.shapes.all()
+                ],
+                variants=[
+                    ProductVariantRecord(
+                        id=option.variant.id,
+                        name=option.variant.name,
+                        image=option.variant.image.url
+                        if option.variant.image
+                        else None,
+                        thumbnail=option.variant.thumbnail.url
+                        if option.variant.thumbnail
+                        else None,
+                        is_standard=option.variant.is_standard,
+                    )
+                    for option in product_1.options.all()
                     if option.variant
                 ],
             ),
@@ -406,7 +420,7 @@ class TestProductsSelectors:
                     origin_country=product_1.supplier.origin_country.name,
                     origin_country_flag=product_1.supplier.origin_country.unicode_flag,
                 ),
-                from_price=0.0,
+                from_price=Decimal("200.00"),
                 display_price=True,
                 materials=product_1.materials_display,
                 rooms=product_1.rooms_display,

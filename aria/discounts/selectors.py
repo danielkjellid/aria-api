@@ -4,14 +4,7 @@ from aria.core.decorators import cached
 from aria.discounts.models import Discount
 from aria.discounts.records import DiscountRecord
 from aria.products.models import Product, ProductOption
-from aria.products.records import (
-    ProductColorRecord,
-    ProductListRecord,
-    ProductShapeRecord,
-    ProductSupplierRecord,
-    ProductVariantRecord,
-)
-from aria.products.selectors import product_list_for_qs
+from aria.products.selectors import product_list_for_qs, product_list_record
 
 
 def discount_record(discount_product: Discount) -> DiscountRecord:
@@ -68,133 +61,100 @@ def discount_active_list() -> list[DiscountRecord]:
             # the list view we want to show the _product_, and not the option
             # which makes us do option.product.options.all() to comply with
             # the product list record.
-            ProductOption.objects.available()
-            .select_related("product", "product__supplier", "variant")
-            .distinct("variant_id")
-            .prefetch_related(
-                "product__colors",
-                "product__shapes",
-                "product__options",
-                "product__options__variant",
-            )
+            ProductOption.objects.available().select_related("product")
         ),
         to_attr="available_options",
     )
 
     prefetch_products = Prefetch(
         "products",
-        queryset=Product.objects.available()
-        .select_related("supplier")
-        .prefetch_related("colors", "shapes", "options", "options__variant"),
+        queryset=Product.objects.available(),
         to_attr="available_products",
     )
 
-    discount_products = (
+    discounts = (
         Discount.objects.active()
         .prefetch_related(prefetch_options, prefetch_products)
         .order_by("ordering", "created_at")
     )
 
-    records = []
+    data = []
 
-    for discount_product in discount_products:
-        aggregated_products = set()
+    for discount in discounts:
 
-        for product in discount_product.available_products:  # type: ignore
-            aggregated_products.add(product)
+        aggregated_product_ids = set()
 
-        for option in discount_product.available_options:  # type: ignore
-            aggregated_products.add(option.product)
+        for product in discount.available_products:  # type: ignore
+            aggregated_product_ids.add(product.id)
 
-        records.append(
-            DiscountRecord(
-                id=discount_product.id,
-                name=discount_product.name,
-                description=discount_product.description
-                if discount_product.description
-                else None,
-                slug=discount_product.slug,
-                products=[
-                    ProductListRecord(
-                        id=product.id,
-                        name=product.name,
-                        slug=product.slug,
-                        supplier=ProductSupplierRecord(
-                            id=product.supplier.id,
-                            name=product.supplier.name,
-                            origin_country=product.supplier.origin_country.name,
-                            origin_country_flag=product.supplier.origin_country.unicode_flag,  # pylint: disable=line-too-long
-                        ),
-                        thumbnail=product.thumbnail.url if product.thumbnail else None,
-                        unit=product.unit_display,
-                        display_price=product.display_price,
-                        from_price=product.from_price,
-                        materials=product.materials_display,
-                        rooms=product.rooms_display,
-                        colors=[
-                            ProductColorRecord(
-                                id=color.id, name=color.name, color_hex=color.color_hex
-                            )
-                            for color in product.colors.all()
-                        ],
-                        shapes=[
-                            ProductShapeRecord(
-                                id=shape.id, name=shape.name, image=shape.image.url
-                            )
-                            for shape in product.shapes.all()
-                        ],
-                        variants=[
-                            ProductVariantRecord(
-                                id=option.variant.id,
-                                name=option.variant.name,
-                                image=option.variant.image.url
-                                if option.variant.image
-                                else None,
-                                thumbnail=option.variant.thumbnail.url
-                                if option.variant.thumbnail
-                                else None,
-                                is_standard=option.variant.is_standard,
-                            )
-                            for option in product.options.all()
-                            if option.variant
-                        ],
-                    )
-                    for product in sorted(
-                        aggregated_products, key=lambda product: product.created_at  # type: ignore # pylint: disable=line-too-long
-                    )
-                ],
-                minimum_quantity=discount_product.minimum_quantity
-                if discount_product.minimum_quantity
-                else None,
-                maximum_quantity=discount_product.maximum_quantity
-                if discount_product.maximum_quantity
-                else None,
-                discount_gross_price=discount_product.discount_gross_price
-                if discount_product.discount_gross_price
-                else None,
-                discount_gross_percentage=discount_product.discount_gross_percentage
-                if discount_product.discount_gross_percentage
-                else None,
-                maximum_sold_quantity=discount_product.maximum_sold_quantity
-                if discount_product.maximum_sold_quantity
-                else None,
-                total_sold_quantity=discount_product.total_sold_quantity
-                if discount_product.total_sold_quantity
-                else None,
-                display_maximum_quantity=discount_product.display_maximum_quantity,
-                active_at=discount_product.active_at
-                if discount_product.active_to
-                else None,
-                active_to=discount_product.active_to
-                if discount_product.active_to
-                else None,
-                ordering=discount_product.ordering
-                if discount_product.ordering
-                else None,
-            )
+        for option in discount.available_options:  # type: ignore
+            aggregated_product_ids.add(option.product.id)
+
+        data.append({"discount_id": discount.id, "products": aggregated_product_ids})
+
+    flattened_aggregated_products = [val for d in data for val in d["products"]]
+    products = (
+        Product.objects.available()
+        .filter(id__in=flattened_aggregated_products)
+        .preload_for_list()
+        .order_by("-created_at")
+    )
+
+    # Find a better way to do this
+    def _find_products_in_data(discount_id: int):
+        for d in data:
+            if d["discount_id"] == discount_id:
+                lst = [
+                    product
+                    for product in products
+                    for product_id in d["products"]
+                    if product_id == product.id
+                ]
+
+                print(
+                    [
+                        hasattr(product, "available_options_unique_variants")
+                        for product in lst
+                    ]
+                )
+
+                return lst
+
+    return [
+        DiscountRecord(
+            id=discount.id,
+            name=discount.name,
+            description=discount.description if discount.description else None,
+            slug=discount.slug,
+            products=[
+                product_list_record(product=product)
+                for product in _find_products_in_data(discount_id=discount.id)
+            ],
+            minimum_quantity=discount.minimum_quantity
+            if discount.minimum_quantity
+            else None,
+            maximum_quantity=discount.maximum_quantity
+            if discount.maximum_quantity
+            else None,
+            discount_gross_price=discount.discount_gross_price
+            if discount.discount_gross_price
+            else None,
+            discount_gross_percentage=discount.discount_gross_percentage
+            if discount.discount_gross_percentage
+            else None,
+            maximum_sold_quantity=discount.maximum_sold_quantity
+            if discount.maximum_sold_quantity
+            else None,
+            total_sold_quantity=discount.total_sold_quantity
+            if discount.total_sold_quantity
+            else None,
+            display_maximum_quantity=discount.display_maximum_quantity,
+            active_at=discount.active_at if discount.active_to else None,
+            active_to=discount.active_to if discount.active_to else None,
+            ordering=discount.ordering if discount.ordering else None,
         )
-
-    return records
+        for discount in discounts
+    ]
 
 
 def _discount_active_list_key() -> str:

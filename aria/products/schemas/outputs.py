@@ -54,7 +54,7 @@ class ProductDetailOutput(Schema):
     description: str | None
     absorption: float | None
     from_price: float
-    display_price: float
+    display_price: bool
     can_be_picked_up: bool
     can_be_purchased_online: bool
     materials: list[BaseArrayFieldLabelRecord] | None = []

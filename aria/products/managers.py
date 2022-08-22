@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from django.db.models import F, Min, Prefetch
@@ -132,7 +133,12 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         available.
         """
 
-        return self.annotate(annotated_from_price=Min("options__gross_price"))
+        from_price = self.annotate(annotated_from_price=Min("options__gross_price"))
+
+        if from_price is None:
+            return Decimal("0.00")
+
+        return from_price
 
     def preload_for_list(self) -> BaseQuerySet["models.Product"]:
         """
@@ -141,7 +147,6 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
 
         qs = (
             self.select_related("supplier")
-            .with_active_categories()
             .with_colors()
             .with_shapes()
             .with_available_options_unique_variants()

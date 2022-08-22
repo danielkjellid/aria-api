@@ -27,47 +27,61 @@ class TestPublicProductsEndpoints:
         for product in products:
             product.categories.set([subcat_1])
 
-        expected_response = [
-            {
-                "id": product.id,
-                "name": product.name,
-                "slug": product.slug,
-                "unit": ProductUnit(product.unit).label,
-                "supplier": {
-                    "name": product.supplier.name,
-                    "origin_country": product.supplier.origin_country.name,
-                    "origin_country_flag": product.supplier.origin_country.unicode_flag,
-                },
-                "thumbnail": product.thumbnail.url if product.thumbnail else None,
-                "display_price": True,
-                "from_price": 0.0,
-                "colors": [
-                    {"id": color.id, "name": color.name, "color_hex": color.color_hex}
-                    for color in product.colors.all()
-                ],
-                "shapes": [
-                    {"id": shape.id, "name": shape.name, "image": shape.image.id}
-                    for shape in product.shapes.all()
-                ],
-                "materials": product.materials_display,
-                "rooms": product.rooms_display,
-                "variants": [
+        expected_response = list(
+            reversed(
+                [
                     {
-                        "id": option.variant.id,
-                        "name": option.variant.name,
-                        "thumbnail": option.variant.thumbnail.url
-                        if option.variant.thumbnail
+                        "id": product.id,
+                        "name": product.name,
+                        "slug": product.slug,
+                        "unit": ProductUnit(product.unit).label,
+                        "supplier": {
+                            "name": product.supplier.name,
+                            "origin_country": product.supplier.origin_country.name,
+                            "origin_country_flag": product.supplier.origin_country.unicode_flag,
+                        },
+                        "thumbnail": product.thumbnail.url
+                        if product.thumbnail
                         else None,
-                        "image": option.variant.image.id
-                        if option.variant.image
-                        else None,
+                        "display_price": True,
+                        "from_price": 200.0,
+                        "colors": [
+                            {
+                                "id": color.id,
+                                "name": color.name,
+                                "color_hex": color.color_hex,
+                            }
+                            for color in product.colors.all()
+                        ],
+                        "shapes": [
+                            {
+                                "id": shape.id,
+                                "name": shape.name,
+                                "image": shape.image.id,
+                            }
+                            for shape in product.shapes.all()
+                        ],
+                        "materials": product.materials_display,
+                        "rooms": product.rooms_display,
+                        "variants": [
+                            {
+                                "id": option.variant.id,
+                                "name": option.variant.name,
+                                "thumbnail": option.variant.thumbnail.url
+                                if option.variant.thumbnail
+                                else None,
+                                "image": option.variant.image.id
+                                if option.variant.image
+                                else None,
+                            }
+                            for option in product.options.all()
+                            if option.variant
+                        ],
                     }
-                    for option in product.options.all()
-                    if option.variant
-                ],
-            }
-            for product in products
-        ]
+                    for product in products
+                ]
+            )
+        )
 
         # Uses 8 queries:
         # - 1 for getting related category,
@@ -120,7 +134,7 @@ class TestPublicProductsEndpoints:
             "can_be_picked_up": product.can_be_picked_up,
             "can_be_purchased_online": product.can_be_purchased_online,
             "display_price": product.display_price,
-            "from_price": product.from_price,
+            "from_price": 200.0,
             "supplier": {
                 "name": product.supplier.name,
                 "origin_country": product.supplier.origin_country.name,
@@ -141,13 +155,13 @@ class TestPublicProductsEndpoints:
             "options": [
                 {
                     "id": option.id,
-                    "gross_price": option.gross_price,
+                    "gross_price": 200.0,
                     "status": ProductStatus(option.status).label,
                     "variant": {
                         "id": option.variant.id,
                         "name": option.variant.name,
-                        "image": option.variant.image.url,
-                        "is_standard": option.variant.is_standard,
+                        "image": None,
+                        "thumbnail": None,
                     }
                     if option.variant
                     else None,

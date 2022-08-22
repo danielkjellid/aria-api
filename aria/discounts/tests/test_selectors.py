@@ -120,19 +120,15 @@ class TestDiscountsSelectors:
                 ],
             )
 
-        # Uses 11 queries:
+        # Uses 7 queries:
         # - 1x for getting discounts
-        # - 1x prefetching options variants
-        # - 1x prefetching options products colors
-        # - 1x prefetching options products shapes
-        # - 1x prefetching options products options
-        # - 1x prefetching options products options variants
-        # - 1x prefetching products
-        # - 1x prefetching products colors
-        # - 1x prefetching products shapes
-        # - 1x prefetching products options
+        # - 1x for prefetching options
+        # - 1x for prefetching products
+        # - 1x for re-fetching products
+        # - 1x for prefetching colors
+        # - 1x for prefetching shapes
         # - 1x prefetching products options variants
-        with django_assert_max_num_queries(11):
+        with django_assert_max_num_queries(7):
             active_discounts = discount_active_list()
 
         assert len(active_discounts) == 3
@@ -144,9 +140,9 @@ class TestDiscountsSelectors:
                 description=active_discount_1.description,
                 slug=active_discount_1.slug,
                 products=[
-                    _product_record(product=product_1),
-                    _product_record(product=product_2_option_1.product),
                     _product_record(product=product_4),
+                    _product_record(product=product_2_option_1.product),
+                    _product_record(product=product_1),
                 ],
                 minimum_quantity=active_discount_1.minimum_quantity,
                 maximum_quantity=active_discount_1.maximum_quantity,
@@ -294,19 +290,15 @@ class TestDiscountsSelectors:
                 ],
             )
 
-        # Uses 11 queries:
+        # Uses 7 queries:
         # - 1x for getting discounts
-        # - 1x prefetching options variants
-        # - 1x prefetching options products colors
-        # - 1x prefetching options products shapes
-        # - 1x prefetching options products options
-        # - 1x prefetching options products options variants
-        # - 1x prefetching products
-        # - 1x prefetching products colors
-        # - 1x prefetching products shapes
-        # - 1x prefetching products options
+        # - 1x for prefetching options
+        # - 1x for prefetching products
+        # - 1x for re-fetching products
+        # - 1x for prefetching colors
+        # - 1x for prefetching shapes
         # - 1x prefetching products options variants
-        with django_assert_max_num_queries(11):
+        with django_assert_max_num_queries(7):
             discount_active_list_from_cache()
 
         # After first hit, instances should have been added to cache.
@@ -326,9 +318,9 @@ class TestDiscountsSelectors:
                 description=active_discount_1.description,
                 slug=active_discount_1.slug,
                 products=[
-                    _product_record(product=product_1),
-                    _product_record(product=product_2_option_1.product),
                     _product_record(product=product_4),
+                    _product_record(product=product_2_option_1.product),
+                    _product_record(product=product_1),
                 ],
                 minimum_quantity=active_discount_1.minimum_quantity,
                 maximum_quantity=active_discount_1.maximum_quantity,
