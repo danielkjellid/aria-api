@@ -67,9 +67,18 @@ class TestProductsSelectors:
 
         product = create_product()
 
-        # Uses 12 queries: Uses 7 to get basic product details and relations,
-        # 4 to get right amount og categories and 1 to get options.
-        with django_assert_max_num_queries(12):
+        # Uses 10 queries:
+        # - 1x for getting product
+        # - 1x for prefetching category children
+        # - 1x for prefetching categories
+        # - 1x for filtering categories
+        # - 1x for prefetching options
+        # - 1x for prefetching colors
+        # - 1x for prefetching shapes
+        # - 1x for prefetching files
+        # - 1x for selecting related supplier
+        # - 1x for prefetching images
+        with django_assert_max_num_queries(10):
             fetched_product = product_detail(product_id=product.id)
 
         assert fetched_product.id == product.id

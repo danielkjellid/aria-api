@@ -189,7 +189,18 @@ class TestPublicProductsEndpoints:
         }
 
         # Test that we return a valid response on existing slug.
-        with django_assert_max_num_queries(11):
+        # Uses 10 queries:
+        # - 1x for getting product
+        # - 1x for prefetching category children
+        # - 1x for prefetching categories
+        # - 1x for filtering categories
+        # - 1x for prefetching options
+        # - 1x for prefetching colors
+        # - 1x for prefetching shapes
+        # - 1x for prefetching files
+        # - 1x for selecting related supplier
+        # - 1x for prefetching images
+        with django_assert_max_num_queries(10):
             response = anonymous_client.get(
                 f"{self.BASE_ENDPOINT}/product/{product.slug}/"
             )

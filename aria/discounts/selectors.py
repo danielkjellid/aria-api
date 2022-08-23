@@ -20,7 +20,7 @@ def discount_record(discount_product: Discount) -> DiscountRecord:
         else None,
         slug=discount_product.slug,
         products=product_list_for_qs(
-            products=discount_product.products.all(), filters=None  # type: ignore
+            products=discount_product.products.available().preload_for_list(), filters=None  # type: ignore
         ),
         minimum_quantity=discount_product.minimum_quantity
         if discount_product.minimum_quantity
@@ -52,36 +52,31 @@ def discount_active_list() -> list[DiscountRecord]:
     Get a list of currently active discounts.
     """
 
-    prefetch_options = Prefetch(
-        "product_options",
-        queryset=(
-            # This queryset might look a bit backwords as we're essentially
-            # prefetching in reverse order (from product to option), even
-            # though the queryset is on option level. This is because in
-            # the list view we want to show the _product_, and not the option
-            # which makes us do option.product.options.all() to comply with
-            # the product list record.
-            ProductOption.objects.available().select_related("product")
-        ),
-        to_attr="available_options",
-    )
-
-    prefetch_products = Prefetch(
-        "products",
-        queryset=Product.objects.available(),
-        to_attr="available_products",
-    )
-
     discounts = (
         Discount.objects.active()
-        .prefetch_related(prefetch_options, prefetch_products)
+        .prefetch_related(
+            Prefetch(
+                "product_options",
+                queryset=(ProductOption.objects.available().select_related("product")),
+                to_attr="available_options",
+            ),
+            Prefetch(
+                "products",
+                queryset=Product.objects.available(),
+                to_attr="available_products",
+            ),
+        )
         .order_by("ordering", "created_at")
     )
 
-    data = []
+    discount_data = []
 
+    # Because of how you can have a discount on both products and product
+    # options, and we essentially want to initially show the discount on
+    # the product itself (even though only one option might be discounted)
+    # we need to loop over each discount and flatten products + option
+    # products.
     for discount in discounts:
-
         aggregated_product_ids = set()
 
         for product in discount.available_products:  # type: ignore
@@ -90,9 +85,19 @@ def discount_active_list() -> list[DiscountRecord]:
         for option in discount.available_options:  # type: ignore
             aggregated_product_ids.add(option.product.id)
 
-        data.append({"discount_id": discount.id, "products": aggregated_product_ids})
+        # Add data with which product ids is associated with each discount.
+        discount_data.append(
+            {"discount_id": discount.id, "products": aggregated_product_ids}
+        )
 
-    flattened_aggregated_products = [val for d in data for val in d["products"]]
+    # Retrieve all products id's for all discounts (flatten products values
+    # in discount_data).
+    flattened_aggregated_products = [
+        val for d in discount_data for val in d["products"]
+    ]
+
+    # Refetch all products, + products from options prefetching it with needed
+    # list values.
     products = (
         Product.objects.available()
         .filter(id__in=flattened_aggregated_products)
@@ -100,25 +105,18 @@ def discount_active_list() -> list[DiscountRecord]:
         .order_by("-created_at")
     )
 
-    # Find a better way to do this
-    def _find_products_in_data(discount_id: int):
-        for d in data:
+    def _find_products_in_discount_data(discount_id: int) -> list[Product]:
+        """
+        Helper method for finding associated products based on discount.
+        """
+        for d in discount_data:
             if d["discount_id"] == discount_id:
-                lst = [
+                return [
                     product
                     for product in products
                     for product_id in d["products"]
                     if product_id == product.id
                 ]
-
-                print(
-                    [
-                        hasattr(product, "available_options_unique_variants")
-                        for product in lst
-                    ]
-                )
-
-                return lst
 
     return [
         DiscountRecord(
@@ -128,7 +126,7 @@ def discount_active_list() -> list[DiscountRecord]:
             slug=discount.slug,
             products=[
                 product_list_record(product=product)
-                for product in _find_products_in_data(discount_id=discount.id)
+                for product in _find_products_in_discount_data(discount_id=discount.id)
             ],
             minimum_quantity=discount.minimum_quantity
             if discount.minimum_quantity
