@@ -78,6 +78,32 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
 
         return self.prefetch_related(prefetched_options)
 
+    def with_available_options_and_option_discounts(
+        self,
+    ) -> BaseQuerySet["models.Product"]:
+
+        from aria.discounts.models import Discount
+        from aria.products.models import ProductOption
+
+        available_product_options = ProductOption.objects.available()
+        active_discounts = Discount.objects.active()
+
+        prefetched_discounts = Prefetch(
+            "discounts", queryset=active_discounts, to_attr="active_discounts"
+        )
+
+        available_product_options = available_product_options.select_related(
+            "variant", "size"
+        ).prefetch_related(prefetched_discounts)
+
+        prefetched_options = Prefetch(
+            "options",
+            queryset=available_product_options,
+            to_attr="available_options",
+        )
+
+        return self.prefetch_related(prefetched_options)
+
     def with_available_options_unique_variants(self) -> BaseQuerySet["models.Product"]:
         """
         Prefetch a set of unique product variants.
@@ -99,7 +125,7 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
 
         return self.prefetch_related(prefetched_unique_variants)
 
-    def with_active_discounts(self) -> BaseQuerySet["models.Product"]:
+    def with_active_product_discounts(self) -> BaseQuerySet["models.Product"]:
         """
         Prefetch related active discounts.
         """
@@ -186,7 +212,7 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
             .with_colors()
             .with_shapes()
             .with_available_options_unique_variants()
-            .with_active_discounts()
+            .with_active_product_discounts()
             .with_active_options_discounts()
             .annotate_from_price()
         )

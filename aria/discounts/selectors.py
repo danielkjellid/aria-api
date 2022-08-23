@@ -6,7 +6,7 @@ from aria.discounts.records import DiscountRecord
 from aria.products.models import Product, ProductOption
 from aria.products.records import (
     ProductColorRecord,
-    ProductListDiscountRecord,
+    ProductDiscountRecord,
     ProductListRecord,
     ProductShapeRecord,
     ProductSupplierRecord,
@@ -151,7 +151,7 @@ def discount_active_list() -> list[DiscountRecord]:
                     thumbnail=product.thumbnail.url if product.thumbnail else None,
                     display_price=product.display_price,
                     from_price=product_get_price_from_options(product=product),
-                    discount=ProductListDiscountRecord(
+                    discount=ProductDiscountRecord(
                         is_discounted=True,
                         discounted_gross_price=product_calculate_discounted_price(
                             product=product, discount=discount

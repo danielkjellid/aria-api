@@ -81,6 +81,8 @@ class TestProductsSelectors:
         """
 
         product = create_product()
+        create_product_option(product=product)
+        create_product_option(product=product, gross_price=Decimal(300.00))
 
         # Uses 10 queries:
         # - 1x for getting product

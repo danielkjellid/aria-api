@@ -11,12 +11,12 @@ from aria.core.selectors import base_header_image_record
 from aria.discounts.models import Discount
 from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.filters import ProductSearchFilter
-from aria.products.models import Product
+from aria.products.models import Product, ProductOption
 from aria.products.records import (
     ProductColorRecord,
     ProductDetailRecord,
+    ProductDiscountRecord,
     ProductFileRecord,
-    ProductListDiscountRecord,
     ProductListRecord,
     ProductOptionRecord,
     ProductRecord,
@@ -98,7 +98,7 @@ def product_list_record(product: Product) -> ProductListRecord:
         thumbnail=product.thumbnail.url if product.thumbnail else None,
         display_price=product.display_price,
         from_price=product_get_price_from_options(product=product),
-        discount=product_get_list_discount(product=product),
+        discount=product_get_discount(product=product),
         materials=product.materials_display,
         rooms=product.rooms_display,
         colors=[
@@ -169,12 +169,13 @@ def product_options_list_for_product(*, product: Product) -> list[ProductOptionR
     else:
         # If prefetched value does not exist, fall back to a queryset.
         options = product.options.filter(status=ProductStatus.AVAILABLE).select_related(
-            "variant", "size"
+            "variant", "size", "discounts"
         )
 
     return [
         ProductOptionRecord(
             id=option.id,
+            discount=product_get_discount_for_option(product_option=option),
             gross_price=option.gross_price,
             status=ProductStatus(option.status).label,
             variant=ProductVariantRecord(
@@ -226,21 +227,21 @@ def product_calculate_discounted_price(
     return discounted_gross_price
 
 
-def product_get_list_discount(*, product: Product) -> ProductListDiscountRecord | None:
+def product_get_discount(*, product: Product) -> ProductDiscountRecord | None:
     # TODO: require prefetched attributes here?
     prefetched_active_discounts = getattr(product, "active_discounts", None)
     prefetched_active_options_discounts = getattr(
         product, "active_options_discounts", None
     )
 
-    if prefetched_active_discounts:
-        active_discounts = prefetched_active_discounts
-    elif prefetched_active_options_discounts:
+    if prefetched_active_options_discounts:
         active_option_discounts = prefetched_active_options_discounts[0].discounts.all()
         if len(active_option_discounts) == 0:
             return None
 
         active_discounts = active_option_discounts
+    elif prefetched_active_discounts:
+        active_discounts = prefetched_active_discounts
 
     else:
         active_discounts = product.discounts.active()
@@ -250,7 +251,7 @@ def product_get_list_discount(*, product: Product) -> ProductListDiscountRecord 
 
     discount = active_discounts[0]
 
-    return ProductListDiscountRecord(
+    return ProductDiscountRecord(
         is_discounted=True,
         discounted_gross_price=product_calculate_discounted_price(
             product=product, discount=discount
@@ -266,8 +267,38 @@ def product_get_list_discount(*, product: Product) -> ProductListDiscountRecord 
     )
 
 
-def product_get_detail_discount(*, product: Product) -> str | None:
-    pass
+def product_get_discount_for_option(
+    *, product_option: ProductOption
+) -> ProductDiscountRecord | None:
+
+    prefetched_active_options_discounts = getattr(
+        product_option, "active_discounts", None
+    )
+
+    if prefetched_active_options_discounts is not None:
+        active_discounts = prefetched_active_options_discounts
+    else:
+        active_discounts = product_option.discounts.all()
+
+    if len(active_discounts) == 0:
+        return None
+
+    discount = active_discounts[0]
+
+    return ProductDiscountRecord(
+        is_discounted=True,
+        discounted_gross_price=product_calculate_discounted_price(
+            product=product_option.product, discount=discount
+        ),
+        maximum_sold_quantity=discount.maximum_sold_quantity
+        if discount.maximum_sold_quantity
+        else None,
+        remaining_quantity=(
+            discount.maximum_sold_quantity - discount.total_sold_quantity
+        )
+        if discount.maximum_sold_quantity and discount.total_sold_quantity
+        else None,
+    )
 
 
 #####################
@@ -290,10 +321,12 @@ def product_detail(
     product = (
         Product.objects.filter(Q(id=product_id) | Q(slug=product_slug))  # type: ignore
         .with_active_categories()
-        .with_available_options()
+        # .with_available_options()
         .with_colors()
         .with_shapes()
         .with_files()
+        .with_active_product_discounts()
+        .with_available_options_and_option_discounts()
         .annotate_from_price()
         .first()
     )
