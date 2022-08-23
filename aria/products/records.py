@@ -89,6 +89,13 @@ class ProductDetailRecord(ProductRecord):
     files: list[ProductFileRecord] = []
 
 
+class ProductListDiscountRecord(BaseModel):
+    is_discounted: bool
+    discounted_gross_price: Decimal
+    maximum_sold_quantity: int | None
+    remaining_quantity: int | None
+
+
 class ProductListRecord(BaseModel):
     id: int
     name: str
@@ -98,6 +105,7 @@ class ProductListRecord(BaseModel):
     thumbnail: str | None = None
     display_price: bool
     from_price: Decimal
+    discount: ProductListDiscountRecord | None
     materials: list[BaseArrayFieldLabelRecord]
     rooms: list[BaseArrayFieldLabelRecord]
     colors: list[ProductColorRecord]

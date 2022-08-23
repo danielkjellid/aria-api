@@ -99,6 +99,42 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
 
         return self.prefetch_related(prefetched_unique_variants)
 
+    def with_active_discounts(self) -> BaseQuerySet["models.Product"]:
+        """
+        Prefetch related active discounts.
+        """
+
+        from aria.discounts.models import Discount
+
+        return self.prefetch_related(
+            Prefetch(
+                "discounts",
+                queryset=Discount.objects.active(),
+                to_attr="active_discounts",
+            )
+        )
+
+    def with_active_options_discounts(self) -> BaseQuerySet["models.Product"]:
+        """
+        Prefetch related options active discounts.
+        """
+
+        from aria.discounts.models import Discount
+        from aria.products.models import ProductOption
+
+        available_options = ProductOption.objects.available()
+        active_discounts = Discount.objects.active()
+
+        prefetched_discounts = Prefetch("discounts", queryset=active_discounts)
+
+        available_options = available_options.prefetch_related(prefetched_discounts)
+
+        prefetched_options_discounts = Prefetch(
+            "options", queryset=available_options, to_attr="active_options_discounts"
+        )
+
+        return self.prefetch_related(prefetched_options_discounts)
+
     def with_images(self) -> BaseQuerySet["models.Product"]:
         """
         Prefetch a product's images.
@@ -150,6 +186,8 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
             .with_colors()
             .with_shapes()
             .with_available_options_unique_variants()
+            .with_active_discounts()
+            .with_active_options_discounts()
             .annotate_from_price()
         )
 

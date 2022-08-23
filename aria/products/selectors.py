@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
 from django.db.models import Min, Q
@@ -8,6 +8,7 @@ from aria.categories.selectors import category_tree_active_list_for_product
 from aria.core.decorators import cached
 from aria.core.models import BaseQuerySet
 from aria.core.selectors import base_header_image_record
+from aria.discounts.models import Discount
 from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.filters import ProductSearchFilter
 from aria.products.models import Product
@@ -15,6 +16,7 @@ from aria.products.records import (
     ProductColorRecord,
     ProductDetailRecord,
     ProductFileRecord,
+    ProductListDiscountRecord,
     ProductListRecord,
     ProductOptionRecord,
     ProductRecord,
@@ -24,6 +26,10 @@ from aria.products.records import (
     ProductVariantRecord,
 )
 from aria.products.schemas.filters import ProductListFilters
+
+#####################
+# Records selectors #
+#####################
 
 
 def product_record(product: Product) -> ProductRecord:
@@ -72,6 +78,10 @@ def product_list_record(product: Product) -> ProductListRecord:
         product, "annotated_from_price"
     ), "Please use the product_list_record alongside prefetched values."
 
+    assert hasattr(
+        product, "active_discounts"
+    ), "Please use the product_list_record alongside prefetched values."
+
     available_options = getattr(product, "available_options_unique_variants")
 
     return ProductListRecord(
@@ -88,6 +98,7 @@ def product_list_record(product: Product) -> ProductListRecord:
         thumbnail=product.thumbnail.url if product.thumbnail else None,
         display_price=product.display_price,
         from_price=product_get_price_from_options(product=product),
+        discount=product_get_list_discount(product=product),
         materials=product.materials_display,
         rooms=product.rooms_display,
         colors=[
@@ -112,6 +123,11 @@ def product_list_record(product: Product) -> ProductListRecord:
             if option.variant
         ],
     )
+
+
+#####################
+# Options selectors #
+#####################
 
 
 def product_get_price_from_options(*, product: Product) -> Decimal:
@@ -185,6 +201,78 @@ def product_options_list_for_product(*, product: Product) -> list[ProductOptionR
         )
         for option in options
     ]
+
+
+###############################
+# Product discounts selectors #
+###############################
+
+
+def product_calculate_discounted_price(
+    *, product: Product, discount: Discount
+) -> Decimal:
+
+    if discount.discount_gross_price:
+        discounted_gross_price = discount.discount_gross_price
+    elif discount.discount_gross_percentage:
+        discounted_gross_price = Decimal(
+            product_get_price_from_options(product=product)
+        ) * (Decimal("1") - discount.discount_gross_percentage)
+
+    discounted_gross_price = discounted_gross_price.quantize(
+        Decimal(".01"), rounding=ROUND_HALF_UP
+    )
+
+    return discounted_gross_price
+
+
+def product_get_list_discount(*, product: Product) -> ProductListDiscountRecord | None:
+    # TODO: require prefetched attributes here?
+    prefetched_active_discounts = getattr(product, "active_discounts", None)
+    prefetched_active_options_discounts = getattr(
+        product, "active_options_discounts", None
+    )
+
+    if prefetched_active_discounts:
+        active_discounts = prefetched_active_discounts
+    elif prefetched_active_options_discounts:
+        active_option_discounts = prefetched_active_options_discounts[0].discounts.all()
+        if len(active_option_discounts) == 0:
+            return None
+
+        active_discounts = active_option_discounts
+
+    else:
+        active_discounts = product.discounts.active()
+
+    if len(active_discounts) == 0:
+        return None
+
+    discount = active_discounts[0]
+
+    return ProductListDiscountRecord(
+        is_discounted=True,
+        discounted_gross_price=product_calculate_discounted_price(
+            product=product, discount=discount
+        ),
+        maximum_sold_quantity=discount.maximum_sold_quantity
+        if discount.maximum_sold_quantity
+        else None,
+        remaining_quantity=(
+            discount.maximum_sold_quantity - discount.total_sold_quantity
+        )
+        if discount.maximum_sold_quantity and discount.total_sold_quantity
+        else None,
+    )
+
+
+def product_get_detail_discount(*, product: Product) -> str | None:
+    pass
+
+
+#####################
+# Product selectors #
+#####################
 
 
 def product_detail(

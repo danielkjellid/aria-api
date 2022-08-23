@@ -59,6 +59,21 @@ class TestProductsSelectors:
 
         assert len(options) == 3
 
+    def test_selector_product_calculate_discounted_price(
+        self, django_assert_max_num_queries
+    ) -> None:
+        assert False
+
+    def test_selector_product_get_list_discount(
+        self, django_assert_max_num_queries
+    ) -> None:
+        assert False
+
+    def test_selector_product_get_detail_discount(
+        self, django_assert_max_num_queries
+    ) -> None:
+        assert False
+
     def test_product_detail(self, django_assert_max_num_queries) -> None:
         """
         Test that the product_detail selector works as expected and does

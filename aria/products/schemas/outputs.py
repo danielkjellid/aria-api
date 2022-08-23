@@ -68,6 +68,13 @@ class ProductDetailOutput(Schema):
     files: list[ProductFileOutput] = []
 
 
+class ProductListDiscountOutput(Schema):
+    is_discounted: bool
+    discounted_gross_price: float
+    maximum_sold_quantity: int | None
+    remaining_quantity: int | None
+
+
 class ProductListOutput(Schema):
     id: int
     name: str
@@ -77,6 +84,7 @@ class ProductListOutput(Schema):
     thumbnail: str | None
     display_price: bool
     from_price: float
+    discount: ProductListDiscountOutput | None
     colors: list[ProductColorOutput]
     shapes: list[ProductShapeOutput]
     materials: list[BaseArrayFieldLabelRecord]

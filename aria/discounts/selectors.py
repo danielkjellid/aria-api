@@ -4,7 +4,19 @@ from aria.core.decorators import cached
 from aria.discounts.models import Discount
 from aria.discounts.records import DiscountRecord
 from aria.products.models import Product, ProductOption
-from aria.products.selectors import product_list_for_qs, product_list_record
+from aria.products.records import (
+    ProductColorRecord,
+    ProductListDiscountRecord,
+    ProductListRecord,
+    ProductShapeRecord,
+    ProductSupplierRecord,
+    ProductVariantRecord,
+)
+from aria.products.selectors import (
+    product_calculate_discounted_price,
+    product_get_price_from_options,
+    product_list_for_qs,
+)
 
 
 def discount_record(discount_product: Discount) -> DiscountRecord:
@@ -125,7 +137,66 @@ def discount_active_list() -> list[DiscountRecord]:
             description=discount.description if discount.description else None,
             slug=discount.slug,
             products=[
-                product_list_record(product=product)
+                ProductListRecord(
+                    id=product.id,
+                    name=product.name,
+                    slug=product.slug,
+                    unit=product.unit_display,
+                    supplier=ProductSupplierRecord(
+                        id=product.supplier.id,
+                        name=product.supplier.name,
+                        origin_country=product.supplier.origin_country.name,
+                        origin_country_flag=product.supplier.origin_country.unicode_flag,
+                    ),
+                    thumbnail=product.thumbnail.url if product.thumbnail else None,
+                    display_price=product.display_price,
+                    from_price=product_get_price_from_options(product=product),
+                    discount=ProductListDiscountRecord(
+                        is_discounted=True,
+                        discounted_gross_price=product_calculate_discounted_price(
+                            product=product, discount=discount
+                        ),
+                        maximum_sold_quantity=discount.maximum_sold_quantity
+                        if discount.maximum_sold_quantity
+                        else None,
+                        remaining_quantity=(
+                            discount.maximum_sold_quantity
+                            - discount.total_sold_quantity
+                        )
+                        if discount.maximum_sold_quantity
+                        and discount.total_sold_quantity
+                        else None,
+                    ),
+                    materials=product.materials_display,
+                    rooms=product.rooms_display,
+                    colors=[
+                        ProductColorRecord(
+                            id=color.id, name=color.name, color_hex=color.color_hex
+                        )
+                        for color in product.colors.all()
+                    ],
+                    shapes=[
+                        ProductShapeRecord(
+                            id=shape.id, name=shape.name, image=shape.image.url
+                        )
+                        for shape in product.shapes.all()
+                    ],
+                    variants=[
+                        ProductVariantRecord(
+                            id=option.variant.id,
+                            name=option.variant.name,
+                            image=option.variant.image.url
+                            if option.variant.image
+                            else None,
+                            thumbnail=option.variant.thumbnail.url
+                            if option.variant.thumbnail
+                            else None,
+                            is_standard=option.variant.is_standard,
+                        )
+                        for option in product.available_options_unique_variants
+                        if option.variant
+                    ],
+                )
                 for product in _find_products_in_discount_data(discount_id=discount.id)
             ],
             minimum_quantity=discount.minimum_quantity
