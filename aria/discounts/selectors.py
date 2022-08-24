@@ -78,7 +78,7 @@ def discount_active_list() -> list[DiscountRecord]:
                 to_attr="available_products",
             ),
         )
-        .order_by("ordering", "created_at")
+        .order_by("ordering")
     )
 
     discount_data = []

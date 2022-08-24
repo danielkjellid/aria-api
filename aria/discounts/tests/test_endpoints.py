@@ -38,7 +38,7 @@ class TestPublicDiscountsEndpoints:
             product_options=[product_2_option_1],
             discount_gross_percentage=Decimal("0.20"),
             active_at=timezone.now(),
-            active_to=timezone.now() + timedelta(minutes=10),
+            active_to=timezone.now() + timedelta(minutes=1),
             ordering=1,
         )
         discount_2 = create_discount(
@@ -46,7 +46,7 @@ class TestPublicDiscountsEndpoints:
             products=[product_3],
             discount_gross_percentage=Decimal("0.40"),
             active_at=timezone.now(),
-            active_to=timezone.now() + timedelta(minutes=10),
+            active_to=timezone.now() + timedelta(minutes=1),
             ordering=2,
         )
 
@@ -71,6 +71,12 @@ class TestPublicDiscountsEndpoints:
                         "thumbnail": product_4.thumbnail.url
                         if product_4.thumbnail
                         else None,
+                        "discount": {
+                            "is_discounted": True,
+                            "discounted_gross_price": 160.0,
+                            "maximum_sold_quantity": None,
+                            "remaining_quantity": None,
+                        },
                         "display_price": True,
                         "from_price": 200.0,
                         "colors": [
@@ -119,6 +125,12 @@ class TestPublicDiscountsEndpoints:
                         "thumbnail": product_2_option_1.product.thumbnail.url
                         if product_2_option_1.product.thumbnail
                         else None,
+                        "discount": {
+                            "is_discounted": True,
+                            "discounted_gross_price": 160.0,
+                            "maximum_sold_quantity": None,
+                            "remaining_quantity": None,
+                        },
                         "display_price": True,
                         "from_price": 200.0,
                         "colors": [
@@ -167,6 +179,12 @@ class TestPublicDiscountsEndpoints:
                         "thumbnail": product_1.thumbnail.url
                         if product_1.thumbnail
                         else None,
+                        "discount": {
+                            "is_discounted": True,
+                            "discounted_gross_price": 160.0,
+                            "maximum_sold_quantity": None,
+                            "remaining_quantity": None,
+                        },
                         "display_price": True,
                         "from_price": 200.0,
                         "colors": [
@@ -224,6 +242,12 @@ class TestPublicDiscountsEndpoints:
                         "thumbnail": product_3.thumbnail.url
                         if product_3.thumbnail
                         else None,
+                        "discount": {
+                            "is_discounted": True,
+                            "discounted_gross_price": 120.0,
+                            "maximum_sold_quantity": None,
+                            "remaining_quantity": None,
+                        },
                         "display_price": True,
                         "from_price": 200.0,
                         "colors": [
@@ -263,15 +287,8 @@ class TestPublicDiscountsEndpoints:
             },
         ]
 
-        # Uses 7 queries:
-        # - 1x for getting discounts
-        # - 1x for prefetching options
-        # - 1x for prefetching products
-        # - 1x for re-fetching products
-        # - 1x for prefetching colors
-        # - 1x for prefetching shapes
-        # - 1x prefetching products options variants
-        with django_assert_max_num_queries(7):
+        # Uses 10 queries.
+        with django_assert_max_num_queries(10):
             response = anonymous_client.get(f"{self.BASE_ENDPOINT}/active/")
 
         actual_response = json.loads(response.content)
