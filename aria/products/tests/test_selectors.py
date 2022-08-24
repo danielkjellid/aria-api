@@ -17,17 +17,17 @@ from aria.products.records import (
     ProductVariantRecord,
 )
 from aria.products.selectors import (
-    _product_calculate_discounted_price,
-    product_calculate_discounted_price_for_option,
-    product_calculate_discounted_price_for_product,
+    _calculate_discounted_price,
+    product_calculate_discounted_price,
     product_detail,
-    product_get_discount_for_option,
-    product_get_discount_for_product,
+    product_get_active_discount,
     product_get_price_from_options,
     product_list_by_category,
     product_list_by_category_from_cache,
     product_list_for_sale_for_qs,
     product_list_record,
+    product_option_calculate_discounted_price,
+    product_option_get_active_discount,
     product_options_list_for_product,
 )
 from aria.products.tests.utils import create_product, create_product_option
@@ -145,11 +145,11 @@ class TestProductsSelectors:
     # Product discounts selectors tests #
     #####################################
 
-    def test_selector__product_calculate_discounted_price(
+    def test_selector__calculate_discounted_price(
         self, django_assert_max_num_queries
     ) -> None:
         """
-        Test that the _product_calculate_discounted_price selector calculates and
+        Test that the _calculate_discounted_price selector calculates and
         returns correct value within query limits.
         """
 
@@ -166,23 +166,23 @@ class TestProductsSelectors:
         )
 
         with django_assert_max_num_queries(0):
-            discounted_percentage_price = _product_calculate_discounted_price(
+            discounted_percentage_price = _calculate_discounted_price(
                 price=Decimal("100.00"), discount=percentage_discount
             )
 
         with django_assert_max_num_queries(0):
-            discounted_fixed_price = _product_calculate_discounted_price(
+            discounted_fixed_price = _calculate_discounted_price(
                 price=Decimal("400.00"), discount=fixed_price_discount
             )
 
         assert discounted_percentage_price == Decimal("80.00")
         assert discounted_fixed_price == Decimal("200.00")
 
-    def test_selector_product_calculate_discounted_price_for_product(
+    def test_selector_product_calculate_discounted_price(
         self, django_assert_max_num_queries
     ):
         """
-        Test that the product_calculate_discounted_price_for_product selector
+        Test that the product_calculate_discounted_price selector
         calculates and returns correct value within query limits.
         """
 
@@ -209,25 +209,23 @@ class TestProductsSelectors:
         )
 
         with django_assert_max_num_queries(0):
-            discounted_percentage_price = (
-                product_calculate_discounted_price_for_product(
-                    product=product_1, discount=percentage_discount
-                )
+            discounted_percentage_price = product_calculate_discounted_price(
+                product=product_1, discount=percentage_discount
             )
 
         with django_assert_max_num_queries(0):
-            discounted_fixed_price = product_calculate_discounted_price_for_product(
+            discounted_fixed_price = product_calculate_discounted_price(
                 product=product_2, discount=fixed_price_discount
             )
 
         assert discounted_percentage_price == Decimal("80.00")
         assert discounted_fixed_price == Decimal("200.00")
 
-    def test_selector_product_calculate_discounted_price_for_option(
+    def test_selector_product_option_calculate_discounted_price(
         self, django_assert_max_num_queries
     ):
         """
-        Test that the product_calculate_discounted_price_for_option selector
+        Test that the product_option_calculate_discounted_price selector
         calculates and returns correct value within query limits.
         """
 
@@ -253,23 +251,23 @@ class TestProductsSelectors:
         )
 
         with django_assert_max_num_queries(0):
-            discounted_percentage_price = product_calculate_discounted_price_for_option(
+            discounted_percentage_price = product_option_calculate_discounted_price(
                 option=option_1, discount=percentage_discount
             )
 
         with django_assert_max_num_queries(0):
-            discounted_fixed_price = product_calculate_discounted_price_for_option(
+            discounted_fixed_price = product_option_calculate_discounted_price(
                 option=option_2, discount=fixed_price_discount
             )
 
         assert discounted_percentage_price == Decimal("70.00")
         assert discounted_fixed_price == Decimal("100.00")
 
-    def test_selector_product_get_discount_for_product(
+    def test_selector_product_get_active_discount(
         self, django_assert_max_num_queries
     ) -> None:
         """
-        Test that the product_get_discount_for_product returns expected
+        Test that the product_get_active_discount returns expected
         output within query limits.
         """
 
@@ -301,7 +299,7 @@ class TestProductsSelectors:
         # - 1x for getting product discounts in fallback
         # - 1x for calculating lowest option price
         with django_assert_max_num_queries(4):
-            product_1_discount = product_get_discount_for_product(product=product_1)
+            product_1_discount = product_get_active_discount(product=product_1)
 
         assert product_1_discount is not None
         assert product_1_discount.is_discounted is True
@@ -313,7 +311,7 @@ class TestProductsSelectors:
         # - 1x for getting product discounts in fallback
         # - 1x for calculating lowest option price
         with django_assert_max_num_queries(4):
-            product_2_discount = product_get_discount_for_product(product=product_2)
+            product_2_discount = product_get_active_discount(product=product_2)
 
         assert product_2_discount is not None
         assert product_2_discount.is_discounted is True
@@ -325,7 +323,7 @@ class TestProductsSelectors:
         # - 1x for getting product discounts in fallback
         # - 1x for calculating lowest option price
         with django_assert_max_num_queries(4):
-            product_3_discount = product_get_discount_for_product(product=product_3)
+            product_3_discount = product_get_active_discount(product=product_3)
 
         assert product_3_discount is None
 
@@ -341,7 +339,7 @@ class TestProductsSelectors:
 
         # Should only use prefetched attributes, and should not hit db.
         with django_assert_max_num_queries(0):
-            prefetched_product_1_discount = product_get_discount_for_product(
+            prefetched_product_1_discount = product_get_active_discount(
                 product=products_prefetched[0]
             )
 
@@ -351,7 +349,7 @@ class TestProductsSelectors:
 
         # Should only use prefetched attributes, and should not hit db.
         with django_assert_max_num_queries(0):
-            prefetched_product_2_discount = product_get_discount_for_product(
+            prefetched_product_2_discount = product_get_active_discount(
                 product=products_prefetched[1]
             )
 
@@ -361,17 +359,17 @@ class TestProductsSelectors:
 
         # Should only use prefetched attributes, and should not hit db.
         with django_assert_max_num_queries(0):
-            prefetched_product_3_discount = product_get_discount_for_product(
+            prefetched_product_3_discount = product_get_active_discount(
                 product=products_prefetched[2]
             )
 
         assert prefetched_product_3_discount is None
 
-    def test_selector_product_get_discount_for_option(  # pylint: disable=too-many-locals, too-many-statements
+    def test_selector_product_option_get_active_discount(  # pylint: disable=too-many-locals, too-many-statements
         self, django_assert_max_num_queries
     ) -> None:
         """
-        Test that the product_get_discount_for_option returns expected
+        Test that the product_option_get_active_discount returns expected
         output within query limits.
         """
 
@@ -416,7 +414,9 @@ class TestProductsSelectors:
         # - 1x for getting discounts for product
         # - 1x for calculating discount price
         with django_assert_max_num_queries(3):
-            option_1_discount = product_get_discount_for_option(product_option=option_1)
+            option_1_discount = product_option_get_active_discount(
+                product_option=option_1
+            )
 
         assert option_1_discount is not None
         assert option_1_discount.is_discounted is True
@@ -427,7 +427,9 @@ class TestProductsSelectors:
         # - 1x for getting discounts for product
         # - 1x for calculating discount price
         with django_assert_max_num_queries(3):
-            option_2_discount = product_get_discount_for_option(product_option=option_2)
+            option_2_discount = product_option_get_active_discount(
+                product_option=option_2
+            )
 
         assert option_2_discount is not None
         assert option_2_discount.is_discounted is True
@@ -438,7 +440,9 @@ class TestProductsSelectors:
         # - 1x for getting discounts for product
         # - 1x for calculating discount price
         with django_assert_max_num_queries(3):
-            option_3_discount = product_get_discount_for_option(product_option=option_3)
+            option_3_discount = product_option_get_active_discount(
+                product_option=option_3
+            )
 
         assert option_3_discount is not None
         assert option_3_discount.is_discounted is True
@@ -451,7 +455,9 @@ class TestProductsSelectors:
         # - 1x for getting discounts for product
         # - 1x for calculating discount price
         with django_assert_max_num_queries(3):
-            option_4_discount = product_get_discount_for_option(product_option=option_4)
+            option_4_discount = product_option_get_active_discount(
+                product_option=option_4
+            )
 
         assert option_4_discount is not None
         assert option_4_discount.is_discounted is True
@@ -462,7 +468,9 @@ class TestProductsSelectors:
         # - 1x for getting discounts for product
         # - 1x for calculating discount price
         with django_assert_max_num_queries(3):
-            option_5_discount = product_get_discount_for_option(product_option=option_5)
+            option_5_discount = product_option_get_active_discount(
+                product_option=option_5
+            )
 
         assert option_5_discount is None
 
@@ -485,7 +493,7 @@ class TestProductsSelectors:
 
         # Should use prefetched attributes, and not hit db.
         with django_assert_max_num_queries(0):
-            option_1_prefetched_discount = product_get_discount_for_option(
+            option_1_prefetched_discount = product_option_get_active_discount(
                 product_option=_get_prefetched_option(product_1, option_1)
             )
 
@@ -495,7 +503,7 @@ class TestProductsSelectors:
 
         # Should use prefetched attributes, and not hit db.
         with django_assert_max_num_queries(0):
-            option_2_prefetched_discount = product_get_discount_for_option(
+            option_2_prefetched_discount = product_option_get_active_discount(
                 product_option=_get_prefetched_option(product_1, option_2)
             )
 
@@ -505,7 +513,7 @@ class TestProductsSelectors:
 
         # Should use prefetched attributes, and not hit db.
         with django_assert_max_num_queries(0):
-            option_3_prefetched_discount = product_get_discount_for_option(
+            option_3_prefetched_discount = product_option_get_active_discount(
                 product_option=_get_prefetched_option(product_1, option_3)
             )
 
@@ -517,7 +525,7 @@ class TestProductsSelectors:
 
         # Should use prefetched attributes, and not hit db.
         with django_assert_max_num_queries(0):
-            option_4_prefetched_discount = product_get_discount_for_option(
+            option_4_prefetched_discount = product_option_get_active_discount(
                 product_option=_get_prefetched_option(product_2, option_4)
             )
 
@@ -527,7 +535,7 @@ class TestProductsSelectors:
 
         # Should use prefetched attributes, and not hit db.
         with django_assert_max_num_queries(0):
-            option_5_prefetched_discount = product_get_discount_for_option(
+            option_5_prefetched_discount = product_option_get_active_discount(
                 product_option=_get_prefetched_option(product_2, option_5)
             )
 

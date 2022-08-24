@@ -15,7 +15,7 @@ from aria.products.records import (
     ProductVariantRecord,
 )
 from aria.products.selectors import (
-    product_calculate_discounted_price_for_product,
+    product_calculate_discounted_price,
     product_get_price_from_options,
     product_list_for_sale_for_qs,
 )
@@ -161,7 +161,7 @@ def discount_active_list() -> list[DiscountRecord]:
                     from_price=product_get_price_from_options(product=product),
                     discount=ProductDiscountRecord(
                         is_discounted=True,
-                        discounted_gross_price=product_calculate_discounted_price_for_product(  # pylint: disable=line-too-long
+                        discounted_gross_price=product_calculate_discounted_price(  # pylint: disable=line-too-long
                             product=product, discount=discount
                         ),
                         maximum_sold_quantity=discount.maximum_sold_quantity

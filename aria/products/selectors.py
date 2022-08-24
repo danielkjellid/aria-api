@@ -99,7 +99,7 @@ def product_list_record(product: Product) -> ProductListRecord:
         thumbnail=product.thumbnail.url if product.thumbnail else None,
         display_price=product.display_price,
         from_price=product_get_price_from_options(product=product),
-        discount=product_get_discount_for_product(product=product),
+        discount=product_get_active_discount(product=product),
         materials=product.materials_display,
         rooms=product.rooms_display,
         colors=[
@@ -186,7 +186,7 @@ def product_options_list_for_product(*, product: Product) -> list[ProductOptionR
     return [
         ProductOptionRecord(
             id=option.id,
-            discount=product_get_discount_for_option(product_option=option),
+            discount=product_option_get_active_discount(product_option=option),
             gross_price=option.gross_price,
             status=ProductStatus(option.status).label,
             variant=ProductVariantRecord(
@@ -220,9 +220,7 @@ def product_options_list_for_product(*, product: Product) -> list[ProductOptionR
 ###############################
 
 
-def _product_calculate_discounted_price(
-    *, price: Decimal, discount: Discount
-) -> Decimal:
+def _calculate_discounted_price(*, price: Decimal, discount: Discount) -> Decimal:
     """
     Calculate a discounted price.
 
@@ -245,33 +243,29 @@ def _product_calculate_discounted_price(
     return discounted_gross_price
 
 
-def product_calculate_discounted_price_for_product(
+def product_calculate_discounted_price(
     *, product: Product, discount: Discount
 ) -> Decimal:
     """
     Get discounted price for a product.
     """
 
-    return _product_calculate_discounted_price(
+    return _calculate_discounted_price(
         price=product_get_price_from_options(product=product), discount=discount
     )
 
 
-def product_calculate_discounted_price_for_option(
+def product_option_calculate_discounted_price(
     *, option: ProductOption, discount: Discount
 ) -> Decimal:
     """
     Get discounted price for an option.
     """
 
-    return _product_calculate_discounted_price(
-        price=option.gross_price, discount=discount
-    )
+    return _calculate_discounted_price(price=option.gross_price, discount=discount)
 
 
-def product_get_discount_for_product(
-    *, product: Product
-) -> ProductDiscountRecord | None:
+def product_get_active_discount(*, product: Product) -> ProductDiscountRecord | None:
     """
     Get an active discount for a specific product. A discount can either be
     on the product level, or it can be for a specific option. This selector
@@ -350,7 +344,7 @@ def product_get_discount_for_product(
 
     return ProductDiscountRecord(
         is_discounted=True,
-        discounted_gross_price=product_calculate_discounted_price_for_product(
+        discounted_gross_price=product_calculate_discounted_price(
             product=product, discount=discount
         ),
         maximum_sold_quantity=discount.maximum_sold_quantity
@@ -364,7 +358,7 @@ def product_get_discount_for_product(
     )
 
 
-def product_get_discount_for_option(
+def product_option_get_active_discount(
     *, product_option: ProductOption
 ) -> ProductDiscountRecord | None:
     """
@@ -411,7 +405,7 @@ def product_get_discount_for_option(
 
     return ProductDiscountRecord(
         is_discounted=True,
-        discounted_gross_price=product_calculate_discounted_price_for_option(
+        discounted_gross_price=product_option_calculate_discounted_price(
             option=product_option, discount=discount
         ),
         maximum_sold_quantity=discount.maximum_sold_quantity
