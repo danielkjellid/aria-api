@@ -38,7 +38,7 @@ class TestPublicDiscountsEndpoints:
             product_options=[product_2_option_1],
             discount_gross_percentage=Decimal("0.20"),
             active_at=timezone.now(),
-            active_to=timezone.now() + timedelta(minutes=10),
+            active_to=timezone.now() + timedelta(minutes=1),
             ordering=1,
         )
         discount_2 = create_discount(
@@ -46,7 +46,7 @@ class TestPublicDiscountsEndpoints:
             products=[product_3],
             discount_gross_percentage=Decimal("0.40"),
             active_at=timezone.now(),
-            active_to=timezone.now() + timedelta(minutes=10),
+            active_to=timezone.now() + timedelta(minutes=1),
             ordering=2,
         )
 
@@ -59,27 +59,33 @@ class TestPublicDiscountsEndpoints:
                 "discount_gross_percentage": 0.2,
                 "products": [
                     {
-                        "id": product_1.id,
-                        "name": product_1.name,
-                        "slug": product_1.slug,
-                        "unit": product_1.unit_display,
+                        "id": product_4.id,
+                        "name": product_4.name,
+                        "slug": product_4.slug,
+                        "unit": product_4.unit_display,
                         "supplier": {
-                            "name": product_1.supplier.name,
-                            "origin_country": product_1.supplier.origin_country.name,
-                            "origin_country_flag": product_1.supplier.origin_country.unicode_flag,  # pylint: disable=line-too-long
+                            "name": product_4.supplier.name,
+                            "origin_country": product_4.supplier.origin_country.name,
+                            "origin_country_flag": product_4.supplier.origin_country.unicode_flag,  # pylint: disable=line-too-long
                         },
-                        "thumbnail": product_1.thumbnail.url
-                        if product_1.thumbnail
+                        "thumbnail": product_4.thumbnail.url
+                        if product_4.thumbnail
                         else None,
+                        "discount": {
+                            "is_discounted": True,
+                            "discounted_gross_price": 160.0,
+                            "maximum_sold_quantity": None,
+                            "remaining_quantity": None,
+                        },
                         "display_price": True,
-                        "from_price": 0.0,
+                        "from_price": 200.0,
                         "colors": [
                             {
                                 "id": color.id,
                                 "name": color.name,
                                 "color_hex": color.color_hex,
                             }
-                            for color in product_1.colors.all()
+                            for color in product_4.colors.all()
                         ],
                         "shapes": [
                             {
@@ -87,10 +93,10 @@ class TestPublicDiscountsEndpoints:
                                 "name": shape.name,
                                 "image": shape.image.id,
                             }
-                            for shape in product_1.shapes.all()
+                            for shape in product_4.shapes.all()
                         ],
-                        "materials": product_1.materials_display,
-                        "rooms": product_1.rooms_display,
+                        "materials": product_4.materials_display,
+                        "rooms": product_4.rooms_display,
                         "variants": [
                             {
                                 "id": option.variant.id,
@@ -102,7 +108,7 @@ class TestPublicDiscountsEndpoints:
                                 if option.variant.image
                                 else None,
                             }
-                            for option in product_1.options.all()
+                            for option in product_4.options.all()
                             if option.variant
                         ],
                     },
@@ -119,8 +125,14 @@ class TestPublicDiscountsEndpoints:
                         "thumbnail": product_2_option_1.product.thumbnail.url
                         if product_2_option_1.product.thumbnail
                         else None,
+                        "discount": {
+                            "is_discounted": True,
+                            "discounted_gross_price": 160.0,
+                            "maximum_sold_quantity": None,
+                            "remaining_quantity": None,
+                        },
                         "display_price": True,
-                        "from_price": 0.0,
+                        "from_price": 200.0,
                         "colors": [
                             {
                                 "id": color.id,
@@ -155,27 +167,33 @@ class TestPublicDiscountsEndpoints:
                         ],
                     },
                     {
-                        "id": product_4.id,
-                        "name": product_4.name,
-                        "slug": product_4.slug,
-                        "unit": product_4.unit_display,
+                        "id": product_1.id,
+                        "name": product_1.name,
+                        "slug": product_1.slug,
+                        "unit": product_1.unit_display,
                         "supplier": {
-                            "name": product_4.supplier.name,
-                            "origin_country": product_4.supplier.origin_country.name,
-                            "origin_country_flag": product_4.supplier.origin_country.unicode_flag,  # pylint: disable=line-too-long
+                            "name": product_1.supplier.name,
+                            "origin_country": product_1.supplier.origin_country.name,
+                            "origin_country_flag": product_1.supplier.origin_country.unicode_flag,  # pylint: disable=line-too-long
                         },
-                        "thumbnail": product_4.thumbnail.url
-                        if product_4.thumbnail
+                        "thumbnail": product_1.thumbnail.url
+                        if product_1.thumbnail
                         else None,
+                        "discount": {
+                            "is_discounted": True,
+                            "discounted_gross_price": 160.0,
+                            "maximum_sold_quantity": None,
+                            "remaining_quantity": None,
+                        },
                         "display_price": True,
-                        "from_price": 0.0,
+                        "from_price": 200.0,
                         "colors": [
                             {
                                 "id": color.id,
                                 "name": color.name,
                                 "color_hex": color.color_hex,
                             }
-                            for color in product_4.colors.all()
+                            for color in product_1.colors.all()
                         ],
                         "shapes": [
                             {
@@ -183,10 +201,10 @@ class TestPublicDiscountsEndpoints:
                                 "name": shape.name,
                                 "image": shape.image.id,
                             }
-                            for shape in product_4.shapes.all()
+                            for shape in product_1.shapes.all()
                         ],
-                        "materials": product_4.materials_display,
-                        "rooms": product_4.rooms_display,
+                        "materials": product_1.materials_display,
+                        "rooms": product_1.rooms_display,
                         "variants": [
                             {
                                 "id": option.variant.id,
@@ -198,7 +216,7 @@ class TestPublicDiscountsEndpoints:
                                 if option.variant.image
                                 else None,
                             }
-                            for option in product_4.options.all()
+                            for option in product_1.options.all()
                             if option.variant
                         ],
                     },
@@ -224,8 +242,14 @@ class TestPublicDiscountsEndpoints:
                         "thumbnail": product_3.thumbnail.url
                         if product_3.thumbnail
                         else None,
+                        "discount": {
+                            "is_discounted": True,
+                            "discounted_gross_price": 120.0,
+                            "maximum_sold_quantity": None,
+                            "remaining_quantity": None,
+                        },
                         "display_price": True,
-                        "from_price": 0.0,
+                        "from_price": 200.0,
                         "colors": [
                             {
                                 "id": color.id,
@@ -263,17 +287,7 @@ class TestPublicDiscountsEndpoints:
             },
         ]
 
-        # Uses 10 queries:
-        # - 1x for getting discounts
-        # - 1x prefetching options variants
-        # - 1x prefetching options products colors
-        # - 1x prefetching options products shapes
-        # - 1x prefetching options products options
-        # - 1x prefetching options products options variants
-        # - 1x prefetching products
-        # - 1x prefetching products colors
-        # - 1x prefetching products shapes
-        # - 1x prefetching products options
+        # Uses 10 queries.
         with django_assert_max_num_queries(10):
             response = anonymous_client.get(f"{self.BASE_ENDPOINT}/active/")
 

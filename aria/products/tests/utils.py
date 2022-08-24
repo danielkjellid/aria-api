@@ -21,8 +21,9 @@ def create_product(
     category_name: str | None = None,
     category_parent: Category | None = None,
     supplier: Supplier | None = None,
+    options: list[ProductOption] | None = None,
     quantity: int = 1,
-) -> Product:
+) -> Product | list[Product]:
     """
     Test util that creates a product instance.
     """
@@ -57,6 +58,9 @@ def create_product(
 
         product.categories.set([category])
         created_products.append(product)
+
+        if options is None:
+            create_product_option(product=product)
 
     if quantity == 1:
         return created_products[0]
@@ -112,13 +116,14 @@ def create_product_option(
     """
     Test util that creates a product option instance.
     """
+
     if variant is None:
         variant = create_variant()
 
     if size is None:
         size = create_size()
 
-    product_option = ProductOption.objects.create(
+    product_option, _created = ProductOption.objects.get_or_create(
         product=product,
         variant=variant,
         size=size,

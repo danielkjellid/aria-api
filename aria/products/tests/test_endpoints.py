@@ -1,10 +1,15 @@
 import json
+from datetime import timedelta
+from decimal import Decimal
+
+from django.utils import timezone
 
 import pytest
 
 from aria.categories.tests.utils import create_category
+from aria.discounts.tests.utils import create_discount
 from aria.products.enums import ProductStatus, ProductUnit
-from aria.products.tests.utils import create_product
+from aria.products.tests.utils import create_product, create_product_option
 
 pytestmark = pytest.mark.django_db
 
@@ -24,50 +29,80 @@ class TestPublicProductsEndpoints:
         subcat_1 = create_category(name="Sub cat 1", parent=cat_1)
         products = create_product(quantity=20)
 
+        create_discount(
+            name="20% off",
+            discount_gross_percentage=Decimal("0.20"),
+            products=[products[0]],
+            active_at=timezone.now(),
+            active_to=timezone.now() + timedelta(minutes=5),
+        )
+
         for product in products:
             product.categories.set([subcat_1])
 
-        expected_response = [
-            {
-                "id": product.id,
-                "name": product.name,
-                "slug": product.slug,
-                "unit": ProductUnit(product.unit).label,
-                "supplier": {
-                    "name": product.supplier.name,
-                    "origin_country": product.supplier.origin_country.name,
-                    "origin_country_flag": product.supplier.origin_country.unicode_flag,
-                },
-                "thumbnail": product.thumbnail.url if product.thumbnail else None,
-                "display_price": True,
-                "from_price": 0.0,
-                "colors": [
-                    {"id": color.id, "name": color.name, "color_hex": color.color_hex}
-                    for color in product.colors.all()
-                ],
-                "shapes": [
-                    {"id": shape.id, "name": shape.name, "image": shape.image.id}
-                    for shape in product.shapes.all()
-                ],
-                "materials": product.materials_display,
-                "rooms": product.rooms_display,
-                "variants": [
+        expected_response = list(
+            reversed(
+                [
                     {
-                        "id": option.variant.id,
-                        "name": option.variant.name,
-                        "thumbnail": option.variant.thumbnail.url
-                        if option.variant.thumbnail
+                        "id": product.id,
+                        "name": product.name,
+                        "slug": product.slug,
+                        "unit": ProductUnit(product.unit).label,
+                        "supplier": {
+                            "name": product.supplier.name,
+                            "origin_country": product.supplier.origin_country.name,
+                            "origin_country_flag": product.supplier.origin_country.unicode_flag,  # pylint: disable=line-too-long
+                        },
+                        "thumbnail": product.thumbnail.url
+                        if product.thumbnail
                         else None,
-                        "image": option.variant.image.id
-                        if option.variant.image
+                        "discount": {
+                            "is_discounted": True,
+                            "discounted_gross_price": 160.0,
+                            "maximum_sold_quantity": None,
+                            "remaining_quantity": None,
+                        }
+                        if product.discounts.exists()
                         else None,
+                        "display_price": True,
+                        "from_price": 200.0,
+                        "colors": [
+                            {
+                                "id": color.id,
+                                "name": color.name,
+                                "color_hex": color.color_hex,
+                            }
+                            for color in product.colors.all()
+                        ],
+                        "shapes": [
+                            {
+                                "id": shape.id,
+                                "name": shape.name,
+                                "image": shape.image.id,
+                            }
+                            for shape in product.shapes.all()
+                        ],
+                        "materials": product.materials_display,
+                        "rooms": product.rooms_display,
+                        "variants": [
+                            {
+                                "id": option.variant.id,
+                                "name": option.variant.name,
+                                "thumbnail": option.variant.thumbnail.url
+                                if option.variant.thumbnail
+                                else None,
+                                "image": option.variant.image.id
+                                if option.variant.image
+                                else None,
+                            }
+                            for option in product.options.all()
+                            if option.variant
+                        ],
                     }
-                    for option in product.options.all()
-                    if option.variant
-                ],
-            }
-            for product in products
-        ]
+                    for product in products
+                ]
+            )
+        )
 
         # Uses 8 queries:
         # - 1 for getting related category,
@@ -105,7 +140,17 @@ class TestPublicProductsEndpoints:
         a valid response.
         """
 
-        product = create_product()
+        product = create_product(options=[])
+        option_1 = create_product_option(product=product, gross_price=Decimal("200.00"))
+        option_2 = create_product_option(product=product, gross_price=Decimal("500.00"))
+
+        create_discount(
+            name="20% off",
+            discount_gross_percentage=Decimal("0.20"),
+            product_options=[option_1],
+            active_at=timezone.now(),
+            active_to=timezone.now() + timedelta(minutes=5),
+        )
 
         expected_response = {
             "id": product.id,
@@ -120,7 +165,7 @@ class TestPublicProductsEndpoints:
             "can_be_picked_up": product.can_be_picked_up,
             "can_be_purchased_online": product.can_be_purchased_online,
             "display_price": product.display_price,
-            "from_price": product.from_price,
+            "from_price": 200.0,
             "supplier": {
                 "name": product.supplier.name,
                 "origin_country": product.supplier.origin_country.name,
@@ -140,25 +185,42 @@ class TestPublicProductsEndpoints:
             ],
             "options": [
                 {
-                    "id": option.id,
-                    "gross_price": option.gross_price,
-                    "status": ProductStatus(option.status).label,
+                    "id": option_1.id,
+                    "gross_price": 200.0,
+                    "discount": {
+                        "is_discounted": True,
+                        "discounted_gross_price": 160.0,
+                        "maximum_sold_quantity": None,
+                        "remaining_quantity": None,
+                    },
+                    "status": ProductStatus(option_1.status).label,
                     "variant": {
-                        "id": option.variant.id,
-                        "name": option.variant.name,
-                        "image": option.variant.image.url,
-                        "is_standard": option.variant.is_standard,
-                    }
-                    if option.variant
-                    else None,
+                        "id": option_1.variant.id,
+                        "name": option_1.variant.name,
+                        "image": None,
+                        "thumbnail": None,
+                    },
                     "size": {
-                        "id": option.size.id,
-                        "name": option.size.name,
-                    }
-                    if option.size
-                    else None,
-                }
-                for option in product.options.all()
+                        "id": option_1.size.id,
+                        "name": option_1.size.name,
+                    },
+                },
+                {
+                    "id": option_2.id,
+                    "gross_price": 500.0,
+                    "discount": None,
+                    "status": ProductStatus(option_2.status).label,
+                    "variant": {
+                        "id": option_2.variant.id,
+                        "name": option_2.variant.name,
+                        "image": None,
+                        "thumbnail": None,
+                    },
+                    "size": {
+                        "id": option_2.size.id,
+                        "name": option_2.size.name,
+                    },
+                },
             ],
             "colors": [
                 {"name": color.name, "color_hex": color.color_hex}
@@ -175,7 +237,20 @@ class TestPublicProductsEndpoints:
         }
 
         # Test that we return a valid response on existing slug.
-        with django_assert_max_num_queries(11):
+        # Uses 12 queries:
+        # - 1x for getting product
+        # - 1x for prefetching category children
+        # - 1x for prefetching categories
+        # - 1x for prefetching colors
+        # - 1x for prefetching shapes
+        # - 1x for prefetching files
+        # - 1x for prefetching options
+        # - 1x for prefetching options discounts
+        # - 1x for prefetching product discounts
+        # - 1x for filtering categories
+        # - 1x for selecting related supplier
+        # - 1x for prefetching images
+        with django_assert_max_num_queries(12):
             response = anonymous_client.get(
                 f"{self.BASE_ENDPOINT}/product/{product.slug}/"
             )

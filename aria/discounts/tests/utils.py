@@ -37,19 +37,21 @@ def create_discount(
             "Discount must either discount a gross percentage or set price."
         )
 
-    discount = Discount.objects.create(
-        name=name,
-        description=description,
+    discount, _created = Discount.objects.update_or_create(
         slug=slug,
-        minimum_quantity=minimum_quantity,
-        maximum_quantity=maximum_quantity,
-        discount_gross_price=discount_gross_price,
-        discount_gross_percentage=discount_gross_percentage,
-        maximum_sold_quantity=maximum_sold_quantity,
-        total_sold_quantity=total_sold_quantity,
-        active_at=active_at,
-        active_to=active_to,
-        ordering=ordering,
+        defaults={
+            "name": name,
+            "description": description,
+            "minimum_quantity": minimum_quantity,
+            "maximum_quantity": maximum_quantity,
+            "discount_gross_price": discount_gross_price,
+            "discount_gross_percentage": discount_gross_percentage,
+            "maximum_sold_quantity": maximum_sold_quantity,
+            "total_sold_quantity": total_sold_quantity,
+            "active_at": active_at,
+            "active_to": active_to,
+            "ordering": ordering,
+        },
     )
 
     if products:

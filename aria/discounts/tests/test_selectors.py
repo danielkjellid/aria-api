@@ -15,6 +15,7 @@ from aria.discounts.tests.utils import create_discount
 from aria.products.models import Product
 from aria.products.records import (
     ProductColorRecord,
+    ProductDiscountRecord,
     ProductListRecord,
     ProductShapeRecord,
     ProductSupplierRecord,
@@ -74,7 +75,7 @@ class TestDiscountsSelectors:
             ordering=4,
         )
 
-        def _product_record(product: Product) -> ProductListRecord:
+        def _product_record(product: Product, **kwargs) -> ProductListRecord:
             return ProductListRecord(
                 id=product.id,
                 name=product.name,
@@ -118,21 +119,11 @@ class TestDiscountsSelectors:
                     for option in product.options.available()
                     if option.variant
                 ],
+                **kwargs,
             )
 
-        # Uses 11 queries:
-        # - 1x for getting discounts
-        # - 1x prefetching options variants
-        # - 1x prefetching options products colors
-        # - 1x prefetching options products shapes
-        # - 1x prefetching options products options
-        # - 1x prefetching options products options variants
-        # - 1x prefetching products
-        # - 1x prefetching products colors
-        # - 1x prefetching products shapes
-        # - 1x prefetching products options
-        # - 1x prefetching products options variants
-        with django_assert_max_num_queries(11):
+        # Uses 10 queries.
+        with django_assert_max_num_queries(10):
             active_discounts = discount_active_list()
 
         assert len(active_discounts) == 3
@@ -144,9 +135,33 @@ class TestDiscountsSelectors:
                 description=active_discount_1.description,
                 slug=active_discount_1.slug,
                 products=[
-                    _product_record(product=product_1),
-                    _product_record(product=product_2_option_1.product),
-                    _product_record(product=product_4),
+                    _product_record(
+                        product=product_4,
+                        discount=ProductDiscountRecord(
+                            is_discounted=True,
+                            discounted_gross_price=Decimal("160.00"),
+                            maximum_sold_quantity=None,
+                            remaining_quantity=None,
+                        ),
+                    ),
+                    _product_record(
+                        product=product_2_option_1.product,
+                        discount=ProductDiscountRecord(
+                            is_discounted=True,
+                            discounted_gross_price=Decimal("160.00"),
+                            maximum_sold_quantity=None,
+                            remaining_quantity=None,
+                        ),
+                    ),
+                    _product_record(
+                        product=product_1,
+                        discount=ProductDiscountRecord(
+                            is_discounted=True,
+                            discounted_gross_price=Decimal("160.00"),
+                            maximum_sold_quantity=None,
+                            remaining_quantity=None,
+                        ),
+                    ),
                 ],
                 minimum_quantity=active_discount_1.minimum_quantity,
                 maximum_quantity=active_discount_1.maximum_quantity,
@@ -164,7 +179,17 @@ class TestDiscountsSelectors:
                 name=active_discount_2.name,
                 description=active_discount_2.description,
                 slug=active_discount_2.slug,
-                products=[_product_record(product=product_3)],
+                products=[
+                    _product_record(
+                        product=product_3,
+                        discount=ProductDiscountRecord(
+                            is_discounted=True,
+                            discounted_gross_price=Decimal("120.00"),
+                            maximum_sold_quantity=None,
+                            remaining_quantity=None,
+                        ),
+                    )
+                ],
                 minimum_quantity=active_discount_2.minimum_quantity,
                 maximum_quantity=active_discount_2.maximum_quantity,
                 discount_gross_price=active_discount_2.discount_gross_price,
@@ -181,7 +206,17 @@ class TestDiscountsSelectors:
                 name=active_discount_3.name,
                 description=active_discount_3.description,
                 slug=active_discount_3.slug,
-                products=[_product_record(product=product_2)],
+                products=[
+                    _product_record(
+                        product=product_2,
+                        discount=ProductDiscountRecord(
+                            is_discounted=True,
+                            discounted_gross_price=Decimal("200.00"),
+                            maximum_sold_quantity=None,
+                            remaining_quantity=None,
+                        ),
+                    )
+                ],
                 minimum_quantity=active_discount_3.minimum_quantity,
                 maximum_quantity=active_discount_3.maximum_quantity,
                 discount_gross_price=active_discount_3.discount_gross_price,
@@ -248,7 +283,7 @@ class TestDiscountsSelectors:
         cache.delete("discounts.active")
         assert "discounts.active" not in cache
 
-        def _product_record(product: Product) -> ProductListRecord:
+        def _product_record(product: Product, **kwargs) -> ProductListRecord:
             return ProductListRecord(
                 id=product.id,
                 name=product.name,
@@ -292,21 +327,10 @@ class TestDiscountsSelectors:
                     for option in product.options.available()
                     if option.variant
                 ],
+                **kwargs,
             )
 
-        # Uses 11 queries:
-        # - 1x for getting discounts
-        # - 1x prefetching options variants
-        # - 1x prefetching options products colors
-        # - 1x prefetching options products shapes
-        # - 1x prefetching options products options
-        # - 1x prefetching options products options variants
-        # - 1x prefetching products
-        # - 1x prefetching products colors
-        # - 1x prefetching products shapes
-        # - 1x prefetching products options
-        # - 1x prefetching products options variants
-        with django_assert_max_num_queries(11):
+        with django_assert_max_num_queries(10):
             discount_active_list_from_cache()
 
         # After first hit, instances should have been added to cache.
@@ -326,9 +350,33 @@ class TestDiscountsSelectors:
                 description=active_discount_1.description,
                 slug=active_discount_1.slug,
                 products=[
-                    _product_record(product=product_1),
-                    _product_record(product=product_2_option_1.product),
-                    _product_record(product=product_4),
+                    _product_record(
+                        product=product_4,
+                        discount=ProductDiscountRecord(
+                            is_discounted=True,
+                            discounted_gross_price=Decimal("160.00"),
+                            maximum_sold_quantity=None,
+                            remaining_quantity=None,
+                        ),
+                    ),
+                    _product_record(
+                        product=product_2_option_1.product,
+                        discount=ProductDiscountRecord(
+                            is_discounted=True,
+                            discounted_gross_price=Decimal("160.00"),
+                            maximum_sold_quantity=None,
+                            remaining_quantity=None,
+                        ),
+                    ),
+                    _product_record(
+                        product=product_1,
+                        discount=ProductDiscountRecord(
+                            is_discounted=True,
+                            discounted_gross_price=Decimal("160.00"),
+                            maximum_sold_quantity=None,
+                            remaining_quantity=None,
+                        ),
+                    ),
                 ],
                 minimum_quantity=active_discount_1.minimum_quantity,
                 maximum_quantity=active_discount_1.maximum_quantity,
@@ -346,7 +394,17 @@ class TestDiscountsSelectors:
                 name=active_discount_2.name,
                 description=active_discount_2.description,
                 slug=active_discount_2.slug,
-                products=[_product_record(product=product_3)],
+                products=[
+                    _product_record(
+                        product=product_3,
+                        discount=ProductDiscountRecord(
+                            is_discounted=True,
+                            discounted_gross_price=Decimal("120.00"),
+                            maximum_sold_quantity=None,
+                            remaining_quantity=None,
+                        ),
+                    )
+                ],
                 minimum_quantity=active_discount_2.minimum_quantity,
                 maximum_quantity=active_discount_2.maximum_quantity,
                 discount_gross_price=active_discount_2.discount_gross_price,
@@ -363,7 +421,17 @@ class TestDiscountsSelectors:
                 name=active_discount_3.name,
                 description=active_discount_3.description,
                 slug=active_discount_3.slug,
-                products=[_product_record(product=product_2)],
+                products=[
+                    _product_record(
+                        product=product_2,
+                        discount=ProductDiscountRecord(
+                            is_discounted=True,
+                            discounted_gross_price=Decimal("200.00"),
+                            maximum_sold_quantity=None,
+                            remaining_quantity=None,
+                        ),
+                    )
+                ],
                 minimum_quantity=active_discount_3.minimum_quantity,
                 maximum_quantity=active_discount_3.maximum_quantity,
                 discount_gross_price=active_discount_3.discount_gross_price,

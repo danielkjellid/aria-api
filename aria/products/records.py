@@ -36,8 +36,16 @@ class ProductSizeRecord(BaseModel):
     name: str
 
 
+class ProductDiscountRecord(BaseModel):
+    is_discounted: bool
+    discounted_gross_price: Decimal
+    maximum_sold_quantity: int | None
+    remaining_quantity: int | None
+
+
 class ProductOptionRecord(BaseModel):
     id: int
+    discount: ProductDiscountRecord | None
     gross_price: Decimal
     status: str
     variant: ProductVariantRecord | None
@@ -77,8 +85,8 @@ class ProductRecord(BaseModel):
 
 
 class ProductDetailRecord(ProductRecord):
-    from_price: float
-    display_price: float
+    from_price: Decimal
+    display_price: bool
     can_be_picked_up: bool
     can_be_purchased_online: bool
     colors: list[ProductColorRecord] = []
@@ -98,6 +106,7 @@ class ProductListRecord(BaseModel):
     thumbnail: str | None = None
     display_price: bool
     from_price: Decimal
+    discount: ProductDiscountRecord | None
     materials: list[BaseArrayFieldLabelRecord]
     rooms: list[BaseArrayFieldLabelRecord]
     colors: list[ProductColorRecord]

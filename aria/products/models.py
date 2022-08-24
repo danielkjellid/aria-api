@@ -370,10 +370,13 @@ class Product(BaseModel, BaseThumbnailImageModel):
     @property
     def from_price(self) -> Decimal:
         """
-        Get product from price.
+        Get a product's from price based on lowest possible price from
+        related options.
         """
-        # TODO: calculate from options
-        return Decimal(0)
+
+        from aria.products.selectors import product_get_price_from_options
+
+        return product_get_price_from_options(product=self)
 
 
 _ProductImageManager = models.Manager.from_queryset(ProductImageQuerySet)

@@ -21,8 +21,16 @@ class ProductSizeOutput(Schema):
     name: str
 
 
+class ProductDiscountOutput(Schema):
+    is_discounted: bool
+    discounted_gross_price: float
+    maximum_sold_quantity: int | None
+    remaining_quantity: int | None
+
+
 class ProductOptionOutput(Schema):
     id: int
+    discount: ProductDiscountOutput | None
     gross_price: float
     status: str
     variant: ProductVariantOutput | None
@@ -54,7 +62,7 @@ class ProductDetailOutput(Schema):
     description: str | None
     absorption: float | None
     from_price: float
-    display_price: float
+    display_price: bool
     can_be_picked_up: bool
     can_be_purchased_online: bool
     materials: list[BaseArrayFieldLabelRecord] | None = []
@@ -77,6 +85,7 @@ class ProductListOutput(Schema):
     thumbnail: str | None
     display_price: bool
     from_price: float
+    discount: ProductDiscountOutput | None
     colors: list[ProductColorOutput]
     shapes: list[ProductShapeOutput]
     materials: list[BaseArrayFieldLabelRecord]
