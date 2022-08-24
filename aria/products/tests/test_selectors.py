@@ -18,6 +18,8 @@ from aria.products.records import (
 )
 from aria.products.selectors import (
     _product_calculate_discounted_price,
+    product_calculate_discounted_price_for_option,
+    product_calculate_discounted_price_for_product,
     product_detail,
     product_get_discount_for_option,
     product_get_discount_for_product,
@@ -147,8 +149,41 @@ class TestProductsSelectors:
         self, django_assert_max_num_queries
     ) -> None:
         """
-        Test that the product_calculate_discounted_price selector calculates and
+        Test that the _product_calculate_discounted_price selector calculates and
         returns correct value within query limits.
+        """
+
+        percentage_discount = create_discount(
+            discount_gross_percentage=Decimal("0.20"),
+            active_at=timezone.now(),
+            active_to=timezone.now() + timedelta(minutes=10),
+        )
+
+        fixed_price_discount = create_discount(
+            discount_gross_price=Decimal("200.00"),
+            active_at=timezone.now(),
+            active_to=timezone.now() + timedelta(minutes=10),
+        )
+
+        with django_assert_max_num_queries(0):
+            discounted_percentage_price = _product_calculate_discounted_price(
+                price=Decimal("100.00"), discount=percentage_discount
+            )
+
+        with django_assert_max_num_queries(0):
+            discounted_fixed_price = _product_calculate_discounted_price(
+                price=Decimal("400.00"), discount=fixed_price_discount
+            )
+
+        assert discounted_percentage_price == Decimal("80.00")
+        assert discounted_fixed_price == Decimal("200.00")
+
+    def test_selector_product_calculate_discounted_price_for_product(
+        self, django_assert_max_num_queries
+    ):
+        """
+        Test that the product_calculate_discounted_price_for_product selector
+        calculates and returns correct value within query limits.
         """
 
         product_1 = create_product(product_name="Product 1")
@@ -174,17 +209,61 @@ class TestProductsSelectors:
         )
 
         with django_assert_max_num_queries(0):
-            discounted_percentage_price = _product_calculate_discounted_price(
-                product=product_1, discount=percentage_discount
+            discounted_percentage_price = (
+                product_calculate_discounted_price_for_product(
+                    product=product_1, discount=percentage_discount
+                )
             )
 
         with django_assert_max_num_queries(0):
-            discounted_fixed_price = _product_calculate_discounted_price(
+            discounted_fixed_price = product_calculate_discounted_price_for_product(
                 product=product_2, discount=fixed_price_discount
             )
 
         assert discounted_percentage_price == Decimal("80.00")
         assert discounted_fixed_price == Decimal("200.00")
+
+    def test_selector_product_calculate_discounted_price_for_option(
+        self, django_assert_max_num_queries
+    ):
+        """
+        Test that the product_calculate_discounted_price_for_option selector
+        calculates and returns correct value within query limits.
+        """
+
+        option_1 = create_product_option(
+            product=create_product(product_name="Product 1"),
+            gross_price=Decimal("100.00"),
+        )
+        option_2 = create_product_option(
+            product=create_product(product_name="Product 2"),
+            gross_price=Decimal("500.00"),
+        )
+
+        percentage_discount = create_discount(
+            discount_gross_percentage=Decimal("0.30"),
+            active_at=timezone.now(),
+            active_to=timezone.now() + timedelta(minutes=10),
+        )
+
+        fixed_price_discount = create_discount(
+            discount_gross_price=Decimal("100.00"),
+            active_at=timezone.now(),
+            active_to=timezone.now() + timedelta(minutes=10),
+        )
+
+        with django_assert_max_num_queries(0):
+            discounted_percentage_price = product_calculate_discounted_price_for_option(
+                option=option_1, discount=percentage_discount
+            )
+
+        with django_assert_max_num_queries(0):
+            discounted_fixed_price = product_calculate_discounted_price_for_option(
+                option=option_2, discount=fixed_price_discount
+            )
+
+        assert discounted_percentage_price == Decimal("70.00")
+        assert discounted_fixed_price == Decimal("100.00")
 
     def test_selector_product_get_discount_for_product(
         self, django_assert_max_num_queries
