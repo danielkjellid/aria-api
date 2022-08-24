@@ -367,12 +367,12 @@ class TestProductsSelectors:
 
         assert prefetched_product_3_discount is None
 
-    def test_selector_product_get_discount_for_option(
+    def test_selector_product_get_discount_for_option(  # pylint: disable=too-many-locals, too-many-statements
         self, django_assert_max_num_queries
     ) -> None:
         """
-        Test that the product_get_discount_for_option returnes expected output
-        withing query limits.
+        Test that the product_get_discount_for_option returns expected
+        output within query limits.
         """
 
         product_1 = create_product(product_name="Product 1")
@@ -442,8 +442,8 @@ class TestProductsSelectors:
 
         assert option_3_discount is not None
         assert option_3_discount.is_discounted is True
-        # option_3 has a more specific discount active than on the product level, therefore
-        # that should be used.
+        # option_3 has a more specific discount active than on the product level,
+        # therefore that should be used.
         assert option_3_discount.discounted_gross_price == Decimal("100.00")
 
         # Uses 3 queries:
@@ -511,8 +511,8 @@ class TestProductsSelectors:
 
         assert option_3_prefetched_discount is not None
         assert option_3_prefetched_discount.is_discounted is True
-        # option_3 has a more specific discount active than on the product level, therefore
-        # that should be used.
+        # option_3 has a more specific discount active than on the product level,
+        # therefore that should be used.
         assert option_3_prefetched_discount.discounted_gross_price == Decimal("100.00")
 
         # Should use prefetched attributes, and not hit db.

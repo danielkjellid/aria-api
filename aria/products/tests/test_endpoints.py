@@ -2,7 +2,6 @@ import json
 from datetime import timedelta
 from decimal import Decimal
 
-from django.core.cache import cache
 from django.utils import timezone
 
 import pytest
@@ -37,7 +36,7 @@ class TestPublicProductsEndpoints:
             active_at=timezone.now(),
             active_to=timezone.now() + timedelta(minutes=5),
         )
-        cache.clear()
+
         for product in products:
             product.categories.set([subcat_1])
 
@@ -52,7 +51,7 @@ class TestPublicProductsEndpoints:
                         "supplier": {
                             "name": product.supplier.name,
                             "origin_country": product.supplier.origin_country.name,
-                            "origin_country_flag": product.supplier.origin_country.unicode_flag,
+                            "origin_country_flag": product.supplier.origin_country.unicode_flag,  # pylint: disable=line-too-long
                         },
                         "thumbnail": product.thumbnail.url
                         if product.thumbnail

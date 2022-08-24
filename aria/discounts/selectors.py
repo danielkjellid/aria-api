@@ -1,3 +1,5 @@
+from typing import TypedDict
+
 from django.db.models import Prefetch
 
 from aria.core.decorators import cached
@@ -59,6 +61,11 @@ def discount_record(discount_product: Discount) -> DiscountRecord:
     )
 
 
+class DiscountDataDict(TypedDict):
+    discount_id: int
+    products: set[int]
+
+
 def discount_active_list() -> list[DiscountRecord]:
     """
     Get a list of currently active discounts.
@@ -81,7 +88,7 @@ def discount_active_list() -> list[DiscountRecord]:
         .order_by("ordering")
     )
 
-    discount_data = []
+    discount_data: list[DiscountDataDict] = []
 
     # Because of how you can have a discount on both products and product
     # options, and we essentially want to initially show the discount on
@@ -89,7 +96,7 @@ def discount_active_list() -> list[DiscountRecord]:
     # we need to loop over each discount and flatten products + option
     # products.
     for discount in discounts:
-        aggregated_product_ids = set()
+        aggregated_product_ids: set[int] = set()
 
         for product in discount.available_products:  # type: ignore
             aggregated_product_ids.add(product.id)
@@ -111,7 +118,7 @@ def discount_active_list() -> list[DiscountRecord]:
     # Refetch all products, + products from options prefetching it with needed
     # list values.
     products = (
-        Product.objects.available()
+        Product.objects.available()  # type: ignore
         .filter(id__in=flattened_aggregated_products)
         .preload_for_list()
         .order_by("-created_at")
@@ -129,6 +136,7 @@ def discount_active_list() -> list[DiscountRecord]:
                     for product_id in d["products"]
                     if product_id == product.id
                 ]
+        return []
 
     return [
         DiscountRecord(
@@ -146,14 +154,14 @@ def discount_active_list() -> list[DiscountRecord]:
                         id=product.supplier.id,
                         name=product.supplier.name,
                         origin_country=product.supplier.origin_country.name,
-                        origin_country_flag=product.supplier.origin_country.unicode_flag,
+                        origin_country_flag=product.supplier.origin_country.unicode_flag,  # pylint: disable=line-too-long
                     ),
                     thumbnail=product.thumbnail.url if product.thumbnail else None,
                     display_price=product.display_price,
                     from_price=product_get_price_from_options(product=product),
                     discount=ProductDiscountRecord(
                         is_discounted=True,
-                        discounted_gross_price=product_calculate_discounted_price_for_product(
+                        discounted_gross_price=product_calculate_discounted_price_for_product(  # pylint: disable=line-too-long
                             product=product, discount=discount
                         ),
                         maximum_sold_quantity=discount.maximum_sold_quantity
@@ -193,11 +201,12 @@ def discount_active_list() -> list[DiscountRecord]:
                             else None,
                             is_standard=option.variant.is_standard,
                         )
-                        for option in product.available_options_unique_variants
+                        for option in product.available_options_unique_variants  # type: ignore # pylint: disable=line-too-long
                         if option.variant
                     ],
                 )
                 for product in _find_products_in_discount_data(discount_id=discount.id)
+                if len(_find_products_in_discount_data(discount_id=discount.id)) > 0
             ],
             minimum_quantity=discount.minimum_quantity
             if discount.minimum_quantity

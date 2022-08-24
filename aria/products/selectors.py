@@ -220,7 +220,9 @@ def product_options_list_for_product(*, product: Product) -> list[ProductOptionR
 ###############################
 
 
-def _product_calculate_discounted_price(*, price: Decimal, discount: Discount):
+def _product_calculate_discounted_price(
+    *, price: Decimal, discount: Discount
+) -> Decimal:
     """
     Calculate a discounted price.
 
@@ -332,9 +334,9 @@ def product_get_discount_for_product(
             options_discounts = list(
                 itertools.chain(
                     *[
-                        option.active_discounts
+                        option.active_discounts  # type: ignore
                         for option in options
-                        if len(option.active_discounts) > 0
+                        if len(option.active_discounts) > 0  # type: ignore
                     ]
                 )
             )
@@ -508,10 +510,10 @@ def product_list_for_sale_for_qs(
     filters = filters or {}
 
     if products is not None:
-        qs = products.preload_for_list().order_by("-created_at")
+        qs = products.preload_for_list().order_by("-created_at")  # type: ignore
 
     else:
-        qs = products.available().preload_for_list().order_by("-created_at")
+        qs = Product.objects.available().preload_for_list().order_by("-created_at")  # type: ignore # pylint: disable=line-too-long
 
     filtered_qs = ProductSearchFilter(filters, qs).qs
 

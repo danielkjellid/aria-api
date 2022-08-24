@@ -62,6 +62,9 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
     def with_available_options_and_option_discounts(
         self,
     ) -> BaseQuerySet["models.Product"]:
+        """
+        Prefetch a list of available options and associated active discounts.
+        """
 
         from aria.discounts.models import Discount
         from aria.products.models import ProductOption
@@ -192,17 +195,15 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         Utility to avoid n+1 queries
         """
 
-        qs = (
+        return (  # type: ignore
             self.select_related("supplier")
             .with_colors()
-            .with_shapes()
+            .with_shapes()  # type: ignore
             .with_available_options_unique_variants()
             .with_active_product_discounts()
             .with_active_options_discounts()
             .annotate_from_price()
         )
-
-        return qs
 
     def by_category(
         self, category: "category_models.Category", ordered: bool = True

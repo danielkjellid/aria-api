@@ -85,8 +85,8 @@ class ProductRecord(BaseModel):
 
 
 class ProductDetailRecord(ProductRecord):
-    from_price: float
-    display_price: float
+    from_price: Decimal
+    display_price: bool
     can_be_picked_up: bool
     can_be_purchased_online: bool
     colors: list[ProductColorRecord] = []
