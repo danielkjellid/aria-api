@@ -59,25 +59,6 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
 
         return self.prefetch_related(prefetched_categories)
 
-    def with_available_options(self) -> BaseQuerySet["models.Product"]:
-        """
-        Prefetch related product options, variants and sizes.
-        """
-
-        from aria.products.models import ProductOption
-
-        available_product_options = ProductOption.objects.available()
-
-        available_product_options = available_product_options.select_related(
-            "variant", "size"
-        )
-
-        prefetched_options = Prefetch(
-            "options", queryset=available_product_options, to_attr="available_options"
-        )
-
-        return self.prefetch_related(prefetched_options)
-
     def with_available_options_and_option_discounts(
         self,
     ) -> BaseQuerySet["models.Product"]:
@@ -151,12 +132,16 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         available_options = ProductOption.objects.available()
         active_discounts = Discount.objects.active()
 
-        prefetched_discounts = Prefetch("discounts", queryset=active_discounts)
+        prefetched_discounts = Prefetch(
+            "discounts", queryset=active_discounts, to_attr="active_discounts"
+        )
 
         available_options = available_options.prefetch_related(prefetched_discounts)
 
         prefetched_options_discounts = Prefetch(
-            "options", queryset=available_options, to_attr="active_options_discounts"
+            "options",
+            queryset=available_options,
+            to_attr="available_options_with_discounts",
         )
 
         return self.prefetch_related(prefetched_options_discounts)

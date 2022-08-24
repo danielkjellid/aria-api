@@ -13,9 +13,9 @@ from aria.products.records import (
     ProductVariantRecord,
 )
 from aria.products.selectors import (
-    product_calculate_discounted_price,
+    product_calculate_discounted_price_for_product,
     product_get_price_from_options,
-    product_list_for_qs,
+    product_list_for_sale_for_qs,
 )
 
 
@@ -31,8 +31,8 @@ def discount_record(discount_product: Discount) -> DiscountRecord:
         if discount_product.description
         else None,
         slug=discount_product.slug,
-        products=product_list_for_qs(
-            products=discount_product.products.available().preload_for_list(), filters=None  # type: ignore
+        products=product_list_for_sale_for_qs(
+            products=discount_product.products.available(), filters=None  # type: ignore
         ),
         minimum_quantity=discount_product.minimum_quantity
         if discount_product.minimum_quantity
@@ -153,7 +153,7 @@ def discount_active_list() -> list[DiscountRecord]:
                     from_price=product_get_price_from_options(product=product),
                     discount=ProductDiscountRecord(
                         is_discounted=True,
-                        discounted_gross_price=product_calculate_discounted_price(
+                        discounted_gross_price=product_calculate_discounted_price_for_product(
                             product=product, discount=discount
                         ),
                         maximum_sold_quantity=discount.maximum_sold_quantity
