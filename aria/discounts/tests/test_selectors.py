@@ -6,7 +6,6 @@ from django.utils import timezone
 
 import pytest
 
-from aria.discounts.models import Discount
 from aria.discounts.records import DiscountRecord
 from aria.discounts.selectors import (
     discount_active_list,
@@ -33,9 +32,6 @@ class TestDiscountsSelectors:
         Test that the discount_active_list selector returns expected output
         withing query limits.
         """
-
-        for d in Discount.objects.all():
-            d.delete()
 
         product_1 = create_product(product_name="Product 1")
 
