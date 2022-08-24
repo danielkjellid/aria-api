@@ -547,18 +547,20 @@ class TestProductsSelectors:
         create_product_option(product=product)
         create_product_option(product=product, gross_price=Decimal(300.00))
 
-        # Uses 10 queries:
+        # Uses 12 queries:
         # - 1x for getting product
         # - 1x for prefetching category children
         # - 1x for prefetching categories
-        # - 1x for filtering categories
-        # - 1x for prefetching options
         # - 1x for prefetching colors
         # - 1x for prefetching shapes
         # - 1x for prefetching files
+        # - 1x for prefetching options
+        # - 1x for prefetching options discounts
+        # - 1x for prefetching product discounts
+        # - 1x for filtering categories
         # - 1x for selecting related supplier
         # - 1x for prefetching images
-        with django_assert_max_num_queries(10):
+        with django_assert_max_num_queries(12):
             fetched_product = product_detail(product_id=product.id)
 
         assert fetched_product.id == product.id
