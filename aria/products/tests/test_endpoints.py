@@ -157,7 +157,7 @@ class TestPublicProductsEndpoints:
             "status": ProductStatus(product.status).label,
             "unit": ProductUnit(product.unit).label,
             "name": product.name,
-            "description": product.new_description,
+            "description": product.description,
             "absorption": product.absorption,
             "materials": product.materials_display,
             "rooms": product.rooms_display,

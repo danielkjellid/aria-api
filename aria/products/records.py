@@ -71,8 +71,7 @@ class ProductRecord(BaseModel):
     status: str
     slug: str
     search_keywords: str | None
-    description: str | None
-    new_description: str
+    description: str
     unit: str
     vat_rate: float
     available_in_special_sizes: bool = False

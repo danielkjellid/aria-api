@@ -265,7 +265,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
         blank=True,
         null=True,
     )
-    new_description = models.TextField("new description")
+    description = models.TextField("new description")
     unit = models.IntegerField(
         "unit",
         choices=enums.ProductUnit.choices,
