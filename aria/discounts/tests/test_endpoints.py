@@ -119,8 +119,8 @@ class TestPublicDiscountsEndpoints:
                         "unit": product_2_option_1.product.unit_display,
                         "supplier": {
                             "name": product_2_option_1.product.supplier.name,
-                            "origin_country": product_2_option_1.product.supplier.country_name,
-                            "origin_country_flag": product_2_option_1.product.supplier.unicode_flag,
+                            "origin_country": product_2_option_1.product.supplier.country_name,  # pylint: disable=line-too-long
+                            "origin_country_flag": product_2_option_1.product.supplier.unicode_flag,  # pylint: disable=line-too-long
                         },
                         "thumbnail": product_2_option_1.product.thumbnail.url
                         if product_2_option_1.product.thumbnail
