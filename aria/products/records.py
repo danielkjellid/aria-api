@@ -70,9 +70,8 @@ class ProductRecord(BaseModel):
     supplier: ProductSupplierRecord
     status: str
     slug: str
-    search_keywords: str | None = None
-    short_description: str | None = None
-    description: str | None = None
+    search_keywords: str | None
+    description: str | None
     new_description: str
     unit: str
     vat_rate: float

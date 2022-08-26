@@ -265,17 +265,6 @@ class Product(BaseModel, BaseThumbnailImageModel):
         blank=True,
         null=True,
     )
-    # Deprecated, use new_description instead
-    short_description = models.TextField(
-        "short description",
-        help_text=(
-            "The short description will be displayed on the top part "
-            "of the product, above the variant selection"
-        ),
-        null=True,
-    )
-    # Deprecated, use new_description instead
-    description = models.TextField("description", null=True)
     new_description = models.TextField("new description")
     unit = models.IntegerField(
         "unit",

@@ -21,8 +21,6 @@ class TestProductsModels:
             "supplier": supplier,
             "status": ProductStatus.AVAILABLE,
             "slug": "1-test-product",
-            "short_description": "Testing",
-            "description": "More testing",
             "new_description": "Even more testing",  # TODO: Rename to description
             "unit": ProductUnit.PCS,
             "available_in_special_sizes": True,
@@ -35,8 +33,6 @@ class TestProductsModels:
         assert product.supplier == supplier
         assert product.status == ProductStatus.AVAILABLE
         assert product.slug == "1-test-product"
-        assert product.short_description == "Testing"
-        assert product.description == "More testing"
         assert product.new_description == "Even more testing"
         assert product.unit == ProductUnit.PCS
         assert product.vat_rate == 0.25  # 0.25 is default

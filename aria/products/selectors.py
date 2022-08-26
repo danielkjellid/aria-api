@@ -50,7 +50,6 @@ def product_record(product: Product) -> ProductRecord:
         status=ProductStatus(product.status).label,
         slug=product.slug,
         search_keywords=product.search_keywords,
-        short_description=product.short_description,
         description=product.new_description,
         new_description=product.new_description,
         unit=ProductUnit(product.unit).label,
