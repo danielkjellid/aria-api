@@ -368,6 +368,13 @@ class Product(BaseModel, BaseThumbnailImageModel):
         return enums.ProductUnit(self.unit).label
 
     @property
+    def status_display(self):
+        """
+        Get human readable status label.
+        """
+        return self.get_status_display()
+
+    @property
     def from_price(self) -> Decimal:
         """
         Get a product's from price based on lowest possible price from
@@ -493,6 +500,9 @@ class ProductOption(BaseModel):
             )
         ]
 
+    def __str__(self) -> str:
+        return f"{self.product} - {self.variant} - {self.size}"
+
     @property
     def vat(self) -> Decimal:
         """
@@ -500,5 +510,9 @@ class ProductOption(BaseModel):
         """
         return Decimal(self.gross_price * Decimal(self.product.vat_rate))
 
-    def __str__(self) -> str:
-        return f"{self.product} - {self.variant} - {self.size}"
+    @property
+    def status_display(self):
+        """
+        Get human readable status label.
+        """
+        return self.get_status_display()

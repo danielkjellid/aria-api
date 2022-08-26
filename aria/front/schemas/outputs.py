@@ -5,18 +5,18 @@ from ninja import Schema
 from aria.front.enums import SiteMessageType
 
 
-class OpeningHoursHumanReadableTimeSlotsOutputSchema(Schema):
+class OpeningHoursHumanReadableTimeSlotsOutput(Schema):
     days: str
     time_slot: str | None
     is_closed: bool
 
 
-class OpeningHoursOutputSchema(Schema):
+class OpeningHoursOutput(Schema):
     id: int
-    human_readable_time_slots: list[OpeningHoursHumanReadableTimeSlotsOutputSchema]
+    human_readable_time_slots: list[OpeningHoursHumanReadableTimeSlotsOutput]
 
 
-class SiteMessageOutputSchema(Schema):
+class SiteMessageOutput(Schema):
     text: str
     message_type: SiteMessageType
     locations: list[str]

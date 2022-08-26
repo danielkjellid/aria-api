@@ -44,10 +44,10 @@ def product_record(product: Product) -> ProductRecord:
         supplier=ProductSupplierRecord(
             id=product.supplier_id,
             name=product.supplier.name,
-            origin_country=product.supplier.origin_country.name,
-            origin_country_flag=product.supplier.origin_country.unicode_flag,
+            origin_country=product.supplier.country_name,
+            origin_country_flag=product.supplier.unicode_flag,
         ),
-        status=ProductStatus(product.status).label,
+        status=product.status_display,
         slug=product.slug,
         search_keywords=product.search_keywords,
         short_description=product.short_description,
@@ -93,8 +93,8 @@ def product_list_record(product: Product) -> ProductListRecord:
         supplier=ProductSupplierRecord(
             id=product.supplier.id,
             name=product.supplier.name,
-            origin_country=product.supplier.origin_country.name,
-            origin_country_flag=product.supplier.origin_country.unicode_flag,
+            origin_country=product.supplier.country_name,
+            origin_country_flag=product.supplier.unicode_flag,
         ),
         thumbnail=product.thumbnail.url if product.thumbnail else None,
         display_price=product.display_price,
@@ -188,7 +188,7 @@ def product_options_list_for_product(*, product: Product) -> list[ProductOptionR
             id=option.id,
             discount=product_option_get_active_discount(product_option=option),
             gross_price=option.gross_price,
-            status=ProductStatus(option.status).label,
+            status=option.status_display,
             variant=ProductVariantRecord(
                 id=option.variant.id,
                 name=option.variant.name,

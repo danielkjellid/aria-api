@@ -8,7 +8,7 @@ import pytest
 
 from aria.categories.tests.utils import create_category
 from aria.discounts.tests.utils import create_discount
-from aria.products.enums import ProductStatus, ProductUnit
+from aria.products.enums import ProductUnit
 from aria.products.tests.utils import create_product, create_product_option
 
 pytestmark = pytest.mark.django_db
@@ -50,8 +50,8 @@ class TestPublicProductsEndpoints:
                         "unit": ProductUnit(product.unit).label,
                         "supplier": {
                             "name": product.supplier.name,
-                            "origin_country": product.supplier.origin_country.name,
-                            "origin_country_flag": product.supplier.origin_country.unicode_flag,  # pylint: disable=line-too-long
+                            "origin_country": product.supplier.country_name,
+                            "origin_country_flag": product.supplier.unicode_flag,
                         },
                         "thumbnail": product.thumbnail.url
                         if product.thumbnail
@@ -154,7 +154,7 @@ class TestPublicProductsEndpoints:
 
         expected_response = {
             "id": product.id,
-            "status": ProductStatus(product.status).label,
+            "status": product.status_display,
             "unit": ProductUnit(product.unit).label,
             "name": product.name,
             "description": product.new_description,
@@ -168,8 +168,8 @@ class TestPublicProductsEndpoints:
             "from_price": 200.0,
             "supplier": {
                 "name": product.supplier.name,
-                "origin_country": product.supplier.origin_country.name,
-                "origin_country_flag": product.supplier.origin_country.unicode_flag,
+                "origin_country": product.supplier.country_name,
+                "origin_country_flag": product.supplier.unicode_flag,
             },
             "images": [
                 {
@@ -193,7 +193,7 @@ class TestPublicProductsEndpoints:
                         "maximum_sold_quantity": None,
                         "remaining_quantity": None,
                     },
-                    "status": ProductStatus(option_1.status).label,
+                    "status": option_1.status_display,
                     "variant": {
                         "id": option_1.variant.id,
                         "name": option_1.variant.name,
@@ -209,7 +209,7 @@ class TestPublicProductsEndpoints:
                     "id": option_2.id,
                     "gross_price": 500.0,
                     "discount": None,
-                    "status": ProductStatus(option_2.status).label,
+                    "status": option_2.status_display,
                     "variant": {
                         "id": option_2.variant.id,
                         "name": option_2.variant.name,

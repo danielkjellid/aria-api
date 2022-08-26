@@ -49,3 +49,17 @@ class Supplier(BaseModel, BaseImageModel):
 
     def __str__(self) -> str:
         return self.name
+
+    @property
+    def unicode_flag(self) -> str:
+        """
+        Retrieve unicode flag for origin country
+        """
+        return self.origin_country.unicode_flag
+
+    @property
+    def country_name(self) -> str:
+        """
+        Retrieve a origin country's human readable name.
+        """
+        return self.origin_country.name
