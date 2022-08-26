@@ -84,8 +84,8 @@ class TestDiscountsSelectors:
                 supplier=ProductSupplierRecord(
                     id=product.supplier_id,
                     name=product.supplier.name,
-                    origin_country=product.supplier.origin_country.name,
-                    origin_country_flag=product.supplier.origin_country.unicode_flag,
+                    origin_country=product.supplier.country_name,
+                    origin_country_flag=product.supplier.unicode_flag,
                 ),
                 thumbnail=product.thumbnail.url if product.thumbnail else None,
                 display_price=product.display_price,
@@ -292,8 +292,8 @@ class TestDiscountsSelectors:
                 supplier=ProductSupplierRecord(
                     id=product.supplier_id,
                     name=product.supplier.name,
-                    origin_country=product.supplier.origin_country.name,
-                    origin_country_flag=product.supplier.origin_country.unicode_flag,
+                    origin_country=product.supplier.country_name,
+                    origin_country_flag=product.supplier.unicode_flag,
                 ),
                 thumbnail=product.thumbnail.url if product.thumbnail else None,
                 display_price=product.display_price,

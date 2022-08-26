@@ -65,8 +65,8 @@ class TestPublicDiscountsEndpoints:
                         "unit": product_4.unit_display,
                         "supplier": {
                             "name": product_4.supplier.name,
-                            "origin_country": product_4.supplier.origin_country.name,
-                            "origin_country_flag": product_4.supplier.origin_country.unicode_flag,  # pylint: disable=line-too-long
+                            "origin_country": product_4.supplier.country_name,
+                            "origin_country_flag": product_4.supplier.unicode_flag,
                         },
                         "thumbnail": product_4.thumbnail.url
                         if product_4.thumbnail
@@ -119,8 +119,8 @@ class TestPublicDiscountsEndpoints:
                         "unit": product_2_option_1.product.unit_display,
                         "supplier": {
                             "name": product_2_option_1.product.supplier.name,
-                            "origin_country": product_2_option_1.product.supplier.origin_country.name,  # pylint: disable=line-too-long
-                            "origin_country_flag": product_2_option_1.product.supplier.origin_country.unicode_flag,  # pylint: disable=line-too-long
+                            "origin_country": product_2_option_1.product.supplier.country_name,
+                            "origin_country_flag": product_2_option_1.product.supplier.unicode_flag,
                         },
                         "thumbnail": product_2_option_1.product.thumbnail.url
                         if product_2_option_1.product.thumbnail
@@ -173,8 +173,8 @@ class TestPublicDiscountsEndpoints:
                         "unit": product_1.unit_display,
                         "supplier": {
                             "name": product_1.supplier.name,
-                            "origin_country": product_1.supplier.origin_country.name,
-                            "origin_country_flag": product_1.supplier.origin_country.unicode_flag,  # pylint: disable=line-too-long
+                            "origin_country": product_1.supplier.country_name,
+                            "origin_country_flag": product_1.supplier.unicode_flag,
                         },
                         "thumbnail": product_1.thumbnail.url
                         if product_1.thumbnail
@@ -236,8 +236,8 @@ class TestPublicDiscountsEndpoints:
                         "unit": product_3.unit_display,
                         "supplier": {
                             "name": product_3.supplier.name,
-                            "origin_country": product_3.supplier.origin_country.name,
-                            "origin_country_flag": product_3.supplier.origin_country.unicode_flag,  # pylint: disable=line-too-long
+                            "origin_country": product_3.supplier.country_name,
+                            "origin_country_flag": product_3.supplier.unicode_flag,
                         },
                         "thumbnail": product_3.thumbnail.url
                         if product_3.thumbnail

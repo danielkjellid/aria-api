@@ -803,8 +803,8 @@ class TestProductsSelectors:
                 supplier=ProductSupplierRecord(
                     id=product_2.supplier.id,
                     name=product_2.supplier.name,
-                    origin_country=product_2.supplier.origin_country.name,
-                    origin_country_flag=product_2.supplier.origin_country.unicode_flag,
+                    origin_country=product_2.supplier.country_name,
+                    origin_country_flag=product_2.supplier.unicode_flag,
                 ),
                 from_price=Decimal("200.00"),
                 display_price=True,
@@ -846,8 +846,8 @@ class TestProductsSelectors:
                 supplier=ProductSupplierRecord(
                     id=product_1.supplier.id,
                     name=product_1.supplier.name,
-                    origin_country=product_1.supplier.origin_country.name,
-                    origin_country_flag=product_1.supplier.origin_country.unicode_flag,
+                    origin_country=product_1.supplier.country_name,
+                    origin_country_flag=product_1.supplier.unicode_flag,
                 ),
                 from_price=Decimal("200.00"),
                 display_price=True,
@@ -920,8 +920,8 @@ class TestProductsSelectors:
                 supplier=ProductSupplierRecord(
                     id=product_1.supplier.id,
                     name=product_1.supplier.name,
-                    origin_country=product_1.supplier.origin_country.name,
-                    origin_country_flag=product_1.supplier.origin_country.unicode_flag,
+                    origin_country=product_1.supplier.country_name,
+                    origin_country_flag=product_1.supplier.unicode_flag,
                 ),
                 from_price=Decimal("200.00"),
                 display_price=True,
