@@ -140,6 +140,7 @@ class TestDiscountsSelectors:
                         discount=ProductDiscountRecord(
                             is_discounted=True,
                             discounted_gross_price=Decimal("160.00"),
+                            discounted_gross_percentage=Decimal("0.20"),
                             maximum_sold_quantity=None,
                             remaining_quantity=None,
                         ),
@@ -149,6 +150,7 @@ class TestDiscountsSelectors:
                         discount=ProductDiscountRecord(
                             is_discounted=True,
                             discounted_gross_price=Decimal("160.00"),
+                            discounted_gross_percentage=Decimal("0.20"),
                             maximum_sold_quantity=None,
                             remaining_quantity=None,
                         ),
@@ -158,6 +160,7 @@ class TestDiscountsSelectors:
                         discount=ProductDiscountRecord(
                             is_discounted=True,
                             discounted_gross_price=Decimal("160.00"),
+                            discounted_gross_percentage=Decimal("0.20"),
                             maximum_sold_quantity=None,
                             remaining_quantity=None,
                         ),
@@ -185,6 +188,7 @@ class TestDiscountsSelectors:
                         discount=ProductDiscountRecord(
                             is_discounted=True,
                             discounted_gross_price=Decimal("120.00"),
+                            discounted_gross_percentage=Decimal("0.40"),
                             maximum_sold_quantity=None,
                             remaining_quantity=None,
                         ),
@@ -212,6 +216,7 @@ class TestDiscountsSelectors:
                         discount=ProductDiscountRecord(
                             is_discounted=True,
                             discounted_gross_price=Decimal("200.00"),
+                            discounted_gross_percentage=None,
                             maximum_sold_quantity=None,
                             remaining_quantity=None,
                         ),
@@ -355,6 +360,7 @@ class TestDiscountsSelectors:
                         discount=ProductDiscountRecord(
                             is_discounted=True,
                             discounted_gross_price=Decimal("160.00"),
+                            discounted_gross_percentage=Decimal("0.20"),
                             maximum_sold_quantity=None,
                             remaining_quantity=None,
                         ),
@@ -364,6 +370,7 @@ class TestDiscountsSelectors:
                         discount=ProductDiscountRecord(
                             is_discounted=True,
                             discounted_gross_price=Decimal("160.00"),
+                            discounted_gross_percentage=Decimal("0.20"),
                             maximum_sold_quantity=None,
                             remaining_quantity=None,
                         ),
@@ -373,6 +380,7 @@ class TestDiscountsSelectors:
                         discount=ProductDiscountRecord(
                             is_discounted=True,
                             discounted_gross_price=Decimal("160.00"),
+                            discounted_gross_percentage=Decimal("0.20"),
                             maximum_sold_quantity=None,
                             remaining_quantity=None,
                         ),
@@ -400,6 +408,7 @@ class TestDiscountsSelectors:
                         discount=ProductDiscountRecord(
                             is_discounted=True,
                             discounted_gross_price=Decimal("120.00"),
+                            discounted_gross_percentage=Decimal("0.40"),
                             maximum_sold_quantity=None,
                             remaining_quantity=None,
                         ),
@@ -427,6 +436,7 @@ class TestDiscountsSelectors:
                         discount=ProductDiscountRecord(
                             is_discounted=True,
                             discounted_gross_price=Decimal("200.00"),
+                            discounted_gross_percentage=None,
                             maximum_sold_quantity=None,
                             remaining_quantity=None,
                         ),

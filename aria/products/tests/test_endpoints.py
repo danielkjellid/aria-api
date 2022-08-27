@@ -59,6 +59,7 @@ class TestPublicProductsEndpoints:
                         "discount": {
                             "is_discounted": True,
                             "discounted_gross_price": 160.0,
+                            "discounted_gross_percentage": 0.20,
                             "maximum_sold_quantity": None,
                             "remaining_quantity": None,
                         }
@@ -190,6 +191,7 @@ class TestPublicProductsEndpoints:
                     "discount": {
                         "is_discounted": True,
                         "discounted_gross_price": 160.0,
+                        "discounted_gross_percentage": 0.20,
                         "maximum_sold_quantity": None,
                         "remaining_quantity": None,
                     },

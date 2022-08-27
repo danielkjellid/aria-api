@@ -164,6 +164,9 @@ def discount_active_list() -> list[DiscountRecord]:
                         discounted_gross_price=product_calculate_discounted_price(  # pylint: disable=line-too-long
                             product=product, discount=discount
                         ),
+                        discounted_gross_percentage=discount.discount_gross_percentage
+                        if discount.discount_gross_percentage
+                        else None,
                         maximum_sold_quantity=discount.maximum_sold_quantity
                         if discount.maximum_sold_quantity
                         else None,
