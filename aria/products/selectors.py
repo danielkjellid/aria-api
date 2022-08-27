@@ -458,8 +458,6 @@ def product_detail(
     categories = category_tree_active_list_for_product(product=product)
     options = product_options_list_for_product(product=product)
 
-    print(categories)
-
     product_base_record = product_record(product=product)
 
     record = ProductDetailRecord(
