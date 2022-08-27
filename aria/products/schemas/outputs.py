@@ -24,6 +24,7 @@ class ProductSizeOutput(Schema):
 class ProductDiscountOutput(Schema):
     is_discounted: bool
     discounted_gross_price: float
+    discounted_gross_percentage: float | None
     maximum_sold_quantity: int | None
     remaining_quantity: int | None
 

@@ -39,6 +39,7 @@ class ProductSizeRecord(BaseModel):
 class ProductDiscountRecord(BaseModel):
     is_discounted: bool
     discounted_gross_price: Decimal
+    discounted_gross_percentage: Decimal | None
     maximum_sold_quantity: int | None
     remaining_quantity: int | None
 

@@ -345,6 +345,9 @@ def product_get_active_discount(*, product: Product) -> ProductDiscountRecord | 
         discounted_gross_price=product_calculate_discounted_price(
             product=product, discount=discount
         ),
+        discounted_gross_percentage=discount.discount_gross_percentage
+        if discount.discount_gross_percentage
+        else None,
         maximum_sold_quantity=discount.maximum_sold_quantity
         if discount.maximum_sold_quantity
         else None,
@@ -406,6 +409,9 @@ def product_option_get_active_discount(
         discounted_gross_price=product_option_calculate_discounted_price(
             option=product_option, discount=discount
         ),
+        discounted_gross_percentage=discount.discount_gross_percentage
+        if discount.discount_gross_percentage
+        else None,
         maximum_sold_quantity=discount.maximum_sold_quantity
         if discount.maximum_sold_quantity
         else None,
