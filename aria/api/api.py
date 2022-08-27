@@ -1,11 +1,12 @@
+from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
 
 from ninja import NinjaAPI
 
 from aria.api.exceptions import PageOutOfBoundsError
-from aria.api.parsers import ORJSONParser
-from aria.api.renderers import ORJSONRenderer
+from aria.api.parsers import CamelCaseParser, ORJSONParser
+from aria.api.renderers import CamelCaseRenderer, ORJSONRenderer
 from aria.api.schemas.responses import ExceptionResponse
 from aria.api_auth.authentication import JWTAuthRequired
 from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
@@ -25,11 +26,19 @@ from aria.users.endpoints import (
     public_endpoints as public_users_endpoints,
 )
 
-api = NinjaAPI(
-    title="Aria API",
-    renderer=ORJSONRenderer(),
-    parser=ORJSONParser(),
-)
+# Temporary: the new frontend app expects output in camelcase.
+if settings.CAMEL_CASE_RENDERER:
+    api = NinjaAPI(
+        title="Aria API",
+        renderer=CamelCaseRenderer(),
+        parser=CamelCaseParser(),
+    )
+else:
+    api = NinjaAPI(
+        title="Aria API",
+        renderer=ORJSONRenderer(),
+        parser=ORJSONParser(),
+    )
 
 # API auth endpoints
 
