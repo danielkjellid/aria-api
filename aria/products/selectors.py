@@ -244,7 +244,7 @@ def _calculate_discounted_price(*, price: Decimal, discount: Discount) -> Decima
 def product_calculate_discounted_price(
     *, product: Product, discount: Discount
 ) -> Decimal:
-    """'
+    """
     Get discounted price for a product.
     """
 
