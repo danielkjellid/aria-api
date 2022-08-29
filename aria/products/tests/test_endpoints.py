@@ -160,6 +160,13 @@ class TestPublicProductsEndpoints:
             "name": product.name,
             "description": product.description,
             "absorption": product.absorption,
+            "categories": [
+                {
+                    "name": "Furniture",
+                    "parents": [{"name": "Parent", "parents": None, "slug": "parent"}],
+                    "slug": "furniture",
+                }
+            ],
             "materials": product.materials_display,
             "rooms": product.rooms_display,
             "available_in_special_sizes": product.available_in_special_sizes,
