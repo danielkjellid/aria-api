@@ -21,6 +21,12 @@ class ProductSizeOutput(Schema):
     name: str
 
 
+class ProductCategoryOutput(Schema):
+    name: str
+    slug: str
+    parents: list["ProductCategoryOutput"] | None
+
+
 class ProductDiscountOutput(Schema):
     is_discounted: bool
     discounted_gross_price: float
@@ -66,6 +72,7 @@ class ProductDetailOutput(Schema):
     display_price: bool
     can_be_picked_up: bool
     can_be_purchased_online: bool
+    categories: list[ProductCategoryOutput] | None = []
     materials: list[BaseArrayFieldLabelRecord] | None = []
     rooms: list[BaseArrayFieldLabelRecord] | None = []
     available_in_special_sizes: bool = False

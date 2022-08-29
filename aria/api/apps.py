@@ -17,12 +17,12 @@ class ApiConfig(AppConfig):
             return
 
         openapi_schema_path_setting = getattr(settings, "OPENAPI_SCHEMA_PATH", None)
+        base_path = getattr(settings, "BASE_DIR")
 
         if not openapi_schema_path_setting:
-            base_path = getattr(settings, "BASE_DIR")
             folder_path = base_path / Path("../aria-frontend/@types/").resolve()
         else:
-            folder_path = openapi_schema_path_setting
+            folder_path = base_path / Path(openapi_schema_path_setting).resolve()
 
         # Make sure folder exist.
         folder_path.mkdir(parents=True, exist_ok=True)
