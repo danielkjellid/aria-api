@@ -5,6 +5,7 @@ from ninja import Router
 from aria.api.decorators import api
 from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse
+from aria.api_auth.authentication import JWTAuthRequired
 from aria.core.exceptions import ApplicationError
 from aria.users.models import User
 from aria.users.schemas.inputs import (
@@ -14,9 +15,33 @@ from aria.users.schemas.inputs import (
     UserPasswordResetConfirmInput,
     UserPasswordResetInput,
 )
+from aria.users.schemas.outputs import UserRequestOutput
+from aria.users.selectors import user_detail
 from aria.users.services import user_create, user_set_password, user_verify_account
 
 router = Router(tags=["Users"])
+
+
+@api(
+    router,
+    "me/",
+    method="GET",
+    response={200: UserRequestOutput},
+    summary="Retrieve details about the user making the request",
+    auth=JWTAuthRequired(),
+)
+def user_request_api(request: HttpRequest) -> tuple[int, UserRequestOutput]:
+    """
+    Retrieve details about the user making the request.
+    """
+
+    request_user = request.auth  # type:ignore
+    user = user_detail(pk=request_user.id)
+
+    if user is None:
+        raise ApplicationError("User does not exist.", status_code=404)
+
+    return 200, UserRequestOutput(**user.dict())
 
 
 @api(

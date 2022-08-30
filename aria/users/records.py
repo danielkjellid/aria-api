@@ -30,6 +30,7 @@ class UserRecord(BaseModel):
     is_active: bool = True
     is_staff: bool = False
     is_superuser: bool = False
+    permissions: list[str]
 
 
 class UserNotesRecord(BaseModel):

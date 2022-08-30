@@ -14,6 +14,16 @@ class UserListOutput(Schema):
     profile: UserProfileRecord
 
 
+class UserRequestOutput(Schema):
+    id: int
+    email: str
+    has_confirmed_email: bool
+    profile: UserProfileRecord
+    is_superuser: bool
+    is_staff: bool
+    permissions: list[str]
+
+
 class UserDetailOutput(Schema):
     first_name: str
     last_name: str

@@ -14,6 +14,55 @@ class TestPublicUsersEndpoints:
 
     BASE_ENDPOINT = "/api/users"
 
+    def test_anonymous_request_user_request_api(
+        self, anonymous_client, django_assert_max_num_queries
+    ):
+        """
+        Test that unauthenticated users gets a 401 unauthorized on
+        retrieving info about request user.
+        """
+
+        with django_assert_max_num_queries(0):
+            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/me/")
+
+        assert response.status_code == 401
+
+    def test_authenticated_unprivileged_client_user_request_api(
+        self,
+        unprivileged_user,
+        authenticated_unprivileged_client,
+        django_assert_max_num_queries,
+    ):
+        """
+        Test that authenticated, unprivileged, users gets a valid response.
+        """
+
+        user = unprivileged_user
+
+        expected_response = {
+            "id": user.id,
+            "email": user.email,
+            "has_confirmed_email": user.has_confirmed_email,
+            "profile": {
+                "full_name": user.full_name,
+                "initial": user.initial,
+                "avatar_color": user.avatar_color,
+            },
+            "is_superuser": user.is_superuser,
+            "is_staff": user.is_staff,
+            "permissions": [],
+        }
+
+        with django_assert_max_num_queries(2):
+            response = authenticated_unprivileged_client.get(
+                f"{self.BASE_ENDPOINT}/me/"
+            )
+
+        actual_response = json.loads(response.content)
+
+        assert response.status_code == 200
+        assert actual_response == expected_response
+
     def test_anonymous_request_user_create_api(
         self, anonymous_client, django_assert_max_num_queries, mocker
     ) -> None:
@@ -448,15 +497,16 @@ class TestProtectedUsersEndpoints:
             "allow_third_party_personalization": not user.allow_third_party_personalization,  # pylint: disable=line-too-long
         }
 
-        # Uses 9 queries:
+        # Uses 11 queries:
         # - 1 for getting user
         # - 3 for getting and checking permissions
         # - 1 for getting user to update
         # - 1 savepoint for atomic transaction
         # - 1 for updating user
         # - 1 for bulk creating log entries
+        # - 2 for getting and aggregating permissions in record.
         # - 1 releasing savepoint
-        with django_assert_max_num_queries(9):
+        with django_assert_max_num_queries(11):
             response = authenticated_privileged_client.post(
                 f"{self.BASE_ENDPOINT}/user/{user.id}/update/",
                 data=payload_json,
@@ -533,8 +583,9 @@ class TestProtectedUsersEndpoints:
         # - 1 savepoint for atomic transaction
         # - 1 for updating user
         # - 1 for bulk creating log entries
+        # - 2 for getting and aggregating permissions in record.
         # - 1 releasing savepoint
-        with django_assert_max_num_queries(9):
+        with django_assert_max_num_queries(11):
             response = authenticated_privileged_client.post(
                 f"{self.BASE_ENDPOINT}/user/{user.id}/update/",
                 data=payload_json,
