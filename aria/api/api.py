@@ -81,9 +81,11 @@ def application_error(request: HttpRequest, exc: ApplicationError) -> HttpRespon
     """
     Exception handler for application errors.
     """
+    print(exc.message)
+
     return api.create_response(
         request,
-        ExceptionResponse(message=exc.message, extra=exc.extra),
+        ExceptionResponse(message=exc.message, extra=exc.extra).dict(),
         status=exc.status_code,
     )
 
@@ -94,7 +96,7 @@ def token_error(request: HttpRequest, exc: TokenError) -> HttpResponse:
     Exception handler for token errors.
     """
     return api.create_response(
-        request, ExceptionResponse(message=exc.message), status=401
+        request, ExceptionResponse(message=exc.message).dict(), status=401
     )
 
 
@@ -105,7 +107,9 @@ def permission_denied_error(
     """
     Exception handler for permission denied errors.
     """
-    return api.create_response(request, ExceptionResponse(message=str(exc)), status=403)
+    return api.create_response(
+        request, ExceptionResponse(message=str(exc)).dict(), status=403
+    )
 
 
 # Custom exception handler for PageOutOfBounds errors.
@@ -118,5 +122,5 @@ def page_out_of_bounds_error(
     in a paginated response.
     """
     return api.create_response(
-        request, ExceptionResponse(message=exc.message), status=404
+        request, ExceptionResponse(message=exc.message).dict(), status=404
     )
