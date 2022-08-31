@@ -1,8 +1,9 @@
-import subprocess
-from typing import Optional, Iterator
-import sys
 import contextlib
-from .colors import red, gray
+import subprocess
+import sys
+from typing import Iterator, Optional
+
+from .colors import gray, red
 from .helpers import print_with_time
 
 

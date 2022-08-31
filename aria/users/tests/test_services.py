@@ -29,8 +29,8 @@ class TestUsersServices:
         existing_user = unprivileged_user
         group = create_group()
 
-        # Check if user exist (1), create user (1), add group (1)
-        with django_assert_max_num_queries(3):
+        # Check if user exist (1), create user (1), add group (1), return record (2)
+        with django_assert_max_num_queries(5):
             new_user = user_create(
                 email="test@example.com",
                 password="supersecret",
@@ -97,9 +97,9 @@ class TestUsersServices:
 
         updates = {"email": "updatedemail@example.com"}
 
-        # Get user (1), update user (1), create log (1) and since
-        # transaction is atomic, it creates and releases savepoint (2)
-        with django_assert_max_num_queries(5):
+        # Get user (1), update user (1), create log (1), return record (2) and
+        # since transaction is atomic, it creates and releases savepoint (2)
+        with django_assert_max_num_queries(7):
             updated_user = user_update(
                 user=user, data=updates, author=author, log_change=True
             )
@@ -133,8 +133,9 @@ class TestUsersServices:
 
         old_email_confirmed_value = user.has_confirmed_email
 
-        # Uses 2 queries: 1 for getting user, 1 for updating user
-        with django_assert_max_num_queries(2):
+        # Uses 2 queries: 1 for getting user, 1 for updating user and
+        # 2 for returning record.
+        with django_assert_max_num_queries(4):
             updated_user = user_verify_account(uid=uid, token=token)
 
         assert updated_user.has_confirmed_email is True
@@ -151,8 +152,9 @@ class TestUsersServices:
         uid = user.uid
         token = default_token_generator.make_token(user)
 
-        # Uses 2 queries: 1 for getting user, 1 for setting password
-        with django_assert_max_num_queries(2):
+        # Uses 2 queries: 1 for getting user, 1 for setting password and
+        # 2 for returning record.
+        with django_assert_max_num_queries(4):
             updated_user = user_set_password(
                 uid=uid, token=token, new_password="horsebatterystaple"
             )

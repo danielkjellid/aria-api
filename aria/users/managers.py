@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any
 
 from django.contrib.auth.models import BaseUserManager
+from django.contrib.postgres.aggregates import ArrayAgg
 
 from aria.core.models import BaseQuerySet
 
@@ -9,7 +10,15 @@ if TYPE_CHECKING:
 
 
 class UserQuerySet(BaseQuerySet["models.User"]):
-    pass
+    def annotate_permissions(self) -> BaseQuerySet["models.User"]:
+        """
+        Annotate lists of user and group permissions.
+        """
+
+        return self.annotate(
+            user_perms=ArrayAgg("user_permissions__codename", default=[]),
+            group_perms=ArrayAgg("groups__permissions__codename", default=[]),
+        )
 
 
 class UserManager(BaseUserManager["models.User"]):
