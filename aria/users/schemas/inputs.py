@@ -7,6 +7,7 @@ class UserCreateInput(Schema):
     last_name: str
     phone_number: str
     street_address: str
+    birth_date: str
     zip_code: str
     zip_place: str
     subscribed_to_newsletter: bool

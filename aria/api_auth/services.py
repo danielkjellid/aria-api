@@ -95,12 +95,25 @@ def token_pair_obtain_for_unauthenticated_user(email: str, password: str) -> JWT
     credentials are valid.
     """
 
+    auth_error_message = (
+        "Wrong username or password. "
+        "Note that you have to separate between lowercase and uppercase characters."
+    )
+
+    if not email or not password:
+        raise ApplicationError(
+            message=auth_error_message,
+            extra={
+                "email": "This field cannot be blank." if not email else None,
+                "password": "This field cannot be blank." if not password else None,
+            },
+        )
+
     user = authenticate(username=email, password=password)
 
     if user is None:
         raise ApplicationError(
-            "Wrong username or password. Note that you have to "
-            "separate between lowercase and uppercase characters.",
+            auth_error_message,
             status_code=401,
         )
 

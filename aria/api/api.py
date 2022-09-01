@@ -3,17 +3,20 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
 
 from ninja import NinjaAPI
+from ninja.errors import ValidationError as NinjaValidationError
 
 from aria.api.exceptions import PageOutOfBoundsError
 from aria.api.parsers import CamelCaseParser, ORJSONParser
 from aria.api.renderers import CamelCaseRenderer, ORJSONRenderer
 from aria.api.schemas.responses import ExceptionResponse
+from aria.api.utils import translate_pydantic_validation_messages
 from aria.api_auth.authentication import JWTAuthRequired
 from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
 from aria.api_auth.exceptions import TokenError
 from aria.categories.endpoints import public_endpoints as public_categories_endpoints
 from aria.core.endpoints import public_endpoints as public_core_endpoints
 from aria.core.exceptions import ApplicationError
+from aria.core.humps import camelize
 from aria.discounts.endpoints import public_endpoints as public_discount_endpoints
 from aria.employees.endpoints import public_endpoints as public_employees_endpoints
 from aria.front.endpoints import public_endpoints as public_front_endpoints
@@ -87,6 +90,31 @@ def application_error(request: HttpRequest, exc: ApplicationError) -> HttpRespon
         request,
         ExceptionResponse(message=exc.message, extra=exc.extra).dict(),
         status=exc.status_code,
+    )
+
+
+@api.exception_handler(NinjaValidationError)
+def pydantic_validation_error(
+    request: HttpRequest, exc: NinjaValidationError
+) -> HttpResponse:
+    """
+    Exception handler for handling schema and record validation errors.
+    """
+
+    locale = request.META.get("HTTP_ACCEPT_LANGUAGE", "en")
+    errors = translate_pydantic_validation_messages(errors=exc.errors, locale=locale)
+
+    field_errors = {}
+
+    for error in errors:
+        location = error["loc"]
+        field = camelize(location[len(location) - 1])
+        field_errors[field] = error["msg"]
+
+    return api.create_response(
+        request,
+        ExceptionResponse(message="Something went wrong.", extra=field_errors).dict(),
+        status=400,
     )
 
 
