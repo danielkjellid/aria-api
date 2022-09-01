@@ -5,6 +5,7 @@ from ninja import Router
 from aria.api.decorators import api
 from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse
+from aria.api_auth.exceptions import TokenError
 from aria.api_auth.schemas.inputs import (
     TokenBlacklistInput,
     TokensObtainInput,
@@ -16,6 +17,7 @@ from aria.api_auth.services import (
     token_pair_obtain_for_unauthenticated_user,
     token_pair_obtain_new_from_refresh_token,
 )
+from aria.core.exceptions import ApplicationError
 
 router = Router(tags=["Auth"])
 
@@ -33,9 +35,15 @@ def auth_obtain_token_pair(
     """
     Authenticate user credentials and return access and refresh tokens.
     """
-    tokens = token_pair_obtain_for_unauthenticated_user(
-        email=payload.email, password=payload.password
-    )
+
+    try:
+        tokens = token_pair_obtain_for_unauthenticated_user(
+            email=payload.email, password=payload.password
+        )
+    except TokenError as exc:
+        raise ApplicationError(
+            _("We're unable to log you in, please try again later."), status_code=400
+        ) from exc
 
     return 200, TokensObtainOutput(**tokens.dict())
 
@@ -53,6 +61,7 @@ def auth_refresh_token_pair(
     """
     Obtain a new token pair based on valid refresh token.
     """
+
     tokens = token_pair_obtain_new_from_refresh_token(payload.refresh_token)
 
     return 200, TokensRefreshOutput(**tokens.dict())
@@ -71,6 +80,7 @@ def auth_log_out_and_blacklist_refresh_token(
     """
     Blacklists a valid refresh token, typically done when a user logs out.
     """
+
     refresh_token_blacklist(payload.refresh_token)
 
     return 200

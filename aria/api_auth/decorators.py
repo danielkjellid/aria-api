@@ -27,20 +27,20 @@ def permission_required(
                 user = info.auth
 
                 if not user:
-                    raise PermissionDenied("User from context is unknown.")
+                    raise PermissionDenied(_("User from context is unknown."))
 
                 if not user.is_authenticated:
-                    raise PermissionDenied("User is unauthenticated.")
+                    raise PermissionDenied(_("User is unauthenticated."))
 
                 if all_required:
                     if not user.has_perms(permissions):
                         raise PermissionDenied(
-                            "User does not have all the required permissions."
+                            _("User does not have all the required permissions.")
                         )
                 else:
                     if not user.has_perm(permissions):
                         raise PermissionDenied(
-                            "User does not have any of the required permissions."
+                            _("User does not have any of the required permissions.")
                         )
 
                 return func(*args, **kwargs)

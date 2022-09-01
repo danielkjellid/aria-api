@@ -1,9 +1,10 @@
 from django.conf import settings
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import HttpRequest, HttpResponse
 
 from ninja import NinjaAPI
 from ninja.errors import ValidationError as NinjaValidationError
+from pydantic.error_wrappers import ValidationError as PydanticValidationError
 
 from aria.api.exceptions import PageOutOfBoundsError
 from aria.api.parsers import CamelCaseParser, ORJSONParser
@@ -12,7 +13,6 @@ from aria.api.schemas.responses import ExceptionResponse
 from aria.api.utils import translate_pydantic_validation_messages
 from aria.api_auth.authentication import JWTAuthRequired
 from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
-from aria.api_auth.exceptions import TokenError
 from aria.categories.endpoints import public_endpoints as public_categories_endpoints
 from aria.core.endpoints import public_endpoints as public_core_endpoints
 from aria.core.exceptions import ApplicationError
@@ -84,7 +84,6 @@ def application_error(request: HttpRequest, exc: ApplicationError) -> HttpRespon
     """
     Exception handler for application errors.
     """
-    print(exc.message)
 
     return api.create_response(
         request,
@@ -94,8 +93,9 @@ def application_error(request: HttpRequest, exc: ApplicationError) -> HttpRespon
 
 
 @api.exception_handler(NinjaValidationError)
-def pydantic_validation_error(
-    request: HttpRequest, exc: NinjaValidationError
+@api.exception_handler(PydanticValidationError)
+def pydantic_models_validation_error(
+    request: HttpRequest, exc: NinjaValidationError | PydanticValidationError
 ) -> HttpResponse:
     """
     Exception handler for handling schema and record validation errors.
@@ -115,16 +115,6 @@ def pydantic_validation_error(
         request,
         ExceptionResponse(message="Something went wrong.", extra=field_errors).dict(),
         status=400,
-    )
-
-
-@api.exception_handler(TokenError)
-def token_error(request: HttpRequest, exc: TokenError) -> HttpResponse:
-    """
-    Exception handler for token errors.
-    """
-    return api.create_response(
-        request, ExceptionResponse(message=exc.message).dict(), status=401
     )
 
 
@@ -151,4 +141,14 @@ def page_out_of_bounds_error(
     """
     return api.create_response(
         request, ExceptionResponse(message=exc.message).dict(), status=404
+    )
+
+
+@api.exception_handler(ObjectDoesNotExist)
+def object_does_not_exist_error(
+    request: HttpRequest, exc: ObjectDoesNotExist
+) -> HttpResponse:
+
+    return api.create_response(
+        request, ExceptionResponse(message=str(exc)).dict(), status=404
     )

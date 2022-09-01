@@ -4,13 +4,17 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.models import Group
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator
-from django.core.exceptions import ValidationError as DjangoValidationError
+from django.core.exceptions import (
+    ObjectDoesNotExist,
+    ValidationError as DjangoValidationError,
+)
 from django.core.validators import validate_email
 from django.db import transaction
 from django.http import HttpRequest
 from django.utils import timezone
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode as uid_decoder
+from django.utils.text import gettext_lazy as _
 
 from aria.audit_logs.services import log_entries_create
 from aria.audit_logs.types import ChangeMessage
@@ -35,7 +39,7 @@ def _validate_email_and_password(email: str, password: str | None) -> tuple[str,
     existing_user = User.objects.filter(email__iexact=email).exists()
 
     if existing_user:
-        raise ApplicationError(message="User with email already exists.")
+        raise ApplicationError(message=_("User with email already exists."))
 
     try:
         validate_email(email)
@@ -150,17 +154,15 @@ def user_verify_account(*, uid: str, token: str) -> UserRecord:
         decode_uid = force_str(uid_decoder(uid))
         user = User.objects.get(id=decode_uid)
     except User.DoesNotExist as exc:
-        raise ApplicationError(
-            message="Unable to find user with provided uid."
-        ) from exc
+        raise ObjectDoesNotExist(_("Unable to find user with provided uid.")) from exc
 
     if user.has_confirmed_email:
-        raise ApplicationError(message="Account is already verified.")
+        raise ApplicationError(message=_("Account is already verified."))
 
     is_token_valid = user.validate_verification_email_token(token=token)
 
     if not is_token_valid:
-        raise ApplicationError(message="Token is invalid, please try again.")
+        raise ApplicationError(message=_("Token is invalid, please try again."))
 
     user.has_confirmed_email = True
     user.save()
@@ -178,14 +180,12 @@ def user_set_password(*, uid: str, token: str, new_password: str) -> UserRecord:
         decode_uid = force_str(uid_decoder(uid))
         user = User.objects.get(id=decode_uid)
     except User.DoesNotExist as exc:
-        raise ApplicationError(
-            message="Unable to find user with provided uid."
-        ) from exc
+        raise ObjectDoesNotExist(_("Unable to find user with provided uid.")) from exc
 
     is_token_valid = default_token_generator.check_token(user, token)
 
     if not is_token_valid:
-        raise ApplicationError(message="Token is invalid, please try again.")
+        raise ApplicationError(message=_("Token is invalid, please try again."))
 
     # Validate password, will raise ValidationError if password does not
     # meet requirements

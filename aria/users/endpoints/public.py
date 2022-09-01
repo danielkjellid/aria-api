@@ -1,4 +1,6 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
+from django.utils.text import gettext_lazy as _
 
 from ninja import Router
 
@@ -6,7 +8,6 @@ from aria.api.decorators import api
 from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse
 from aria.api_auth.authentication import JWTAuthRequired
-from aria.core.exceptions import ApplicationError
 from aria.users.models import User
 from aria.users.schemas.inputs import (
     UserAccountVerificationConfirmInput,
@@ -39,7 +40,7 @@ def user_request_api(request: HttpRequest) -> tuple[int, UserRequestOutput]:
     user = user_detail(pk=request_user.id)
 
     if user is None:
-        raise ApplicationError("User does not exist.", status_code=404)
+        raise ObjectDoesNotExist(_("User does not exist."))
 
     return 200, UserRequestOutput(**user.dict())
 
@@ -77,7 +78,7 @@ def user_account_verification_api(
     try:
         user = User.objects.get(email__iexact=payload.email, is_active=True)
     except User.DoesNotExist as exc:
-        raise ApplicationError("User does not exist.", status_code=404) from exc
+        raise ObjectDoesNotExist(_("User does not exist.")) from exc
 
     user.send_verification_email()
 
@@ -120,7 +121,7 @@ def user_password_reset_api(
     try:
         user = User.objects.get(email__iexact=payload.email, is_active=True)
     except User.DoesNotExist as exc:
-        raise ApplicationError(message="User does not exist.", status_code=404) from exc
+        raise ObjectDoesNotExist(_("User does not exist.")) from exc
 
     user.send_password_reset_email(request=request)
 

@@ -41,7 +41,7 @@ class PageNumberSetPagination(PaginationBase):
         total_pages = self._total_pages(total_items)
 
         if pagination.page > total_pages:
-            raise PageOutOfBoundsError()
+            raise PageOutOfBoundsError(_("The page does not exist."))
 
         return {
             "next": self._get_next_link(pagination.page, total_pages),

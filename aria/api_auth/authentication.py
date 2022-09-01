@@ -1,6 +1,8 @@
 from typing import Any, Optional
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
+from django.utils.text import gettext_lazy as _
 
 from ninja.security import HttpBearer
 
@@ -26,9 +28,7 @@ class JWTAuthRequired(HttpBearer):
             try:
                 user = User.objects.get(id=decoded_access_token.user_id)
             except User.DoesNotExist as exc:
-                raise ApplicationError(
-                    "No user with provided id exist", status_code=404
-                ) from exc
+                raise ObjectDoesNotExist(_("No user with provided id exist")) from exc
 
             # Also check that the user is active before returning a valid
             # response.
