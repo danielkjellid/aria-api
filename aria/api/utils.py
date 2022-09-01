@@ -5,11 +5,8 @@ from django.utils.translation import activate, deactivate, gettext as _
 
 MESSAGE_TEMPLATE = {
     "field required": _("field required"),
-    "extra fields not permitted": "extra fields not permitted",
     "none is not an allowed value": _("none is not an allowed value"),
-    "value is not none": "value is not none",
-    "value could not be parsed to a boolean": "value could not be parsed to a boolean",
-    "byte type expected": "byte type expected",
+    "value is not none": _("value is not none"),
 }
 
 

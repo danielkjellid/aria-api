@@ -35,12 +35,12 @@ def permission_required(
                 if all_required:
                     if not user.has_perms(permissions):
                         raise PermissionDenied(
-                            _("User does not have all the required permissions.")
+                            _("You do not have all the required permissions.")
                         )
                 else:
                     if not user.has_perm(permissions):
                         raise PermissionDenied(
-                            _("User does not have any of the required permissions.")
+                            _("You do not have any of the required permissions.")
                         )
 
                 return func(*args, **kwargs)

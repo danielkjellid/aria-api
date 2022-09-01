@@ -45,6 +45,6 @@ def kitchen_detail_api(
     kitchen = kitchen_detail(kitchen_slug=kitchen_slug)
 
     if kitchen is None:
-        raise ObjectDoesNotExist(_("Kitchen with provided slug does not exist"))
+        raise ObjectDoesNotExist(_("Kitchen does not exist"))
 
     return 200, KitchenDetailOutput(**kitchen.dict())

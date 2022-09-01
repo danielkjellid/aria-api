@@ -28,7 +28,7 @@ class JWTAuthRequired(HttpBearer):
             try:
                 user = User.objects.get(id=decoded_access_token.user_id)
             except User.DoesNotExist as exc:
-                raise ObjectDoesNotExist(_("No user with provided id exist")) from exc
+                raise ObjectDoesNotExist(_("No user with provided id exist.")) from exc
 
             # Also check that the user is active before returning a valid
             # response.

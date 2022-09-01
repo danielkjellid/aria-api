@@ -4,7 +4,6 @@ from uuid import uuid4
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import AbstractBaseUser
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.text import gettext_lazy as _
 from django.utils.translation import gettext as _
@@ -155,4 +154,4 @@ def refresh_token_blacklist(token: str) -> None:
         )
         BlacklistedToken.objects.create(token=token_instance)
     except OutstandingToken.DoesNotExist as exc:
-        raise ObjectDoesNotExist(_("Refresh token provided does not exist.")) from exc
+        raise TokenError("Refresh token provided does not exist.") from exc

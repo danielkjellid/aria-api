@@ -39,7 +39,7 @@ def _validate_email_and_password(email: str, password: str | None) -> tuple[str,
     existing_user = User.objects.filter(email__iexact=email).exists()
 
     if existing_user:
-        raise ApplicationError(message=_("User with email already exists."))
+        raise ApplicationError(message=_("Email is already registered."))
 
     try:
         validate_email(email)
@@ -154,7 +154,7 @@ def user_verify_account(*, uid: str, token: str) -> UserRecord:
         decode_uid = force_str(uid_decoder(uid))
         user = User.objects.get(id=decode_uid)
     except User.DoesNotExist as exc:
-        raise ObjectDoesNotExist(_("Unable to find user with provided uid.")) from exc
+        raise ObjectDoesNotExist(_("User does not exist.")) from exc
 
     if user.has_confirmed_email:
         raise ApplicationError(message=_("Account is already verified."))
@@ -180,7 +180,7 @@ def user_set_password(*, uid: str, token: str, new_password: str) -> UserRecord:
         decode_uid = force_str(uid_decoder(uid))
         user = User.objects.get(id=decode_uid)
     except User.DoesNotExist as exc:
-        raise ObjectDoesNotExist(_("Unable to find user with provided uid.")) from exc
+        raise ObjectDoesNotExist(_("User does not exist.")) from exc
 
     is_token_valid = default_token_generator.check_token(user, token)
 

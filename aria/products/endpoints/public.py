@@ -53,6 +53,6 @@ def product_detail_api(
     product = product_detail(product_slug=product_slug)
 
     if product is None:
-        raise ObjectDoesNotExist(_("Product with provided slug does not exist"))
+        raise ObjectDoesNotExist(_("Product does not exist"))
 
     return 200, ProductDetailOutput(**product.dict())
