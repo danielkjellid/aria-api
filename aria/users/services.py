@@ -188,7 +188,7 @@ def user_verify_account(*, uid: str, token: str) -> None:
 
 
 def user_set_password(
-    *, uid: str, token: str, new_password: str, new_password2: str | None
+    *, uid: str, token: str, new_password: str, new_password2: str | None = None
 ) -> None:
     """
     Set new password for user, validating uid, token and password. Eventually
@@ -230,19 +230,19 @@ def user_set_password(
                 "The password is too similar to the %(verbose_name)s."
             ),
             "password_too_short": _(
-                "This password is too short. It must contain at least %(min_length)d characters."
+                "This password is too short. It must contain at least %(min_length)d characters."  # pylint: disable=line-too-long
             ),
         }
 
         field_errors = []
 
         for error in exc.error_list:
-            for key in translation_codes.keys():
-                if error.code == key:
+            for code in translation_codes:  # pylint: disable=consider-using-dict-items
+                if error.code == code:
                     if error.params:
-                        field_errors.append((translation_codes[key] % error.params))
+                        field_errors.append((translation_codes[code] % error.params))
                     else:
-                        field_errors.append(translation_codes[key])
+                        field_errors.append(translation_codes[code])
 
         raise ApplicationError(
             message=_(

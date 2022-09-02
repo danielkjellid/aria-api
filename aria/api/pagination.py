@@ -4,6 +4,7 @@ from urllib import parse
 
 from django.db.models import Model, QuerySet  # pylint: disable=unused-import
 from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 
 from ninja import Field, Schema
 from ninja.pagination import PaginationBase

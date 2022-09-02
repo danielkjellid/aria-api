@@ -1,4 +1,5 @@
 from django.http import HttpRequest
+from django.utils.translation import gettext as _
 
 from ninja import Router
 

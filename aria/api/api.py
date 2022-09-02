@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.http import HttpRequest, HttpResponse
@@ -103,14 +105,14 @@ def pydantic_models_validation_error(
     """
 
     locale = request.META.get("HTTP_ACCEPT_LANGUAGE", "en")
-    errors = translate_pydantic_validation_messages(errors=exc.errors, locale=locale)
+    errors = translate_pydantic_validation_messages(errors=exc.errors, locale=locale)  # type: ignore # pylint: disable=line-too-long
 
-    field_errors = {}
+    field_errors: dict[str, Any] = {}
 
     for error in errors:
         location = error["loc"]
         field = camelize(location[len(location) - 1])
-        field_errors[field] = error["msg"]
+        field_errors[field] = error["msg"]  # type: ignore
 
     activate(locale)
     message = _("There were errors in the form. Please correct them and try again.")
@@ -166,7 +168,9 @@ def object_does_not_exist_error(
 
 
 @api.exception_handler(ValidationError)
-def validation_error(request: HttpRequest, exc: ValidationError) -> HttpResponse:
+def validation_error(  # pylint: disable=unused-argument
+    request: HttpRequest, exc: ValidationError
+) -> HttpResponse:
     """
     Exception handler for when django throws ValidationErrors.
     """

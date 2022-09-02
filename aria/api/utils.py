@@ -15,7 +15,12 @@ def _init_translation_pattern() -> Pattern[str]:
     Split MESSAGE TEMPLATE dict into a string we can search later on.
     """
     pattern = re.compile(
-        "|".join("({})".format(i.replace("{}", "(.+)")) for i in MESSAGE_TEMPLATE)
+        "|".join(
+            "({})".format(  # pylint: disable=consider-using-f-string
+                i.replace("{}", "(.+)")
+            )
+            for i in MESSAGE_TEMPLATE
+        )
     )
 
     return pattern
@@ -52,7 +57,9 @@ def _translate(message: str, locale: str) -> str:
     return translated_string
 
 
-def translate_pydantic_validation_messages(errors: list[dict[str, Any]], locale: str):
+def translate_pydantic_validation_messages(
+    errors: list[dict[str, Any]], locale: str
+) -> list[dict[str, str]]:
     """
     Loop over all messages in validation output and translate messages.
     """
