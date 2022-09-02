@@ -1,6 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
-from django.utils.text import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ninja import Router
 

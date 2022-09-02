@@ -1,6 +1,7 @@
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.http import HttpRequest, HttpResponse
+from django.utils.translation import activate, deactivate, gettext as _
 
 from ninja import NinjaAPI
 from ninja.errors import ValidationError as NinjaValidationError
@@ -111,9 +112,16 @@ def pydantic_models_validation_error(
         field = camelize(location[len(location) - 1])
         field_errors[field] = error["msg"]
 
+    activate(locale)
+    message = _("There were errors in the form. Please correct them and try again.")
+    deactivate()
+
     return api.create_response(
         request,
-        ExceptionResponse(message="Something went wrong.", extra=field_errors).dict(),
+        ExceptionResponse(
+            message=message,
+            extra=field_errors,
+        ).dict(),
         status=400,
     )
 
@@ -148,7 +156,27 @@ def page_out_of_bounds_error(
 def object_does_not_exist_error(
     request: HttpRequest, exc: ObjectDoesNotExist
 ) -> HttpResponse:
+    """
+    Exception handler for attempting to get an object that does not exist.
+    """
 
     return api.create_response(
         request, ExceptionResponse(message=str(exc)).dict(), status=404
+    )
+
+
+@api.exception_handler(ValidationError)
+def validation_error(request: HttpRequest, exc: ValidationError) -> HttpResponse:
+    """
+    Exception handler for when django throws ValidationErrors.
+    """
+
+    locale = request.META.get("HTTP_ACCEPT_LANGUAGE", "en")
+
+    activate(locale)
+    message = _("Something went wrong. Please double check the form and try again.")
+    deactivate()
+
+    return api.create_response(
+        request, ExceptionResponse(message=message).dict(), status=400
     )

@@ -14,7 +14,7 @@ from django.http import HttpRequest
 from django.utils import timezone
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode as uid_decoder
-from django.utils.text import gettext_lazy as _
+from django.utils.translation import gettext as _
 
 from aria.audit_logs.services import log_entries_create
 from aria.audit_logs.types import ChangeMessage
@@ -25,7 +25,9 @@ from aria.users.records import UserRecord
 from aria.users.selectors import user_record
 
 
-def _validate_email_and_password(email: str, password: str | None) -> tuple[str, str]:
+def _validate_email_and_password(
+    email: str, password: str | None, password2: str | None
+) -> tuple[str, str]:
     """
     Validate email and password for create operation
     """
@@ -36,10 +38,23 @@ def _validate_email_and_password(email: str, password: str | None) -> tuple[str,
     if not password:
         raise ValueError("Unable to validate email and password, password is none.")
 
+    if password and password2:
+        if password != password2:
+            raise ApplicationError(
+                message=_("The two password fields didn’t match."),
+                extra={
+                    "password": _("The two password fields didn’t match."),
+                    "password2": _("The two password fields didn’t match."),
+                },
+            )
+
     existing_user = User.objects.filter(email__iexact=email).exists()
 
     if existing_user:
-        raise ApplicationError(message=_("Email is already registered."))
+        raise ApplicationError(
+            message=_("Email is already registered."),
+            extra={"email": _("Email is already registered.")},
+        )
 
     try:
         validate_email(email)
@@ -58,6 +73,7 @@ def user_create(
     *,
     email: str,
     password: Optional[str] = None,
+    password2: Optional[str] = None,
     subscribed_to_newsletter: bool = True,
     send_verification_email: bool = False,
     group: Optional[Group] = None,
@@ -70,7 +86,9 @@ def user_create(
     Creates a new user instance.
     """
 
-    email, password = _validate_email_and_password(email=email, password=password)
+    email, password = _validate_email_and_password(
+        email=email, password=password, password2=password2
+    )
 
     # Create the new user
     new_user = User(
@@ -144,15 +162,17 @@ def user_update(
     return user_record(user=updated_user)
 
 
-def user_verify_account(*, uid: str, token: str) -> UserRecord:
+def user_verify_account(*, uid: str, token: str) -> None:
     """
     Verify a user account, setting has_confirmed_email to True
     if given uid and token match.
     """
 
+    print("fired")
+
     try:
-        decode_uid = force_str(uid_decoder(uid))
-        user = User.objects.get(id=decode_uid)
+        decoded_uid = force_str(uid_decoder(uid))
+        user = User.objects.get(id=decoded_uid)
     except User.DoesNotExist as exc:
         raise ObjectDoesNotExist(_("User does not exist.")) from exc
 
@@ -167,10 +187,8 @@ def user_verify_account(*, uid: str, token: str) -> UserRecord:
     user.has_confirmed_email = True
     user.save()
 
-    return user_record(user=user)
 
-
-def user_set_password(*, uid: str, token: str, new_password: str) -> UserRecord:
+def user_set_password(*, uid: str, token: str, new_password: str) -> None:
     """
     Set new password for user, validating uid, token and password. Eventually
     sets a new password for the user.
@@ -193,5 +211,3 @@ def user_set_password(*, uid: str, token: str, new_password: str) -> UserRecord:
 
     user.set_password(new_password)
     user.save()
-
-    return user_record(user=user)

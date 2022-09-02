@@ -5,8 +5,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import AbstractBaseUser
 from django.utils import timezone
-from django.utils.text import gettext_lazy as _
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 import jwt
 
@@ -97,7 +96,7 @@ def token_pair_obtain_for_unauthenticated_user(email: str, password: str) -> JWT
     """
 
     auth_error_message = _(
-        "Wrong username or password. "
+        "Wrong email or password. "
         "Note that you have to separate between lowercase and uppercase characters."
     )
 

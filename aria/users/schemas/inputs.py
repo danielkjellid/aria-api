@@ -14,6 +14,7 @@ class UserCreateInput(Schema):
     allow_personalization: bool
     allow_third_party_personalization: bool
     password: str
+    password2: str
 
 
 class UserAccountVerificationInput(Schema):

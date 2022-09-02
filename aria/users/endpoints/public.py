@@ -1,6 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
-from django.utils.text import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ninja import Router
 
@@ -56,8 +56,8 @@ def user_create_api(request: HttpRequest, payload: UserCreateInput) -> int:
     """
     Creates a single user instance.
     """
-
-    user_create(**payload.dict())
+    print("CREATED")
+    user_create(**payload.dict(), send_verification_email=True)
     return 201
 
 
@@ -89,7 +89,7 @@ def user_account_verification_api(
     router,
     "verify/confirm/",
     method="POST",
-    response={200: None, codes_40x: ExceptionResponse},
+    response={200: None},
     summary="Validate email tokens to confirm account",
 )
 def user_account_verification_confirm_api(
@@ -101,6 +101,7 @@ def user_account_verification_confirm_api(
     """
 
     user_verify_account(uid=payload.uid, token=payload.token)
+
     return 200
 
 

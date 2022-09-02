@@ -71,7 +71,7 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 # Language code for this installation.
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "no"
 
 LOCALE_PATHS = (BASE_DIR / "public/translations/",)
 
