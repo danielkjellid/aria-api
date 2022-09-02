@@ -32,6 +32,7 @@ class UserPasswordResetInput(Schema):
 
 class UserPasswordResetConfirmInput(Schema):
     new_password: str
+    new_password2: str
     uid: str
     token: str
 

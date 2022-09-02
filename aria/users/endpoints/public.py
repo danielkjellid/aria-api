@@ -122,7 +122,7 @@ def user_password_reset_api(
     try:
         user = User.objects.get(email__iexact=payload.email, is_active=True)
     except User.DoesNotExist as exc:
-        raise ObjectDoesNotExist(_("User does not exist.")) from exc
+        raise ObjectDoesNotExist from exc
 
     user.send_password_reset_email(request=request)
 
@@ -144,7 +144,10 @@ def user_password_reset_confirm_api(
     """
 
     user_set_password(
-        uid=payload.uid, token=payload.token, new_password=payload.new_password
+        uid=payload.uid,
+        token=payload.token,
+        new_password=payload.new_password,
+        new_password2=payload.new_password2,
     )
 
     return 200

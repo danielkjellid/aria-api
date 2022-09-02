@@ -1,6 +1,5 @@
 from typing import Any, Optional
 
-from django.contrib.auth import password_validation
 from django.contrib.auth.models import Group
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator
@@ -188,7 +187,9 @@ def user_verify_account(*, uid: str, token: str) -> None:
     user.save()
 
 
-def user_set_password(*, uid: str, token: str, new_password: str) -> None:
+def user_set_password(
+    *, uid: str, token: str, new_password: str, new_password2: str | None
+) -> None:
     """
     Set new password for user, validating uid, token and password. Eventually
     sets a new password for the user.
@@ -205,9 +206,53 @@ def user_set_password(*, uid: str, token: str, new_password: str) -> None:
     if not is_token_valid:
         raise ApplicationError(message=_("Token is invalid, please try again."))
 
+    if new_password and new_password2:
+        if new_password != new_password2:
+            raise ApplicationError(
+                message=_("The two password fields didn’t match."),
+                extra={
+                    "new_password": _("The two password fields didn’t match."),
+                    "new_password2": _("The two password fields didn’t match."),
+                },
+            )
+
     # Validate password, will raise ValidationError if password does not
     # meet requirements
-    password_validation.validate_password(new_password, user)
+
+    try:
+        validate_password(new_password, user)
+    except DjangoValidationError as exc:
+
+        translation_codes = {
+            "password_entirely_numeric": _("This password is entirely numeric."),
+            "password_too_common": _("This password is too common."),
+            "password_too_similar": _(
+                "The password is too similar to the %(verbose_name)s."
+            ),
+            "password_too_short": _(
+                "This password is too short. It must contain at least %(min_length)d characters."
+            ),
+        }
+
+        field_errors = []
+
+        for error in exc.error_list:
+            for key in translation_codes.keys():
+                if error.code == key:
+                    if error.params:
+                        field_errors.append((translation_codes[key] % error.params))
+                    else:
+                        field_errors.append(translation_codes[key])
+
+        raise ApplicationError(
+            message=_(
+                "Something went wrong. Please double check the form and try again."
+            ),
+            extra={
+                "new_password": " ".join(field_errors),
+                "new_password2": " ".join(field_errors),
+            },
+        ) from exc
 
     user.set_password(new_password)
     user.save()

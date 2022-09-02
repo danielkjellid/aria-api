@@ -161,7 +161,7 @@ def object_does_not_exist_error(
     """
 
     return api.create_response(
-        request, ExceptionResponse(message=str(exc)).dict(), status=404
+        request, ExceptionResponse(message=str(exc)).dict(), status=400
     )
 
 
