@@ -38,7 +38,7 @@ RUN mkdir ./.ssh && chmod 700 ./.ssh
 
 # Copy application files
 COPY --chown=aria aria/ /app/aria/
-COPY --chown aria public/ /app/public/
+COPY --chown=aria public/ /app/public/
 COPY --chown=aria bin/ /app/bin/
 
 # Collect static files
