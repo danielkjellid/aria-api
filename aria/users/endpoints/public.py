@@ -56,7 +56,7 @@ def user_create_api(request: HttpRequest, payload: UserCreateInput) -> int:
     """
     Creates a single user instance.
     """
-    print("CREATED")
+
     user_create(**payload.dict(), send_verification_email=True)
     return 201
 
@@ -142,7 +142,7 @@ def user_password_reset_confirm_api(
     """
     Sets a password if provided uid and token is valid.
     """
-
+    print("yoo?")
     user_set_password(
         uid=payload.uid,
         token=payload.token,

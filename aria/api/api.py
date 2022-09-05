@@ -16,6 +16,7 @@ from aria.api.schemas.responses import ExceptionResponse
 from aria.api.utils import translate_pydantic_validation_messages
 from aria.api_auth.authentication import JWTAuthRequired
 from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
+from aria.api_auth.exceptions import TokenError
 from aria.categories.endpoints import public_endpoints as public_categories_endpoints
 from aria.core.endpoints import public_endpoints as public_core_endpoints
 from aria.core.exceptions import ApplicationError
@@ -183,4 +184,14 @@ def validation_error(  # pylint: disable=unused-argument
 
     return api.create_response(
         request, ExceptionResponse(message=message).dict(), status=400
+    )
+
+
+@api.exception_handler(TokenError)
+def token_error(request: HttpRequest, exc: TokenError) -> HttpResponse:
+    """
+    Exception handler for token errors.
+    """
+    return api.create_response(
+        request, ExceptionResponse(message=exc.message), status=401
     )

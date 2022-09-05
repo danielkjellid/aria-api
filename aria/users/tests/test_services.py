@@ -138,7 +138,7 @@ class TestUsersServices:
         with django_assert_max_num_queries(4):
             user_verify_account(uid=uid, token=token)
 
-        user.update_from_db()
+        user.refresh_from_db()
 
         assert user.has_confirmed_email is True
         assert user.has_confirmed_email != old_email_confirmed_value
@@ -159,6 +159,6 @@ class TestUsersServices:
         with django_assert_max_num_queries(4):
             user_set_password(uid=uid, token=token, new_password="horsebatterystaple")
 
-        user.update_from_db()
+        user.refresh_from_db()
 
         assert check_password("horsebatterystaple", user.password) is True

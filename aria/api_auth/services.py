@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import AbstractBaseUser
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 
 import jwt
 

@@ -2,6 +2,7 @@ import functools
 from typing import Any, Callable, TypeVar
 
 from django.core.exceptions import PermissionDenied
+from django.utils.translation import gettext as _
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -21,7 +22,7 @@ def permission_required(
     def decorator(func: Any) -> Callable[..., Any]:
         @functools.wraps(func)
         def inner(*args: Any, **kwargs: Any) -> Any:
-            *_, info = args
+            *arg, info = args
 
             try:
                 user = info.auth
