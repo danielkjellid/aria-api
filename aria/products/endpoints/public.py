@@ -1,11 +1,12 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 
 from ninja import Query, Router
 
 from aria.api.decorators import api
 from aria.categories.models import Category
-from aria.core.exceptions import ApplicationError
 from aria.products.schemas.filters import ProductListFilters
 from aria.products.schemas.outputs import ProductDetailOutput, ProductListOutput
 from aria.products.selectors import product_detail, product_list_by_category_from_cache
@@ -52,8 +53,6 @@ def product_detail_api(
     product = product_detail(product_slug=product_slug)
 
     if product is None:
-        raise ApplicationError(
-            "Product with provided slug does not exist", status_code=404
-        )
+        raise ObjectDoesNotExist(_("Product does not exist"))
 
     return 200, ProductDetailOutput(**product.dict())

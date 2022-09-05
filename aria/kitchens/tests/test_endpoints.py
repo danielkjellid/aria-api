@@ -145,4 +145,4 @@ class TestPublicKitchensEndpoints:
                 f"{self.BASE_ENDPOINT}/kitchen/does-not-exist/"
             )
 
-        assert failed_response.status_code == 404
+        assert failed_response.status_code == 400

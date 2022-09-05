@@ -52,7 +52,7 @@ def _refresh_token_create_and_encode(payload: Any) -> str:
 
 def _access_token_create_and_encode(payload: Any) -> str:
     """
-    Encode a access token.
+    Encode an access token.
     """
 
     access_to_expire_at = timezone.now() + ACCESS_TOKEN_LIFESPAN
@@ -69,7 +69,7 @@ def _access_token_create_and_encode(payload: Any) -> str:
 def token_pair_obtain_for_user(user: Union[User, AbstractBaseUser]) -> JWTPair:
     """
     Create a token par of both refresh and access tokens for a
-    spcific user.
+    specific user.
     """
 
     payload = {
@@ -91,16 +91,20 @@ def token_pair_obtain_for_user(user: Union[User, AbstractBaseUser]) -> JWTPair:
 
 def token_pair_obtain_for_unauthenticated_user(email: str, password: str) -> JWTPair:
     """
-    Authenticate user credentails and create tokens if
+    Authenticate user credentials and create tokens if
     credentials are valid.
     """
+
+    auth_error_message = _(
+        "Wrong email or password. "
+        "Note that you have to separate between lowercase and uppercase characters."
+    )
 
     user = authenticate(username=email, password=password)
 
     if user is None:
         raise ApplicationError(
-            "Wrong username or password. Note that you have to "
-            "separate between lowercase and uppercase characters.",
+            auth_error_message,
             status_code=401,
         )
 
@@ -149,4 +153,4 @@ def refresh_token_blacklist(token: str) -> None:
         )
         BlacklistedToken.objects.create(token=token_instance)
     except OutstandingToken.DoesNotExist as exc:
-        raise TokenError(_("Refresh token provided does not exist.")) from exc
+        raise TokenError("Refresh token provided does not exist.") from exc

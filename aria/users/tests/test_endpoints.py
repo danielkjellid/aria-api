@@ -64,7 +64,7 @@ class TestPublicUsersEndpoints:
         assert actual_response == expected_response
 
     def test_anonymous_request_user_create_api(
-        self, anonymous_client, django_assert_max_num_queries, mocker
+        self, anonymous_client, django_assert_max_num_queries
     ) -> None:
         """
         Test creating a user from the endpoint.
@@ -75,6 +75,7 @@ class TestPublicUsersEndpoints:
             "first_name": "Someone",
             "last_name": "Special",
             "phone_number": "91812345",
+            "birth_date": "1990-08-23",
             "street_address": "Example street 1",
             "zip_code": "0172",
             "zip_place": "Oslo",
@@ -82,13 +83,12 @@ class TestPublicUsersEndpoints:
             "allow_personalization": True,
             "allow_third_party_personalization": True,
             "password": "supersecret",
+            "password2": "supersecret",
         }
 
-        service_mock = mocker.patch("aria.users.endpoints.public.user_create")
-
-        # 1 query for checking if the user already exists, and one for
-        # creating the new user.
-        with django_assert_max_num_queries(2):
+        # 1 query for checking if the user already exists, 1 for
+        # and 2 for returning permissions in returned record.
+        with django_assert_max_num_queries(4):
             response = anonymous_client.post(
                 f"{self.BASE_ENDPOINT}/create/",
                 data=payload_json,
@@ -96,10 +96,6 @@ class TestPublicUsersEndpoints:
             )
 
         assert response.status_code == 201
-        assert service_mock.call_count == 1
-        # Endpoint consumes kwargs of request, so it should match
-        # what's being called in the service.
-        assert service_mock.call_args_list[0].kwargs == payload_json
 
     def test_anonymous_request_user_verify_account_api(
         self, anonymous_client, django_assert_max_num_queries
@@ -134,7 +130,7 @@ class TestPublicUsersEndpoints:
             )
 
         # Assert that appropriate response is returned.
-        assert failed_response.status_code == 404
+        assert failed_response.status_code == 400
 
     def test_anonymous_request_user_verify_account_confirm_api(
         self, anonymous_client, django_assert_max_num_queries, mocker
@@ -199,10 +195,10 @@ class TestPublicUsersEndpoints:
             )
 
         # Assert that appropriate response is returned.
-        assert failed_response.status_code == 404
+        assert failed_response.status_code == 400
 
     def test_anonymous_request_user_password_reset_confirm_api(
-        self, anonymous_client, django_assert_max_num_queries, mocker
+        self, anonymous_client, django_assert_max_num_queries
     ) -> None:
         """
         Test validating created tokens and setting new password.
@@ -212,13 +208,28 @@ class TestPublicUsersEndpoints:
         user_uid = user.uid
         user_token = default_token_generator.make_token(user)
 
-        payload_json = {
+        password_mismatch_json = {
+            "new_password2": "notthesame",
             "new_password": "supersecret",
             "uid": user_uid,
             "token": user_token,
         }
 
-        service_mock = mocker.patch("aria.users.endpoints.public.user_set_password")
+        with django_assert_max_num_queries(2):
+            mismatch_response = anonymous_client.post(
+                f"{self.BASE_ENDPOINT}/password/reset/confirm/",
+                data=password_mismatch_json,
+                content_type="application/json",
+            )
+
+        assert mismatch_response.status_code == 400
+
+        payload_json = {
+            "new_password2": "supersecret",
+            "new_password": "supersecret",
+            "uid": user_uid,
+            "token": user_token,
+        }
 
         with django_assert_max_num_queries(2):
             response = anonymous_client.post(
@@ -228,12 +239,6 @@ class TestPublicUsersEndpoints:
             )
 
         assert response.status_code == 200
-        assert service_mock.call_count == 1
-        assert service_mock.call_args_list[0].kwargs == {
-            "uid": user_uid,
-            "token": user_token,
-            "new_password": "supersecret",
-        }
 
 
 class TestProtectedUsersEndpoints:

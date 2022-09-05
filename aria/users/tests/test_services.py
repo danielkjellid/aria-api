@@ -136,10 +136,12 @@ class TestUsersServices:
         # Uses 2 queries: 1 for getting user, 1 for updating user and
         # 2 for returning record.
         with django_assert_max_num_queries(4):
-            updated_user = user_verify_account(uid=uid, token=token)
+            user_verify_account(uid=uid, token=token)
 
-        assert updated_user.has_confirmed_email is True
-        assert updated_user.has_confirmed_email != old_email_confirmed_value
+        user.refresh_from_db()
+
+        assert user.has_confirmed_email is True
+        assert user.has_confirmed_email != old_email_confirmed_value
 
     def test_user_set_password_sets_new_password(
         self, unprivileged_user, django_assert_max_num_queries
@@ -155,10 +157,8 @@ class TestUsersServices:
         # Uses 2 queries: 1 for getting user, 1 for setting password and
         # 2 for returning record.
         with django_assert_max_num_queries(4):
-            updated_user = user_set_password(
-                uid=uid, token=token, new_password="horsebatterystaple"
-            )
+            user_set_password(uid=uid, token=token, new_password="horsebatterystaple")
 
-        user_instance = User.objects.get(id=updated_user.id)
+        user.refresh_from_db()
 
-        assert check_password("horsebatterystaple", user_instance.password) is True
+        assert check_password("horsebatterystaple", user.password) is True

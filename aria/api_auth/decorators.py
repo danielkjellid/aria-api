@@ -2,6 +2,7 @@ import functools
 from typing import Any, Callable, TypeVar
 
 from django.core.exceptions import PermissionDenied
+from django.utils.translation import gettext as _
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -21,26 +22,26 @@ def permission_required(
     def decorator(func: Any) -> Callable[..., Any]:
         @functools.wraps(func)
         def inner(*args: Any, **kwargs: Any) -> Any:
-            *_, info = args
+            *_arg, info = args
 
             try:
                 user = info.auth
 
                 if not user:
-                    raise PermissionDenied("User from context is unknown.")
+                    raise PermissionDenied(_("User from context is unknown."))
 
                 if not user.is_authenticated:
-                    raise PermissionDenied("User is unauthenticated.")
+                    raise PermissionDenied(_("User is unauthenticated."))
 
                 if all_required:
                     if not user.has_perms(permissions):
                         raise PermissionDenied(
-                            "User does not have all the required permissions."
+                            _("You do not have all the required permissions.")
                         )
                 else:
                     if not user.has_perm(permissions):
                         raise PermissionDenied(
-                            "User does not have any of the required permissions."
+                            _("You do not have any of the required permissions.")
                         )
 
                 return func(*args, **kwargs)

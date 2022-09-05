@@ -4,6 +4,7 @@ from urllib import parse
 
 from django.db.models import Model, QuerySet  # pylint: disable=unused-import
 from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 
 from ninja import Field, Schema
 from ninja.pagination import PaginationBase
@@ -41,7 +42,7 @@ class PageNumberSetPagination(PaginationBase):
         total_pages = self._total_pages(total_items)
 
         if pagination.page > total_pages:
-            raise PageOutOfBoundsError()
+            raise PageOutOfBoundsError(_("The page does not exist."))
 
         return {
             "next": self._get_next_link(pagination.page, total_pages),

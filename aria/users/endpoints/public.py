@@ -1,4 +1,6 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
+from django.utils.translation import gettext_lazy as _
 
 from ninja import Router
 
@@ -6,7 +8,6 @@ from aria.api.decorators import api
 from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse
 from aria.api_auth.authentication import JWTAuthRequired
-from aria.core.exceptions import ApplicationError
 from aria.users.models import User
 from aria.users.schemas.inputs import (
     UserAccountVerificationConfirmInput,
@@ -39,7 +40,7 @@ def user_request_api(request: HttpRequest) -> tuple[int, UserRequestOutput]:
     user = user_detail(pk=request_user.id)
 
     if user is None:
-        raise ApplicationError("User does not exist.", status_code=404)
+        raise ObjectDoesNotExist(_("User does not exist."))
 
     return 200, UserRequestOutput(**user.dict())
 
@@ -56,7 +57,7 @@ def user_create_api(request: HttpRequest, payload: UserCreateInput) -> int:
     Creates a single user instance.
     """
 
-    user_create(**payload.dict())
+    user_create(**payload.dict(), send_verification_email=True)
     return 201
 
 
@@ -77,7 +78,7 @@ def user_account_verification_api(
     try:
         user = User.objects.get(email__iexact=payload.email, is_active=True)
     except User.DoesNotExist as exc:
-        raise ApplicationError("User does not exist.", status_code=404) from exc
+        raise ObjectDoesNotExist(_("User does not exist.")) from exc
 
     user.send_verification_email()
 
@@ -88,7 +89,7 @@ def user_account_verification_api(
     router,
     "verify/confirm/",
     method="POST",
-    response={200: None, codes_40x: ExceptionResponse},
+    response={200: None},
     summary="Validate email tokens to confirm account",
 )
 def user_account_verification_confirm_api(
@@ -100,6 +101,7 @@ def user_account_verification_confirm_api(
     """
 
     user_verify_account(uid=payload.uid, token=payload.token)
+
     return 200
 
 
@@ -120,7 +122,7 @@ def user_password_reset_api(
     try:
         user = User.objects.get(email__iexact=payload.email, is_active=True)
     except User.DoesNotExist as exc:
-        raise ApplicationError(message="User does not exist.", status_code=404) from exc
+        raise ObjectDoesNotExist from exc
 
     user.send_password_reset_email(request=request)
 
@@ -142,7 +144,10 @@ def user_password_reset_confirm_api(
     """
 
     user_set_password(
-        uid=payload.uid, token=payload.token, new_password=payload.new_password
+        uid=payload.uid,
+        token=payload.token,
+        new_password=payload.new_password,
+        new_password2=payload.new_password2,
     )
 
     return 200

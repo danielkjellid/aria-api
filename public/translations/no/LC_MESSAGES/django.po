@@ -1,0 +1,126 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-09-02 19:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: aria/api/api.py:116
+msgid "There were errors in the form. Please correct them and try again."
+msgstr ""
+"Noen av feltene i skjemaet er feil. Vennligst rett dem opp og prøv igjen."
+
+#: aria/api/api.py:177
+msgid "Something went wrong. Please double check the form and try again."
+msgstr "Noe gikk galt. Vennligst dobbelsjekk skjemaet og prøv igjen."
+
+#: aria/api/pagination.py:44
+msgid "The page does not exist."
+msgstr "Denne siden eksisterer ikke."
+
+#: aria/api/utils.py:7
+msgid "field required"
+msgstr "Dette feltet må fylles ut."
+
+#: aria/api/utils.py:8
+msgid "none is not an allowed value"
+msgstr "Dette feltet kan ikke være blankt."
+
+#: aria/api/utils.py:9
+msgid "value is not none"
+msgstr "Dette feltet aksepterer ikke verdier."
+
+#: aria/api_auth/authentication.py:31
+msgid "No user with provided id exist."
+msgstr "Brukeren med gitt id eksisterer ikke."
+
+#: aria/api_auth/decorators.py:30
+msgid "User from context is unknown."
+msgstr "Fant ikke brukeren fra kontekst."
+
+#: aria/api_auth/decorators.py:33
+msgid "User is unauthenticated."
+msgstr "Brukeren er ikke autentisert."
+
+#: aria/api_auth/decorators.py:38
+msgid "You do not have all the required permissions."
+msgstr "Du har ikke alle påkrevde tilganger for å utføre denne handlingen."
+
+#: aria/api_auth/decorators.py:43
+msgid "You do not have any of the required permissions."
+msgstr "Du har ikke tilgang til å utføre denne handlingen."
+
+#: aria/api_auth/endpoints/public.py:45
+msgid "We're unable to log you in, please try again later."
+msgstr "Vi kunne ikke logge deg inn, vennligst prøv igjen senere."
+
+#: aria/api_auth/services.py:99
+msgid ""
+"Wrong email or password. Note that you have to separate between lowercase "
+"and uppercase characters."
+msgstr ""
+"Feil e-postadresse eller passord. Merk at du må skille mellom store og små "
+"bokstaver."
+
+#: aria/kitchens/endpoints/public.py:48
+msgid "Kitchen does not exist"
+msgstr "Kjøkkenet eksisterer ikke."
+
+#: aria/products/endpoints/public.py:56
+msgid "Product does not exist"
+msgstr "Produktet eksisterer ikke."
+
+#: aria/users/endpoints/public.py:43 aria/users/endpoints/public.py:81
+#: aria/users/services.py:177 aria/users/services.py:203
+msgid "User does not exist."
+msgstr "Brukeren eksisterer ikke."
+
+#: aria/users/services.py:44 aria/users/services.py:46
+#: aria/users/services.py:47 aria/users/services.py:213
+#: aria/users/services.py:215 aria/users/services.py:216
+msgid "The two password fields didn’t match."
+msgstr "De to passordene stemmer ikke overens."
+
+#: aria/users/services.py:55 aria/users/services.py:56
+msgid "Email is already registered."
+msgstr "Denne e-postadressen er allerede registrert."
+
+#: aria/users/services.py:180
+msgid "Account is already verified."
+msgstr "Kontoen er allerede bekreftet."
+
+#: aria/users/services.py:185 aria/users/services.py:208
+msgid "Token is invalid, please try again."
+msgstr "Nøkkelen er ugyldig, vennligst prøv igjen."
+
+#: aria/users/services.py:228
+msgid "This password is entirely numeric."
+msgstr "Dette passordet består kun av tall."
+
+#: aria/users/services.py:229
+msgid "This password is too common."
+msgstr "Dette passordet er for vanlig."
+
+#: aria/users/services.py:231
+#, python-format
+msgid "The password is too similar to the %(verbose_name)s."
+msgstr "Passordet er for likt %(verbose_name)s."
+
+#: aria/users/services.py:234
+#, python-format
+msgid ""
+"This password is too short. It must contain at least %(min_length)d "
+"characters."
+msgstr "Passordet er for kort. Det må inneholde minst %(min_length)d tegn."
