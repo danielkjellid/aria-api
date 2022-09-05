@@ -22,7 +22,7 @@ def permission_required(
     def decorator(func: Any) -> Callable[..., Any]:
         @functools.wraps(func)
         def inner(*args: Any, **kwargs: Any) -> Any:
-            *arg, info = args
+            *_arg, info = args
 
             try:
                 user = info.auth

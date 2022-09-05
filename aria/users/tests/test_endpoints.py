@@ -64,7 +64,7 @@ class TestPublicUsersEndpoints:
         assert actual_response == expected_response
 
     def test_anonymous_request_user_create_api(
-        self, anonymous_client, django_assert_max_num_queries, mocker
+        self, anonymous_client, django_assert_max_num_queries
     ) -> None:
         """
         Test creating a user from the endpoint.
@@ -198,7 +198,7 @@ class TestPublicUsersEndpoints:
         assert failed_response.status_code == 400
 
     def test_anonymous_request_user_password_reset_confirm_api(
-        self, anonymous_client, django_assert_max_num_queries, mocker
+        self, anonymous_client, django_assert_max_num_queries
     ) -> None:
         """
         Test validating created tokens and setting new password.
