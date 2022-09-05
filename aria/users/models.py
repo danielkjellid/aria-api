@@ -9,6 +9,7 @@ from django.core.mail import send_mail
 from django.db import models
 from django.forms import ValidationError
 from django.http import HttpRequest
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import (
@@ -333,24 +334,23 @@ class User(AbstractBaseUser, PermissionsMixin):
             raise ValidationError(
                 "Email is already verified, unable to send verification email."
             )
-        print(self.uid)
-        print(self.generate_verification_email_token())
-        # user_verification_email = render_to_string(
-        #     "email/verify_account.html",
-        #     {
-        #         "protocol": "https",
-        #         "domain": "flis.no",
-        #         "user": self,
-        #         "uid": self.uid,
-        #         "token": self.generate_verification_email_token(),
-        #     },
-        # )
 
-        # self.email_user(
-        #     "Bekreft kontoen din på Flishuset",
-        #     "Bekreft kontoen din på Flishuset",
-        #     html_message=user_verification_email,
-        # )
+        user_verification_email = render_to_string(
+            "email/verify_account.html",
+            {
+                "protocol": "https",
+                "domain": "flis.no",
+                "user": self,
+                "uid": self.uid,
+                "token": self.generate_verification_email_token(),
+            },
+        )
+
+        self.email_user(
+            "Bekreft kontoen din på Flishuset",
+            "Bekreft kontoen din på Flishuset",
+            html_message=user_verification_email,
+        )
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         if not self.avatar_color:

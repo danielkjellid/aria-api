@@ -142,7 +142,7 @@ def user_password_reset_confirm_api(
     """
     Sets a password if provided uid and token is valid.
     """
-    print("yoo?")
+
     user_set_password(
         uid=payload.uid,
         token=payload.token,

@@ -222,7 +222,10 @@ def user_set_password(
     try:
         validate_password(new_password, user)
     except DjangoValidationError as exc:
-
+        # This exception handler is a bit iffy, mainly because Django does not
+        # translate the validation exception codes when the exception is re-
+        # raised. Therefore, we translate them ourselves and fit the output
+        # to our needs.
         translation_codes = {
             "password_entirely_numeric": _("This password is entirely numeric."),
             "password_too_common": _("This password is too common."),
