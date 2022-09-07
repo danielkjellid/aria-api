@@ -35,6 +35,8 @@ jobs:
           key: pip-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
           restore-keys: |
             pip-${{ runner.os }}-
+      - run: python3 -m venv pip-env
+      - run: source pip-env/bin/activate
       - run: pip install poetry==1.1.5  poetry-core==1.0.4
       - name: Cache Python venv
         id: cache-venv
