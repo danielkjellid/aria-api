@@ -45,7 +45,7 @@ jobs:
           path: .venv
           key: venv-${{ runner.os }}-${{ hashFiles('.python-version', 'poetry.lock') }}
       - run: poetry install
-        if: steps.cache-venv.outputs.cache-hit != 'true'
+        # if: steps.cache-venv.outputs.cache-hit != 'true'
       - run: poetry run ${{ matrix.check }}
 
   python-tests:
