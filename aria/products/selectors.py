@@ -147,7 +147,7 @@ def product_get_price_from_options(*, product: Product) -> Decimal:
         "gross_price__min"
     ]
 
-    return Decimal(lowest_option_price) or Decimal("0.00")
+    return Decimal(lowest_option_price) if lowest_option_price else Decimal("0.00")
 
 
 def product_options_list_for_product(*, product: Product) -> list[ProductOptionRecord]:
@@ -516,6 +516,35 @@ def product_list_for_sale_for_qs(
     filtered_qs = ProductSearchFilter(filters, qs).qs
 
     return [product_list_record(product=product) for product in filtered_qs]
+
+
+def product_list_for_sale(
+    *, filters: ProductListFilters | dict[str, Any] | None
+) -> list[ProductListRecord]:
+    """
+    Returns a filterable list of products for sale.
+    """
+
+    products = Product.objects.available()
+
+    return product_list_for_sale_for_qs(products=products, filters=filters)
+
+
+def _product_list_for_sale_cache_key(
+    *, filters: ProductListFilters | dict[str, Any] | None
+) -> str:
+    return f"products.for_sale.filters={filters}"
+
+
+@cached(key=_product_list_for_sale_cache_key, timeout=5 * 60)
+def product_list_for_sale_from_cache(
+    *, filters: ProductListFilters | dict[str, Any] | None
+) -> list[ProductListRecord]:
+    """
+    Returns a filterable list of products for sale from cache.
+    """
+
+    return product_list_for_sale(filters=filters)
 
 
 def product_list_by_category(
