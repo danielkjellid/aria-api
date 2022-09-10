@@ -1,0 +1,37 @@
+name: Setup project
+description: Setup project and install dependencies
+
+runs:
+  using: composite
+  steps:
+  - name: Setup python
+    id: setup-python
+    uses: actions/setup-python@v4
+
+  - name: Cache pip downloads
+    id: cache-pip-downloads
+    uses: actions/cache@v3
+    with:
+      path: ~/.cache/pip
+      key: pip-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+      restore-keys: |
+        pip-${{ runner.os }}-
+
+  - name: Install poetry
+    id: install-poetry
+    shell: bash
+    run: pip install poetry==1.2.0
+
+  - name: Cache python venv
+    id: cache-python-venv
+    uses: actions/cache@v3
+    with:
+      path: .venv
+      key: venv-${{ runner.os }}-${{ hashFiles('.python-version', 'poetry.lock') }}
+
+  - name: Install dependencies
+    id: install-dependencies
+    shell: bash
+    run: poetry install
+    if: steps.cache-python-venv.outputs.cache-hit != 'true'
+
