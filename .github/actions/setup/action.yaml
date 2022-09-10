@@ -24,6 +24,7 @@ runs:
     with:
       path: .venv
       key: venv-${{ runner.os }}-${{ hashFiles('.python-version', 'poetry.lock') }}
+    shell: bash
     run: poetry install
     if: steps.cache-venv.outputs.cache-hit != 'true'
 
