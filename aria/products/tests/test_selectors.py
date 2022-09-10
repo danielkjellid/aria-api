@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 from datetime import timedelta
 from decimal import Decimal
 
@@ -749,15 +750,15 @@ class TestProductsSelectors:
             product_list_for_sale_from_cache(filters={"search": "awesome"})
 
         # New key with appended filters should have been added to cache.
-        assert f"products.for_sale.filters={{'search': 'awesome'}}" in cache
+        assert "products.for_sale.filters={'search': 'awesome'}" in cache
 
         # Should be cached, and no queries should hit db.
         with django_assert_max_num_queries(0):
             product_list_for_sale_from_cache(filters={"search": "awesome"})
 
-        assert len(cache.get(f"products.for_sale.filters={{'search': 'awesome'}}")) == 1
+        assert len(cache.get("products.for_sale.filters={'search': 'awesome'}")) == 1
         assert (
-            cache.get(f"products.for_sale.filters={{'search': 'awesome'}}")[0].id
+            cache.get("products.for_sale.filters={'search': 'awesome'}")[0].id
             == products[0].id
         )
 
