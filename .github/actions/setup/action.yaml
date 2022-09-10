@@ -16,14 +16,18 @@ runs:
       key: pip-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
       restore-keys: |
         pip-${{ runner.os }}-
+      shell: bash
       run: pip install poetry==1.2.0
 
   - name: Cache python venv
-    id: cache-python-venv
+    id: cache-venv
     uses: actions/cache@v3
     with:
       path: .venv
       key: venv-${{ runner.os }}-${{ hashFiles('.python-version', 'poetry.lock') }}
+
+  - name: Install dependencies
+    id: install-dependencies
     shell: bash
     run: poetry install
     if: steps.cache-venv.outputs.cache-hit != 'true'
