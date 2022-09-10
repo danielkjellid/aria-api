@@ -8,6 +8,7 @@ import pytest
 
 from aria.categories.tests.utils import create_category
 from aria.discounts.tests.utils import create_discount
+from aria.products.enums import ProductStatus
 from aria.products.models import Product, ProductOption
 from aria.products.records import (
     ProductColorRecord,
@@ -16,7 +17,6 @@ from aria.products.records import (
     ProductSupplierRecord,
     ProductVariantRecord,
 )
-from aria.products.enums import ProductStatus
 from aria.products.selectors import (
     _calculate_discounted_price,
     product_calculate_discounted_price,
@@ -25,13 +25,13 @@ from aria.products.selectors import (
     product_get_price_from_options,
     product_list_by_category,
     product_list_by_category_from_cache,
+    product_list_for_sale,
     product_list_for_sale_for_qs,
+    product_list_for_sale_from_cache,
     product_list_record,
     product_option_calculate_discounted_price,
     product_option_get_active_discount,
     product_options_list_for_product,
-    product_list_for_sale,
-    product_list_for_sale_from_cache,
 )
 from aria.products.tests.utils import create_product, create_product_option
 

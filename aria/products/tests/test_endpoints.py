@@ -8,7 +8,7 @@ import pytest
 
 from aria.categories.tests.utils import create_category
 from aria.discounts.tests.utils import create_discount
-from aria.products.enums import ProductUnit, ProductStatus
+from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.tests.utils import create_product, create_product_option
 
 pytestmark = pytest.mark.django_db
