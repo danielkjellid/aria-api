@@ -24,29 +24,35 @@ jobs:
             check: pylint aria  --output-format=parseable --reports=no
     name: ${{ matrix.name }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: 3.10.2
-      - name: Cache pip downloads
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: pip-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            pip-${{ runner.os }}-
-      - run: python3 -m venv pip-env
-      - run: source pip-env/bin/activate
-      - run: pip install poetry==1.1.5  poetry-core==1.0.4
-      - name: Cache Python venv
-        id: cache-venv
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ hashFiles('.python-version', 'poetry.lock') }}
-      - run: poetry install
-        # if: steps.cache-venv.outputs.cache-hit != 'true'
-      - run: poetry run ${{ matrix.check }}
+#      - uses: actions/checkout@v3
+#      - uses: actions/setup-python@v4
+#        with:
+#          python-version: 3.10.2
+#      - name: Cache pip downloads
+#        uses: actions/cache@v3
+#        with:
+#          path: ~/.cache/pip
+#          key: pip-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+#          restore-keys: |
+#            pip-${{ runner.os }}-
+#      - run: python3 -m venv pip-env
+#      - run: source pip-env/bin/activate
+#      - run: pip install poetry==1.1.5  poetry-core==1.0.4
+#      - name: Cache Python venv
+#        id: cache-venv
+#        uses: actions/cache@v3
+#        with:
+#          path: .venv
+#          key: venv-${{ runner.os }}-${{ hashFiles('.python-version', 'poetry.lock') }}
+#      - run: poetry install
+#        # if: steps.cache-venv.outputs.cache-hit != 'true'
+#      - run: poetry run ${{ matrix.check }}
+      - name: Checkout project
+        uses: actions/checkout@v3
+      - name: Setup project
+        uses: ./.github/actions/setup
+      - name: Run ${{ matrix.name }}
+        run:  poetry run ${{ matrix.check }}
 
   python-tests:
     name: tests
