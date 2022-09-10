@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 from datetime import timedelta
 from decimal import Decimal
 
@@ -8,6 +9,7 @@ import pytest
 
 from aria.categories.tests.utils import create_category
 from aria.discounts.tests.utils import create_discount
+from aria.products.enums import ProductStatus
 from aria.products.models import Product, ProductOption
 from aria.products.records import (
     ProductColorRecord,
@@ -24,7 +26,9 @@ from aria.products.selectors import (
     product_get_price_from_options,
     product_list_by_category,
     product_list_by_category_from_cache,
+    product_list_for_sale,
     product_list_for_sale_for_qs,
+    product_list_for_sale_from_cache,
     product_list_record,
     product_option_calculate_discounted_price,
     product_option_get_active_discount,
@@ -614,9 +618,6 @@ class TestProductsSelectors:
                 products=products_by_category_subcat_1, filters=None
             )
 
-        print(products_by_subcat_1)
-        print(list(reversed(products_subcat_1)))
-
         assert len(products_by_subcat_1) == 20
         # Qs is ordered by -created_at, so reverse list returned på util.
         assert products_by_subcat_1[0].id == list(reversed(products_subcat_1))[0].id
@@ -662,6 +663,104 @@ class TestProductsSelectors:
         # Assert that only awesome product is returned.
         assert len(filtered_products_by_subcat_2) == 1
         assert filtered_products_by_subcat_2[0].id == products_subcat_2[0].id
+
+    def test_selector_product_list_for_sale(self, django_assert_max_num_queries):
+        """
+        Test that the product_list_for_sale selector returns expected output within
+        query limits.
+        """
+
+        products = create_product(quantity=10, status=ProductStatus.AVAILABLE)
+        create_product(quantity=5, status=ProductStatus.DRAFT)
+
+        # Uses 7 queries:
+        # - 1 for getting products,
+        # - 1 for preloading colors,
+        # - 1 for preloading shapes,
+        # - 1 for preloading options variants,
+        # - 1 for preloading discounts
+        # - 1 for preloading options,
+        # - 1 for preloading discounts for options
+        with django_assert_max_num_queries(7):
+            available_products = product_list_for_sale(filters=None)
+
+        # Assert that only available products are returned.
+        assert len(available_products) == 10
+        assert available_products[0].id == list(reversed(products))[0].id
+        assert available_products[9].id == list(reversed(products))[9].id
+
+        products[0].name = "Awesome product"
+        products[0].save()
+
+        with django_assert_max_num_queries(7):
+            filtered_available_products = product_list_for_sale(
+                filters={"search": "awesome"}
+            )
+
+        assert len(filtered_available_products) == 1
+        assert filtered_available_products[0].id == products[0].id
+
+    def test_selector_product_list_for_sale_from_cache(
+        self, django_assert_max_num_queries
+    ):
+        """
+        Test that the product_list_for_sale_from_cache selector returns correctly from
+        cache, and output is expected within query limits.
+        """
+
+        products = create_product(quantity=10, status=ProductStatus.AVAILABLE)
+        create_product(quantity=5, status=ProductStatus.DRAFT)
+
+        cache.delete(f"products.for_sale.filters={None}")
+        assert f"products.for_sale.filters={None}" not in cache
+
+        # Uses 7 queries:
+        # - 1 for getting products,
+        # - 1 for preloading colors,
+        # - 1 for preloading shapes,
+        # - 1 for preloading options variants,
+        # - 1 for preloading discounts
+        # - 1 for preloading options,
+        # - 1 for preloading discounts for options
+        with django_assert_max_num_queries(7):
+            product_list_for_sale_from_cache(filters=None)
+
+        # After first hit, instance should have been added to cache.
+        assert f"products.for_sale.filters={None}" in cache
+
+        # Should be cached, and no queries should hit db.
+        with django_assert_max_num_queries(0):
+            product_list_for_sale_from_cache(filters=None)
+
+        assert len(cache.get(f"products.for_sale.filters={None}")) == 10
+        assert (
+            cache.get(f"products.for_sale.filters={None}")[0].id
+            == list(reversed(products))[0].id
+        )
+        assert (
+            cache.get(f"products.for_sale.filters={None}")[9].id
+            == list(reversed(products))[9].id
+        )
+
+        products[0].name = "Awesome product"
+        products[0].save()
+
+        # Adding search filters should re-hit db.
+        with django_assert_max_num_queries(7):
+            product_list_for_sale_from_cache(filters={"search": "awesome"})
+
+        # New key with appended filters should have been added to cache.
+        assert "products.for_sale.filters={'search': 'awesome'}" in cache
+
+        # Should be cached, and no queries should hit db.
+        with django_assert_max_num_queries(0):
+            product_list_for_sale_from_cache(filters={"search": "awesome"})
+
+        assert len(cache.get("products.for_sale.filters={'search': 'awesome'}")) == 1
+        assert (
+            cache.get("products.for_sale.filters={'search': 'awesome'}")[0].id
+            == products[0].id
+        )
 
     def test_selector_product_list_by_category(
         self, django_assert_max_num_queries
@@ -894,7 +993,7 @@ class TestProductsSelectors:
             f"products.category_id={subcat.id}.filters={{'search': 'awesome'}}" in cache
         )
 
-        # Adding search filters should re-hit db.
+        # Re-querying the same search filters should not hit db.
         with django_assert_max_num_queries(0):
             product_list_by_category_from_cache(
                 category=subcat, filters={"search": "awesome"}

@@ -9,9 +9,32 @@ from aria.api.decorators import api
 from aria.categories.models import Category
 from aria.products.schemas.filters import ProductListFilters
 from aria.products.schemas.outputs import ProductDetailOutput, ProductListOutput
-from aria.products.selectors import product_detail, product_list_by_category_from_cache
+from aria.products.selectors import (
+    product_detail,
+    product_list_by_category_from_cache,
+    product_list_for_sale_from_cache,
+)
 
 router = Router(tags=["Products"])
+
+
+@api(
+    router,
+    "/",
+    method="GET",
+    response={200: list[ProductListOutput]},
+    summary="List all product for sale.",
+)
+def product_list_api(
+    request: HttpRequest, search: ProductListFilters = Query(...)
+) -> list[ProductListOutput]:
+    """
+    Get a list of all products for sale.
+    """
+
+    products = product_list_for_sale_from_cache(filters=search.dict())
+
+    return [ProductListOutput(**product.dict()) for product in products]
 
 
 @api(

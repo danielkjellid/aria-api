@@ -8,7 +8,7 @@ import pytest
 
 from aria.categories.tests.utils import create_category
 from aria.discounts.tests.utils import create_discount
-from aria.products.enums import ProductUnit
+from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.tests.utils import create_product, create_product_option
 
 pytestmark = pytest.mark.django_db
@@ -18,7 +18,92 @@ class TestPublicProductsEndpoints:
 
     BASE_ENDPOINT = "/api/products"
 
-    def test_anonymous_requesst_product_list_by_category_api(
+    def test_anonymous_request_product_list_for_sale_api(
+        self, anonymous_client, django_assert_max_num_queries
+    ):
+        """
+        Test listing products for sale from an anonymous
+        client returns a valid response.
+        """
+
+        products = create_product(quantity=10, status=ProductStatus.AVAILABLE)
+        create_product(quantity=5, status=ProductStatus.DRAFT)
+
+        expected_response = list(
+            reversed(
+                [
+                    {
+                        "id": product.id,
+                        "name": product.name,
+                        "slug": product.slug,
+                        "unit": product.unit_display,
+                        "supplier": {
+                            "name": product.supplier.name,
+                            "origin_country": product.supplier.country_name,
+                            "origin_country_flag": product.supplier.unicode_flag,
+                        },
+                        "thumbnail": product.thumbnail.url
+                        if product.thumbnail
+                        else None,
+                        "discount": None,
+                        "display_price": True,
+                        "from_price": 200.0,
+                        "colors": [
+                            {
+                                "id": color.id,
+                                "name": color.name,
+                                "color_hex": color.color_hex,
+                            }
+                            for color in product.colors.all()
+                        ],
+                        "shapes": [
+                            {
+                                "id": shape.id,
+                                "name": shape.name,
+                                "image": shape.image.id,
+                            }
+                            for shape in product.shapes.all()
+                        ],
+                        "materials": product.materials_display,
+                        "rooms": product.rooms_display,
+                        "variants": [
+                            {
+                                "id": option.variant.id,
+                                "name": option.variant.name,
+                                "thumbnail": option.variant.thumbnail.url
+                                if option.variant.thumbnail
+                                else None,
+                                "image": option.variant.image.id
+                                if option.variant.image
+                                else None,
+                            }
+                            for option in product.options.all()
+                            if option.variant
+                        ],
+                    }
+                    for product in products
+                ]
+            )
+        )
+
+        # Uses 7 queries:
+        # - 1 for getting products,
+        # - 1 for preloading colors,
+        # - 1 for preloading shapes,
+        # - 1 for preloading options variants,
+        # - 1 for preloading discounts
+        # - 1 for preloading options,
+        # - 1 for preloading discounts for options
+        with django_assert_max_num_queries(7):
+            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/")
+
+        actual_response = json.loads(response.content)
+
+        assert response.status_code == 200
+        assert len(actual_response) == 10
+        assert actual_response == expected_response
+
+    def test_anonymous_request_product_list_by_category_api(
         self, anonymous_client, django_assert_max_num_queries
     ):
         """
@@ -106,14 +191,14 @@ class TestPublicProductsEndpoints:
         )
 
         # Uses 8 queries:
-        # - 1 for getting related category,
+        # - 1 for resolving category
         # - 1 for getting products,
-        # - 1 for preloading options,
-        # - 1 for preloading product categories,
         # - 1 for preloading colors,
         # - 1 for preloading shapes,
-        # - 1 for preloading images,
-        # - 1 for preloading files
+        # - 1 for preloading options variants,
+        # - 1 for preloading discounts
+        # - 1 for preloading options,
+        # - 1 for preloading discounts for options
         with django_assert_max_num_queries(8):
             response = anonymous_client.get(
                 f"{self.BASE_ENDPOINT}/category/{subcat_1.slug}/"
