@@ -8,14 +8,17 @@ runs:
     id: setup-python
     uses: actions/setup-python@v4
 
-  - name: Install poetry
-    id: install-poetry
+  - name: Cache pip downloads
+    id: cache-pip-downloads
     uses: actions/cache@v3
     with:
       path: ~/.cache/pip
       key: pip-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
       restore-keys: |
         pip-${{ runner.os }}-
+
+  - name: Install poetry
+    id: install-poetry
     shell: bash
     run: pip install poetry==1.2.0
 
