@@ -671,7 +671,7 @@ class TestProductsSelectors:
         """
 
         products = create_product(quantity=10, status=ProductStatus.AVAILABLE)
-        _draft_products = create_product(quantity=5, status=ProductStatus.DRAFT)
+        create_product(quantity=5, status=ProductStatus.DRAFT)
 
         # Uses 7 queries:
         # - 1 for getting products,
@@ -709,7 +709,7 @@ class TestProductsSelectors:
         """
 
         products = create_product(quantity=10, status=ProductStatus.AVAILABLE)
-        _draft_products = create_product(quantity=5, status=ProductStatus.DRAFT)
+        create_product(quantity=5, status=ProductStatus.DRAFT)
 
         cache.delete(f"products.for_sale.filters={None}")
         assert f"products.for_sale.filters={None}" not in cache

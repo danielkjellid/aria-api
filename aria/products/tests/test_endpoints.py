@@ -27,7 +27,7 @@ class TestPublicProductsEndpoints:
         """
 
         products = create_product(quantity=10, status=ProductStatus.AVAILABLE)
-        _draft_products = create_product(quantity=5, status=ProductStatus.DRAFT)
+        create_product(quantity=5, status=ProductStatus.DRAFT)
 
         expected_response = list(
             reversed(
