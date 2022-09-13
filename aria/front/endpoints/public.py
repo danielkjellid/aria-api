@@ -1,8 +1,6 @@
 from django.http import HttpRequest
-
 from ninja import Router
 
-from aria.api.decorators import api
 from aria.front.schemas.outputs import OpeningHoursOutput, SiteMessageOutput
 from aria.front.selectors import (
     opening_hours_detail_from_cache,
@@ -12,10 +10,8 @@ from aria.front.selectors import (
 router = Router(tags=["Front"])
 
 
-@api(
-    router,
+@router.get(
     "opening-hours/",
-    method="GET",
     response={200: OpeningHoursOutput},
     summary="Get opening hours for a site",
 )
@@ -31,10 +27,8 @@ def opening_hours_detail_api(
     return 200, OpeningHoursOutput(**opening_hours.dict())
 
 
-@api(
-    router,
+@router.get(
     "site-messages/active/",
-    method="GET",
     response={200: list[SiteMessageOutput]},
     summary="Get site messages for a site",
 )

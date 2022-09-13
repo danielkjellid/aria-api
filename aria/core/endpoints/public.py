@@ -1,18 +1,14 @@
 from django.http import HttpRequest
-
 from ninja import Router
 from ninja.responses import codes_5xx
 
-from aria.api.decorators import api
 from aria.core.schemas.outputs import CoreSiteHealthOutput
 
 router = Router(tags=["Core"])
 
 
-@api(
-    router,
+@router.get(
     "health/",
-    method="GET",
     response={200: CoreSiteHealthOutput, codes_5xx: None},
     summary="Get api status",
 )

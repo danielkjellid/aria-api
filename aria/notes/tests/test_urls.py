@@ -10,8 +10,6 @@ class TestInternalNotesUrls:
         """
         Test reverse match of note_delete_api endpoint.
         """
-        url = reverse(
-            "api-internal-1.0.0:notes-note-{note_id}-delete", args=["note_id"]
-        )
+        url = reverse("api-internal-1.0.0:notes-{note_id}-delete", args=["note_id"])
 
-        assert url == "/api/v1/internal/notes/note/note_id/delete/"
+        assert url == "/api/v1/internal/notes/note_id/delete/"

@@ -1,18 +1,14 @@
 from django.http import HttpRequest
-
 from ninja import Router
 
-from aria.api.decorators import api
 from aria.discounts.schemas.outputs import DiscountsActiveListOutput
 from aria.discounts.selectors import discount_active_list_from_cache
 
 router = Router(tags=["Discounts"])
 
 
-@api(
-    router,
+@router.get(
     "/",
-    method="GET",
     response={200: list[DiscountsActiveListOutput]},
     summary="List all active discounts",
 )
