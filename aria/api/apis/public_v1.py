@@ -1,17 +1,18 @@
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.http import HttpRequest, HttpResponse
+
 from ninja.errors import ValidationError as NinjaValidationError
 from pydantic.error_wrappers import ValidationError as PydanticValidationError
 
 from aria.api.base import AriaAPI
 from aria.api.exception_handlers import (
     application_error_exception_handler,
-    pydantic_models_validation_error_exception_handler,
-    permission_denied_error_exception_handler,
-    page_out_of_bounds_error_exception_handler,
     object_does_not_exist_error_exception_handler,
-    validation_error_exception_handler,
+    page_out_of_bounds_error_exception_handler,
+    permission_denied_error_exception_handler,
+    pydantic_models_validation_error_exception_handler,
     token_error_exception_handler,
+    validation_error_exception_handler,
 )
 from aria.api.exceptions import PageOutOfBoundsError
 from aria.api_auth.endpoints import public_endpoints as auth_endpoints
@@ -25,9 +26,7 @@ from aria.front.endpoints import public_endpoints as front_endpoints
 from aria.kitchens.endpoints import public_endpoints as kitchens_endpoints
 from aria.products.endpoints import public_endpoints as products_endpoints
 from aria.suppliers.endpoints import public_endpoints as suppliers_endpoints
-from aria.users.endpoints import (
-    public_endpoints as users_endpoints,
-)
+from aria.users.endpoints import public_endpoints as users_endpoints
 
 api_public = AriaAPI(
     title="Aria Public API",

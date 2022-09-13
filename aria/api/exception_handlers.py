@@ -3,6 +3,7 @@ from typing import Any
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.http import HttpRequest, HttpResponse
 from django.utils.translation import activate, deactivate, gettext as _
+
 from ninja import NinjaAPI
 from ninja.errors import ValidationError as NinjaValidationError
 from pydantic.error_wrappers import ValidationError as PydanticValidationError
@@ -40,9 +41,9 @@ def pydantic_models_validation_error_exception_handler(
     """
 
     locale = request.META.get("HTTP_ACCEPT_LANGUAGE", "en")
-    errors = translate_pydantic_validation_messages(
+    errors = translate_pydantic_validation_messages(  # type: ignore # pylint: disable=line-too-long
         errors=exc.errors, locale=locale
-    )  # type: ignore # pylint: disable=line-too-long
+    )
 
     field_errors: dict[str, Any] = {}
 

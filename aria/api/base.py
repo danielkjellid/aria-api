@@ -1,8 +1,4 @@
-from typing import (
-    Callable,
-    Sequence,
-    Union,
-)
+from typing import Callable, Sequence, Union
 
 from ninja import NinjaAPI
 from ninja.constants import NOT_SET, NOT_SET_TYPE
@@ -12,10 +8,10 @@ from aria.api.parsers import CamelCaseParser
 from aria.api.renderers import CamelCaseRenderer
 
 
-class AriaAPI(NinjaAPI):
+class AriaAPI(NinjaAPI):  # pylint: disable=too-many-instance-attributes
     """
-    Base class to create APIs. Inherits Django Ninjas base NinjaAPI, but overrides default
-    renders and parsers, as well as how url_namespaces are generated.
+    Base class to create APIs. Inherits Django Ninjas base NinjaAPI, but overrides
+    default renders and parsers, as well as how url_namespaces are generated.
     """
 
     def __init__(
@@ -26,7 +22,7 @@ class AriaAPI(NinjaAPI):
         description: str = "",
         docs_decorator: Callable[[TCallable], TCallable] | None = None,
         urls_namespace: str | None = None,
-        auth: Union[Sequence[Callable], Callable, NOT_SET_TYPE] | None = NOT_SET,
+        auth: Union[Sequence[Callable], Callable, NOT_SET_TYPE] | None = NOT_SET,  # type: ignore # pylint: disable=line-too-long
     ):
         super().__init__()
 

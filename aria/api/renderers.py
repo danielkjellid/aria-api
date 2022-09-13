@@ -1,7 +1,8 @@
 from typing import Any
 
-import orjson
 from django.http import HttpRequest
+
+import orjson
 from ninja.renderers import BaseRenderer
 
 from aria.core.humps import camelize

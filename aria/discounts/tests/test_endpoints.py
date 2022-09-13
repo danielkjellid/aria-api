@@ -2,9 +2,10 @@ import json
 from datetime import timedelta
 from decimal import Decimal
 
-import pytest
 from django.core.cache import cache
 from django.utils import timezone
+
+import pytest
 
 from aria.discounts.tests.utils import create_discount
 from aria.products.tests.utils import create_product, create_product_option
