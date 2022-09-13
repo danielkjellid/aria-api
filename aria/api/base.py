@@ -2,6 +2,7 @@ from typing import Callable, Sequence, Union
 
 from ninja import NinjaAPI, Router
 from ninja.constants import NOT_SET, NOT_SET_TYPE
+from ninja.operation import Operation
 from ninja.types import TCallable
 
 from aria.api.parsers import CamelCaseParser
@@ -51,7 +52,7 @@ class AriaAPI(NinjaAPI):  # pylint: disable=too-many-instance-attributes
 
         return url_name
 
-    def _get_and_validate_router_tag(self, tags: list[str]) -> str:
+    def _get_and_validate_router_tag(self, tags: list[str] | None) -> str:
         """
         Check that there is only a single tag provided.
         """
