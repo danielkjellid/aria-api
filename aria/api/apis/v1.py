@@ -1,6 +1,7 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.http import HttpRequest, HttpResponse
+
 from ninja import Router
 from ninja.errors import ValidationError as NinjaValidationError
 from pydantic.error_wrappers import ValidationError as PydanticValidationError
@@ -30,8 +31,8 @@ from aria.notes.endpoints import internal_endpoints as internal_notes_endpoints
 from aria.products.endpoints import public_endpoints as public_products_endpoints
 from aria.suppliers.endpoints import public_endpoints as public_suppliers_endpoints
 from aria.users.endpoints import (
-    public_endpoints as public_users_endpoints,
     internal_endpoints as internal_users_endpoints,
+    public_endpoints as public_users_endpoints,
 )
 
 #####################
