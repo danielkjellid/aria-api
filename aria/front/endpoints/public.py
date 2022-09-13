@@ -1,5 +1,4 @@
 from django.http import HttpRequest
-
 from ninja import Router
 
 from aria.front.schemas.outputs import OpeningHoursOutput, SiteMessageOutput
