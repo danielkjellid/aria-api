@@ -1,9 +1,9 @@
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.http import HttpRequest, HttpResponse
-from ninja import NinjaAPI
 from ninja.errors import ValidationError as NinjaValidationError
 from pydantic.error_wrappers import ValidationError as PydanticValidationError
 
+from aria.api.base import AriaAPI
 from aria.api.exception_handlers import (
     application_error_exception_handler,
     pydantic_models_validation_error_exception_handler,
@@ -14,68 +14,58 @@ from aria.api.exception_handlers import (
     token_error_exception_handler,
 )
 from aria.api.exceptions import PageOutOfBoundsError
-from aria.api.parsers import CamelCaseParser
-from aria.api.renderers import CamelCaseRenderer
-from aria.api_auth.authentication import JWTAuthRequired
-from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
+from aria.api_auth.endpoints import public_endpoints as auth_endpoints
 from aria.api_auth.exceptions import TokenError
-from aria.categories.endpoints import public_endpoints as public_categories_endpoints
-from aria.core.endpoints import public_endpoints as public_core_endpoints
+from aria.categories.endpoints import public_endpoints as categories_endpoints
+from aria.core.endpoints import public_endpoints as core_endpoints
 from aria.core.exceptions import ApplicationError
-from aria.discounts.endpoints import public_endpoints as public_discount_endpoints
-from aria.employees.endpoints import public_endpoints as public_employees_endpoints
-from aria.front.endpoints import public_endpoints as public_front_endpoints
-from aria.kitchens.endpoints import public_endpoints as public_kitchens_endpoints
-from aria.notes.endpoints import private_endpoints as private_notes_endpoints
-from aria.products.endpoints import public_endpoints as public_products_endpoints
-from aria.suppliers.endpoints import public_endpoints as public_suppliers_endpoints
+from aria.discounts.endpoints import public_endpoints as discount_endpoints
+from aria.employees.endpoints import public_endpoints as employees_endpoints
+from aria.front.endpoints import public_endpoints as front_endpoints
+from aria.kitchens.endpoints import public_endpoints as kitchens_endpoints
+from aria.products.endpoints import public_endpoints as products_endpoints
+from aria.suppliers.endpoints import public_endpoints as suppliers_endpoints
 from aria.users.endpoints import (
-    private_endpoints as private_users_endpoints,
-    public_endpoints as public_users_endpoints,
+    public_endpoints as users_endpoints,
 )
 
-api_public = NinjaAPI(
-    title="Aria API Public",
-    renderer=CamelCaseRenderer(),
-    parser=CamelCaseParser(),
+api_public = AriaAPI(
+    title="Aria Public API",
+    urls_namespace="api-public",
+    version="1.0.0",
     auth=None,
+    docs_decorator=None,
 )
-
 
 # API auth endpoints
-
-api_public.add_router("/auth/", public_auth_endpoints, auth=None)
+api_public.add_router("/auth/", auth_endpoints)
 
 # Categories endpoints
-api_public.add_router("/categories/", public_categories_endpoints, auth=None)
+api_public.add_router("/categories/", categories_endpoints)
 
 # Core endpoints
-api_public.add_router("/core/", public_core_endpoints, auth=None)
+api_public.add_router("/core/", core_endpoints)
 
 # Discount endpoints
-api_public.add_router("/discounts/", public_discount_endpoints, auth=None)
+api_public.add_router("/discounts/", discount_endpoints)
 
 # Employees endpoints
-api_public.add_router("/employees/", public_employees_endpoints, auth=None)
+api_public.add_router("/employees/", employees_endpoints)
 
 # Front endpoints
-api_public.add_router("/front/", public_front_endpoints, auth=None)
+api_public.add_router("/front/", front_endpoints)
 
 # Kitchens endpoints
-api_public.add_router("/kitchens/", public_kitchens_endpoints, auth=None)
-
-# Notes endpoints
-api_public.add_router("/notes/", private_notes_endpoints, auth=JWTAuthRequired())
+api_public.add_router("/kitchens/", kitchens_endpoints)
 
 # Products endpoints
-api_public.add_router("/products/", public_products_endpoints, auth=None)
+api_public.add_router("/products/", products_endpoints)
 
 # Suppliers endpoints
-api_public.add_router("/suppliers/", public_suppliers_endpoints, auth=None)
+api_public.add_router("/suppliers/", suppliers_endpoints)
 
 # Users endpoints
-api_public.add_router("/users/", private_users_endpoints, auth=JWTAuthRequired())
-api_public.add_router("/users/", public_users_endpoints, auth=None)
+api_public.add_router("/users/", users_endpoints)
 
 
 @api_public.exception_handler(ApplicationError)

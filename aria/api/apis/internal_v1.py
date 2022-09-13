@@ -1,9 +1,10 @@
+from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.http import HttpRequest, HttpResponse
-from ninja import NinjaAPI
 from ninja.errors import ValidationError as NinjaValidationError
 from pydantic.error_wrappers import ValidationError as PydanticValidationError
 
+from aria.api.base import AriaAPI
 from aria.api.exception_handlers import (
     application_error_exception_handler,
     pydantic_models_validation_error_exception_handler,
@@ -14,33 +15,40 @@ from aria.api.exception_handlers import (
     token_error_exception_handler,
 )
 from aria.api.exceptions import PageOutOfBoundsError
-from aria.api.parsers import CamelCaseParser
-from aria.api.renderers import CamelCaseRenderer
 from aria.api_auth.authentication import JWTAuthRequired
 from aria.api_auth.exceptions import TokenError
 from aria.core.exceptions import ApplicationError
+from aria.notes.endpoints import private_endpoints as notes_endpoints
+from aria.users.endpoints import private_endpoints as users_endpoints
 
-api_private = NinjaAPI(
-    title="Aria API Internal",
-    renderer=CamelCaseRenderer(),
-    parser=CamelCaseParser(),
+api_internal = AriaAPI(
+    title="Aria Internal API",
+    urls_namespace="api-internal",
+    version="1.0.0",
     auth=JWTAuthRequired(),
+    docs_decorator=staff_member_required,
 )
 
+# Notes endpoints
+api_internal.add_router("/notes/", notes_endpoints)
 
-@api_private.exception_handler(ApplicationError)
+# Users endpoints
+api_internal.add_router("/users/", users_endpoints)
+
+
+@api_internal.exception_handler(ApplicationError)
 def application_error(request: HttpRequest, exc: ApplicationError) -> HttpResponse:
     """
     Exception handler for application errors.
     """
 
     return application_error_exception_handler(
-        api=api_private, request=request, exc=exc
+        api=api_internal, request=request, exc=exc
     )
 
 
-@api_private.exception_handler(NinjaValidationError)
-@api_private.exception_handler(PydanticValidationError)
+@api_internal.exception_handler(NinjaValidationError)
+@api_internal.exception_handler(PydanticValidationError)
 def pydantic_models_validation_error(
     request: HttpRequest, exc: NinjaValidationError | PydanticValidationError
 ) -> HttpResponse:
@@ -49,11 +57,11 @@ def pydantic_models_validation_error(
     """
 
     return pydantic_models_validation_error_exception_handler(
-        api=api_private, request=request, exc=exc
+        api=api_internal, request=request, exc=exc
     )
 
 
-@api_private.exception_handler(PermissionDenied)
+@api_internal.exception_handler(PermissionDenied)
 def permission_denied_error(
     request: HttpRequest, exc: PermissionDenied
 ) -> HttpResponse:
@@ -62,12 +70,12 @@ def permission_denied_error(
     """
 
     return permission_denied_error_exception_handler(
-        api=api_private, request=request, exc=exc
+        api=api_internal, request=request, exc=exc
     )
 
 
 # Custom exception handler for PageOutOfBounds errors.
-@api_private.exception_handler(PageOutOfBoundsError)
+@api_internal.exception_handler(PageOutOfBoundsError)
 def page_out_of_bounds_error(
     request: HttpRequest, exc: PageOutOfBoundsError
 ) -> HttpResponse:
@@ -77,11 +85,11 @@ def page_out_of_bounds_error(
     """
 
     return page_out_of_bounds_error_exception_handler(
-        api=api_private, request=request, exc=exc
+        api=api_internal, request=request, exc=exc
     )
 
 
-@api_private.exception_handler(ObjectDoesNotExist)
+@api_internal.exception_handler(ObjectDoesNotExist)
 def object_does_not_exist_error(
     request: HttpRequest, exc: ObjectDoesNotExist
 ) -> HttpResponse:
@@ -90,22 +98,24 @@ def object_does_not_exist_error(
     """
 
     return object_does_not_exist_error_exception_handler(
-        api=api_private, request=request, exc=exc
+        api=api_internal, request=request, exc=exc
     )
 
 
-@api_private.exception_handler(ValidationError)
+@api_internal.exception_handler(ValidationError)
 def validation_error(request: HttpRequest, exc: ValidationError) -> HttpResponse:
     """
     Exception handler for when django throws ValidationErrors.
     """
 
-    return validation_error_exception_handler(api=api_private, request=request, exc=exc)
+    return validation_error_exception_handler(
+        api=api_internal, request=request, exc=exc
+    )
 
 
-@api_private.exception_handler(TokenError)
+@api_internal.exception_handler(TokenError)
 def token_error(request: HttpRequest, exc: TokenError) -> HttpResponse:
     """
     Exception handler for token errors.
     """
-    return token_error_exception_handler(api=api_private, request=request, exc=exc)
+    return token_error_exception_handler(api=api_internal, request=request, exc=exc)
