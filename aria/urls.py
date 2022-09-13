@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 
-from aria.api.api import api as endpoints
+from aria.api.apis.public_v1 import api_public as endpoints
 
 urlpatterns = [
     path("alpha/", admin.site.urls),
