@@ -15,7 +15,7 @@ router = Router(tags=["Discounts"])
     response={200: list[DiscountsActiveListOutput]},
     summary="List all active discounts",
 )
-def discount_active_list_api(request: HttpRequest) -> list[DiscountsActiveListOutput]:
+def discount_list_api(request: HttpRequest) -> list[DiscountsActiveListOutput]:
     """
     Retrieve a list of currently active discounts.
     """

@@ -16,7 +16,7 @@ class TestPublicDiscountsEndpoints:
 
     BASE_ENDPOINT = "/api/v1/discounts"
 
-    def test_endpoint_discount_active_list_api(
+    def test_endpoint_discount_list_api(
         self, anonymous_client, django_assert_max_num_queries
     ) -> None:
         """
