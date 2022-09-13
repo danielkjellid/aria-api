@@ -1,5 +1,6 @@
 from django.http import HttpRequest
 from django.utils.translation import gettext as _
+
 from ninja import Router
 
 from aria.api.responses import codes_40x

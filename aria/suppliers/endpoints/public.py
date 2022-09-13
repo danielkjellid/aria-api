@@ -1,4 +1,5 @@
 from django.http import HttpRequest
+
 from ninja import Router
 
 from aria.suppliers.models import Supplier

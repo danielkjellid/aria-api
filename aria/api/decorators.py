@@ -1,5 +1,4 @@
 from functools import partial, wraps
-from functools import partial, wraps
 from typing import Any, Callable, Tuple
 
 from ninja.compatibility.util import get_args as get_collection_args

@@ -1,5 +1,6 @@
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
+
 from ninja import Router
 
 from aria.categories.models import Category

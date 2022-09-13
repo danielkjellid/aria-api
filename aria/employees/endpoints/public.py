@@ -1,4 +1,5 @@
 from django.http.request import HttpRequest
+
 from ninja import Router
 
 from aria.employees.schemas.outputs import EmployeeListOutput
