@@ -1,9 +1,8 @@
 import json
 from datetime import timedelta
 
-from django.utils import timezone
-
 import pytest
+from django.utils import timezone
 
 from aria.front.tests.utils import (
     create_opening_hours,

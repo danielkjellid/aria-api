@@ -3,6 +3,7 @@ import json
 from django.core.cache import cache
 
 import pytest
+from django.core.cache import cache
 
 from aria.categories.tests.utils import create_category
 

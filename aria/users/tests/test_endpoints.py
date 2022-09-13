@@ -1,9 +1,8 @@
 import json
 from datetime import datetime
 
-from django.contrib.auth.tokens import default_token_generator
-
 import pytest
+from django.contrib.auth.tokens import default_token_generator
 
 from aria.users.tests.utils import create_user
 
