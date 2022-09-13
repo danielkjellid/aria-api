@@ -3,6 +3,7 @@ from typing import Any
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.http import HttpRequest, HttpResponse
 from django.utils.translation import activate, deactivate, gettext as _
+
 from ninja import NinjaAPI
 from ninja.errors import ValidationError as NinjaValidationError
 from pydantic.error_wrappers import ValidationError as PydanticValidationError
