@@ -36,7 +36,7 @@ class AriaAPI(NinjaAPI):  # pylint: disable=too-many-instance-attributes
         self.auth = auth  # type: ignore
         self.docs_decorator = docs_decorator
 
-    def get_operation_url_name(self, operation: "Operation", router: Router) -> str:
+    def get_operation_url_name(self, operation: Operation, router: Router) -> str:
         """
         Override to match path parameters instead of view function name.
         """
