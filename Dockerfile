@@ -24,7 +24,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip
-RUN pip install --no-cache poetry
+RUN pip install --no-cache poetry==1.2.0
 
 # Set app user and working directory
 USER aria
