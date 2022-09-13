@@ -1,7 +1,6 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.http import HttpRequest, HttpResponse
-
 from ninja.errors import ValidationError as NinjaValidationError
 from pydantic.error_wrappers import ValidationError as PydanticValidationError
 
@@ -19,8 +18,8 @@ from aria.api.exceptions import PageOutOfBoundsError
 from aria.api_auth.authentication import JWTAuthRequired
 from aria.api_auth.exceptions import TokenError
 from aria.core.exceptions import ApplicationError
-from aria.notes.endpoints import private_endpoints as notes_endpoints
-from aria.users.endpoints import private_endpoints as users_endpoints
+from aria.notes.endpoints import internal_endpoints as notes_endpoints
+from aria.users.endpoints import internal_endpoints as users_endpoints
 
 api_internal = AriaAPI(
     title="Aria Internal API",
