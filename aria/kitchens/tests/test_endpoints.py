@@ -10,7 +10,7 @@ pytestmark = pytest.mark.django_db
 
 class TestPublicKitchensEndpoints:
 
-    BASE_ENDPOINT = "/api/kitchens"
+    BASE_ENDPOINT = "/api/v1/kitchens"
 
     def test_anonymous_request_kitchen_list_api(
         self, anonymous_client, django_assert_max_num_queries

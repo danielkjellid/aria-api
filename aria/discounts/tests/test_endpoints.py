@@ -14,7 +14,7 @@ pytestmark = pytest.mark.django_db
 
 class TestPublicDiscountsEndpoints:
 
-    BASE_ENDPOINT = "/api/discounts"
+    BASE_ENDPOINT = "/api/v1/discounts"
 
     def test_endpoint_discount_active_list_api(
         self, anonymous_client, django_assert_max_num_queries

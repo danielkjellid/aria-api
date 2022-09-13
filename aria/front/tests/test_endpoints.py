@@ -15,7 +15,7 @@ pytestmark = pytest.mark.django_db
 
 class TestPublicFrontEndoints:
 
-    BASE_ENDPOINT = "/api/front"
+    BASE_ENDPOINT = "/api/v1/front"
 
     def test_opening_hours_detail_api(
         self, django_assert_max_num_queries, anonymous_client

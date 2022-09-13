@@ -10,7 +10,7 @@ pytestmark = pytest.mark.django_db
 
 class TestPublicEmployeeEndpoints:
 
-    BASE_ENDPOINT = "/api/employees"
+    BASE_ENDPOINT = "/api/v1/employees"
 
     def test_employee_list_api(
         self, django_assert_max_num_queries, anonymous_client

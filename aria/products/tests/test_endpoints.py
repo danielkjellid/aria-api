@@ -15,7 +15,7 @@ pytestmark = pytest.mark.django_db
 
 class TestPublicProductsEndpoints:
 
-    BASE_ENDPOINT = "/api/products"
+    BASE_ENDPOINT = "/api/v1/products"
 
     def test_anonymous_request_product_list_for_sale_api(
         self, anonymous_client, django_assert_max_num_queries

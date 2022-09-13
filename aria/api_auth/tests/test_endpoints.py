@@ -11,7 +11,7 @@ pytestmark = pytest.mark.django_db
 
 class TestAPIAuthPublicEndpoints:
 
-    BASE_ENDPOINT = "/api/auth"
+    BASE_ENDPOINT = "/api/v1/auth"
 
     def test_auth_obtain_token_pair(
         self,

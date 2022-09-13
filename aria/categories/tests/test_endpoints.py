@@ -10,7 +10,7 @@ pytestmark = pytest.mark.django_db
 
 class TestPublicCategoriesEndpoints:
 
-    BASE_ENDPOINT = "/api/categories"
+    BASE_ENDPOINT = "/api/v1/categories"
 
     def test_anonymous_request_category_list_api(
         self, anonymous_client, django_assert_max_num_queries

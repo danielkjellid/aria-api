@@ -12,9 +12,9 @@ class TestPublicNotesEndpoints:
     pass
 
 
-class TestPrivateNotesEndpoints:
+class TestInternalNotesEndpoints:
 
-    BASE_ENDPOINT = "/api/notes"
+    BASE_ENDPOINT = "/api/v1/internal/notes"
 
     def test_anonymous_client_note_delete_api(
         self, anonymous_client, django_assert_max_num_queries

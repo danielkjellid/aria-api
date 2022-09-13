@@ -11,7 +11,7 @@ pytestmark = pytest.mark.django_db
 
 class TestPublicUsersEndpoints:
 
-    BASE_ENDPOINT = "/api/users"
+    BASE_ENDPOINT = "/api/v1/users"
 
     def test_anonymous_request_user_request_api(
         self, anonymous_client, django_assert_max_num_queries
@@ -240,9 +240,9 @@ class TestPublicUsersEndpoints:
         assert response.status_code == 200
 
 
-class TestProtectedUsersEndpoints:
+class TestInternalUsersEndpoints:
 
-    BASE_ENDPOINT = "/api/users"
+    BASE_ENDPOINT = "/api/v1/internal/users"
 
     #################
     # List endpoint #

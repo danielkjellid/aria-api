@@ -30,6 +30,6 @@ class ApiConfig(AppConfig):
 
         with open(path, "w", encoding="utf-8"):
             call_command(
-                "export_openapi_schema", api="aria.urls.endpoints", output=path
+                "export_openapi_schema", api="aria.urls.public_endpoints", output=path
             )
             logger.info("Wrote OpenAPI schema to %s", path)

@@ -6,14 +6,14 @@ class TestPublicFrontUrls:
         """
         Test reverse match of opening_hours_detail_api endpoint.
         """
-        url = reverse("api-1.0.0:front-opening-hours")
+        url = reverse("api-public-1.0.0:front-opening-hours")
 
-        assert url == "/api/front/opening-hours/"
+        assert url == "/api/v1/front/opening-hours/"
 
     def test_url_site_messages_active_list_api(self) -> None:
         """
         Test reverse match of site_messages_active_list_api endpoint.
         """
-        url = reverse("api-1.0.0:front-site-messages-active")
+        url = reverse("api-public-1.0.0:front-site-messages-active")
 
-        assert url == "/api/front/site-messages/active/"
+        assert url == "/api/v1/front/site-messages/active/"

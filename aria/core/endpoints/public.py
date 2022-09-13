@@ -1,5 +1,4 @@
 from django.http import HttpRequest
-
 from ninja import Router
 from ninja.responses import codes_5xx
 
@@ -21,7 +20,7 @@ def core_site_health_check_api(
 ) -> tuple[int, CoreSiteHealthOutput]:
     """
     Returns ok if the site is not experiencing any issues. Used for
-    meausuring uptime during rolling deploys.
+    measuring uptime during rolling deploys.
     """
 
     return 200, CoreSiteHealthOutput(status="ok")

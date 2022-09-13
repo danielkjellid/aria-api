@@ -6,8 +6,8 @@ class TestPublicCoreEndpoints:
         """
         Test reverse match of core_site_health_check_api endpoint.
         """
-        url = reverse("api-1.0.0:core-health")
-        assert url == "/api/core/health/"
+        url = reverse("api-public-1.0.0:core-health")
+        assert url == "/api/v1/core/health/"
 
 
 class TestPrivateCoreEndpoints:
