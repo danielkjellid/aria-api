@@ -1,17 +1,15 @@
 from typing import Any
 
-from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.http import HttpRequest, HttpResponse
 from django.utils.translation import activate, deactivate, gettext as _
-
 from ninja import NinjaAPI
 from ninja.errors import ValidationError as NinjaValidationError
 from pydantic.error_wrappers import ValidationError as PydanticValidationError
 
 from aria.api.exceptions import PageOutOfBoundsError
-from aria.api.parsers import CamelCaseParser, ORJSONParser
-from aria.api.renderers import CamelCaseRenderer, ORJSONRenderer
+from aria.api.parsers import CamelCaseParser
+from aria.api.renderers import CamelCaseRenderer
 from aria.api.schemas.responses import ExceptionResponse
 from aria.api.utils import translate_pydantic_validation_messages
 from aria.api_auth.authentication import JWTAuthRequired
@@ -33,19 +31,12 @@ from aria.users.endpoints import (
     public_endpoints as public_users_endpoints,
 )
 
-# Temporary: the new frontend app expects output in camelcase.
-if settings.CAMEL_CASE_RENDERER:
-    api = NinjaAPI(
-        title="Aria API",
-        renderer=CamelCaseRenderer(),
-        parser=CamelCaseParser(),
-    )
-else:
-    api = NinjaAPI(
-        title="Aria API",
-        renderer=ORJSONRenderer(),
-        parser=ORJSONParser(),
-    )
+api = NinjaAPI(
+    title="Aria API",
+    renderer=CamelCaseRenderer(),
+    parser=CamelCaseParser(),
+)
+
 
 # API auth endpoints
 
