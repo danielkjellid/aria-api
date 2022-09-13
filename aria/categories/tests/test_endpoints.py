@@ -180,7 +180,7 @@ class TestPublicCategoriesEndpoints:
         # exist, and 1 for getting children.
         with django_assert_max_num_queries(2):
             response = anonymous_client.get(
-                f"{self.BASE_ENDPOINT}/category/{cat_1.slug}/children/"
+                f"{self.BASE_ENDPOINT}/{cat_1.slug}/children/"
             )
 
         actual_response = json.loads(response.content)
@@ -191,7 +191,7 @@ class TestPublicCategoriesEndpoints:
         # Test querying for a slug that does not exist returns a 404.
         with django_assert_max_num_queries(1):
             failed_response = anonymous_client.get(
-                f"{self.BASE_ENDPOINT}/category/does-not-exist/children/"
+                f"{self.BASE_ENDPOINT}/does-not-exist/children/"
             )
         assert failed_response.status_code == 404
 
@@ -222,9 +222,7 @@ class TestPublicCategoriesEndpoints:
 
         # Uses 1 query for getting category
         with django_assert_max_num_queries(1):
-            response = anonymous_client.get(
-                f"{self.BASE_ENDPOINT}/category/{cat_1.slug}/"
-            )
+            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/{cat_1.slug}/")
 
         actual_response = json.loads(response.content)
 
@@ -234,7 +232,7 @@ class TestPublicCategoriesEndpoints:
         # Test querying for a slug that does not exist returns a 404.
         with django_assert_max_num_queries(1):
             failed_response = anonymous_client.get(
-                f"{self.BASE_ENDPOINT}/category/does-not-exist/"
+                f"{self.BASE_ENDPOINT}/does-not-exist/"
             )
 
         assert failed_response.status_code == 404

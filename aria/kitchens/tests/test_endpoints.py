@@ -130,9 +130,7 @@ class TestPublicKitchensEndpoints:
         # - 1 for getting kitchen + supplier
         # - 6 for prefetching related objects.
         with django_assert_max_num_queries(7):
-            response = anonymous_client.get(
-                f"{self.BASE_ENDPOINT}/kitchen/{kitchen.slug}/"
-            )
+            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/{kitchen.slug}/")
 
         actual_response = json.loads(response.content)
 
@@ -142,7 +140,7 @@ class TestPublicKitchensEndpoints:
         # Test that we fail when an invalid slug is passed.
         with django_assert_max_num_queries(1):
             failed_response = anonymous_client.get(
-                f"{self.BASE_ENDPOINT}/kitchen/does-not-exist/"
+                f"{self.BASE_ENDPOINT}/does-not-exist/"
             )
 
         assert failed_response.status_code == 400

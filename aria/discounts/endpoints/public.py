@@ -1,5 +1,4 @@
 from django.http import HttpRequest
-
 from ninja import Router
 
 from aria.api.decorators import api
@@ -11,7 +10,7 @@ router = Router(tags=["Discounts"])
 
 @api(
     router,
-    "active/",
+    "/",
     method="GET",
     response={200: list[DiscountsActiveListOutput]},
     summary="List all active discounts",

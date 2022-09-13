@@ -2,7 +2,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
-
 from ninja import Query, Router
 
 from aria.api.decorators import api
@@ -61,7 +60,7 @@ def product_list_by_category_api(
 
 @api(
     router,
-    "product/{product_slug}/",
+    "{product_slug}/",
     method="GET",
     response={200: ProductDetailOutput},
     summary="Get information about a single product instance",

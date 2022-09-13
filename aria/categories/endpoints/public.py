@@ -1,6 +1,5 @@
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
-
 from ninja import Router
 
 from aria.api.decorators import api
@@ -58,7 +57,7 @@ def category_parent_list_api(request: HttpRequest) -> list[CategoryParentListOut
 
 @api(
     router,
-    "category/{category_slug}/",
+    "{category_slug}/",
     method="GET",
     response={200: CategoryDetailOutput},
     summary="Retrieve a specific category",
@@ -77,7 +76,7 @@ def category_detail_api(
 
 @api(
     router,
-    "category/{category_slug}/children/",
+    "{category_slug}/children/",
     method="GET",
     response={200: list[CategoryChildrenListOutput]},
     summary="List all active children categories belonging to a parent",

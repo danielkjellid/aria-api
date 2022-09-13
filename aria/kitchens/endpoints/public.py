@@ -1,7 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
-
 from ninja import Router
 
 from aria.api.decorators import api
@@ -30,7 +29,7 @@ def kitchen_list_api(request: HttpRequest) -> list[KitchenListOutput]:
 
 @api(
     router,
-    "kitchen/{kitchen_slug}/",
+    "{kitchen_slug}/",
     method="GET",
     response={200: KitchenDetailOutput},
     summary="Get information about a single kitchen instance",

@@ -6,6 +6,6 @@ class TestPublicDiscountsUrls:
         """
         Test reverse match of discount_active_list_api endpoint.
         """
-        url = reverse("api-public-1.0.0:discounts-active")
+        url = reverse("api-public-1.0.0:discounts-index")
 
-        assert url == "/api/v1/discounts/active/"
+        assert url == "/api/v1/discounts/"

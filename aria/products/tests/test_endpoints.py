@@ -344,9 +344,7 @@ class TestPublicProductsEndpoints:
         # - 1x for selecting related supplier
         # - 1x for prefetching images
         with django_assert_max_num_queries(12):
-            response = anonymous_client.get(
-                f"{self.BASE_ENDPOINT}/product/{product.slug}/"
-            )
+            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/{product.slug}/")
 
             actual_response = json.loads(response.content)
 
@@ -359,4 +357,4 @@ class TestPublicProductsEndpoints:
                 f"{self.BASE_ENDPOINT}/does-not-exist/"
             )
 
-            assert failed_response.status_code == 404
+            assert failed_response.status_code == 400

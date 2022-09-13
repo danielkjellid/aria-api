@@ -321,7 +321,7 @@ class TestInternalUsersEndpoints:
         user = create_user()
 
         with django_assert_max_num_queries(0):
-            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/user/{user.id}/")
+            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/{user.id}/")
 
         assert response.status_code == 401
 
@@ -340,7 +340,7 @@ class TestInternalUsersEndpoints:
         # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
         with django_assert_max_num_queries(3):
             response = authenticated_unprivileged_client.get(
-                f"{self.BASE_ENDPOINT}/user/{user.id}/"
+                f"{self.BASE_ENDPOINT}/{user.id}/"
             )
 
         assert response.status_code == 403
@@ -396,7 +396,7 @@ class TestInternalUsersEndpoints:
         # - 1 for getting audit logs for user
         with django_assert_max_num_queries(7):
             response = authenticated_privileged_client.get(
-                f"{self.BASE_ENDPOINT}/user/{user.id}/"
+                f"{self.BASE_ENDPOINT}/{user.id}/"
             )
 
             actual_json = json.loads(response.content)
@@ -437,7 +437,7 @@ class TestInternalUsersEndpoints:
 
         with django_assert_max_num_queries(0):
             response = anonymous_client.post(
-                f"{self.BASE_ENDPOINT}/user/{user.id}/update/", data=payload_json
+                f"{self.BASE_ENDPOINT}/{user.id}/update/", data=payload_json
             )
 
         assert response.status_code == 401
@@ -469,7 +469,7 @@ class TestInternalUsersEndpoints:
         # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
         with django_assert_max_num_queries(3):
             response = authenticated_unprivileged_client.post(
-                f"{self.BASE_ENDPOINT}/user/{user.id}/update/",
+                f"{self.BASE_ENDPOINT}/{user.id}/update/",
                 data=payload_json,
                 content_type="application/json",
             )
@@ -512,7 +512,7 @@ class TestInternalUsersEndpoints:
         # - 1 releasing savepoint
         with django_assert_max_num_queries(11):
             response = authenticated_privileged_client.post(
-                f"{self.BASE_ENDPOINT}/user/{user.id}/update/",
+                f"{self.BASE_ENDPOINT}/{user.id}/update/",
                 data=payload_json,
                 content_type="application/json",
             )
@@ -540,7 +540,7 @@ class TestInternalUsersEndpoints:
 
         with django_assert_max_num_queries(0):
             response = anonymous_client.post(
-                f"{self.BASE_ENDPOINT}/user/{user.id}/update/", data=payload_json
+                f"{self.BASE_ENDPOINT}/{user.id}/update/", data=payload_json
             )
 
         assert response.status_code == 401
@@ -560,7 +560,7 @@ class TestInternalUsersEndpoints:
         # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
         with django_assert_max_num_queries(3):
             response = authenticated_unprivileged_client.post(
-                f"{self.BASE_ENDPOINT}/user/{user.id}/update/",
+                f"{self.BASE_ENDPOINT}/{user.id}/update/",
                 data=payload_json,
                 content_type="application/json",
             )
@@ -591,7 +591,7 @@ class TestInternalUsersEndpoints:
         # - 1 releasing savepoint
         with django_assert_max_num_queries(11):
             response = authenticated_privileged_client.post(
-                f"{self.BASE_ENDPOINT}/user/{user.id}/update/",
+                f"{self.BASE_ENDPOINT}/{user.id}/update/",
                 data=payload_json,
                 content_type="application/json",
             )

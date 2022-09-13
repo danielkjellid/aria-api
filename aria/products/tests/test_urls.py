@@ -22,7 +22,5 @@ class TestPublicProductsUrls:
         """
         Test reverse match of product_detail_api endpoint.
         """
-        url = reverse(
-            "api-public-1.0.0:products-product-{product_slug}", args=["product_slug"]
-        )
-        assert url == "/api/v1/products/product/product_slug/"
+        url = reverse("api-public-1.0.0:products-{product_slug}", args=["product_slug"])
+        assert url == "/api/v1/products/product_slug/"

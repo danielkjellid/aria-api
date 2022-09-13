@@ -13,7 +13,5 @@ class TestPublicKitchensUrls:
         """
         Test reverse match of kitchen_detail_api endpoint.
         """
-        url = reverse(
-            "api-public-1.0.0:kitchens-kitchen-{kitchen_slug}", args=["kitchen_slug"]
-        )
-        assert url == "/api/v1/kitchens/kitchen/kitchen_slug/"
+        url = reverse("api-public-1.0.0:kitchens-{kitchen_slug}", args=["kitchen_slug"])
+        assert url == "/api/v1/kitchens/kitchen_slug/"

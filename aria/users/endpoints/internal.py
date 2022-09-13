@@ -1,6 +1,5 @@
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
-
 from ninja import Query, Router
 
 from aria.api.decorators import api, paginate
@@ -42,7 +41,7 @@ def user_list_api(
 
 @api(
     router,
-    "user/{user_id}/",
+    "{user_id}/",
     method="GET",
     response={200: UserDetailOutput, codes_40x: ExceptionResponse},
     summary="Retrieve a single user",
@@ -59,7 +58,7 @@ def user_detail_api(request: HttpRequest, user_id: int) -> tuple[int, UserDetail
 
 @api(
     router,
-    "user/{user_id}/update/",
+    "{user_id}/update/",
     method="POST",
     response={200: None, codes_40x: ExceptionResponse},
     summary="Update a single user",
