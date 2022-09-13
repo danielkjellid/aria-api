@@ -3,13 +3,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 
-from aria.api.apis.internal_v1 import api_internal as internal_endpoints
-from aria.api.apis.public_v1 import api_public as public_endpoints
+from aria.api.apis.v1 import api as api_v1
 
 urlpatterns = [
     path("alpha/", admin.site.urls),
-    path("api/v1/", public_endpoints.urls),
-    path("api/v1/internal/", internal_endpoints.urls),
+    path("api/v1/", api_v1.urls),
 ]
 
 

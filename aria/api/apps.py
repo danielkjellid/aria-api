@@ -29,7 +29,5 @@ class ApiConfig(AppConfig):
         path = folder_path / "schema.json"
 
         with open(path, "w", encoding="utf-8"):
-            call_command(
-                "export_openapi_schema", api="aria.urls.public_endpoints", output=path
-            )
+            call_command("export_openapi_schema", api="aria.urls.api_v1", output=path)
             logger.info("Wrote OpenAPI schema to %s", path)

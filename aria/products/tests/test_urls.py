@@ -6,7 +6,7 @@ class TestPublicProductsUrls:
         """
         Test reverse match of product_list_api endpoint.
         """
-        url = reverse("api-public-1.0.0:products-index")
+        url = reverse("api-1.0.0:products-index")
         assert url == "/api/v1/products/"
 
     def test_url_product_list_by_category_api(self) -> None:
@@ -14,7 +14,7 @@ class TestPublicProductsUrls:
         Test reverse match of product_list_by_category_api endpoint.
         """
         url = reverse(
-            "api-public-1.0.0:products-category-{category_slug}", args=["category_slug"]
+            "api-1.0.0:products-category-{category_slug}", args=["category_slug"]
         )
         assert url == "/api/v1/products/category/category_slug/"
 
@@ -22,5 +22,5 @@ class TestPublicProductsUrls:
         """
         Test reverse match of product_detail_api endpoint.
         """
-        url = reverse("api-public-1.0.0:products-{product_slug}", args=["product_slug"])
+        url = reverse("api-1.0.0:products-{product_slug}", args=["product_slug"])
         assert url == "/api/v1/products/product_slug/"
