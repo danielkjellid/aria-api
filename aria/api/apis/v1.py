@@ -139,7 +139,6 @@ def permission_denied_error(
     return permission_denied_error_exception_handler(api=api, request=request, exc=exc)
 
 
-# Custom exception handler for PageOutOfBounds errors.
 @api.exception_handler(PageOutOfBoundsError)
 def page_out_of_bounds_error(
     request: HttpRequest, exc: PageOutOfBoundsError
