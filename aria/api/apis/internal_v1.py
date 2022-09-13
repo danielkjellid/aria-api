@@ -1,18 +1,19 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.http import HttpRequest, HttpResponse
+
 from ninja.errors import ValidationError as NinjaValidationError
 from pydantic.error_wrappers import ValidationError as PydanticValidationError
 
 from aria.api.base import AriaAPI
 from aria.api.exception_handlers import (
     application_error_exception_handler,
-    pydantic_models_validation_error_exception_handler,
-    permission_denied_error_exception_handler,
-    page_out_of_bounds_error_exception_handler,
     object_does_not_exist_error_exception_handler,
-    validation_error_exception_handler,
+    page_out_of_bounds_error_exception_handler,
+    permission_denied_error_exception_handler,
+    pydantic_models_validation_error_exception_handler,
     token_error_exception_handler,
+    validation_error_exception_handler,
 )
 from aria.api.exceptions import PageOutOfBoundsError
 from aria.api_auth.authentication import JWTAuthRequired
