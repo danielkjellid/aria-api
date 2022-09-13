@@ -51,8 +51,8 @@ class TestAPIAuthPublicEndpoints:
 
         # Assert that we return a valid response.
         assert response.status_code == 200
-        assert list(json.loads(response.content).keys())[0] == "refresh_token"
-        assert list(json.loads(response.content).keys())[1] == "access_token"
+        assert list(json.loads(response.content).keys())[0] == "refreshToken"
+        assert list(json.loads(response.content).keys())[1] == "accessToken"
 
     def test_auth_refresh_token_pair(
         self,
@@ -96,8 +96,8 @@ class TestAPIAuthPublicEndpoints:
 
         # Assert that we return a valid response.
         assert response.status_code == 200
-        assert list(json.loads(response.content).keys())[0] == "refresh_token"
-        assert list(json.loads(response.content).keys())[1] == "access_token"
+        assert list(json.loads(response.content).keys())[0] == "refreshToken"
+        assert list(json.loads(response.content).keys())[1] == "accessToken"
 
     def test_auth_log_out_and_blacklist_refresh_token(
         self,

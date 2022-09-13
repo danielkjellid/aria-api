@@ -36,16 +36,16 @@ class TestPublicEmployeeEndpoints:
 
         expected_response = [
             {
-                "full_name": user_1_employee.full_name,
-                "company_email": user_1_employee.company_email,
-                "profile_picture": user_1_employee.profile_picture.url
+                "fullName": user_1_employee.full_name,
+                "companyEmail": user_1_employee.company_email,
+                "profilePicture": user_1_employee.profile_picture.url
                 if user_1_employee.profile_picture
                 else None,
             },
             {
-                "full_name": user_2_employee.full_name,
-                "company_email": user_2_employee.company_email,
-                "profile_picture": user_2_employee.profile_picture.url
+                "fullName": user_2_employee.full_name,
+                "companyEmail": user_2_employee.company_email,
+                "profilePicture": user_2_employee.profile_picture.url
                 if user_2_employee.profile_picture
                 else None,
             },

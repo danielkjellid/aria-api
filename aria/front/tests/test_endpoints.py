@@ -1,9 +1,8 @@
 import json
 from datetime import timedelta
 
-from django.utils import timezone
-
 import pytest
+from django.utils import timezone
 
 from aria.front.tests.utils import (
     create_opening_hours,
@@ -30,15 +29,15 @@ class TestPublicFrontEndoints:
 
         expected_response = {
             "id": opening_hours.id,
-            "human_readable_time_slots": [
+            "humanReadableTimeSlots": [
                 {
                     "days": "Mandag - Torsdag",
-                    "time_slot": "09:00 - 17:00",
-                    "is_closed": False,
+                    "timeSlot": "09:00 - 17:00",
+                    "isClosed": False,
                 },
-                {"days": "Fredag", "time_slot": "09:00 - 16:00", "is_closed": False},
-                {"days": "Lørdag", "time_slot": "10:00 - 15:00", "is_closed": False},
-                {"days": "Søndag", "time_slot": None, "is_closed": True},
+                {"days": "Fredag", "timeSlot": "09:00 - 16:00", "isClosed": False},
+                {"days": "Lørdag", "timeSlot": "10:00 - 15:00", "isClosed": False},
+                {"days": "Søndag", "timeSlot": None, "isClosed": True},
             ],
         }
 
@@ -62,15 +61,15 @@ class TestPublicFrontEndoints:
 
         expected_deviation_response = {
             "id": opening_hours.id,
-            "human_readable_time_slots": [
+            "humanReadableTimeSlots": [
                 {
                     "days": "Mandag, Tirsdag og Torsdag",
-                    "time_slot": "09:00 - 17:00",
-                    "is_closed": False,
+                    "timeSlot": "09:00 - 17:00",
+                    "isClosed": False,
                 },
-                {"days": "Onsdag og Søndag", "time_slot": None, "is_closed": True},
-                {"days": "Fredag", "time_slot": "09:00 - 16:00", "is_closed": False},
-                {"days": "Lørdag", "time_slot": "10:00 - 15:00", "is_closed": False},
+                {"days": "Onsdag og Søndag", "timeSlot": None, "isClosed": True},
+                {"days": "Fredag", "timeSlot": "09:00 - 16:00", "isClosed": False},
+                {"days": "Lørdag", "timeSlot": "10:00 - 15:00", "isClosed": False},
             ],
         }
 
@@ -115,17 +114,17 @@ class TestPublicFrontEndoints:
         expected_response = [
             {
                 "text": site_message_1.text,
-                "message_type": site_message_1.message_type,
+                "messageType": site_message_1.message_type,
                 "locations": ["test-location"],
-                "show_message_at": site_message_1.show_message_at.isoformat(),
-                "show_message_to": site_message_1.show_message_to.isoformat(),
+                "showMessageAt": site_message_1.show_message_at.isoformat(),
+                "showMessageTo": site_message_1.show_message_to.isoformat(),
             },
             {
                 "text": site_message_2.text,
-                "message_type": site_message_2.message_type,
+                "messageType": site_message_2.message_type,
                 "locations": ["test-location"],
-                "show_message_at": site_message_2.show_message_at.isoformat(),
-                "show_message_to": site_message_2.show_message_to.isoformat(),
+                "showMessageAt": site_message_2.show_message_at.isoformat(),
+                "showMessageTo": site_message_2.show_message_to.isoformat(),
             },
         ]
 

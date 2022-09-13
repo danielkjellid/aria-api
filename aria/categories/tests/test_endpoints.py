@@ -1,6 +1,7 @@
 import json
 
 import pytest
+from django.core.cache import cache
 
 from aria.categories.tests.utils import create_category
 
@@ -18,6 +19,8 @@ class TestPublicCategoriesEndpoints:
         Test listing categories from an anonymous client returns
         a valid response.
         """
+
+        cache.clear()
 
         main_cat_1 = create_category(name="Main cat 1")
         main_cat_1_sub_1 = create_category("Sub cat 1.1", parent=main_cat_1)
@@ -73,9 +76,7 @@ class TestPublicCategoriesEndpoints:
 
         assert response.status_code == 200
         assert len(actual_response) == 2
-        assert sorted(actual_response, key=lambda x: x["id"]) == sorted(
-            expected_response, key=lambda x: x["id"]
-        )
+        assert actual_response == expected_response
 
     def test_anonymous_request_category_parent_list_api(
         self, anonymous_client, django_assert_max_num_queries
@@ -101,13 +102,13 @@ class TestPublicCategoriesEndpoints:
                 "slug": main_cat_1.slug,
                 "ordering": main_cat_1.ordering,
                 "images": {
-                    "apply_filter": main_cat_1.apply_filter,
-                    "image_512x512": main_cat_1.image_512x512.url,
-                    "image_640x275": main_cat_1.image_640x275.url,
-                    "image_1024x575": main_cat_1.image_1024x575.url,
-                    "image_1024x1024": main_cat_1.image_1024x1024.url,
-                    "image_1536x860": main_cat_1.image_1536x860.url,
-                    "image_2048x1150": main_cat_1.image_2048x1150.url,
+                    "applyFilter": main_cat_1.apply_filter,
+                    "image512x512": main_cat_1.image_512x512.url,
+                    "image640x275": main_cat_1.image_640x275.url,
+                    "image1024x575": main_cat_1.image_1024x575.url,
+                    "image1024x1024": main_cat_1.image_1024x1024.url,
+                    "image1536x860": main_cat_1.image_1536x860.url,
+                    "image2048x1150": main_cat_1.image_2048x1150.url,
                 },
             },
             {
@@ -116,13 +117,13 @@ class TestPublicCategoriesEndpoints:
                 "slug": main_cat_2.slug,
                 "ordering": main_cat_2.ordering,
                 "images": {
-                    "apply_filter": main_cat_2.apply_filter,
-                    "image_512x512": main_cat_2.image_512x512.url,
-                    "image_640x275": main_cat_2.image_640x275.url,
-                    "image_1024x575": main_cat_2.image_1024x575.url,
-                    "image_1024x1024": main_cat_2.image_1024x1024.url,
-                    "image_1536x860": main_cat_2.image_1536x860.url,
-                    "image_2048x1150": main_cat_2.image_2048x1150.url,
+                    "applyFilter": main_cat_2.apply_filter,
+                    "image512x512": main_cat_2.image_512x512.url,
+                    "image640x275": main_cat_2.image_640x275.url,
+                    "image1024x575": main_cat_2.image_1024x575.url,
+                    "image1024x1024": main_cat_2.image_1024x1024.url,
+                    "image1536x860": main_cat_2.image_1536x860.url,
+                    "image2048x1150": main_cat_2.image_2048x1150.url,
                 },
             },
         ]
@@ -155,7 +156,7 @@ class TestPublicCategoriesEndpoints:
                 "slug": sub_1.slug,
                 "ordering": sub_1.ordering,
                 "description": sub_1.description,
-                "list_images": {
+                "listImages": {
                     "image500x305": sub_1.image500x305.url,
                     "image600x440": sub_1.image600x440.url,
                     "image850x520": sub_1.image850x520.url,
@@ -167,7 +168,7 @@ class TestPublicCategoriesEndpoints:
                 "slug": sub_2.slug,
                 "ordering": sub_2.ordering,
                 "description": sub_2.description,
-                "list_images": {
+                "listImages": {
                     "image500x305": sub_1.image500x305.url,
                     "image600x440": sub_1.image600x440.url,
                     "image850x520": sub_1.image850x520.url,
@@ -209,13 +210,13 @@ class TestPublicCategoriesEndpoints:
             "name": cat_1.name,
             "slug": cat_1.slug,
             "images": {
-                "apply_filter": cat_1.apply_filter,
-                "image_512x512": cat_1.image_512x512.url,
-                "image_640x275": cat_1.image_640x275.url,
-                "image_1024x575": cat_1.image_1024x575.url,
-                "image_1024x1024": cat_1.image_1024x1024.url,
-                "image_1536x860": cat_1.image_1536x860.url,
-                "image_2048x1150": cat_1.image_2048x1150.url,
+                "applyFilter": cat_1.apply_filter,
+                "image512x512": cat_1.image_512x512.url,
+                "image640x275": cat_1.image_640x275.url,
+                "image1024x575": cat_1.image_1024x575.url,
+                "image1024x1024": cat_1.image_1024x1024.url,
+                "image1536x860": cat_1.image_1536x860.url,
+                "image2048x1150": cat_1.image_2048x1150.url,
             },
         }
 
