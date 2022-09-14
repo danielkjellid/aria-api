@@ -10,7 +10,7 @@ pytestmark = pytest.mark.django_db
 
 class TestPublicSuppliersEndpoints:
 
-    BASE_ENDPOINT = "/api/suppliers"
+    BASE_ENDPOINT = "/api/v1/suppliers"
 
     def test_anonymous_request_supplier_list(
         self, anonymous_client, django_assert_max_num_queries

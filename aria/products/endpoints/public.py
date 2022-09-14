@@ -5,7 +5,6 @@ from django.utils.translation import gettext_lazy as _
 
 from ninja import Query, Router
 
-from aria.api.decorators import api
 from aria.categories.models import Category
 from aria.products.schemas.filters import ProductListFilters
 from aria.products.schemas.outputs import ProductDetailOutput, ProductListOutput
@@ -18,12 +17,8 @@ from aria.products.selectors import (
 router = Router(tags=["Products"])
 
 
-@api(
-    router,
-    "/",
-    method="GET",
-    response={200: list[ProductListOutput]},
-    summary="List all product for sale.",
+@router.get(
+    "/", response={200: list[ProductListOutput]}, summary="List all product for sale."
 )
 def product_list_api(
     request: HttpRequest, search: ProductListFilters = Query(...)
@@ -37,10 +32,8 @@ def product_list_api(
     return [ProductListOutput(**product.dict()) for product in products]
 
 
-@api(
-    router,
+@router.get(
     "category/{category_slug}/",
-    method="GET",
     response={200: list[ProductListOutput]},
     summary="List all products belonging to a certain category",
 )
@@ -59,10 +52,8 @@ def product_list_by_category_api(
     return [ProductListOutput(**product.dict()) for product in products]
 
 
-@api(
-    router,
-    "product/{product_slug}/",
-    method="GET",
+@router.get(
+    "{product_slug}/",
     response={200: ProductDetailOutput},
     summary="Get information about a single product instance",
 )

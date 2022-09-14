@@ -10,7 +10,7 @@ pytestmark = pytest.mark.django_db
 
 class TestPublicKitchensEndpoints:
 
-    BASE_ENDPOINT = "/api/kitchens"
+    BASE_ENDPOINT = "/api/v1/kitchens"
 
     def test_anonymous_request_kitchen_list_api(
         self, anonymous_client, django_assert_max_num_queries
@@ -33,8 +33,8 @@ class TestPublicKitchensEndpoints:
                 "id": available_kitchen_3.id,
                 "name": available_kitchen_3.name,
                 "slug": available_kitchen_3.slug,
-                "thumbnail_description": available_kitchen_3.thumbnail_description,
-                "list_images": {
+                "thumbnailDescription": available_kitchen_3.thumbnail_description,
+                "listImages": {
                     "image500x305": available_kitchen_3.image500x305.url,
                     "image600x440": available_kitchen_3.image600x440.url,
                     "image850x520": available_kitchen_3.image850x520.url,
@@ -44,8 +44,8 @@ class TestPublicKitchensEndpoints:
                 "id": available_kitchen_2.id,
                 "name": available_kitchen_2.name,
                 "slug": available_kitchen_2.slug,
-                "thumbnail_description": available_kitchen_2.thumbnail_description,
-                "list_images": {
+                "thumbnailDescription": available_kitchen_2.thumbnail_description,
+                "listImages": {
                     "image500x305": available_kitchen_2.image500x305.url,
                     "image600x440": available_kitchen_2.image600x440.url,
                     "image850x520": available_kitchen_2.image850x520.url,
@@ -55,8 +55,8 @@ class TestPublicKitchensEndpoints:
                 "id": available_kitchen_1.id,
                 "name": available_kitchen_1.name,
                 "slug": available_kitchen_1.slug,
-                "thumbnail_description": available_kitchen_1.thumbnail_description,
-                "list_images": {
+                "thumbnailDescription": available_kitchen_1.thumbnail_description,
+                "listImages": {
                     "image500x305": available_kitchen_1.image500x305.url,
                     "image600x440": available_kitchen_1.image600x440.url,
                     "image850x520": available_kitchen_1.image850x520.url,
@@ -88,41 +88,41 @@ class TestPublicKitchensEndpoints:
             "name": kitchen.name,
             "slug": kitchen.slug,
             "description": kitchen.description,
-            "extra_description": kitchen.extra_description,
-            "example_from_price": "40000.00",
-            "can_be_painted": kitchen.can_be_painted,
-            "silk_variants": [
-                {"name": obj.name, "color_hex": obj.color_hex}
+            "extraDescription": kitchen.extra_description,
+            "exampleFromPrice": "40000.00",
+            "canBePainted": kitchen.can_be_painted,
+            "silkVariants": [
+                {"name": obj.name, "colorHex": obj.color_hex}
                 for obj in kitchen.silk_variants.all()
             ],
-            "decor_variants": [
+            "decorVariants": [
                 {"name": obj.name, "image": obj.image.url}
                 for obj in kitchen.decor_variants.all()
             ],
-            "plywood_variants": [
+            "plywoodVariants": [
                 {"name": obj.name, "image": obj.image.url}
                 for obj in kitchen.plywood_variants.all()
             ],
-            "laminate_variants": [
+            "laminateVariants": [
                 {"name": obj.name, "color_hex": obj.color_hex}
                 for obj in kitchen.laminate_variants.all()
             ],
-            "exclusive_variants": [
+            "exclusiveVariants": [
                 {"name": obj.name, "color_hex": obj.color_hex}
                 for obj in kitchen.exclusive_variants.all()
             ],
-            "trend_variants": [
+            "trendVariants": [
                 {"name": obj.name, "color_hex": obj.color_hex}
                 for obj in kitchen.trend_variants.all()
             ],
             "images": {
-                "apply_filter": kitchen.apply_filter,
-                "image_512x512": kitchen.image_512x512.url,
-                "image_640x275": kitchen.image_640x275.url,
-                "image_1024x575": kitchen.image_1024x575.url,
-                "image_1024x1024": kitchen.image_1024x1024.url,
-                "image_1536x860": kitchen.image_1536x860.url,
-                "image_2048x1150": kitchen.image_2048x1150.url,
+                "applyFilter": kitchen.apply_filter,
+                "image512x512": kitchen.image_512x512.url,
+                "image640x275": kitchen.image_640x275.url,
+                "image1024x575": kitchen.image_1024x575.url,
+                "image1024x1024": kitchen.image_1024x1024.url,
+                "image1536x860": kitchen.image_1536x860.url,
+                "image2048x1150": kitchen.image_2048x1150.url,
             },
         }
 
@@ -130,9 +130,7 @@ class TestPublicKitchensEndpoints:
         # - 1 for getting kitchen + supplier
         # - 6 for prefetching related objects.
         with django_assert_max_num_queries(7):
-            response = anonymous_client.get(
-                f"{self.BASE_ENDPOINT}/kitchen/{kitchen.slug}/"
-            )
+            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/{kitchen.slug}/")
 
         actual_response = json.loads(response.content)
 
@@ -142,7 +140,7 @@ class TestPublicKitchensEndpoints:
         # Test that we fail when an invalid slug is passed.
         with django_assert_max_num_queries(1):
             failed_response = anonymous_client.get(
-                f"{self.BASE_ENDPOINT}/kitchen/does-not-exist/"
+                f"{self.BASE_ENDPOINT}/does-not-exist/"
             )
 
         assert failed_response.status_code == 400

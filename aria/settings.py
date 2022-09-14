@@ -36,8 +36,6 @@ DEBUG = env.bool("DEBUG", default=False)
 OPENAPI_AUTO_GENERATE = env.bool("OPENAPI_AUTO_GENERATE", default=False)
 OPENAPI_SCHEMA_PATH = env.str("OPENAPI_SCHEMA_PATH", default=None)
 
-CAMEL_CASE_RENDERER = env.bool("CAMEL_CASE_RENDERER", default=False)
-
 #################
 # Django basics #
 #################

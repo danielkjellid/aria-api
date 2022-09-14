@@ -16,7 +16,7 @@ pytestmark = pytest.mark.django_db
 
 class TestPublicProductsEndpoints:
 
-    BASE_ENDPOINT = "/api/products"
+    BASE_ENDPOINT = "/api/v1/products"
 
     def test_anonymous_request_product_list_for_sale_api(
         self, anonymous_client, django_assert_max_num_queries
@@ -39,20 +39,20 @@ class TestPublicProductsEndpoints:
                         "unit": product.unit_display,
                         "supplier": {
                             "name": product.supplier.name,
-                            "origin_country": product.supplier.country_name,
-                            "origin_country_flag": product.supplier.unicode_flag,
+                            "originCountry": product.supplier.country_name,
+                            "originCountryFlag": product.supplier.unicode_flag,
                         },
                         "thumbnail": product.thumbnail.url
                         if product.thumbnail
                         else None,
                         "discount": None,
-                        "display_price": True,
-                        "from_price": 200.0,
+                        "displayPrice": True,
+                        "fromPrice": 200.0,
                         "colors": [
                             {
                                 "id": color.id,
                                 "name": color.name,
-                                "color_hex": color.color_hex,
+                                "colorHex": color.color_hex,
                             }
                             for color in product.colors.all()
                         ],
@@ -135,28 +135,28 @@ class TestPublicProductsEndpoints:
                         "unit": ProductUnit(product.unit).label,
                         "supplier": {
                             "name": product.supplier.name,
-                            "origin_country": product.supplier.country_name,
-                            "origin_country_flag": product.supplier.unicode_flag,
+                            "originCountry": product.supplier.country_name,
+                            "originCountryFlag": product.supplier.unicode_flag,
                         },
                         "thumbnail": product.thumbnail.url
                         if product.thumbnail
                         else None,
                         "discount": {
-                            "is_discounted": True,
-                            "discounted_gross_price": 160.0,
-                            "discounted_gross_percentage": 0.20,
-                            "maximum_sold_quantity": None,
-                            "remaining_quantity": None,
+                            "isDiscounted": True,
+                            "discountedGrossPrice": 160.0,
+                            "discountedGrossPercentage": 0.20,
+                            "maximumSoldQuantity": None,
+                            "remainingQuantity": None,
                         }
                         if product.discounts.exists()
                         else None,
-                        "display_price": True,
-                        "from_price": 200.0,
+                        "displayPrice": True,
+                        "fromPrice": 200.0,
                         "colors": [
                             {
                                 "id": color.id,
                                 "name": color.name,
-                                "color_hex": color.color_hex,
+                                "colorHex": color.color_hex,
                             }
                             for color in product.colors.all()
                         ],
@@ -254,38 +254,38 @@ class TestPublicProductsEndpoints:
             ],
             "materials": product.materials_display,
             "rooms": product.rooms_display,
-            "available_in_special_sizes": product.available_in_special_sizes,
-            "can_be_picked_up": product.can_be_picked_up,
-            "can_be_purchased_online": product.can_be_purchased_online,
-            "display_price": product.display_price,
-            "from_price": 200.0,
+            "availableInSpecialSizes": product.available_in_special_sizes,
+            "canBePickedUp": product.can_be_picked_up,
+            "canBePurchasedOnline": product.can_be_purchased_online,
+            "displayPrice": product.display_price,
+            "fromPrice": 200.0,
             "supplier": {
                 "name": product.supplier.name,
-                "origin_country": product.supplier.country_name,
-                "origin_country_flag": product.supplier.unicode_flag,
+                "originCountry": product.supplier.country_name,
+                "originCountryFlag": product.supplier.unicode_flag,
             },
             "images": [
                 {
-                    "apply_filter": image.apply_filter,
-                    "image_512x512": image.image_512x512.url,
-                    "image_640x275": image.image_640x275.url,
-                    "image_1024x575": image.image_1024x575.url,
-                    "image_1024x1024": image.image_1024x1024.url,
-                    "image_1536x860": image.image_1536x860.url,
-                    "image_2048x1150": image.image_2048x1150.url,
+                    "applyFilter": image.apply_filter,
+                    "image512x512": image.image_512x512.url,
+                    "image640x275": image.image_640x275.url,
+                    "image1024x575": image.image_1024x575.url,
+                    "image1024x1024": image.image_1024x1024.url,
+                    "image1536x860": image.image_1536x860.url,
+                    "image2048x1150": image.image_2048x1150.url,
                 }
                 for image in product.images.all()
             ],
             "options": [
                 {
                     "id": option_1.id,
-                    "gross_price": 200.0,
+                    "grossPrice": 200.0,
                     "discount": {
-                        "is_discounted": True,
-                        "discounted_gross_price": 160.0,
-                        "discounted_gross_percentage": 0.20,
-                        "maximum_sold_quantity": None,
-                        "remaining_quantity": None,
+                        "isDiscounted": True,
+                        "discountedGrossPrice": 160.0,
+                        "discountedGrossPercentage": 0.20,
+                        "maximumSoldQuantity": None,
+                        "remainingQuantity": None,
                     },
                     "status": option_1.status_display,
                     "variant": {
@@ -301,7 +301,7 @@ class TestPublicProductsEndpoints:
                 },
                 {
                     "id": option_2.id,
-                    "gross_price": 500.0,
+                    "grossPrice": 500.0,
                     "discount": None,
                     "status": option_2.status_display,
                     "variant": {
@@ -317,7 +317,7 @@ class TestPublicProductsEndpoints:
                 },
             ],
             "colors": [
-                {"name": color.name, "color_hex": color.color_hex}
+                {"name": color.name, "colorHex": color.color_hex}
                 for color in product.colors.all()
             ],
             "shapes": [
@@ -345,9 +345,7 @@ class TestPublicProductsEndpoints:
         # - 1x for selecting related supplier
         # - 1x for prefetching images
         with django_assert_max_num_queries(12):
-            response = anonymous_client.get(
-                f"{self.BASE_ENDPOINT}/product/{product.slug}/"
-            )
+            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/{product.slug}/")
 
             actual_response = json.loads(response.content)
 
@@ -360,4 +358,4 @@ class TestPublicProductsEndpoints:
                 f"{self.BASE_ENDPOINT}/does-not-exist/"
             )
 
-            assert failed_response.status_code == 404
+            assert failed_response.status_code == 400

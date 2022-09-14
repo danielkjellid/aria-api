@@ -3,7 +3,6 @@ from django.shortcuts import get_object_or_404
 
 from ninja import Router
 
-from aria.api.decorators import api
 from aria.categories.models import Category
 from aria.categories.schemas.outputs import (
     CategoryChildrenListOutput,
@@ -20,10 +19,8 @@ from aria.categories.selectors import (
 router = Router(tags=["Categories"])
 
 
-@api(
-    router,
+@router.get(
     "/",
-    method="GET",
     response={200: list[CategoryListOutput]},
     summary="List all active categories and children",
 )
@@ -38,10 +35,8 @@ def category_list_api(request: HttpRequest) -> list[CategoryListOutput]:
     return [CategoryListOutput(**category.dict()) for category in categories]
 
 
-@api(
-    router,
+@router.get(
     "parents/",
-    method="GET",
     response={200: list[CategoryParentListOutput]},
     summary="List all active primary categories",
 )
@@ -56,10 +51,8 @@ def category_parent_list_api(request: HttpRequest) -> list[CategoryParentListOut
     ]
 
 
-@api(
-    router,
-    "category/{category_slug}/",
-    method="GET",
+@router.get(
+    "{category_slug}/",
     response={200: CategoryDetailOutput},
     summary="Retrieve a specific category",
 )
@@ -75,10 +68,8 @@ def category_detail_api(
     return 200, CategoryDetailOutput.from_orm(category)
 
 
-@api(
-    router,
-    "category/{category_slug}/children/",
-    method="GET",
+@router.get(
+    "{category_slug}/children/",
     response={200: list[CategoryChildrenListOutput]},
     summary="List all active children categories belonging to a parent",
 )

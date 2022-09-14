@@ -3,7 +3,6 @@ from django.utils.translation import gettext as _
 
 from ninja import Router
 
-from aria.api.decorators import api
 from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse
 from aria.api_auth.exceptions import TokenError
@@ -23,10 +22,8 @@ from aria.core.exceptions import ApplicationError
 router = Router(tags=["Auth"])
 
 
-@api(
-    router,
+@router.post(
     "tokens/obtain/",
-    method="POST",
     response={200: TokensObtainOutput, codes_40x: ExceptionResponse},
     summary="Obtain access and refresh token pair",
 )
@@ -49,10 +46,8 @@ def auth_obtain_token_pair(
     return 200, TokensObtainOutput(**tokens.dict())
 
 
-@api(
-    router,
+@router.post(
     "tokens/refresh/",
-    method="POST",
     response={200: TokensRefreshOutput, codes_40x: ExceptionResponse},
     summary="Obtain a new token pair",
 )
@@ -68,10 +63,8 @@ def auth_refresh_token_pair(
     return 200, TokensRefreshOutput(**tokens.dict())
 
 
-@api(
-    router,
+@router.post(
     "tokens/blacklist/",
-    method="POST",
     response={200: None, codes_40x: ExceptionResponse},
     summary="Blacklists a refresh token",
 )

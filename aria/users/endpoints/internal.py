@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 
 from ninja import Query, Router
 
-from aria.api.decorators import api, paginate
+from aria.api.decorators import paginate
 from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse
 from aria.api_auth.decorators import permission_required
@@ -17,10 +17,8 @@ from aria.users.services import user_update
 router = Router(tags=["Users"])
 
 
-@api(
-    router,
+@router.get(
     "/",
-    method="GET",
     response={
         200: list[UserListOutput],
         codes_40x: ExceptionResponse,
@@ -40,10 +38,8 @@ def user_list_api(
     return [UserListOutput(**user.dict()) for user in users]
 
 
-@api(
-    router,
-    "user/{user_id}/",
-    method="GET",
+@router.get(
+    "{user_id}/",
     response={200: UserDetailOutput, codes_40x: ExceptionResponse},
     summary="Retrieve a single user",
 )
@@ -57,10 +53,8 @@ def user_detail_api(request: HttpRequest, user_id: int) -> tuple[int, UserDetail
     return 200, UserDetailOutput.from_orm(user)
 
 
-@api(
-    router,
-    "user/{user_id}/update/",
-    method="POST",
+@router.post(
+    "{user_id}/update/",
     response={200: None, codes_40x: ExceptionResponse},
     summary="Update a single user",
 )

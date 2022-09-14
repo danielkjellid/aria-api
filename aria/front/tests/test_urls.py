@@ -8,7 +8,7 @@ class TestPublicFrontUrls:
         """
         url = reverse("api-1.0.0:front-opening-hours")
 
-        assert url == "/api/front/opening-hours/"
+        assert url == "/api/v1/front/opening-hours/"
 
     def test_url_site_messages_active_list_api(self) -> None:
         """
@@ -16,4 +16,4 @@ class TestPublicFrontUrls:
         """
         url = reverse("api-1.0.0:front-site-messages-active")
 
-        assert url == "/api/front/site-messages/active/"
+        assert url == "/api/v1/front/site-messages/active/"

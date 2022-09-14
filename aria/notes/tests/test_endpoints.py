@@ -12,9 +12,9 @@ class TestPublicNotesEndpoints:
     pass
 
 
-class TestPrivateNotesEndpoints:
+class TestInternalNotesEndpoints:
 
-    BASE_ENDPOINT = "/api/notes"
+    BASE_ENDPOINT = "/api/v1/internal/notes"
 
     def test_anonymous_client_note_delete_api(
         self, anonymous_client, django_assert_max_num_queries
@@ -30,7 +30,7 @@ class TestPrivateNotesEndpoints:
 
         with django_assert_max_num_queries(0):
             response = anonymous_client.delete(
-                f"{self.BASE_ENDPOINT}/note/{note.id}/delete/"
+                f"{self.BASE_ENDPOINT}/{note.id}/delete/"
             )
 
         assert response.status_code == 401
@@ -50,7 +50,7 @@ class TestPrivateNotesEndpoints:
         # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
         with django_assert_max_num_queries(3):
             response = authenticated_unprivileged_client.delete(
-                f"{self.BASE_ENDPOINT}/note/{note.id}/delete/"
+                f"{self.BASE_ENDPOINT}/{note.id}/delete/"
             )
 
         assert response.status_code == 403
@@ -73,7 +73,7 @@ class TestPrivateNotesEndpoints:
         # 1 for getting note and 1 for deleting note.
         with django_assert_max_num_queries(5):
             response = authenticated_privileged_client.delete(
-                f"{self.BASE_ENDPOINT}/note/{note.id}/delete/"
+                f"{self.BASE_ENDPOINT}/{note.id}/delete/"
             )
 
         assert response.status_code == 200

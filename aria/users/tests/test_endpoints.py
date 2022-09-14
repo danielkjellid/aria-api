@@ -12,7 +12,7 @@ pytestmark = pytest.mark.django_db
 
 class TestPublicUsersEndpoints:
 
-    BASE_ENDPOINT = "/api/users"
+    BASE_ENDPOINT = "/api/v1/users"
 
     def test_anonymous_request_user_request_api(
         self, anonymous_client, django_assert_max_num_queries
@@ -42,14 +42,14 @@ class TestPublicUsersEndpoints:
         expected_response = {
             "id": user.id,
             "email": user.email,
-            "has_confirmed_email": user.has_confirmed_email,
+            "hasConfirmedEmail": user.has_confirmed_email,
             "profile": {
-                "full_name": user.full_name,
+                "fullName": user.full_name,
                 "initial": user.initial,
-                "avatar_color": user.avatar_color,
+                "avatarColor": user.avatar_color,
             },
-            "is_superuser": user.is_superuser,
-            "is_staff": user.is_staff,
+            "isSuperuser": user.is_superuser,
+            "isStaff": user.is_staff,
             "permissions": [],
         }
 
@@ -72,16 +72,16 @@ class TestPublicUsersEndpoints:
 
         payload_json = {
             "email": "someone.special@example.com",
-            "first_name": "Someone",
-            "last_name": "Special",
-            "phone_number": "91812345",
-            "birth_date": "1990-08-23",
-            "street_address": "Example street 1",
-            "zip_code": "0172",
-            "zip_place": "Oslo",
-            "subscribed_to_newsletter": False,
-            "allow_personalization": True,
-            "allow_third_party_personalization": True,
+            "firstName": "Someone",
+            "lastName": "Special",
+            "phoneNumber": "91812345",
+            "birthDate": "1990-08-23",
+            "streetAddress": "Example street 1",
+            "zipCode": "0172",
+            "zipPlace": "Oslo",
+            "subscribedToNewsletter": False,
+            "allowPersonalization": True,
+            "allowThirdPartyPersonalization": True,
             "password": "supersecret",
             "password2": "supersecret",
         }
@@ -241,9 +241,9 @@ class TestPublicUsersEndpoints:
         assert response.status_code == 200
 
 
-class TestProtectedUsersEndpoints:
+class TestInternalUsersEndpoints:
 
-    BASE_ENDPOINT = "/api/users"
+    BASE_ENDPOINT = "/api/v1/internal/users"
 
     #################
     # List endpoint #
@@ -322,7 +322,7 @@ class TestProtectedUsersEndpoints:
         user = create_user()
 
         with django_assert_max_num_queries(0):
-            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/user/{user.id}/")
+            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/{user.id}/")
 
         assert response.status_code == 401
 
@@ -341,7 +341,7 @@ class TestProtectedUsersEndpoints:
         # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
         with django_assert_max_num_queries(3):
             response = authenticated_unprivileged_client.get(
-                f"{self.BASE_ENDPOINT}/user/{user.id}/"
+                f"{self.BASE_ENDPOINT}/{user.id}/"
             )
 
         assert response.status_code == 403
@@ -362,30 +362,30 @@ class TestProtectedUsersEndpoints:
         user.save()
 
         expected_json = {
-            "first_name": user.first_name,
-            "last_name": user.last_name,
+            "firstName": user.first_name,
+            "lastName": user.last_name,
             "email": user.email,
-            "phone_number": user.formatted_phone_number,
-            "birth_date": user.birth_date,
-            "has_confirmed_email": user.has_confirmed_email,
-            "last_login": user.last_login,
+            "phoneNumber": user.formatted_phone_number,
+            "birthDate": user.birth_date,
+            "hasConfirmedEmail": user.has_confirmed_email,
+            "lastLogin": user.last_login,
             "id": user.id,
             "profile": {
-                "full_name": user.full_name,
+                "fullName": user.full_name,
                 "initial": user.initial,
-                "avatar_color": user.avatar_color,
+                "avatarColor": user.avatar_color,
             },
-            "date_joined": "1970-01-01T20:00:00+00:00",
-            "is_active": user.is_active,
-            "full_address": user.full_address,
-            "street_address": user.street_address,
-            "zip_code": user.zip_code,
-            "zip_place": user.zip_place,
-            "acquisition_source": user.acquisition_source,
-            "disabled_emails": user.disabled_emails,
-            "subscribed_to_newsletter": user.subscribed_to_newsletter,
-            "allow_personalization": user.allow_personalization,
-            "allow_third_party_personalization": user.allow_personalization,
+            "dateJoined": "1970-01-01T20:00:00+00:00",
+            "isActive": user.is_active,
+            "fullAddress": user.full_address,
+            "streetAddress": user.street_address,
+            "zipCode": user.zip_code,
+            "zipPlace": user.zip_place,
+            "acquisitionSource": user.acquisition_source,
+            "disabledEmails": user.disabled_emails,
+            "subscribedToNewsletter": user.subscribed_to_newsletter,
+            "allowPersonalization": user.allow_personalization,
+            "allowThirdPartyPersonalization": user.allow_personalization,
             "logs": [],
             "notes": [],
         }
@@ -397,7 +397,7 @@ class TestProtectedUsersEndpoints:
         # - 1 for getting audit logs for user
         with django_assert_max_num_queries(7):
             response = authenticated_privileged_client.get(
-                f"{self.BASE_ENDPOINT}/user/{user.id}/"
+                f"{self.BASE_ENDPOINT}/{user.id}/"
             )
 
             actual_json = json.loads(response.content)
@@ -426,19 +426,19 @@ class TestProtectedUsersEndpoints:
             "email": "newtestuser@example,com",
             "first_name": "First",
             "last_name": "Last",
-            "phone_number": "12345678",
-            "has_confirmed_email": not user.has_confirmed_email,
-            "zip_code": "1234",
-            "zip_place": "Oslo",
-            "disabled_emails": not user.disabled_emails,
-            "subscribed_to_newsletter": not user.subscribed_to_newsletter,
-            "allow_personalization": not user.allow_personalization,
-            "allow_third_party_personalization": not user.allow_third_party_personalization,  # pylint: disable=line-too-long
+            "phoneNumber": "12345678",
+            "hasConfirmedEmail": not user.has_confirmed_email,
+            "zipCode": "1234",
+            "zipPlace": "Oslo",
+            "disabledEmails": not user.disabled_emails,
+            "subscribedToNewsletter": not user.subscribed_to_newsletter,
+            "allowPersonalization": not user.allow_personalization,
+            "allowThirdPartyPersonalization": not user.allow_third_party_personalization,  # pylint: disable=line-too-long
         }
 
         with django_assert_max_num_queries(0):
             response = anonymous_client.post(
-                f"{self.BASE_ENDPOINT}/user/{user.id}/update/", data=payload_json
+                f"{self.BASE_ENDPOINT}/{user.id}/update/", data=payload_json
             )
 
         assert response.status_code == 401
@@ -457,20 +457,20 @@ class TestProtectedUsersEndpoints:
             "email": "newtestuser@example,com",
             "first_name": "First",
             "last_name": "Last",
-            "phone_number": "12345678",
-            "has_confirmed_email": not user.has_confirmed_email,
-            "zip_code": "1234",
-            "zip_place": "Oslo",
-            "disabled_emails": not user.disabled_emails,
-            "subscribed_to_newsletter": not user.subscribed_to_newsletter,
-            "allow_personalization": not user.allow_personalization,
-            "allow_third_party_personalization": not user.allow_third_party_personalization,  # pylint: disable=line-too-long
+            "phoneNumber": "12345678",
+            "hasConfirmedEmail": not user.has_confirmed_email,
+            "zipCode": "1234",
+            "zipPlace": "Oslo",
+            "disabledEmails": not user.disabled_emails,
+            "subscribedToNewsletter": not user.subscribed_to_newsletter,
+            "allowPersonalization": not user.allow_personalization,
+            "allowThirdPartyPersonalization": not user.allow_third_party_personalization,  # pylint: disable=line-too-long
         }
 
         # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
         with django_assert_max_num_queries(3):
             response = authenticated_unprivileged_client.post(
-                f"{self.BASE_ENDPOINT}/user/{user.id}/update/",
+                f"{self.BASE_ENDPOINT}/{user.id}/update/",
                 data=payload_json,
                 content_type="application/json",
             )
@@ -490,16 +490,16 @@ class TestProtectedUsersEndpoints:
 
         payload_json = {
             "email": "newtestuser@example.com",
-            "first_name": "First",
-            "last_name": "Last",
-            "phone_number": "12345678",
-            "has_confirmed_email": not user.has_confirmed_email,
-            "zip_code": "1234",
-            "zip_place": "Oslo",
-            "disabled_emails": not user.disabled_emails,
-            "subscribed_to_newsletter": not user.subscribed_to_newsletter,
-            "allow_personalization": not user.allow_personalization,
-            "allow_third_party_personalization": not user.allow_third_party_personalization,  # pylint: disable=line-too-long
+            "firstName": "First",
+            "lastName": "Last",
+            "phoneNumber": "12345678",
+            "hasConfirmedEmail": not user.has_confirmed_email,
+            "zipCode": "1234",
+            "zipPlace": "Oslo",
+            "disabledEmails": not user.disabled_emails,
+            "subscribedToNewsletter": not user.subscribed_to_newsletter,
+            "allowPersonalization": not user.allow_personalization,
+            "allowThirdPartyPersonalization": not user.allow_third_party_personalization,  # pylint: disable=line-too-long
         }
 
         # Uses 11 queries:
@@ -513,7 +513,7 @@ class TestProtectedUsersEndpoints:
         # - 1 releasing savepoint
         with django_assert_max_num_queries(11):
             response = authenticated_privileged_client.post(
-                f"{self.BASE_ENDPOINT}/user/{user.id}/update/",
+                f"{self.BASE_ENDPOINT}/{user.id}/update/",
                 data=payload_json,
                 content_type="application/json",
             )
@@ -541,7 +541,7 @@ class TestProtectedUsersEndpoints:
 
         with django_assert_max_num_queries(0):
             response = anonymous_client.post(
-                f"{self.BASE_ENDPOINT}/user/{user.id}/update/", data=payload_json
+                f"{self.BASE_ENDPOINT}/{user.id}/update/", data=payload_json
             )
 
         assert response.status_code == 401
@@ -561,7 +561,7 @@ class TestProtectedUsersEndpoints:
         # Uses 3 queries: 1 for getting the user, 2 for checking permissions.
         with django_assert_max_num_queries(3):
             response = authenticated_unprivileged_client.post(
-                f"{self.BASE_ENDPOINT}/user/{user.id}/update/",
+                f"{self.BASE_ENDPOINT}/{user.id}/update/",
                 data=payload_json,
                 content_type="application/json",
             )
@@ -592,7 +592,7 @@ class TestProtectedUsersEndpoints:
         # - 1 releasing savepoint
         with django_assert_max_num_queries(11):
             response = authenticated_privileged_client.post(
-                f"{self.BASE_ENDPOINT}/user/{user.id}/update/",
+                f"{self.BASE_ENDPOINT}/{user.id}/update/",
                 data=payload_json,
                 content_type="application/json",
             )

@@ -8,4 +8,4 @@ class TestPublicEmployeesUrls:
         """
         url = reverse("api-1.0.0:employees-index")
 
-        assert url == "/api/employees/"
+        assert url == "/api/v1/employees/"

@@ -4,7 +4,6 @@ from django.utils.translation import gettext_lazy as _
 
 from ninja import Router
 
-from aria.api.decorators import api
 from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse
 from aria.api_auth.authentication import JWTAuthRequired
@@ -23,10 +22,8 @@ from aria.users.services import user_create, user_set_password, user_verify_acco
 router = Router(tags=["Users"])
 
 
-@api(
-    router,
+@router.get(
     "me/",
-    method="GET",
     response={200: UserRequestOutput},
     summary="Retrieve details about the user making the request",
     auth=JWTAuthRequired(),
@@ -45,10 +42,8 @@ def user_request_api(request: HttpRequest) -> tuple[int, UserRequestOutput]:
     return 200, UserRequestOutput(**user.dict())
 
 
-@api(
-    router,
+@router.post(
     "create/",
-    method="POST",
     response={201: None},
     summary="Creates a user",
 )
@@ -61,10 +56,8 @@ def user_create_api(request: HttpRequest, payload: UserCreateInput) -> int:
     return 201
 
 
-@api(
-    router,
+@router.post(
     "verify/",
-    method="POST",
     response={200: None, codes_40x: ExceptionResponse},
     summary="Sends verification email",
 )
@@ -85,10 +78,8 @@ def user_account_verification_api(
     return 200
 
 
-@api(
-    router,
+@router.post(
     "verify/confirm/",
-    method="POST",
     response={200: None},
     summary="Validate email tokens to confirm account",
 )
@@ -105,10 +96,8 @@ def user_account_verification_confirm_api(
     return 200
 
 
-@api(
-    router,
+@router.post(
     "password/reset/",
-    method="POST",
     response={200: None, codes_40x: ExceptionResponse},
     summary="Send a reset password email",
 )
@@ -129,10 +118,8 @@ def user_password_reset_api(
     return 200
 
 
-@api(
-    router,
+@router.post(
     "password/reset/confirm/",
-    method="POST",
     response={200: None, codes_40x: ExceptionResponse},
     summary="Send a reset password email",
 )
