@@ -101,6 +101,7 @@ class ProductListRecord(BaseModel):
     name: str
     slug: str
     unit: str
+    status: str
     supplier: ProductSupplierRecord
     thumbnail: str | None = None
     display_price: bool

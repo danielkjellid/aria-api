@@ -28,6 +28,7 @@ from aria.products.records import (
 )
 from aria.products.schemas.filters import ProductListFilters
 
+
 #####################
 # Records selectors #
 #####################
@@ -87,6 +88,7 @@ def product_list_record(product: Product) -> ProductListRecord:
         id=product.id,
         name=product.name,
         slug=product.slug,
+        status=product.status_display,
         unit=product.unit_display,
         supplier=ProductSupplierRecord(
             id=product.supplier.id,
@@ -516,6 +518,18 @@ def product_list_for_sale_for_qs(
     filtered_qs = ProductSearchFilter(filters, qs).qs
 
     return [product_list_record(product=product) for product in filtered_qs]
+
+
+def product_list(
+    *, filters: ProductListFilters | dict[str, Any] | None
+) -> list[ProductListRecord]:
+    """
+    Returns a filterable list of products.
+    """
+
+    products = Product.objects.all()
+
+    return product_list_for_sale_for_qs(products=products, filters=filters)
 
 
 def product_list_for_sale(
