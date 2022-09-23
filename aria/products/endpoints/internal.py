@@ -8,7 +8,7 @@ from aria.api_auth.decorators import permission_required
 from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.schemas.filters import ProductListFilters
 from aria.products.schemas.outputs import ProductInternalListOutput
-from aria.products.selectors import product_list
+from aria.products.selectors.core import product_list
 from aria.products.services import variant_create, size_create
 
 router = Router(tags=["Products"])
