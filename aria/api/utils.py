@@ -2,6 +2,7 @@ import re
 from typing import Any, Pattern
 
 from django.utils.translation import activate, deactivate, gettext as _
+from ninja import Schema
 
 MESSAGE_TEMPLATE = {
     "field required": _("field required"),
@@ -71,3 +72,13 @@ def translate_pydantic_validation_messages(
         }
         for error in errors
     ]
+
+
+def create_schema_class(name: str, fields: dict[Any, Any]) -> Schema:
+    return type(name, (Schema,), fields)
+
+
+def inline_schema(*, name: str, fields: dict[Any, Any], **kwargs: Any):
+    schema_class = create_schema_class(name=name, fields=fields)
+
+    return schema_class(**kwargs)

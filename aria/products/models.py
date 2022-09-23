@@ -2,7 +2,6 @@ from decimal import Decimal
 
 from django.db import models
 from django.utils.text import slugify
-
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from mptt.models import TreeManyToManyField

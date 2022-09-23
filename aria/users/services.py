@@ -40,10 +40,10 @@ def _validate_email_and_password(
     if password and password2:
         if password != password2:
             raise ApplicationError(
-                message=_("The two password fields didn’t match."),
+                message=_("The two password fields didn't match."),
                 extra={
-                    "password": _("The two password fields didn’t match."),
-                    "password2": _("The two password fields didn’t match."),
+                    "password": _("The two password fields didn't match."),
+                    "password2": _("The two password fields didn't match."),
                 },
             )
 
