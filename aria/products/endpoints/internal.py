@@ -9,6 +9,7 @@ from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.schemas.filters import ProductListFilters
 from aria.products.schemas.outputs import ProductInternalListOutput
 from aria.products.selectors.core import product_list
+from aria.products.selectors.sizes import size_distinct_list
 from aria.products.services import variant_create, size_create
 
 router = Router(tags=["Products"])
@@ -113,6 +114,29 @@ def variant_create_api(request: HttpRequest, payload: VariantCreateInternalInput
     return 201
 
 
+class SizeListInternalOutput(Schema):
+    id: float | None
+    width: float | None
+    height: float | None
+    depth: float | None
+    circumference: float | None
+
+
+@router.get(
+    "sizes/",
+    response={200: list[SizeListInternalOutput]},
+    summary="List all distinct sizes.",
+)
+def size_list_api(request: HttpRequest) -> list[SizeListInternalOutput]:
+    """
+    Get a list of all distinct sizes in the application.
+    """
+
+    sizes = size_distinct_list()
+
+    return [SizeListInternalOutput(**size.dict()) for size in sizes]
+
+
 class SizeCreateInternalInput(Schema):
     width: float | None
     height: float | None
@@ -126,9 +150,9 @@ class SizeCreateInternalInput(Schema):
         201: None,
         codes_40x: ExceptionResponse,
     },
-    summary="Create a new size",
+    summary="Create a new size.",
 )
-def size_create_api(request: HttpRequest, payload: SizeCreateInternalInput):
+def size_create_api(request: HttpRequest, payload: SizeCreateInternalInput) -> int:
     """
     Creates a single size instance if size does not already exist.
     """

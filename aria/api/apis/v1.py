@@ -96,7 +96,9 @@ internal_router.add_router("/notes/", internal_notes_endpoints, auth=JWTAuthRequ
 # Users endpoints
 internal_router.add_router("/users/", internal_users_endpoints, auth=JWTAuthRequired())
 
-internal_router.add_router("/products/", internal_products_endpoints, auth=None)
+internal_router.add_router(
+    "/products/", internal_products_endpoints, auth=JWTAuthRequired()
+)
 
 ###############
 # API routers #

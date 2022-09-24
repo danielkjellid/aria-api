@@ -85,24 +85,14 @@ class Size(models.Model):
         ]
 
     def __str__(self) -> str:
-        if (
-            self.depth is not None
-            and self.width is not None
-            and self.height is not None
-            and self.circumference is None
-        ):
+        if self.depth and self.width and self.height and not self.circumference:
             return (
                 f"B{self.convert_to_self_repr(self.width)} "
                 f"x H{self.convert_to_self_repr(self.height)} "
                 f"x D{self.convert_to_self_repr(self.depth)}"
             )
 
-        if (
-            self.circumference is not None
-            and self.width is None
-            and self.height is None
-            and self.depth is None
-        ):
+        if self.circumference and not self.width and not self.height and not self.depth:
             return f"Ø{self.convert_to_self_repr(self.circumference)}"
 
         return (
