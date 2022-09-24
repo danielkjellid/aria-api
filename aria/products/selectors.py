@@ -143,9 +143,9 @@ def product_get_price_from_options(*, product: Product) -> Decimal:
         return Decimal(annotated_price)
 
     # Aggregate lowest gross price based on a product's options.
-    lowest_option_price = product.options.available().aggregate(Min("gross_price"))[
-        "gross_price__min"
-    ]
+    lowest_option_price = product.options.available().aggregate(
+        price=Min("gross_price", filter=Q(gross_price__gt=0))
+    )["price"]
 
     return Decimal(lowest_option_price) if lowest_option_price else Decimal("0.00")
 

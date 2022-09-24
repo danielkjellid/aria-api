@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from django.db.models import F, Min, Prefetch
+from django.db.models import F, Min, Prefetch, Q
 
 from aria.core.models import BaseQuerySet
 from aria.products.enums import ProductStatus
@@ -183,7 +183,11 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         available.
         """
 
-        from_price = self.annotate(annotated_from_price=Min("options__gross_price"))
+        from_price = self.annotate(
+            annotated_from_price=Min(
+                "options__gross_price", filter=Q(options__gross_price__gt=0)
+            )
+        )
 
         if from_price is None:
             return Decimal("0.00")
