@@ -15,3 +15,4 @@ class DiscountAdmin(admin.ModelAdmin):
         "products",
         "product_options",
     )
+    autocomplete_fields = ["products", "product_options"]
