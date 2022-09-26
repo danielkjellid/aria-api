@@ -7,7 +7,7 @@ from django.utils.text import slugify
 from django.utils.translation import gettext as _
 
 from aria.core.exceptions import ApplicationError
-from aria.products.models import ProductOption, Variant, Size
+from aria.products.models import ProductOption, Variant, Size, Product, ProductFile
 
 
 @transaction.atomic
@@ -110,6 +110,13 @@ def size_create(
             raise ApplicationError(message=_("Size already exist.")) from exc
 
         raise exc
+
+
+def product_file_create(*, product: Product, name: str, file: File) -> ProductFile:
+    """
+    Create a product file associated to a product.
+    """
+    return ProductFile.objects.create(product=product, name=name, file=file)
 
 
 def product_option_delete_related_variants(*, instance: ProductOption) -> None:

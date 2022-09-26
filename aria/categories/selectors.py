@@ -13,6 +13,7 @@ def category_record(*, category: Category) -> CategoryRecord:
     return CategoryRecord(
         id=category.id,
         name=category.name,
+        display_name=category.get_category_display(),
         slug=category.slug,
         description=category.description,
         ordering=category.ordering,
@@ -33,6 +34,7 @@ def category_detail_record(*, category: Category) -> CategoryDetailRecord:
     return CategoryDetailRecord(
         id=category.id,
         name=category.name,
+        display_name=category.get_category_display(),
         ordering=category.ordering,
         slug=category.slug,
         description=category.description,
@@ -56,6 +58,16 @@ def category_navigation_active_list() -> list[CategoryDetailRecord]:
 
 def _category_navigation_active_list_key() -> str:
     return "categories"
+
+
+def category_children_list() -> list[CategoryRecord]:
+    """
+    Returns a list of all categories.
+    """
+
+    categories = Category.objects.secondary().select_related("parent")
+
+    return [category_record(category=category) for category in categories]
 
 
 @cached(key=_category_navigation_active_list_key, timeout=5 * 60)

@@ -19,7 +19,10 @@ from aria.api.exceptions import PageOutOfBoundsError
 from aria.api_auth.authentication import JWTAuthRequired
 from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
 from aria.api_auth.exceptions import TokenError
-from aria.categories.endpoints import public_endpoints as public_categories_endpoints
+from aria.categories.endpoints import (
+    public_endpoints as public_categories_endpoints,
+    internal_endpoints as internal_categories_endpoints,
+)
 from aria.core.endpoints import public_endpoints as public_core_endpoints
 from aria.core.exceptions import ApplicationError
 from aria.discounts.endpoints import public_endpoints as public_discount_endpoints
@@ -31,7 +34,10 @@ from aria.products.endpoints import (
     public_endpoints as public_products_endpoints,
     internal_endpoints as internal_products_endpoints,
 )
-from aria.suppliers.endpoints import public_endpoints as public_suppliers_endpoints
+from aria.suppliers.endpoints import (
+    public_endpoints as public_suppliers_endpoints,
+    internal_endpoints as internal_suppliers_endpoints,
+)
 from aria.users.endpoints import (
     internal_endpoints as internal_users_endpoints,
     public_endpoints as public_users_endpoints,
@@ -90,6 +96,8 @@ public_router.add_router("/users/", public_users_endpoints, auth=None)
 
 internal_router = Router(auth=JWTAuthRequired())
 
+internal_router.add_router("/categories/", internal_categories_endpoints, auth=None)
+
 # Notes endpoints
 internal_router.add_router("/notes/", internal_notes_endpoints, auth=JWTAuthRequired())
 
@@ -98,6 +106,10 @@ internal_router.add_router("/users/", internal_users_endpoints, auth=JWTAuthRequ
 
 internal_router.add_router(
     "/products/", internal_products_endpoints, auth=JWTAuthRequired()
+)
+
+internal_router.add_router(
+    "/suppliers/", internal_suppliers_endpoints, auth=JWTAuthRequired()
 )
 
 ###############

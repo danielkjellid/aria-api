@@ -1,16 +1,18 @@
 from django.http import HttpRequest
-from ninja import Router, Query, Schema
+from django.shortcuts import get_object_or_404
+from ninja import Router, Query, Schema, Form, UploadedFile, File
 
 from aria.api.decorators import paginate
 from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse
 from aria.api_auth.decorators import permission_required
 from aria.products.enums import ProductStatus, ProductUnit
+from aria.products.models import Product
 from aria.products.schemas.filters import ProductListFilters
 from aria.products.schemas.outputs import ProductInternalListOutput
 from aria.products.selectors.core import product_list
 from aria.products.selectors.sizes import size_distinct_list
-from aria.products.services import variant_create, size_create
+from aria.products.services import variant_create, size_create, product_file_create
 
 router = Router(tags=["Products"])
 
@@ -90,6 +92,44 @@ class ProductCreateInternalInput(Schema):
 )
 def product_create_api(request: HttpRequest):
     pass
+
+
+class ProductFileCreateInternalInput(Schema):
+    name: str
+
+
+class ProductFileCreateInternalOutput(Schema):
+    product_id: int
+    name: str
+    file: str | None
+
+
+@router.post(
+    "{product_id}/files/create/",
+    response={
+        200: ProductFileCreateInternalOutput,
+        codes_40x: ExceptionResponse,
+    },
+    summary="Create a file associated to a product.",
+)
+def product_file_create_api(
+    request: HttpRequest,
+    product_id: int,
+    payload: ProductFileCreateInternalInput = Form(...),
+    file: UploadedFile = File(...),
+):
+    """
+    Create a file associated to a certain product based on a product's id.
+    """
+
+    product = get_object_or_404(Product, pk=product_id)
+    product_file = product_file_create(product=product, name=payload.name, file=file)
+
+    return ProductFileCreateInternalOutput(
+        product_id=product_file.product.id,
+        name=product_file.name,
+        file=product_file.file.url if product_file.file else None,
+    )
 
 
 class VariantCreateInternalInput(Schema):
