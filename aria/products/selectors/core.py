@@ -1,35 +1,25 @@
-import itertools
-from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
-from django.db.models import Min, Prefetch, Q
+from django.db.models import Q
 
 from aria.categories.models import Category
 from aria.categories.selectors import category_tree_active_list_for_product
 from aria.core.decorators import cached
 from aria.core.models import BaseQuerySet
 from aria.core.selectors import base_header_image_record
-from aria.discounts.models import Discount
-from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.filters import ProductSearchFilter
-from aria.products.models import Product, ProductOption
+from aria.products.models import Product
 from aria.products.records import (
     ProductColorRecord,
     ProductDetailRecord,
-    ProductDiscountRecord,
     ProductFileRecord,
     ProductListRecord,
-    ProductOptionRecord,
-    ProductRecord,
     ProductShapeRecord,
-    ProductSizeRecord,
-    ProductSupplierRecord,
-    ProductVariantRecord,
 )
 from aria.products.schemas.filters import ProductListFilters
-from aria.products.selectors.options import product_options_list_for_product
-from aria.products.selectors.records import product_record, product_list_record
 from aria.products.selectors.pricing import product_get_price_from_options
+from aria.products.selectors.product_options import product_options_list_for_product
+from aria.products.selectors.records import product_record, product_list_record
 
 
 def product_detail(

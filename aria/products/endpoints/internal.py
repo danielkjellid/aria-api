@@ -13,7 +13,12 @@ from aria.products.schemas.outputs import ProductInternalListOutput
 from aria.products.selectors.core import product_list
 from aria.products.selectors.sizes import size_distinct_list
 from aria.products.selectors.variants import variant_list
-from aria.products.services import variant_create, size_create, product_file_create
+from aria.products.services import (
+    variant_create,
+    size_get_or_create,
+    product_file_create,
+    product_option_create,
+)
 
 router = Router(tags=["Products"])
 
@@ -247,5 +252,54 @@ def size_create_internal_api(
     Creates a single size instance if size does not already exist.
     """
 
-    size_create(**payload.dict())
+    size_get_or_create(**payload.dict())
     return 201
+
+
+class ProductOptionCreateInternalInput(Schema):
+    status: int
+    gross_price: float
+    size_width: float | None = None
+    size_height: float | None = None
+    size_depth: float | None = None
+    size_circumference: float | None = None
+    variant_id: int | None = None
+
+    # TODO: Validate that some parts of the size is present
+    # TODO: Validate that either some size fields or variant is present
+
+
+class ProductOptionCreateInternalOutput(Schema):
+    id: int
+    status: int
+    gross_price: float
+    size_id: int
+    variant_id: int
+
+
+def product_option_create_internal_api(
+    request: HttpRequest, product_id: int, payload: ProductOptionCreateInternalInput
+) -> tuple[int, ProductOptionCreateInternalOutput]:
+
+    size = size_get_or_create(
+        width=payload.size_width,
+        height=payload.size_height,
+        depth=payload.size_depth,
+        circumference=payload.size_circumference,
+    )
+
+    product_option = product_option_create(
+        product_id=product_id,
+        gross_price=payload.gross_price,
+        status=payload.status,
+        size_id=size.id,
+        variant_id=payload.variant_id,
+    )
+
+    return 201, ProductOptionCreateInternalOutput(
+        id=product_option.id,
+        status=product_option.status,
+        gross_price=product_option.gross_price,
+        size_id=product_option.size.id,
+        variant_id=product_option.variant.id,
+    )

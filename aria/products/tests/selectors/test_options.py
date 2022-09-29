@@ -3,7 +3,7 @@ from decimal import Decimal
 import pytest
 
 from aria.products.models import Product
-from aria.products.selectors.options import product_options_list_for_product
+from aria.products.selectors.product_options import product_options_list_for_product
 from aria.products.tests.utils import create_product, create_product_option
 
 pytestmark = pytest.mark.django_db
