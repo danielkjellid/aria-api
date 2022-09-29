@@ -12,6 +12,7 @@ from aria.products.schemas.filters import ProductListFilters
 from aria.products.schemas.outputs import ProductInternalListOutput
 from aria.products.selectors.core import product_list
 from aria.products.selectors.sizes import size_distinct_list
+from aria.products.selectors.variants import variant_list
 from aria.products.services import variant_create, size_create, product_file_create
 
 router = Router(tags=["Products"])
@@ -107,7 +108,7 @@ class ProductFileCreateInternalOutput(Schema):
 @router.post(
     "{product_id}/files/create/",
     response={
-        200: ProductFileCreateInternalOutput,
+        201: ProductFileCreateInternalOutput,
         codes_40x: ExceptionResponse,
     },
     summary="Create a file associated to a product.",
@@ -125,33 +126,80 @@ def product_file_create_api(
     product = get_object_or_404(Product, pk=product_id)
     product_file = product_file_create(product=product, name=payload.name, file=file)
 
-    return ProductFileCreateInternalOutput(
+    return 201, ProductFileCreateInternalOutput(
         product_id=product_file.product.id,
         name=product_file.name,
         file=product_file.file.url if product_file.file else None,
     )
 
 
+class VariantListInternalOutput(Schema):
+    id: int
+    name: str
+    is_standard: bool
+    image: str | None
+    thumbnail: str | None
+
+
+@router.get(
+    "variants/",
+    response={
+        200: list[VariantListInternalOutput],
+        codes_40x: ExceptionResponse,
+    },
+    summary="List all variants.",
+)
+def variant_list_internal_api(request: HttpRequest) -> list[VariantListInternalOutput]:
+    """
+    Get a list of all variants in the application.
+    """
+
+    variants = variant_list()
+
+    return [VariantListInternalOutput(**variant.dict()) for variant in variants]
+
+
 class VariantCreateInternalInput(Schema):
     name: str
+    is_standard: bool
+
+
+class VariantCreateInternalOutput(Schema):
+    id: int
+    name: str
+    is_standard: bool
+    image: str | None
     thumbnail: str | None
 
 
 @router.post(
     "variants/create/",
     response={
-        201: None,
+        201: VariantCreateInternalOutput,
         codes_40x: ExceptionResponse,
     },
     summary="Create a new variant.",
 )
-def variant_create_api(request: HttpRequest, payload: VariantCreateInternalInput):
+def variant_create_internal_api(
+    request: HttpRequest,
+    payload: VariantCreateInternalInput = Form(...),
+    file: UploadedFile = File(...),
+):
     """
     Creates a single variant instance.
     """
 
-    variant_create(**payload.dict())
-    return 201
+    variant = variant_create(
+        name=payload.name, is_standard=payload.is_standard, thumbnail=file
+    )
+
+    return 201, VariantCreateInternalOutput(
+        id=variant.id,
+        name=variant.name,
+        is_standard=variant.is_standard,
+        image=variant.image.url if variant.image else None,
+        thumbnail=variant.thumbnail.url if variant.thumbnail else None,
+    )
 
 
 class SizeListInternalOutput(Schema):
@@ -167,7 +215,7 @@ class SizeListInternalOutput(Schema):
     response={200: list[SizeListInternalOutput]},
     summary="List all distinct sizes.",
 )
-def size_list_api(request: HttpRequest) -> list[SizeListInternalOutput]:
+def size_list_internal_api(request: HttpRequest) -> list[SizeListInternalOutput]:
     """
     Get a list of all distinct sizes in the application.
     """
@@ -192,7 +240,9 @@ class SizeCreateInternalInput(Schema):
     },
     summary="Create a new size.",
 )
-def size_create_api(request: HttpRequest, payload: SizeCreateInternalInput) -> int:
+def size_create_internal_api(
+    request: HttpRequest, payload: SizeCreateInternalInput
+) -> int:
     """
     Creates a single size instance if size does not already exist.
     """

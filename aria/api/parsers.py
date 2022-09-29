@@ -1,8 +1,7 @@
 from typing import Any
 
-from django.http import HttpRequest
-
 import orjson
+from django.http import HttpRequest
 from ninja.parser import Parser
 
 from aria.core.humps import decamelize, is_camelcase
@@ -20,11 +19,12 @@ class ORJSONParser(Parser):
 class CamelCaseParser(Parser):
     """
     A parser that parses data from camel case to snake case,
-    if the data sent is camel case. If not, it returnes parsed
+    if the data sent is camel case. If not, it returns parsed
     data with orjson.
     """
 
     def parse_body(self, request: HttpRequest) -> Any:
+        print(request.body)
         data = orjson.loads(request.body)
 
         if is_camelcase(data):
