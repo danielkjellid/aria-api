@@ -13,7 +13,9 @@ from aria.products.models import (
     ProductOption,
     Variant,
 )
-from aria.products.services import product_option_delete_related_variants
+from aria.products.services.product_options import (
+    product_option_delete_related_variants,
+)
 
 
 def _validate_category(**kwargs: Any) -> None:

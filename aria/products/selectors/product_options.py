@@ -4,14 +4,16 @@ from aria.discounts.models import Discount
 from aria.products.enums import ProductStatus
 from aria.products.models import Product
 from aria.products.records import (
-    ProductOptionRecord,
+    ProductOptionDetailRecord,
     ProductSizeRecord,
     ProductVariantRecord,
 )
 from aria.products.selectors.discounts import product_option_get_active_discount
 
 
-def product_options_list_for_product(*, product: Product) -> list[ProductOptionRecord]:
+def product_options_list_for_product(
+    *, product: Product
+) -> list[ProductOptionDetailRecord]:
     """
     Get a full representation of a product options connected to a single product
     instance.
@@ -43,7 +45,7 @@ def product_options_list_for_product(*, product: Product) -> list[ProductOptionR
         )
 
     return [
-        ProductOptionRecord(
+        ProductOptionDetailRecord(
             id=option.id,
             discount=product_option_get_active_discount(product_option=option),
             gross_price=option.gross_price,

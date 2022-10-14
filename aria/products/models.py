@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.db import models
 from django.utils.text import slugify
+
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from mptt.models import TreeManyToManyField
@@ -308,12 +309,20 @@ class Product(BaseModel, BaseThumbnailImageModel):
     class Meta:
         verbose_name = "Product"
         verbose_name_plural = "Products"
-        permissions = (
-            ("has_products_list", "Can list products"),
-            ("has_product_edit", "Can edit a single product instance"),
-            ("has_product_add", "Can add a single product instance"),
-            ("has_product_delete", "Can delete a single product instance"),
-        )
+        permissions = [
+            (
+                "products.view",
+                "Has access to view limited info about a product.",
+            ),
+            (
+                "products.management",
+                "Has access to manage products (add, edit, etc).",
+            ),
+            (
+                "products.admin",
+                "Has admin access to all product functionality, including all info.",
+            ),
+        ]
 
     def __str__(self) -> str:
         return self.name
@@ -359,7 +368,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
         related options.
         """
 
-        from aria.products.selectors import product_get_price_from_options
+        from aria.products.selectors.pricing import product_get_price_from_options
 
         return product_get_price_from_options(product=self)
 

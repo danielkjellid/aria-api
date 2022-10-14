@@ -359,3 +359,18 @@ class TestPublicProductsEndpoints:
             )
 
             assert failed_response.status_code == 400
+
+
+class TestInternalProductsEndpoints:
+
+    BASE_ENDPOINT = "/api/v1/products/internal/"
+
+    def test_anonymous_request_variant_list_internal_api(
+        self, anonymous_client, django_assert_max_num_queries
+    ):
+        assert False
+
+    def test_anonymous_request_variant_create_internal_api(
+        self, anonymous_client, django_assert_max_num_queries
+    ):
+        assert False

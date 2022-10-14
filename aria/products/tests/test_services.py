@@ -1,10 +1,10 @@
 import pytest
 
 from aria.products.models import Variant
-from aria.products.services import (
+from aria.products.services.product_options import (
     product_option_delete_related_variants,
-    variant_create,
 )
+from aria.products.services.variants import variant_create
 from aria.products.tests.utils import (
     create_product,
     create_product_option,

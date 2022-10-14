@@ -1,6 +1,7 @@
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
-from ninja import Router, Query, Schema, Form, UploadedFile, File
+
+from ninja import File, Form, Query, Router, Schema, UploadedFile
 
 from aria.api.decorators import paginate
 from aria.api.responses import codes_40x
@@ -10,15 +11,18 @@ from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.models import Product
 from aria.products.schemas.filters import ProductListFilters
 from aria.products.schemas.outputs import ProductInternalListOutput
+from aria.products.selectors.colors import color_list
 from aria.products.selectors.core import product_list
+from aria.products.selectors.shapes import shape_list
 from aria.products.selectors.sizes import size_distinct_list
 from aria.products.selectors.variants import variant_list
-from aria.products.services import (
-    variant_create,
-    size_get_or_create,
-    product_file_create,
+from aria.products.services.product_files import product_file_create
+from aria.products.services.product_options import (
+    product_option_bulk_create_option_and_sizes,
     product_option_create,
 )
+from aria.products.services.sizes import size_get_or_create
+from aria.products.services.variants import variant_create
 
 router = Router(tags=["Products"])
 
@@ -32,7 +36,7 @@ router = Router(tags=["Products"])
     summary="List all products",
 )
 @paginate(page_size=50)
-@permission_required("products.has_products_list")
+@permission_required("products.management")
 def product_list_internal_api(
     request: HttpRequest, filters: ProductListFilters = Query(...)
 ) -> list[ProductInternalListOutput]:
@@ -154,6 +158,7 @@ class VariantListInternalOutput(Schema):
     },
     summary="List all variants.",
 )
+@permission_required("products.management")
 def variant_list_internal_api(request: HttpRequest) -> list[VariantListInternalOutput]:
     """
     Get a list of all variants in the application.
@@ -185,6 +190,7 @@ class VariantCreateInternalOutput(Schema):
     },
     summary="Create a new variant.",
 )
+@permission_required("products.management")
 def variant_create_internal_api(
     request: HttpRequest,
     payload: VariantCreateInternalInput = Form(...),
@@ -265,18 +271,23 @@ class ProductOptionCreateInternalInput(Schema):
     size_circumference: float | None = None
     variant_id: int | None = None
 
-    # TODO: Validate that some parts of the size is present
-    # TODO: Validate that either some size fields or variant is present
-
 
 class ProductOptionCreateInternalOutput(Schema):
     id: int
     status: int
     gross_price: float
-    size_id: int
-    variant_id: int
+    size_id: int | None
+    variant_id: int | None
 
 
+@router.post(
+    "{product_id}/options/create/",
+    response={
+        201: ProductOptionCreateInternalOutput,
+        codes_40x: ExceptionResponse,
+    },
+    summary="Create a new product option.",
+)
 def product_option_create_internal_api(
     request: HttpRequest, product_id: int, payload: ProductOptionCreateInternalInput
 ) -> tuple[int, ProductOptionCreateInternalOutput]:
@@ -303,3 +314,105 @@ def product_option_create_internal_api(
         size_id=product_option.size.id,
         variant_id=product_option.variant.id,
     )
+
+
+class ProductOptionCreateInBulkInternalSizeInput(Schema):
+    width: float | None = None
+    height: float | None = None
+    depth: float | None = None
+    circumference: float | None = None
+
+
+class ProductOptionCreateInBulkInternalInput(Schema):
+    status: int
+    gross_price: float
+    variant_id: int | None = None
+    size: ProductOptionCreateInBulkInternalSizeInput
+
+
+class ProductOptionCreateInBulkInternalOutput(Schema):
+    id: int
+    status: int
+    gross_price: float
+    size_id: int | None
+    variant_id: int | None
+
+
+@router.post(
+    "{product_id}/options/bulk-create/",
+    response={
+        200: list[ProductOptionCreateInBulkInternalOutput],
+        codes_40x: ExceptionResponse,
+    },
+    summary="Create new product options in bulk.",
+)
+def product_option_create_in_bulk_internal_api(
+    request: HttpRequest,
+    product_id: int,
+    payload: list[ProductOptionCreateInBulkInternalInput],
+) -> tuple[int, ProductOptionCreateInBulkInternalOutput]:
+
+    options = product_option_bulk_create_option_and_sizes(
+        product_id=product_id, options=payload
+    )
+
+    return [
+        ProductOptionCreateInBulkInternalOutput(
+            id=option.id,
+            gross_price=option.gross_price,
+            status=option.status,
+            variant_id=option.variant.id,
+            size_id=option.size.id,
+        )
+        for option in options
+    ]
+
+
+class ColorListInternalOutput(Schema):
+    id: int
+    name: str
+    color_hex: str
+
+
+@router.get(
+    "colors/",
+    response={
+        200: list[ColorListInternalOutput],
+        codes_40x: ExceptionResponse,
+    },
+    summary="List all colors available.",
+)
+def color_list_internal_api(
+    request: HttpRequest,
+) -> list[ColorListInternalOutput]:
+    """
+    Endpoint for getting a list of all sizes in the application.
+    """
+
+    colors = color_list()
+
+    return [ColorListInternalOutput(**color.dict()) for color in colors]
+
+
+class ShapeListInternalOutput(Schema):
+    id: int
+    name: str
+    image: str
+
+
+@router.get(
+    "shapes/",
+    response={
+        200: list[ShapeListInternalOutput],
+        codes_40x: ExceptionResponse,
+    },
+    summary="List all shapes available.",
+)
+def shape_list_internal_api(request: HttpRequest) -> list[ShapeListInternalOutput]:
+    """
+    Endpoint for getting a list of all shapes in the application.
+    """
+
+    shapes = shape_list()
+
+    return [ShapeListInternalOutput(**shape.dict()) for shape in shapes]
