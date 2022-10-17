@@ -53,6 +53,13 @@ class ProductOptionRecord(BaseModel):
     size_id: int | None
 
 
+class SizeRecord(BaseModel):
+    width: Decimal | None = None
+    height: Decimal | None = None
+    depth: Decimal | None = None
+    circumference: Decimal | None = None
+
+
 class ProductOptionDetailRecord(BaseModel):
     id: int
     discount: ProductDiscountRecord | None

@@ -95,7 +95,7 @@ def create_size(
     Test util that creates a size instance.
     """
 
-    if width and height and depth and circumference is None:
+    if all(param is None for param in {width, height, depth, circumference}):
         raise ValueError("All args cannot be None!")
 
     size, _created = Size.objects.get_or_create(
