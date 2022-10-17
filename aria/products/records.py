@@ -64,6 +64,7 @@ class ProductOptionDetailRecord(BaseModel):
 
 class ProductFileRecord(BaseModel):
     id: int
+    product_id: int
     name: str
     file: str | None
 

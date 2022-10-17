@@ -1,6 +1,5 @@
 from decimal import Decimal
 
-from django.db import transaction
 from django.utils.translation import gettext as _
 
 from aria.core.exceptions import ApplicationError
@@ -10,7 +9,109 @@ from aria.products.selectors.sizes import size_list_from_mapped_values
 from aria.products.types import SizeDict
 
 
-def _size_validation(
+def size_create(
+    *,
+    width: Decimal | None = None,
+    height: Decimal | None = None,
+    depth: Decimal | None = None,
+    circumference: Decimal | None = None,
+) -> ProductSizeRecord:
+    cleaned_size = size_clean_and_validate_value(
+        width=width, height=height, depth=depth, circumference=circumference
+    )
+
+    size = Size(
+        width=cleaned_size["width"],
+        height=cleaned_size["height"],
+        depth=cleaned_size["depth"],
+        circumference=cleaned_size["circumference"],
+    )
+    size.full_clean()
+    size.save()
+
+    return ProductSizeRecord(
+        id=size.id,
+        name=size.name,
+        width=size.width,
+        height=size.height,
+        depth=size.depth,
+        circumference=size.circumference,
+    )
+
+
+def size_bulk_create(*, sizes: list[SizeDict]) -> list[ProductSizeRecord]:
+
+    sizes_to_create = [
+        Size(
+            width=size["width"],
+            height=size["height"],
+            depth=size["depth"],
+            circumference=size["circumference"],
+        )
+        for size in size_clean_and_validate_values(sizes=sizes)
+    ]
+
+    Size.objects.bulk_create(sizes_to_create, ignore_conflicts=True)
+
+    # Since we ignore conflicts, not all values passed in are necessarily created.
+    # Therefore, we re-fetch all relevant objects and return them instead of the
+    # Django's default "all objects that has been created".
+    fetched_sizes = size_list_from_mapped_values(values=sizes)
+
+    return [
+        ProductSizeRecord(
+            id=size.id,
+            name=size.name,
+            width=size.width,
+            height=size.height,
+            depth=size.depth,
+            circumference=size.circumference,
+        )
+        for size in fetched_sizes
+    ]
+
+
+def size_get_or_create(
+    *,
+    width: Decimal | None,
+    height: Decimal | None,
+    depth: Decimal | None,
+    circumference: Decimal | None,
+) -> ProductSizeRecord | None:
+    """
+    Creates a Size with given fields, if size does not already exist.
+    """
+
+    cleaned_size = size_clean_and_validate_value(
+        width=width, height=height, depth=depth, circumference=circumference
+    )
+
+    if cleaned_size is None:
+        return None
+
+    try:
+        size = Size.objects.get(
+            width=cleaned_size["width"],
+            height=cleaned_size["height"],
+            depth=cleaned_size["depth"],
+            circumference=cleaned_size["circumference"],
+        )
+    except Size.DoesNotExist:
+        size = size_create(
+            width=width, height=height, depth=depth, circumference=circumference
+        )
+
+    return ProductSizeRecord(
+        id=size.id,
+        name=size.name,
+        width=size.width,
+        height=size.height,
+        depth=size.depth,
+        circumference=size.circumference,
+    )
+
+
+def _size_validate(
     *,
     width: Decimal | None = None,
     height: Decimal | None = None,
@@ -60,118 +161,20 @@ def _size_validation(
         )
 
 
-@transaction.atomic
-def size_create(
-    *,
-    width: Decimal | None = None,
-    height: Decimal | None = None,
-    depth: Decimal | None = None,
-    circumference: Decimal | None = None,
-) -> ProductSizeRecord:
-    cleaned_size = size_clean_value(
-        width=width, height=height, depth=depth, circumference=circumference
-    )
-
-    size = Size(
-        width=cleaned_size["width"],
-        height=cleaned_size["height"],
-        depth=cleaned_size["depth"],
-        circumference=cleaned_size["circumference"],
-    )
-    size.full_clean()
-    size.save()
-
-    return ProductSizeRecord(
-        id=size.id,
-        name=size.name,
-        width=size.width,
-        height=size.height,
-        depth=size.depth,
-        circumference=size.circumference,
-    )
-
-
-def size_bulk_create(*, sizes: list[SizeDict]) -> list[ProductSizeRecord]:
-
-    sizes_to_create = [
-        Size(
-            width=size["width"],
-            height=size["height"],
-            depth=size["depth"],
-            circumference=size["circumference"],
-        )
-        for size in size_clean_values(sizes=sizes)
-    ]
-
-    Size.objects.bulk_create(sizes_to_create, ignore_conflicts=True)
-
-    # Since we ignore conflicts, not all values passed in are necessarily created.
-    # Therefore, we re-fetch all relevant objects and return them instead of the
-    # Django's default "all objects that has been created".
-    fetched_sizes = size_list_from_mapped_values(values=sizes)
-
-    return [
-        ProductSizeRecord(
-            id=size.id,
-            name=size.name,
-            width=size.width,
-            height=size.height,
-            depth=size.depth,
-            circumference=size.circumference,
-        )
-        for size in fetched_sizes
-    ]
-
-
-@transaction.atomic
-def size_get_or_create(
+def size_clean_and_validate_value(
     *,
     width: Decimal | None,
     height: Decimal | None,
     depth: Decimal | None,
     circumference: Decimal | None,
-) -> ProductSizeRecord:
-    """
-    Creates a Size with given fields, if size does not already exist.
-    """
-
-    cleaned_size = size_clean_value(
-        width=width, height=height, depth=depth, circumference=circumference
-    )
-
-    try:
-        size = Size.objects.get(
-            width=cleaned_size["width"],
-            height=cleaned_size["height"],
-            depth=cleaned_size["depth"],
-            circumference=cleaned_size["circumference"],
-        )
-    except Size.DoesNotExist:
-        size = size_create(
-            width=width, height=height, depth=depth, circumference=circumference
-        )
-
-    return ProductSizeRecord(
-        id=size.id,
-        name=size.name,
-        width=size.width,
-        height=size.height,
-        depth=size.depth,
-        circumference=size.circumference,
-    )
-
-
-def size_clean_value(
-    *,
-    width: Decimal | None,
-    height: Decimal | None,
-    depth: Decimal | None,
-    circumference: Decimal | None,
-) -> SizeDict:
+) -> SizeDict | None:
     width = width if width != 0 else None
     height = height if height != 0 else None
     depth = depth if depth != 0 else None
     circumference = circumference if circumference else None
+
+    if all(param is None for param in {width, height, depth, circumference}):
+        return None
 
     size_to_clean = {
         "width": Decimal(width) if width else None,
@@ -180,17 +183,17 @@ def size_clean_value(
         "circumference": Decimal(circumference) if circumference else None,
     }
 
-    _size_validation(**size_to_clean)
+    _size_validate(**size_to_clean)
 
     return size_to_clean
 
 
-def size_clean_values(*, sizes: list[SizeDict]) -> list[SizeDict]:
+def size_clean_and_validate_values(*, sizes: list[SizeDict]) -> list[SizeDict]:
 
     cleaned_sizes = []
 
     for size in sizes:
-        cleaned_size = size_clean_value(
+        cleaned_size = size_clean_and_validate_value(
             width=size.get("width", None),
             height=size.get("height", None),
             depth=size.get("depth", None),

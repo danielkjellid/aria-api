@@ -311,15 +311,15 @@ class Product(BaseModel, BaseThumbnailImageModel):
         verbose_name_plural = "Products"
         permissions = [
             (
-                "products.view",
+                "product.view",
                 "Has access to view limited info about a product.",
             ),
             (
-                "products.management",
+                "product.management",
                 "Has access to manage products (add, edit, etc).",
             ),
             (
-                "products.admin",
+                "product.admin",
                 "Has admin access to all product functionality, including all info.",
             ),
         ]

@@ -98,7 +98,7 @@ def create_size(
     if width and height and depth and circumference is None:
         raise ValueError("All args cannot be None!")
 
-    size = Size.objects.create(
+    size, _created = Size.objects.get_or_create(
         width=width, height=height, depth=depth, circumference=circumference
     )
 

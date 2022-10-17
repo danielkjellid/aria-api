@@ -1,6 +1,7 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.http import HttpRequest, HttpResponse
+
 from ninja import Router
 from ninja.errors import ValidationError as NinjaValidationError
 from pydantic.error_wrappers import ValidationError as PydanticValidationError
@@ -20,8 +21,8 @@ from aria.api_auth.authentication import JWTAuthRequired
 from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
 from aria.api_auth.exceptions import TokenError
 from aria.categories.endpoints import (
-    public_endpoints as public_categories_endpoints,
     internal_endpoints as internal_categories_endpoints,
+    public_endpoints as public_categories_endpoints,
 )
 from aria.core.endpoints import public_endpoints as public_core_endpoints
 from aria.core.exceptions import ApplicationError
@@ -31,12 +32,12 @@ from aria.front.endpoints import public_endpoints as public_front_endpoints
 from aria.kitchens.endpoints import public_endpoints as public_kitchens_endpoints
 from aria.notes.endpoints import internal_endpoints as internal_notes_endpoints
 from aria.products.endpoints import (
-    public_endpoints as public_products_endpoints,
     internal_endpoints as internal_products_endpoints,
+    public_endpoints as public_products_endpoints,
 )
 from aria.suppliers.endpoints import (
-    public_endpoints as public_suppliers_endpoints,
     internal_endpoints as internal_suppliers_endpoints,
+    public_endpoints as public_suppliers_endpoints,
 )
 from aria.users.endpoints import (
     internal_endpoints as internal_users_endpoints,

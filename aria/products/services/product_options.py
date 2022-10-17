@@ -1,41 +1,53 @@
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
 from typing import TypedDict
 
 from django.db import transaction
+from django.utils.translation import gettext as _
 
+from aria.core.exceptions import ApplicationError
 from aria.products.enums import ProductStatus
-from aria.products.models import ProductOption, Variant
+from aria.products.models import Product, ProductOption, Size, Variant
 from aria.products.records import ProductOptionRecord
-from aria.products.services.sizes import size_bulk_create, size_clean_value
+from aria.products.services.sizes import size_bulk_create, size_clean_and_validate_value
 
 
-@transaction.atomic
 def product_option_create(
     *,
-    product_id: int,
-    gross_price: Decimal,
+    product: Product,
+    gross_price: Decimal | float,
     status: ProductStatus = ProductStatus.AVAILABLE,
-    size_id: int | None = None,
-    variant_id: int | None = None,
-) -> ProductOption:
+    size: Size | None = None,
+    variant: Variant | None = None,
+) -> ProductOptionRecord:
 
-    if product_id is None:
-        raise ValueError("Product must be defined.")
+    if product is None:
+        raise ApplicationError(
+            message=_("Product must be defined."),
+            extra={"product": _("field required")},
+        )
 
-    if size_id is None and variant_id is None:
-        raise ValueError("Either size or variant must be defined.")
+    if size is None and variant is None:
+        raise ApplicationError(message=_("Either size or variant must be defined."))
 
     product_option = ProductOption(
-        product=product_id,
-        gross_price=gross_price,
+        product=product,
+        gross_price=Decimal(gross_price).quantize(
+            Decimal(".01"), rounding=ROUND_HALF_UP
+        ),
         status=status,
-        variant=variant_id,
-        size=size_id,
+        variant=variant,
+        size=size,
     )
     product_option.full_clean()
     product_option.save()
 
-    return product_option
+    return ProductOptionRecord(
+        id=product_option.id,
+        gross_price=product_option.gross_price,
+        status=product_option.status,
+        variant_id=product_option.variant_id,
+        size_id=product_option.size_id,
+    )
 
 
 class ProductOptionDict(TypedDict):
@@ -118,7 +130,7 @@ def product_option_bulk_create_option_and_sizes(
             depth = option.get("size", {}).get("depth")
             circumference = option.get("size", {}).get("circumference")
 
-            option["size"] = size_clean_value(
+            option["size"] = size_clean_and_validate_value(
                 width=width, height=height, depth=depth, circumference=circumference
             )
 

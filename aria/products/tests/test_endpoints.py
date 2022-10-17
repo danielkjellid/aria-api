@@ -1,7 +1,9 @@
 import json
 from datetime import timedelta
 from decimal import Decimal
+from unittest.mock import ANY
 
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 
 import pytest
@@ -9,7 +11,13 @@ import pytest
 from aria.categories.tests.utils import create_category
 from aria.discounts.tests.utils import create_discount
 from aria.products.enums import ProductStatus, ProductUnit
-from aria.products.tests.utils import create_product, create_product_option
+from aria.products.models import Size
+from aria.products.tests.utils import (
+    create_product,
+    create_product_option,
+    create_size,
+    create_variant,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -363,14 +371,493 @@ class TestPublicProductsEndpoints:
 
 class TestInternalProductsEndpoints:
 
-    BASE_ENDPOINT = "/api/v1/products/internal/"
+    BASE_ENDPOINT = "/api/v1/internal/products"
+
+    ################################
+    # Product file create endpoint #
+    ################################
+
+    def test_anonymous_request_product_file_create_internal_api(
+        self, anonymous_client, django_assert_max_num_queries
+    ):
+        """
+        Test that unauthenticated users gets a 401 unauthorized on creating a new
+        product file.
+        """
+
+        product = create_product()
+
+        assert product.files.all().count() == 0
+
+        file = SimpleUploadedFile("test.pdf", b"data123")
+        payload = {"name": "Catalog", "file": file}
+
+        with django_assert_max_num_queries(0):
+            response = anonymous_client.post(
+                f"{self.BASE_ENDPOINT}/{product.id}/files/create/", data=payload
+            )
+
+        assert product.files.all().count() == 0
+        assert response.status_code == 401
+
+    def test_authenticated_unprivileged_request_product_file_create_internal_api(
+        self, authenticated_unprivileged_client, django_assert_max_num_queries
+    ):
+        """
+        Test that unauthenticated users gets a 403 forbidding on creating a new file.
+        """
+
+        product = create_product()
+
+        assert product.files.all().count() == 0
+
+        file = SimpleUploadedFile("test.pdf", b"data123")
+        payload = {"name": "Catalog", "file": file}
+
+        with django_assert_max_num_queries(3):
+            response = authenticated_unprivileged_client.post(
+                f"{self.BASE_ENDPOINT}/{product.id}/files/create/", data=payload
+            )
+
+        assert product.files.all().count() == 0
+        assert response.status_code == 403
+
+    @pytest.mark.parametrize("test_permissions", ["product.management"], indirect=True)
+    def test_authenticated_privileged_request_variant_create_internal_api(
+        self, authenticated_privileged_client, django_assert_max_num_queries
+    ):
+        """
+        Test that privileged users gets a valid response on creating a new file.
+        """
+
+        product = create_product()
+
+        assert product.files.all().count() == 0
+
+        file = SimpleUploadedFile("test.pdf", b"data123")
+        payload = {"name": "Catalog", "file": file}
+
+        expected_response = {"productId": product.id, "name": "Catalog", "file": ANY}
+
+        # Uses 6 queries:
+        # 3 - for checking user and permissions
+        # 1 - for getting product
+        # 1 - for getting supplier (for finding/creating correct folder)
+        # 1 - for creating file
+        with django_assert_max_num_queries(6):
+            response = authenticated_privileged_client.post(
+                f"{self.BASE_ENDPOINT}/{product.id}/files/create/", data=payload
+            )
+
+        assert response.status_code == 201
+        assert response.json() == expected_response
+        assert product.files.all().count() == 1
+        assert product.files.first().name == "Catalog"
+        assert product.files.first().file is not None
+
+    ##########################
+    # Variants list endpoint #
+    ##########################
 
     def test_anonymous_request_variant_list_internal_api(
         self, anonymous_client, django_assert_max_num_queries
     ):
-        assert False
+        """
+        Test that unauthenticated users gets a 401 unauthorized on listing
+        all variants in the application.
+        """
+
+        with django_assert_max_num_queries(0):
+            response = anonymous_client.get(f"{self.BASE_ENDPOINT}/variants/")
+
+        assert response.status_code == 401
+
+    def test_authenticated_unprivileged_request_variant_list_internal_api(
+        self, authenticated_unprivileged_client, django_assert_max_num_queries
+    ):
+        """
+        Test that unauthenticated users gets a 403 forbidding on listing
+        all variants in the application.
+        """
+
+        with django_assert_max_num_queries(3):
+            response = authenticated_unprivileged_client.get(
+                f"{self.BASE_ENDPOINT}/variants/"
+            )
+
+        assert response.status_code == 403
+
+    @pytest.mark.parametrize("test_permissions", ["product.management"], indirect=True)
+    def test_authenticated_privileged_request_variant_list_internal_api(
+        self,
+        authenticated_privileged_client,
+        django_assert_max_num_queries,
+    ):
+        """
+        Test that privileged users gets a valid response on listing all variants in
+        the application.
+        """
+
+        create_variant(name="Variant 1", is_standard=False)
+        create_variant(name="Variant 2", is_standard=False)
+        create_variant(name="Variant 3", is_standard=False)
+        create_variant(name="Variant 4", is_standard=True)
+
+        expected_response = [
+            {
+                "id": ANY,
+                "name": "Variant 4",
+                "isStandard": True,
+                "image": None,
+                "thumbnail": None,
+            },
+            {
+                "id": ANY,
+                "name": "Variant 3",
+                "isStandard": False,
+                "image": None,
+                "thumbnail": None,
+            },
+            {
+                "id": ANY,
+                "name": "Variant 2",
+                "isStandard": False,
+                "image": None,
+                "thumbnail": None,
+            },
+            {
+                "id": ANY,
+                "name": "Variant 1",
+                "isStandard": False,
+                "image": None,
+                "thumbnail": None,
+            },
+        ]
+
+        with django_assert_max_num_queries(4):
+            response = authenticated_privileged_client.get(
+                f"{self.BASE_ENDPOINT}/variants/"
+            )
+
+        actual_response = json.loads(response.content)
+
+        assert response.status_code == 200
+        assert len(actual_response) == 4
+        assert actual_response == expected_response
+
+    ############################
+    # Variants create endpoint #
+    ############################
 
     def test_anonymous_request_variant_create_internal_api(
         self, anonymous_client, django_assert_max_num_queries
     ):
-        assert False
+        """
+        Test that unauthenticated users gets a 401 unauthorized on creating a new
+        variant.
+        """
+
+        file = SimpleUploadedFile("test.jpeg", b"data123")
+        payload = {"name": "White mist", "is_standard": False, "file": file}
+
+        with django_assert_max_num_queries(0):
+            response = anonymous_client.post(
+                f"{self.BASE_ENDPOINT}/variants/create/", data=payload
+            )
+
+        assert response.status_code == 401
+
+    def test_authenticated_unprivileged_request_variant_create_internal_api(
+        self, authenticated_unprivileged_client, django_assert_max_num_queries
+    ):
+        """
+        Test that unauthenticated users gets a 403 forbidding on creating a new variant.
+        """
+
+        file = SimpleUploadedFile("test.jpeg", b"data123")
+        payload = {"name": "White mist", "is_standard": False, "file": file}
+
+        with django_assert_max_num_queries(3):
+            response = authenticated_unprivileged_client.post(
+                f"{self.BASE_ENDPOINT}/variants/create/", data=payload
+            )
+
+        assert response.status_code == 403
+
+    # Skip for now as image creating in the test using the SimpleUploadedFile utility
+    # Causes issues with Pillow. Long term plan is to replace ImageKit and Pillow with
+    # on-demand image CDN.
+    @pytest.mark.skip
+    @pytest.mark.parametrize("test_permissions", ["product.management"], indirect=True)
+    def test_authenticated_privileged_request_variant_create_internal_api(
+        self, authenticated_privileged_client, django_assert_max_num_queries
+    ):
+        """
+        Test that privileged users gets a valid response on creating a new variant.
+        """
+
+        file = SimpleUploadedFile("test.jpeg", b"data123")
+        payload = {"name": "White mist", "is_standard": False, "file": file}
+
+        expected_response = {
+            "id": ANY,
+            "name": "White mist",
+            "isStandard": False,
+            "image": None,
+            "thumbnail": None,
+        }
+
+        with django_assert_max_num_queries(3):
+            response = authenticated_privileged_client.post(
+                f"{self.BASE_ENDPOINT}/variants/create/", data=payload
+            )
+
+        actual_response = json.loads(response.content)
+
+        assert response.status_code == 201
+        assert actual_response == expected_response
+
+    ##################################
+    # Product option create endpoint #
+    ##################################
+
+    def test_anonymous_request_product_option_create_internal_api(
+        self, anonymous_client, django_assert_max_num_queries
+    ):
+        """
+        Test that unauthenticated users gets a 401 unauthorized on creating a new
+        product option.
+        """
+
+        product = create_product()
+        payload = {
+            "status": ProductStatus.AVAILABLE,
+            "grossPrice": 99.00,
+            "variantId": None,
+            "size": {
+                "width": 10.0,
+                "height": 12.0,
+                "depth": None,
+                "circumference": None,
+            },
+        }
+
+        with django_assert_max_num_queries(3):
+            response = anonymous_client.post(
+                f"{self.BASE_ENDPOINT}/{product.id}/options/create/",
+                data=payload,
+                content_type="application/json",
+            )
+
+        assert response.status_code == 401
+
+    def test_authenticated_unprivileged_request_product_option_create_internal_api(
+        self, authenticated_unprivileged_client, django_assert_max_num_queries
+    ):
+        """
+        Test that unauthenticated users gets a 403 forbidding on creating a new product
+        option.
+        """
+
+        product = create_product()
+        payload = {
+            "status": ProductStatus.AVAILABLE,
+            "grossPrice": 99.00,
+            "variantId": None,
+            "size": {
+                "width": 10.0,
+                "height": 12.0,
+                "depth": None,
+                "circumference": None,
+            },
+        }
+
+        with django_assert_max_num_queries(3):
+            response = authenticated_unprivileged_client.post(
+                f"{self.BASE_ENDPOINT}/{product.id}/options/create/",
+                data=payload,
+                content_type="application/json",
+            )
+
+        assert response.status_code == 403
+
+    @pytest.mark.parametrize("test_permissions", ["product.management"], indirect=True)
+    def test_authenticated_privileged_request_product_option_create_internal_api(
+        self, authenticated_privileged_client, django_assert_max_num_queries
+    ):
+
+        product = create_product()
+        existing_size = create_size(
+            width=Decimal("10.00"),
+            height=Decimal("12.00"),
+            depth=None,
+            circumference=None,
+        )
+        existing_variant = create_variant(name="Test variant", is_standard=False)
+
+        no_size_payload = {
+            "status": ProductStatus.AVAILABLE,
+            "grossPrice": 101.49,
+            "variantId": existing_variant.id,
+        }
+        no_size_expected_response = {
+            "id": ANY,
+            "status": ProductStatus.AVAILABLE,
+            "grossPrice": 101.49,
+            "sizeId": None,
+            "variantId": existing_variant.id,
+        }
+
+        with django_assert_max_num_queries(8):
+            no_size_response = authenticated_privileged_client.post(
+                f"{self.BASE_ENDPOINT}/{product.id}/options/create/",
+                data=no_size_payload,
+                content_type="application/json",
+            )
+
+        assert no_size_response.status_code == 201
+        assert no_size_response.json() == no_size_expected_response
+
+        existing_size_payload = {
+            "status": ProductStatus.AVAILABLE,
+            "grossPrice": 102.00,
+            "variantId": existing_variant.id,
+            "size": {
+                "width": 10.0,
+                "height": 12.0,
+                "depth": None,
+                "circumference": None,
+            },
+        }
+        existing_size_expected_response = {
+            "id": ANY,
+            "status": ProductStatus.AVAILABLE,
+            "grossPrice": 102.00,
+            "sizeId": existing_size.id,
+            "variantId": existing_variant.id,
+        }
+
+        with django_assert_max_num_queries(12):
+            existing_size_response = authenticated_privileged_client.post(
+                f"{self.BASE_ENDPOINT}/{product.id}/options/create/",
+                data=existing_size_payload,
+                content_type="application/json",
+            )
+
+        assert existing_size_response.status_code == 201
+        assert existing_size_response.json() == existing_size_expected_response
+
+        sizes_in_db_count = Size.objects.count()
+
+        create_size_payload = {
+            "status": ProductStatus.AVAILABLE,
+            "grossPrice": 50.00,
+            "variantId": existing_variant.id,
+            "size": {
+                "width": 20.0,
+                "height": 20.0,
+                "depth": None,
+                "circumference": None,
+            },
+        }
+        create_size_expected_response = {
+            "id": ANY,
+            "status": ProductStatus.AVAILABLE,
+            "grossPrice": 50.00,
+            "variantId": existing_variant.id,
+            "sizeId": ANY,
+        }
+
+        with django_assert_max_num_queries(13):
+            create_size_response = authenticated_privileged_client.post(
+                f"{self.BASE_ENDPOINT}/{product.id}/options/create/",
+                data=create_size_payload,
+                content_type="application/json",
+            )
+
+        assert create_size_response.status_code == 201
+        assert create_size_response.json() == create_size_expected_response
+        assert Size.objects.count() == sizes_in_db_count + 1
+
+        no_variant_existing_size_payload = {
+            "status": ProductStatus.AVAILABLE,
+            "grossPrice": 500.50,
+            "variantId": None,
+            "size": {
+                "width": 10.0,
+                "height": 12.0,
+                "depth": None,
+                "circumference": None,
+            },
+        }
+        no_variant_existing_size_expected_response = {
+            "id": ANY,
+            "status": ProductStatus.AVAILABLE,
+            "grossPrice": 500.50,
+            "variantId": None,
+            "sizeId": ANY,
+        }
+
+        with django_assert_max_num_queries(9):
+            no_variant_existing_size_response = authenticated_privileged_client.post(
+                f"{self.BASE_ENDPOINT}/{product.id}/options/create/",
+                data=no_variant_existing_size_payload,
+                content_type="application/json",
+            )
+
+        assert no_variant_existing_size_response.status_code == 201
+        assert (
+            no_variant_existing_size_response.json()
+            == no_variant_existing_size_expected_response
+        )
+
+        sizes_in_db_count = Size.objects.count()
+
+        no_variant_create_size_payload = {
+            "status": ProductStatus.AVAILABLE,
+            "grossPrice": 349.50,
+            "variantId": None,
+            "size": {
+                "width": 90.0,
+                "height": 90.0,
+                "depth": None,
+                "circumference": None,
+            },
+        }
+        no_variant_create_size_expected_response = {
+            "id": ANY,
+            "status": ProductStatus.AVAILABLE,
+            "grossPrice": 349.50,
+            "variantId": None,
+            "sizeId": ANY,
+        }
+
+        with django_assert_max_num_queries(10):
+            no_variant_create_size_response = authenticated_privileged_client.post(
+                f"{self.BASE_ENDPOINT}/{product.id}/options/create/",
+                data=no_variant_create_size_payload,
+                content_type="application/json",
+            )
+
+        assert no_variant_create_size_response.status_code == 201
+        assert (
+            no_variant_create_size_response.json()
+            == no_variant_create_size_expected_response
+        )
+        assert Size.objects.count() == sizes_in_db_count + 1
+
+        no_size_no_variant_payload = {
+            "status": ProductStatus.AVAILABLE,
+            "grossPrice": 999.50,
+            "variantId": None,
+            "size": None,
+        }
+
+        with django_assert_max_num_queries(4):
+            no_size_no_variant_response = authenticated_privileged_client.post(
+                f"{self.BASE_ENDPOINT}/{product.id}/options/create/",
+                data=no_size_no_variant_payload,
+                content_type="application/json",
+            )
+
+        assert no_size_no_variant_response.status_code == 400

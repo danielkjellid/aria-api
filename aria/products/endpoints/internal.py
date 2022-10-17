@@ -8,13 +8,12 @@ from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse
 from aria.api_auth.decorators import permission_required
 from aria.products.enums import ProductStatus, ProductUnit
-from aria.products.models import Product
+from aria.products.models import Product, Size, Variant
 from aria.products.schemas.filters import ProductListFilters
 from aria.products.schemas.outputs import ProductInternalListOutput
 from aria.products.selectors.colors import color_list
 from aria.products.selectors.core import product_list
 from aria.products.selectors.shapes import shape_list
-from aria.products.selectors.sizes import size_distinct_list
 from aria.products.selectors.variants import variant_list
 from aria.products.services.product_files import product_file_create
 from aria.products.services.product_options import (
@@ -122,7 +121,8 @@ class ProductFileCreateInternalOutput(Schema):
     },
     summary="Create a file associated to a product.",
 )
-def product_file_create_api(
+@permission_required("products.product.management")
+def product_file_create_internal_api(
     request: HttpRequest,
     product_id: int,
     payload: ProductFileCreateInternalInput = Form(...),
@@ -136,9 +136,9 @@ def product_file_create_api(
     product_file = product_file_create(product=product, name=payload.name, file=file)
 
     return 201, ProductFileCreateInternalOutput(
-        product_id=product_file.product.id,
+        product_id=product_file.product_id,
         name=product_file.name,
-        file=product_file.file.url if product_file.file else None,
+        file=product_file.file,
     )
 
 
@@ -158,7 +158,7 @@ class VariantListInternalOutput(Schema):
     },
     summary="List all variants.",
 )
-@permission_required("products.management")
+@permission_required("products.product.management")
 def variant_list_internal_api(request: HttpRequest) -> list[VariantListInternalOutput]:
     """
     Get a list of all variants in the application.
@@ -190,7 +190,7 @@ class VariantCreateInternalOutput(Schema):
     },
     summary="Create a new variant.",
 )
-@permission_required("products.management")
+@permission_required("products.product.management")
 def variant_create_internal_api(
     request: HttpRequest,
     payload: VariantCreateInternalInput = Form(...),
@@ -200,76 +200,25 @@ def variant_create_internal_api(
     Creates a single variant instance.
     """
 
-    variant = variant_create(
+    variant_record = variant_create(
         name=payload.name, is_standard=payload.is_standard, thumbnail=file
     )
 
-    return 201, VariantCreateInternalOutput(
-        id=variant.id,
-        name=variant.name,
-        is_standard=variant.is_standard,
-        image=variant.image.url if variant.image else None,
-        thumbnail=variant.thumbnail.url if variant.thumbnail else None,
-    )
+    return 201, VariantCreateInternalOutput(**variant_record.dict())
 
 
-class SizeListInternalOutput(Schema):
-    id: float | None
-    width: float | None
-    height: float | None
-    depth: float | None
-    circumference: float | None
-
-
-@router.get(
-    "sizes/",
-    response={200: list[SizeListInternalOutput]},
-    summary="List all distinct sizes.",
-)
-def size_list_internal_api(request: HttpRequest) -> list[SizeListInternalOutput]:
-    """
-    Get a list of all distinct sizes in the application.
-    """
-
-    sizes = size_distinct_list()
-
-    return [SizeListInternalOutput(**size.dict()) for size in sizes]
-
-
-class SizeCreateInternalInput(Schema):
-    width: float | None
-    height: float | None
-    depth: float | None
-    circumference: float | None
-
-
-@router.post(
-    "sizes/create/",
-    response={
-        201: None,
-        codes_40x: ExceptionResponse,
-    },
-    summary="Create a new size.",
-)
-def size_create_internal_api(
-    request: HttpRequest, payload: SizeCreateInternalInput
-) -> int:
-    """
-    Creates a single size instance if size does not already exist.
-    """
-
-    size_get_or_create(**payload.dict())
-    return 201
+class ProductOptionCreateInternalSizeInput(Schema):
+    width: float | None = None
+    height: float | None = None
+    depth: float | None = None
+    circumference: float | None = None
 
 
 class ProductOptionCreateInternalInput(Schema):
     status: int
     gross_price: float
-    size_width: float | None = None
-    size_height: float | None = None
-    size_depth: float | None = None
-    size_circumference: float | None = None
     variant_id: int | None = None
+    size: ProductOptionCreateInternalSizeInput | None = None
 
 
 class ProductOptionCreateInternalOutput(Schema):
@@ -288,32 +237,37 @@ class ProductOptionCreateInternalOutput(Schema):
     },
     summary="Create a new product option.",
 )
+@permission_required("products.product.management")
 def product_option_create_internal_api(
     request: HttpRequest, product_id: int, payload: ProductOptionCreateInternalInput
 ) -> tuple[int, ProductOptionCreateInternalOutput]:
 
-    size = size_get_or_create(
-        width=payload.size_width,
-        height=payload.size_height,
-        depth=payload.size_depth,
-        circumference=payload.size_circumference,
+    product = get_object_or_404(Product, pk=product_id)
+    size = None
+    variant = None
+
+    size_record = size_get_or_create(
+        width=payload.size.width if payload.size else None,
+        height=payload.size.height if payload.size else None,
+        depth=payload.size.depth if payload.size else None,
+        circumference=payload.size.circumference if payload.size else None,
     )
 
-    product_option = product_option_create(
-        product_id=product_id,
+    if size_record:
+        size = get_object_or_404(Size, pk=size_record.id)
+
+    if payload.variant_id:
+        variant = get_object_or_404(Variant, pk=payload.variant_id)
+
+    product_option_record = product_option_create(
+        product=product,
         gross_price=payload.gross_price,
         status=payload.status,
-        size_id=size.id,
-        variant_id=payload.variant_id,
+        size=size,
+        variant=variant,
     )
 
-    return 201, ProductOptionCreateInternalOutput(
-        id=product_option.id,
-        status=product_option.status,
-        gross_price=product_option.gross_price,
-        size_id=product_option.size.id,
-        variant_id=product_option.variant.id,
-    )
+    return 201, ProductOptionCreateInternalOutput(**product_option_record.dict())
 
 
 class ProductOptionCreateInBulkInternalSizeInput(Schema):
@@ -327,7 +281,7 @@ class ProductOptionCreateInBulkInternalInput(Schema):
     status: int
     gross_price: float
     variant_id: int | None = None
-    size: ProductOptionCreateInBulkInternalSizeInput
+    size: ProductOptionCreateInBulkInternalSizeInput | None = None
 
 
 class ProductOptionCreateInBulkInternalOutput(Schema):

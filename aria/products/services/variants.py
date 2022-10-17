@@ -3,6 +3,7 @@ from django.db import transaction
 from django.utils.text import slugify
 
 from aria.products.models import Variant
+from aria.products.records import ProductVariantRecord
 
 
 @transaction.atomic
@@ -11,7 +12,7 @@ def variant_create(
     name: str,
     thumbnail: File | None = None,  # type: ignore
     is_standard: bool = False,
-) -> Variant:
+) -> ProductVariantRecord:
     """
     Creates a Variant with given fields.
     """
@@ -26,4 +27,10 @@ def variant_create(
     if thumbnail:
         new_variant.thumbnail.save(f"{slugify(new_variant.name)}", thumbnail)
 
-    return new_variant
+    return ProductVariantRecord(
+        id=new_variant.id,
+        name=new_variant.name,
+        image=new_variant.image.url if new_variant.image else None,
+        thumbnail=new_variant.thumbnail.url if new_variant.thumbnail else None,
+        is_standard=new_variant.is_standard,
+    )
