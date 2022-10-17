@@ -60,6 +60,13 @@ class SizeRecord(BaseModel):
     circumference: Decimal | None = None
 
 
+class OptionRecord(BaseModel):
+    gross_price: Decimal
+    status: str
+    variant_id: int | None
+    size: SizeRecord | None
+
+
 class ProductOptionDetailRecord(BaseModel):
     id: int
     discount: ProductDiscountRecord | None

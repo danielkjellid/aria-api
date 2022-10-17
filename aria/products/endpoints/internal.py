@@ -17,8 +17,8 @@ from aria.products.selectors.shapes import shape_list
 from aria.products.selectors.variants import variant_list
 from aria.products.services.product_files import product_file_create
 from aria.products.services.product_options import (
-    product_option_bulk_create_option_and_sizes,
     product_option_create,
+    product_options_bulk_create_options_and_sizes,
 )
 from aria.products.services.sizes import size_get_or_create
 from aria.products.services.variants import variant_create
@@ -300,25 +300,20 @@ class ProductOptionCreateInBulkInternalOutput(Schema):
     },
     summary="Create new product options in bulk.",
 )
-def product_option_create_in_bulk_internal_api(
+# @permission_required("products.product.management")
+def product_option_bulk_create_internal_api(
     request: HttpRequest,
     product_id: int,
     payload: list[ProductOptionCreateInBulkInternalInput],
 ) -> tuple[int, ProductOptionCreateInBulkInternalOutput]:
 
-    options = product_option_bulk_create_option_and_sizes(
-        product_id=product_id, options=payload
+    product = get_object_or_404(Product, pk=product_id)
+    options = product_options_bulk_create_options_and_sizes(
+        product=product, options=payload
     )
 
     return [
-        ProductOptionCreateInBulkInternalOutput(
-            id=option.id,
-            gross_price=option.gross_price,
-            status=option.status,
-            variant_id=option.variant.id,
-            size_id=option.size.id,
-        )
-        for option in options
+        ProductOptionCreateInBulkInternalOutput(**option.dict()) for option in options
     ]
 
 

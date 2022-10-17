@@ -861,3 +861,102 @@ class TestInternalProductsEndpoints:
             )
 
         assert no_size_no_variant_response.status_code == 400
+
+    #######################################
+    # Product option bulk create endpoint #
+    #######################################
+
+    @pytest.mark.parametrize("test_permissions", ["product.management"], indirect=True)
+    def test_authenticated_privileged_request_product_option_bulk_create_internal_api(
+        self, authenticated_privileged_client, django_assert_max_num_queries
+    ):
+
+        product = create_product()
+        variant = create_variant(name="Test variant")
+        size = create_size(
+            width=Decimal("20.0"),
+            height=Decimal("10.0"),
+            depth=Decimal("5.0"),
+            circumference=None,
+        )
+
+        payload = [
+            {
+                "status": ProductStatus.AVAILABLE,
+                "grossPrice": 500.0,
+                "variantId": variant.id,
+                "size": None,
+            },
+            {
+                "status": ProductStatus.AVAILABLE,
+                "grossPrice": 400.0,
+                "variantId": None,
+                "size": {
+                    "width": None,
+                    "height": None,
+                    "depth": None,
+                    "circumference": 30.0,
+                },
+            },
+            {
+                "status": ProductStatus.AVAILABLE,
+                "grossPrice": 600.0,
+                "variantId": variant.id,
+                "size": {
+                    "width": 20.0,
+                    "height": 10.0,
+                    "depth": 5.0,
+                    "circumference": None,
+                },
+            },
+        ]
+
+        options_attached_to_product = product.options.count()
+        sizes_in_db_count = Size.objects.count()
+
+        assert options_attached_to_product == 1
+        assert sizes_in_db_count == 2  # 1 created above, 1 created with product util.
+
+        expected_response = [
+            {
+                "id": ANY,
+                "status": ProductStatus.AVAILABLE,
+                "grossPrice": 500.0,
+                "variantId": variant.id,
+                "sizeId": None,
+            },
+            {
+                "id": ANY,
+                "status": ProductStatus.AVAILABLE,
+                "grossPrice": 400.0,
+                "variantId": None,
+                "sizeId": ANY,
+            },
+            {
+                "id": ANY,
+                "status": ProductStatus.AVAILABLE,
+                "grossPrice": 600.0,
+                "variantId": variant.id,
+                "sizeId": size.id,
+            },
+        ]
+
+        with django_assert_max_num_queries(6):
+            response = authenticated_privileged_client.post(
+                f"{self.BASE_ENDPOINT}/{product.id}/options/bulk-create/",
+                data=payload,
+                content_type="application/json",
+            )
+
+        assert response.status_code == 200
+        assert response.json() == expected_response
+        assert Size.objects.count() == sizes_in_db_count + 1
+        assert product.options.count() == options_attached_to_product + 3
+
+    #######################
+    # Color list endpoint #
+    #######################
+
+    ########################
+    # Shapes list endpoint #
+    ########################
