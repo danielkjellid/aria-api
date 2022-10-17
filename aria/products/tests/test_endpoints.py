@@ -286,6 +286,22 @@ class TestPublicProductsEndpoints:
             ],
             "options": [
                 {
+                    "id": option_2.id,
+                    "grossPrice": 500.0,
+                    "discount": None,
+                    "status": option_2.status_display,
+                    "variant": {
+                        "id": option_2.variant.id,
+                        "name": option_2.variant.name,
+                        "image": None,
+                        "thumbnail": None,
+                    },
+                    "size": {
+                        "id": option_2.size.id,
+                        "name": option_2.size.name,
+                    },
+                },
+                {
                     "id": option_1.id,
                     "grossPrice": 200.0,
                     "discount": {
@@ -305,22 +321,6 @@ class TestPublicProductsEndpoints:
                     "size": {
                         "id": option_1.size.id,
                         "name": option_1.size.name,
-                    },
-                },
-                {
-                    "id": option_2.id,
-                    "grossPrice": 500.0,
-                    "discount": None,
-                    "status": option_2.status_display,
-                    "variant": {
-                        "id": option_2.variant.id,
-                        "name": option_2.variant.name,
-                        "image": None,
-                        "thumbnail": None,
-                    },
-                    "size": {
-                        "id": option_2.size.id,
-                        "name": option_2.size.name,
                     },
                 },
             ],
@@ -355,10 +355,10 @@ class TestPublicProductsEndpoints:
         with django_assert_max_num_queries(12):
             response = anonymous_client.get(f"{self.BASE_ENDPOINT}/{product.slug}/")
 
-            actual_response = json.loads(response.content)
+        actual_response = json.loads(response.content)
 
-            assert response.status_code == 200
-            assert actual_response == expected_response
+        assert response.status_code == 200
+        assert actual_response == expected_response
 
         # Test that we fail when an invalid slug is passed.
         with django_assert_max_num_queries(1):
@@ -366,7 +366,7 @@ class TestPublicProductsEndpoints:
                 f"{self.BASE_ENDPOINT}/does-not-exist/"
             )
 
-            assert failed_response.status_code == 400
+        assert failed_response.status_code == 400
 
 
 class TestInternalProductsEndpoints:

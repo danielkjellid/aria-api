@@ -1,7 +1,8 @@
 from decimal import Decimal
 
-import pytest
 from django.core.cache import cache
+
+import pytest
 
 from aria.categories.tests.utils import create_category
 from aria.products.enums import ProductStatus
@@ -14,12 +15,12 @@ from aria.products.records import (
     ProductVariantRecord,
 )
 from aria.products.selectors.core import (
-    product_list_for_sale_for_qs,
     product_detail,
     product_list_by_category,
-    product_list_for_sale_from_cache,
-    product_list_for_sale,
     product_list_by_category_from_cache,
+    product_list_for_sale,
+    product_list_for_sale_for_qs,
+    product_list_for_sale_from_cache,
 )
 from aria.products.tests.utils import create_product, create_product_option
 
@@ -376,6 +377,7 @@ class TestProductCoreSelectors:
                 id=product_2.id,
                 name=product_2.name,
                 slug=product_2.slug,
+                status=product_2.status_display,
                 unit=product_2.unit_display,
                 supplier=ProductSupplierRecord(
                     id=product_2.supplier.id,
@@ -419,6 +421,7 @@ class TestProductCoreSelectors:
                 id=product_1.id,
                 name=product_1.name,
                 slug=product_1.slug,
+                status=product_1.status_display,
                 unit=product_1.unit_display,
                 supplier=ProductSupplierRecord(
                     id=product_1.supplier.id,
@@ -493,6 +496,7 @@ class TestProductCoreSelectors:
                 id=product_1.id,
                 name=product_1.name,
                 slug=product_1.slug,
+                status=product_1.status_display,
                 unit=product_1.unit_display,
                 supplier=ProductSupplierRecord(
                     id=product_1.supplier.id,
