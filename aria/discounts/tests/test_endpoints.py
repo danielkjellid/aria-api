@@ -8,6 +8,7 @@ from django.utils import timezone
 import pytest
 
 from aria.discounts.tests.utils import create_discount
+from aria.products.enums import ProductStatus
 from aria.products.tests.utils import create_product, create_product_option
 
 pytestmark = pytest.mark.django_db
@@ -299,6 +300,6 @@ class TestPublicDiscountsEndpoints:
             response = anonymous_client.get(f"{self.BASE_ENDPOINT}/")
 
         actual_response = json.loads(response.content)
-
+        print(response.json())
         assert response.status_code == 200
         assert actual_response == expected_response

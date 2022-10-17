@@ -97,7 +97,9 @@ public_router.add_router("/users/", public_users_endpoints, auth=None)
 
 internal_router = Router(auth=JWTAuthRequired())
 
-internal_router.add_router("/categories/", internal_categories_endpoints, auth=None)
+internal_router.add_router(
+    "/categories/", internal_categories_endpoints, auth=JWTAuthRequired()
+)
 
 # Notes endpoints
 internal_router.add_router("/notes/", internal_notes_endpoints, auth=JWTAuthRequired())

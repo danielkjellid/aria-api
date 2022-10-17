@@ -46,7 +46,7 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
 
         from aria.categories.models import Category
 
-        active_categories = Category.objects.active()
+        active_categories = Category.objects.active().select_related("parent")
 
         prefetched_children = Prefetch(
             "children", queryset=active_categories, to_attr="active_children"

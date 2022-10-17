@@ -181,6 +181,7 @@ class TestCategoriesSelectors:
         expected_parent_output = CategoryDetailRecord(
             id=cat_1.id,
             name=cat_1.name,
+            display_name=cat_1.get_category_display(),
             ordering=cat_1.ordering,
             slug=cat_1.slug,
             description=cat_1.description,
@@ -190,6 +191,7 @@ class TestCategoriesSelectors:
                 CategoryRecord(
                     id=subcat_1.id,
                     name=subcat_1.name,
+                    display_name=subcat_1.get_category_display(),
                     slug=subcat_1.slug,
                     description=subcat_1.description,
                     ordering=subcat_1.ordering,
@@ -212,6 +214,7 @@ class TestCategoriesSelectors:
                 CategoryRecord(
                     id=subcat_2.id,
                     name=subcat_2.name,
+                    display_name=subcat_2.get_category_display(),
                     slug=subcat_2.slug,
                     description=subcat_2.description,
                     ordering=subcat_2.ordering,
@@ -234,6 +237,7 @@ class TestCategoriesSelectors:
                 CategoryRecord(
                     id=subcat_3.id,
                     name=subcat_3.name,
+                    display_name=subcat_3.get_category_display(),
                     slug=subcat_3.slug,
                     description=subcat_3.description,
                     ordering=subcat_3.ordering,
@@ -280,6 +284,7 @@ class TestCategoriesSelectors:
         expected_child_output = CategoryDetailRecord(
             id=subcat_1.id,
             name=subcat_1.name,
+            display_name=subcat_1.get_category_display(),
             ordering=subcat_1.ordering,
             slug=subcat_1.slug,
             description=subcat_1.description,
@@ -288,6 +293,7 @@ class TestCategoriesSelectors:
                 CategoryRecord(
                     id=cat_1.id,
                     name=cat_1.name,
+                    display_name=cat_1.get_category_display(),
                     slug=cat_1.slug,
                     description=cat_1.description,
                     ordering=cat_1.ordering,
