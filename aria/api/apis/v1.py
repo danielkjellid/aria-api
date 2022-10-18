@@ -17,7 +17,7 @@ from aria.api.exception_handlers import (
     validation_error_exception_handler,
 )
 from aria.api.exceptions import PageOutOfBoundsError
-from aria.api_auth.authentication import JWTAuthRequired
+from aria.api_auth.authentication import JWTAuthRequired, JWTAuthStaffRequired
 from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
 from aria.api_auth.exceptions import TokenError
 from aria.categories.endpoints import (
@@ -95,24 +95,28 @@ public_router.add_router("/users/", public_users_endpoints, auth=None)
 # Internal routers #
 ####################
 
-internal_router = Router(auth=JWTAuthRequired())
+internal_router = Router(auth=JWTAuthStaffRequired())
 
 internal_router.add_router(
-    "/categories/", internal_categories_endpoints, auth=JWTAuthRequired()
+    "/categories/", internal_categories_endpoints, auth=JWTAuthStaffRequired()
 )
 
 # Notes endpoints
-internal_router.add_router("/notes/", internal_notes_endpoints, auth=JWTAuthRequired())
+internal_router.add_router(
+    "/notes/", internal_notes_endpoints, auth=JWTAuthStaffRequired()
+)
 
 # Users endpoints
-internal_router.add_router("/users/", internal_users_endpoints, auth=JWTAuthRequired())
-
 internal_router.add_router(
-    "/products/", internal_products_endpoints, auth=JWTAuthRequired()
+    "/users/", internal_users_endpoints, auth=JWTAuthStaffRequired()
 )
 
 internal_router.add_router(
-    "/suppliers/", internal_suppliers_endpoints, auth=JWTAuthRequired()
+    "/products/", internal_products_endpoints, auth=JWTAuthStaffRequired()
+)
+
+internal_router.add_router(
+    "/suppliers/", internal_suppliers_endpoints, auth=JWTAuthStaffRequired()
 )
 
 ###############

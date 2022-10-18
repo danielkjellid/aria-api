@@ -28,6 +28,14 @@ def authenticated_privileged_client(privileged_user):
 
 
 @pytest.fixture
+def authenticated_unprivileged_staff_client(unprivileged_staff_user):
+    tokens = token_pair_obtain_for_user(unprivileged_staff_user)
+    client = Client(HTTP_AUTHORIZATION=f"Bearer {tokens.access_token}")
+
+    return client
+
+
+@pytest.fixture
 def authenticated_privileged_staff_client(privileged_staff_user):
     tokens = token_pair_obtain_for_user(privileged_staff_user)
     client = Client(HTTP_AUTHORIZATION=f"Bearer {tokens.access_token}")

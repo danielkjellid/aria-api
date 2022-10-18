@@ -12,7 +12,7 @@ from aria.users.models import User
 
 
 class JWTAuthRequired(HttpBearer):
-    def authenticate(self, request: HttpRequest, token: str) -> Optional[Any]:
+    def authenticate(self, request: HttpRequest, token: str) -> User:
         try:
             # Decode provided token.
             is_token_valid, decoded_access_token = access_token_is_valid(token)
@@ -34,11 +34,27 @@ class JWTAuthRequired(HttpBearer):
             # response.
             if not user.is_active:
                 raise ApplicationError(
-                    "User with provided id is inactive", status_code=403
+                    "User with provided id is inactive", status_code=401
                 )
 
             # If all checks passes, return endpoint.
             return user  # 200 OK
         # Any exception we want it to return False i.e. 401
+        except Exception:  # pylint: disable=broad-except
+            return False
+
+
+class JWTAuthStaffRequired(JWTAuthRequired):
+    def authenticate(self, request: HttpRequest, token: str) -> Optional[Any]:
+        try:
+            user = super().authenticate(request=request, token=token)
+
+            if not user.is_staff:
+                raise ApplicationError(
+                    "User with provided id is not staff", status_code=401
+                )
+
+            return user
+
         except Exception:  # pylint: disable=broad-except
             return False
