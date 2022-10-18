@@ -32,7 +32,7 @@ class TestAPIAuthPublicEndpoints:
             failed_response = anonymous_client.post(
                 f"{self.BASE_ENDPOINT}/tokens/obtain/",
                 data={
-                    "email": "testuser@example.com",
+                    "email": "unprivileged_user@example.com",
                     "password": "nottherightpassword",
                 },
                 content_type="application/json",
@@ -45,7 +45,10 @@ class TestAPIAuthPublicEndpoints:
         with django_assert_max_num_queries(2):
             response = anonymous_client.post(
                 f"{self.BASE_ENDPOINT}/tokens/obtain/",
-                data={"email": "testuser@example.com", "password": "supersecret1234"},
+                data={
+                    "email": "unprivileged_user@example.com",
+                    "password": "supersecret1234",
+                },
                 content_type="application/json",
             )
 

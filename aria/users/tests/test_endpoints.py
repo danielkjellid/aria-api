@@ -279,11 +279,11 @@ class TestInternalUsersEndpoints:
         with django_assert_max_num_queries(3):
             response = authenticated_unprivileged_client.get(f"{self.BASE_ENDPOINT}/")
 
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     @pytest.mark.parametrize("test_permissions", ["has_users_list"], indirect=True)
-    def test_authenticated_privileged_client_users_list(
-        self, authenticated_privileged_client, django_assert_max_num_queries
+    def test_authenticated_privileged_staff_client_users_list(
+        self, authenticated_privileged_staff_client, django_assert_max_num_queries
     ) -> None:
         """
         Test that privileged users gets a valid response on listing all users in
@@ -297,7 +297,9 @@ class TestInternalUsersEndpoints:
         # Uses 5 queries: 1 for getting request user, 2 for checking permissions,
         # 2 for getting users and pagination data.
         with django_assert_max_num_queries(5):
-            response = authenticated_privileged_client.get(f"{self.BASE_ENDPOINT}/")
+            response = authenticated_privileged_staff_client.get(
+                f"{self.BASE_ENDPOINT}/"
+            )
 
         assert response.status_code == 200
         assert (
@@ -344,12 +346,12 @@ class TestInternalUsersEndpoints:
                 f"{self.BASE_ENDPOINT}/{user.id}/"
             )
 
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     @pytest.mark.parametrize("test_permissions", ["has_users_list"], indirect=True)
     def test_authenticated_privileged_client_user_detail_api(
         self,
-        authenticated_privileged_client,
+        authenticated_privileged_staff_client,
         django_assert_max_num_queries,
     ) -> None:
         """
@@ -396,7 +398,7 @@ class TestInternalUsersEndpoints:
         # - 2 for getting notes associated with user
         # - 1 for getting audit logs for user
         with django_assert_max_num_queries(7):
-            response = authenticated_privileged_client.get(
+            response = authenticated_privileged_staff_client.get(
                 f"{self.BASE_ENDPOINT}/{user.id}/"
             )
 
@@ -475,11 +477,11 @@ class TestInternalUsersEndpoints:
                 content_type="application/json",
             )
 
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     @pytest.mark.parametrize("test_permissions", ["has_user_edit"], indirect=True)
-    def test_authenticated_privileged_client_user_update_api(
-        self, authenticated_privileged_client, django_assert_max_num_queries
+    def test_authenticated_privileged_staff_client_user_update_api(
+        self, authenticated_privileged_staff_client, django_assert_max_num_queries
     ) -> None:
         """
         Test that privileged users gets a valid response on
@@ -512,7 +514,7 @@ class TestInternalUsersEndpoints:
         # - 2 for getting and aggregating permissions in record.
         # - 1 releasing savepoint
         with django_assert_max_num_queries(11):
-            response = authenticated_privileged_client.post(
+            response = authenticated_privileged_staff_client.post(
                 f"{self.BASE_ENDPOINT}/{user.id}/update/",
                 data=payload_json,
                 content_type="application/json",
@@ -566,11 +568,11 @@ class TestInternalUsersEndpoints:
                 content_type="application/json",
             )
 
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     @pytest.mark.parametrize("test_permissions", ["has_user_edit"], indirect=True)
     def test_authenticated_privileged_client_user_update_api_partial(
-        self, authenticated_privileged_client, django_assert_max_num_queries
+        self, authenticated_privileged_staff_client, django_assert_max_num_queries
     ) -> None:
         """
         Test that privileged users gets a valid response on
@@ -591,7 +593,7 @@ class TestInternalUsersEndpoints:
         # - 2 for getting and aggregating permissions in record.
         # - 1 releasing savepoint
         with django_assert_max_num_queries(11):
-            response = authenticated_privileged_client.post(
+            response = authenticated_privileged_staff_client.post(
                 f"{self.BASE_ENDPOINT}/{user.id}/update/",
                 data=payload_json,
                 content_type="application/json",

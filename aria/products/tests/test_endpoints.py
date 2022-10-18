@@ -1333,14 +1333,9 @@ class TestInternalProductsEndpoints:
 
         expected_response = [
             {
-                "id": color_1.id,
-                "name": color_1.name,
-                "colorHex": color_1.color_hex,
-            },
-            {
-                "id": color_2.id,
-                "name": color_2.name,
-                "colorHex": color_2.color_hex,
+                "id": color_4.id,
+                "name": color_4.name,
+                "colorHex": color_4.color_hex,
             },
             {
                 "id": color_3.id,
@@ -1348,9 +1343,14 @@ class TestInternalProductsEndpoints:
                 "colorHex": color_3.color_hex,
             },
             {
-                "id": color_4.id,
-                "name": color_4.name,
-                "colorHex": color_4.color_hex,
+                "id": color_2.id,
+                "name": color_2.name,
+                "colorHex": color_2.color_hex,
+            },
+            {
+                "id": color_1.id,
+                "name": color_1.name,
+                "colorHex": color_1.color_hex,
             },
         ]
 
@@ -1413,14 +1413,9 @@ class TestInternalProductsEndpoints:
 
         expected_response = [
             {
-                "id": shape_1.id,
-                "name": shape_1.name,
-                "image": shape_1.image.url if shape_1.image else None,
-            },
-            {
-                "id": shape_2.id,
-                "name": shape_2.name,
-                "image": shape_2.image.url if shape_2.image else None,
+                "id": shape_4.id,
+                "name": shape_4.name,
+                "image": shape_4.image.url if shape_4.image else None,
             },
             {
                 "id": shape_3.id,
@@ -1428,9 +1423,14 @@ class TestInternalProductsEndpoints:
                 "image": shape_3.image.url if shape_3.image else None,
             },
             {
-                "id": shape_4.id,
-                "name": shape_4.name,
-                "image": shape_4.image.url if shape_4.image else None,
+                "id": shape_2.id,
+                "name": shape_2.name,
+                "image": shape_2.image.url if shape_2.image else None,
+            },
+            {
+                "id": shape_1.id,
+                "name": shape_1.name,
+                "image": shape_1.image.url if shape_1.image else None,
             },
         ]
 
