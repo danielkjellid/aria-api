@@ -8,7 +8,13 @@ from aria.products.types import SizeDict
 
 
 def size_list_from_mapped_values(values: list[SizeDict]) -> list[ProductSizeRecord]:
+    """
+    Map a list of unknown sizes to existing size instances in the db, and return a list
+    of mapped instances.
+    """
 
+    # Aggregate all values base on key. Will return something like:
+    # [{"width": [30.0, 20.0, 10.0], "height": [11.0, 20.0]...}...].
     aggregated_values = {
         k: [Decimal(val.get(k)) for val in values if val.get(k) is not None]
         for k in set().union(*values)

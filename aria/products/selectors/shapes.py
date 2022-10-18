@@ -7,7 +7,7 @@ def shape_list() -> list[ProductShapeRecord]:
     Returns a list of all shapes in the application.
     """
 
-    shapes = Shape.objects.all().order_by("id")
+    shapes = Shape.objects.all().order_by("-id")
 
     return [
         ProductShapeRecord(

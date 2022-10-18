@@ -7,7 +7,7 @@ def color_list() -> ProductColorRecord:
     Returns a list of all colors in the application.
     """
 
-    colors = Color.objects.all().order_by("id")
+    colors = Color.objects.all().order_by("-id")
 
     return [
         ProductColorRecord(

@@ -1,12 +1,10 @@
 from django.core.files import File
-from django.db import transaction
 from django.utils.text import slugify
 
 from aria.products.models import Variant
 from aria.products.records import ProductVariantRecord
 
 
-@transaction.atomic
 def variant_create(
     *,
     name: str,
