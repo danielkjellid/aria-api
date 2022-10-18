@@ -104,6 +104,30 @@ def product_create_internal_api(request: HttpRequest):
     pass
 
 
+@router.post(
+    "{product_id}/images/create/",
+    response={
+        201: None,
+        codes_40x: ExceptionResponse,
+    },
+    summary="Create a file associated to a product.",
+)
+def product_image_create_internal_api(request: HttpRequest):
+    pass
+
+
+@router.post(
+    "{product_id}/images/bulk-create/",
+    response={
+        201: None,
+        codes_40x: ExceptionResponse,
+    },
+    summary="Create a file associated to a product.",
+)
+def product_image_bulk_create_internal_api(request: HttpRequest):
+    pass
+
+
 class ProductFileCreateInternalInput(Schema):
     name: str
 
@@ -141,6 +165,18 @@ def product_file_create_internal_api(
         name=product_file.name,
         file=product_file.file,
     )
+
+
+@router.post(
+    "{product_id}/files/bulk-create/",
+    response={
+        201: None,
+        codes_40x: ExceptionResponse,
+    },
+    summary="Create a file associated to a product.",
+)
+def product_file_bulk_create_internal_api(request: HttpRequest):
+    pass
 
 
 class VariantListInternalOutput(Schema):
@@ -301,7 +337,7 @@ class ProductOptionCreateInBulkInternalOutput(Schema):
     },
     summary="Create new product options in bulk.",
 )
-# @permission_required("products.product.management")
+@permission_required("products.product.management")
 def product_option_bulk_create_internal_api(
     request: HttpRequest,
     product_id: int,

@@ -1,9 +1,11 @@
 import json
 from datetime import timedelta
 from decimal import Decimal
+from typing import Any
 from unittest.mock import ANY
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test.client import MULTIPART_CONTENT
 from django.utils import timezone
 
 import pytest
@@ -373,6 +375,27 @@ class TestInternalProductsEndpoints:
 
     BASE_ENDPOINT = "/api/v1/internal/products"
 
+    #########################
+    # Product list endpoint #
+    #########################
+
+    def test_endpoint_product_list_internal_api(self):
+        assert False
+
+    #################################
+    # Product image create endpoint #
+    #################################
+
+    def test_endpoint_product_image_create_internal_api(self):
+        assert False
+
+    ######################################
+    # Product image bulk create endpoint #
+    ######################################
+
+    def test_endpoint_product_image_bulk_create_internal_api(self):
+        assert False
+
     ################################
     # Product file create endpoint #
     ################################
@@ -386,6 +409,7 @@ class TestInternalProductsEndpoints:
         authenticated_unprivileged_staff_client,
         authenticated_privileged_staff_client,
         django_assert_max_num_queries,
+        assert_client_response_is_status_code,
     ):
         """
         Test that privileged staff users gets a valid response on creating a new
@@ -396,46 +420,60 @@ class TestInternalProductsEndpoints:
 
         assert product.files.count() == 0
 
+        endpoint = f"{self.BASE_ENDPOINT}/{product.id}/files/create/"
+
         file = SimpleUploadedFile("test.pdf", b"data123")
         payload = {"name": "Catalog", "file": file}
 
         expected_response = {"productId": product.id, "name": "Catalog", "file": ANY}
 
         # Anonymous users should get 401.
-        with django_assert_max_num_queries(0):
-            anonymous_response = anonymous_client.post(
-                f"{self.BASE_ENDPOINT}/{product.id}/files/create/", data=payload
-            )
-
-        assert anonymous_response.status_code == 401
+        assert_client_response_is_status_code(
+            client=anonymous_client,
+            endpoint=endpoint,
+            method="POST",
+            max_allowed_queries=0,
+            payload=payload,
+            expected_status_code=401,
+            content_type=MULTIPART_CONTENT,
+        )
         assert product.files.count() == 0
 
         # Authenticated users without the correct permissions should get 401.
-        with django_assert_max_num_queries(1):
-            unprivileged_response = authenticated_unprivileged_client.post(
-                f"{self.BASE_ENDPOINT}/{product.id}/files/create/", data=payload
-            )
-
-        assert unprivileged_response.status_code == 401
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_client,
+            endpoint=endpoint,
+            method="POST",
+            max_allowed_queries=1,
+            payload=payload,
+            expected_status_code=401,
+            content_type=MULTIPART_CONTENT,
+        )
         assert product.files.count() == 0
 
         # Authenticated users with the correct permissions, but are not staff,
         # should get 401.
-        with django_assert_max_num_queries(1):
-            privileged_response = authenticated_privileged_client.post(
-                f"{self.BASE_ENDPOINT}/{product.id}/files/create/", data=payload
-            )
-
-        assert privileged_response.status_code == 401
+        assert_client_response_is_status_code(
+            client=authenticated_privileged_client,
+            endpoint=endpoint,
+            method="POST",
+            max_allowed_queries=1,
+            payload=payload,
+            expected_status_code=401,
+            content_type=MULTIPART_CONTENT,
+        )
         assert product.files.count() == 0
 
         # Authenticated staff users without correct permissions should get 403.
-        with django_assert_max_num_queries(3):
-            unprivileged_staff_response = authenticated_unprivileged_staff_client.post(
-                f"{self.BASE_ENDPOINT}/{product.id}/files/create/", data=payload
-            )
-
-        assert unprivileged_staff_response.status_code == 403
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_staff_client,
+            endpoint=endpoint,
+            method="POST",
+            max_allowed_queries=3,
+            payload=payload,
+            expected_status_code=403,
+            content_type=MULTIPART_CONTENT,
+        )
         assert product.files.count() == 0
 
         # Uses 6 queries:
@@ -445,7 +483,7 @@ class TestInternalProductsEndpoints:
         # 1 - for creating file
         with django_assert_max_num_queries(6):
             privileged_staff_response = authenticated_privileged_staff_client.post(
-                f"{self.BASE_ENDPOINT}/{product.id}/files/create/", data=payload
+                endpoint, data=payload
             )
 
         assert privileged_staff_response.status_code == 201
@@ -453,6 +491,13 @@ class TestInternalProductsEndpoints:
         assert product.files.count() == 1
         assert product.files.first().name == "Catalog"
         assert product.files.first().file is not None
+
+    #####################################
+    # Product file bulk create endpoint #
+    #####################################
+
+    def test_endpoint_product_file_bulk_create_internal_api(self):
+        assert False
 
     ##########################
     # Variants list endpoint #
@@ -467,12 +512,15 @@ class TestInternalProductsEndpoints:
         authenticated_unprivileged_staff_client,
         authenticated_privileged_staff_client,
         django_assert_max_num_queries,
+        assert_client_response_is_status_code,
     ):
         """
         Test that privileged staff users gets a valid response on listing all variants
         in the application, and that all other request return appropriate HTTP status
         codes.
         """
+
+        endpoint = f"{self.BASE_ENDPOINT}/variants/"
 
         create_variant(name="Variant 1", is_standard=False)
         create_variant(name="Variant 2", is_standard=False)
@@ -511,39 +559,41 @@ class TestInternalProductsEndpoints:
         ]
 
         # Anonymous users should get 401.
-        with django_assert_max_num_queries(0):
-            anonymous_response = anonymous_client.get(f"{self.BASE_ENDPOINT}/variants/")
-
-        assert anonymous_response.status_code == 401
+        assert_client_response_is_status_code(
+            client=anonymous_client,
+            endpoint=endpoint,
+            max_allowed_queries=0,
+            expected_status_code=401,
+        )
 
         # Authenticated users without the correct permissions should get 401.
-        with django_assert_max_num_queries(1):
-            unprivileged_response = authenticated_unprivileged_client.get(
-                f"{self.BASE_ENDPOINT}/variants/"
-            )
-
-        assert unprivileged_response.status_code == 401
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            expected_status_code=401,
+        )
 
         # Authenticated users with the correct permissions, but are not staff,
         # should get 401.
-        with django_assert_max_num_queries(1):
-            privileged_response = authenticated_privileged_client.get(
-                f"{self.BASE_ENDPOINT}/variants/"
-            )
-
-        assert privileged_response.status_code == 401
+        assert_client_response_is_status_code(
+            client=authenticated_privileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            expected_status_code=401,
+        )
 
         # Authenticated staff users without correct permissions should get 403.
-        with django_assert_max_num_queries(3):
-            unprivileged_staff_response = authenticated_unprivileged_staff_client.get(
-                f"{self.BASE_ENDPOINT}/variants/"
-            )
-
-        assert unprivileged_staff_response.status_code == 403
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_staff_client,
+            endpoint=endpoint,
+            max_allowed_queries=3,
+            expected_status_code=403,
+        )
 
         with django_assert_max_num_queries(4):
             privileged_staff_response = authenticated_privileged_staff_client.get(
-                f"{self.BASE_ENDPOINT}/variants/"
+                endpoint
             )
 
         assert privileged_staff_response.status_code == 200
@@ -567,12 +617,15 @@ class TestInternalProductsEndpoints:
         authenticated_unprivileged_staff_client,
         authenticated_privileged_staff_client,
         django_assert_max_num_queries,
+        assert_client_response_is_status_code,
     ):
         """
         Test that privileged staff users gets a valid response on creating a new variant
         in the application, and that all other request return appropriate HTTP status
         codes.
         """
+
+        endpoint = f"{self.BASE_ENDPOINT}/variants/create/"
 
         file = SimpleUploadedFile("test.jpeg", b"data123")
         payload = {"name": "White mist", "is_standard": False, "file": file}
@@ -586,41 +639,49 @@ class TestInternalProductsEndpoints:
         }
 
         # Anonymous users should get 401.
-        with django_assert_max_num_queries(0):
-            anonymous_response = anonymous_client.post(
-                f"{self.BASE_ENDPOINT}/variants/create/", data=payload
-            )
-
-        assert anonymous_response.status_code == 401
+        assert_client_response_is_status_code(
+            client=anonymous_client,
+            endpoint=endpoint,
+            max_allowed_queries=0,
+            method="POST",
+            payload=payload,
+            expected_status_code=401,
+        )
 
         # Authenticated users without the correct permissions should get 401.
-        with django_assert_max_num_queries(1):
-            unprivileged_response = authenticated_unprivileged_client.post(
-                f"{self.BASE_ENDPOINT}/variants/create/", data=payload
-            )
-
-        assert unprivileged_response.status_code == 401
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            method="POST",
+            payload=payload,
+            expected_status_code=401,
+        )
 
         # Authenticated users with the correct permissions, but are not staff,
         # should get 401.
-        with django_assert_max_num_queries(1):
-            privileged_response = authenticated_privileged_client.post(
-                f"{self.BASE_ENDPOINT}/variants/create/", data=payload
-            )
-
-        assert privileged_response.status_code == 401
+        assert_client_response_is_status_code(
+            client=authenticated_privileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            method="POST",
+            payload=payload,
+            expected_status_code=401,
+        )
 
         # Authenticated staff users without correct permissions should get 403.
-        with django_assert_max_num_queries(3):
-            unprivileged_staff_response = authenticated_unprivileged_staff_client.post(
-                f"{self.BASE_ENDPOINT}/variants/create/", data=payload
-            )
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_staff_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            method="POST",
+            payload=payload,
+            expected_status_code=401,
+        )
 
-        assert unprivileged_staff_response.status_code == 403
-
         with django_assert_max_num_queries(3):
-            privileged_staff_response = authenticated_privileged_client.post(
-                f"{self.BASE_ENDPOINT}/variants/create/", data=payload
+            privileged_staff_response = authenticated_privileged_staff_client.post(
+                endpoint, data=payload
             )
 
         assert privileged_staff_response.status_code == 201
@@ -630,69 +691,16 @@ class TestInternalProductsEndpoints:
     # Product option create endpoint #
     ##################################
 
-    def test_anonymous_request_product_option_create_internal_api(
-        self, anonymous_client, django_assert_max_num_queries
-    ):
-        """
-        Test that unauthenticated users gets a 401 unauthorized on creating a new
-        product option.
-        """
-
-        product = create_product()
-        payload = {
-            "status": ProductStatus.AVAILABLE,
-            "grossPrice": 99.00,
-            "variantId": None,
-            "size": {
-                "width": 10.0,
-                "height": 12.0,
-                "depth": None,
-                "circumference": None,
-            },
-        }
-
-        with django_assert_max_num_queries(3):
-            response = anonymous_client.post(
-                f"{self.BASE_ENDPOINT}/{product.id}/options/create/",
-                data=payload,
-                content_type="application/json",
-            )
-
-        assert response.status_code == 401
-
-    def test_authenticated_unprivileged_request_product_option_create_internal_api(
-        self, authenticated_unprivileged_client, django_assert_max_num_queries
-    ):
-        """
-        Test that unauthenticated users gets a 403 forbidding on creating a new product
-        option.
-        """
-
-        product = create_product()
-        payload = {
-            "status": ProductStatus.AVAILABLE,
-            "grossPrice": 99.00,
-            "variantId": None,
-            "size": {
-                "width": 10.0,
-                "height": 12.0,
-                "depth": None,
-                "circumference": None,
-            },
-        }
-
-        with django_assert_max_num_queries(3):
-            response = authenticated_unprivileged_client.post(
-                f"{self.BASE_ENDPOINT}/{product.id}/options/create/",
-                data=payload,
-                content_type="application/json",
-            )
-
-        assert response.status_code == 403
-
     @pytest.mark.parametrize("test_permissions", ["product.management"], indirect=True)
-    def test_authenticated_privileged_request_product_option_create_internal_api(
-        self, authenticated_privileged_client, django_assert_max_num_queries
+    def test_endpoint_product_option_create_internal_api(
+        self,
+        anonymous_client,
+        authenticated_unprivileged_client,
+        authenticated_privileged_client,
+        authenticated_unprivileged_staff_client,
+        authenticated_privileged_staff_client,
+        django_assert_max_num_queries,
+        assert_client_response_is_status_code,
     ):
 
         product = create_product()
@@ -703,6 +711,12 @@ class TestInternalProductsEndpoints:
             circumference=None,
         )
         existing_variant = create_variant(name="Test variant", is_standard=False)
+
+        endpoint = f"{self.BASE_ENDPOINT}/{product.id}/options/create/"
+
+        ###########
+        # No size #
+        ###########
 
         no_size_payload = {
             "status": ProductStatus.AVAILABLE,
@@ -717,15 +731,62 @@ class TestInternalProductsEndpoints:
             "variantId": existing_variant.id,
         }
 
+        # Anonymous users should get 401.
+        assert_client_response_is_status_code(
+            client=anonymous_client,
+            endpoint=endpoint,
+            max_allowed_queries=0,
+            method="POST",
+            payload=no_size_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated users without the correct permissions should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            method="POST",
+            payload=no_size_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated users with the correct permissions, but are not staff,
+        # should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_privileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            method="POST",
+            payload=no_size_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated staff users without correct permissions should get 403.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_staff_client,
+            endpoint=endpoint,
+            max_allowed_queries=3,
+            method="POST",
+            payload=no_size_payload,
+            expected_status_code=403,
+        )
+
         with django_assert_max_num_queries(8):
-            no_size_response = authenticated_privileged_client.post(
-                f"{self.BASE_ENDPOINT}/{product.id}/options/create/",
-                data=no_size_payload,
-                content_type="application/json",
+            no_size_privileged_staff_response = (
+                authenticated_privileged_staff_client.post(
+                    endpoint,
+                    data=no_size_payload,
+                    content_type="application/json",
+                )
             )
 
-        assert no_size_response.status_code == 201
-        assert no_size_response.json() == no_size_expected_response
+        assert no_size_privileged_staff_response.status_code == 201
+        assert no_size_privileged_staff_response.json() == no_size_expected_response
+
+        #################
+        # Existing size #
+        #################
 
         existing_size_payload = {
             "status": ProductStatus.AVAILABLE,
@@ -746,15 +807,65 @@ class TestInternalProductsEndpoints:
             "variantId": existing_variant.id,
         }
 
+        # Anonymous users should get 401.
+        assert_client_response_is_status_code(
+            client=anonymous_client,
+            endpoint=endpoint,
+            max_allowed_queries=0,
+            method="POST",
+            payload=existing_size_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated users without the correct permissions should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            method="POST",
+            payload=existing_size_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated users with the correct permissions, but are not staff,
+        # should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_privileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            method="POST",
+            payload=existing_size_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated staff users without correct permissions should get 403.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_staff_client,
+            endpoint=endpoint,
+            max_allowed_queries=3,
+            method="POST",
+            payload=existing_size_payload,
+            expected_status_code=403,
+        )
+
         with django_assert_max_num_queries(12):
-            existing_size_response = authenticated_privileged_client.post(
-                f"{self.BASE_ENDPOINT}/{product.id}/options/create/",
-                data=existing_size_payload,
-                content_type="application/json",
+            existing_size_privileged_staff_response = (
+                authenticated_privileged_staff_client.post(
+                    endpoint,
+                    data=existing_size_payload,
+                    content_type="application/json",
+                )
             )
 
-        assert existing_size_response.status_code == 201
-        assert existing_size_response.json() == existing_size_expected_response
+        assert existing_size_privileged_staff_response.status_code == 201
+        assert (
+            existing_size_privileged_staff_response.json()
+            == existing_size_expected_response
+        )
+
+        ###############
+        # Create size #
+        ###############
 
         sizes_in_db_count = Size.objects.count()
 
@@ -777,16 +888,66 @@ class TestInternalProductsEndpoints:
             "sizeId": ANY,
         }
 
+        # Anonymous users should get 401.
+        assert_client_response_is_status_code(
+            client=anonymous_client,
+            endpoint=endpoint,
+            max_allowed_queries=0,
+            method="POST",
+            payload=create_size_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated users without the correct permissions should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            method="POST",
+            payload=create_size_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated users with the correct permissions, but are not staff,
+        # should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_privileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            method="POST",
+            payload=create_size_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated staff users without correct permissions should get 403.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_staff_client,
+            endpoint=endpoint,
+            max_allowed_queries=3,
+            method="POST",
+            payload=create_size_payload,
+            expected_status_code=403,
+        )
+
         with django_assert_max_num_queries(13):
-            create_size_response = authenticated_privileged_client.post(
-                f"{self.BASE_ENDPOINT}/{product.id}/options/create/",
-                data=create_size_payload,
-                content_type="application/json",
+            create_size_privileged_staff_response = (
+                authenticated_privileged_staff_client.post(
+                    endpoint,
+                    data=create_size_payload,
+                    content_type="application/json",
+                )
             )
 
-        assert create_size_response.status_code == 201
-        assert create_size_response.json() == create_size_expected_response
+        assert create_size_privileged_staff_response.status_code == 201
+        assert (
+            create_size_privileged_staff_response.json()
+            == create_size_expected_response
+        )
         assert Size.objects.count() == sizes_in_db_count + 1
+
+        #############################
+        # No variant, existing size #
+        #############################
 
         no_variant_existing_size_payload = {
             "status": ProductStatus.AVAILABLE,
@@ -807,11 +968,54 @@ class TestInternalProductsEndpoints:
             "sizeId": ANY,
         }
 
+        # Anonymous users should get 401.
+        assert_client_response_is_status_code(
+            client=anonymous_client,
+            endpoint=endpoint,
+            max_allowed_queries=0,
+            method="POST",
+            payload=no_variant_existing_size_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated users without the correct permissions should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            method="POST",
+            payload=no_variant_existing_size_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated users with the correct permissions, but are not staff,
+        # should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_privileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            method="POST",
+            payload=no_variant_existing_size_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated staff users without correct permissions should get 403.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_staff_client,
+            endpoint=endpoint,
+            max_allowed_queries=3,
+            method="POST",
+            payload=no_variant_existing_size_payload,
+            expected_status_code=403,
+        )
+
         with django_assert_max_num_queries(9):
-            no_variant_existing_size_response = authenticated_privileged_client.post(
-                f"{self.BASE_ENDPOINT}/{product.id}/options/create/",
-                data=no_variant_existing_size_payload,
-                content_type="application/json",
+            no_variant_existing_size_response = (
+                authenticated_privileged_staff_client.post(
+                    endpoint,
+                    data=no_variant_existing_size_payload,
+                    content_type="application/json",
+                )
             )
 
         assert no_variant_existing_size_response.status_code == 201
@@ -819,6 +1023,10 @@ class TestInternalProductsEndpoints:
             no_variant_existing_size_response.json()
             == no_variant_existing_size_expected_response
         )
+
+        ###########################
+        # No variant, create size #
+        ###########################
 
         sizes_in_db_count = Size.objects.count()
 
@@ -841,11 +1049,54 @@ class TestInternalProductsEndpoints:
             "sizeId": ANY,
         }
 
+        # Anonymous users should get 401.
+        assert_client_response_is_status_code(
+            client=anonymous_client,
+            endpoint=endpoint,
+            max_allowed_queries=0,
+            method="POST",
+            payload=no_variant_create_size_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated users without the correct permissions should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            method="POST",
+            payload=no_variant_create_size_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated users with the correct permissions, but are not staff,
+        # should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_privileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            method="POST",
+            payload=no_variant_create_size_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated staff users without correct permissions should get 403.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_staff_client,
+            endpoint=endpoint,
+            max_allowed_queries=3,
+            method="POST",
+            payload=no_variant_create_size_payload,
+            expected_status_code=403,
+        )
+
         with django_assert_max_num_queries(10):
-            no_variant_create_size_response = authenticated_privileged_client.post(
-                f"{self.BASE_ENDPOINT}/{product.id}/options/create/",
-                data=no_variant_create_size_payload,
-                content_type="application/json",
+            no_variant_create_size_response = (
+                authenticated_privileged_staff_client.post(
+                    endpoint,
+                    data=no_variant_create_size_payload,
+                    content_type="application/json",
+                )
             )
 
         assert no_variant_create_size_response.status_code == 201
@@ -855,6 +1106,10 @@ class TestInternalProductsEndpoints:
         )
         assert Size.objects.count() == sizes_in_db_count + 1
 
+        #######################
+        # No variant, no size #
+        #######################
+
         no_size_no_variant_payload = {
             "status": ProductStatus.AVAILABLE,
             "grossPrice": 999.50,
@@ -862,28 +1117,70 @@ class TestInternalProductsEndpoints:
             "size": None,
         }
 
+        # Anonymous users should get 401.
+        assert_client_response_is_status_code(
+            client=anonymous_client,
+            endpoint=endpoint,
+            max_allowed_queries=0,
+            method="POST",
+            payload=no_size_no_variant_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated users without the correct permissions should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            method="POST",
+            payload=no_size_no_variant_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated users with the correct permissions, but are not staff,
+        # should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_privileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            method="POST",
+            payload=no_size_no_variant_payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated staff users without correct permissions should get 403.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_staff_client,
+            endpoint=endpoint,
+            max_allowed_queries=3,
+            method="POST",
+            payload=no_size_no_variant_payload,
+            expected_status_code=403,
+        )
+
         with django_assert_max_num_queries(4):
-            no_size_no_variant_response = authenticated_privileged_client.post(
-                f"{self.BASE_ENDPOINT}/{product.id}/options/create/",
+            no_size_no_variant_response = authenticated_privileged_staff_client.post(
+                endpoint,
                 data=no_size_no_variant_payload,
                 content_type="application/json",
             )
 
         assert no_size_no_variant_response.status_code == 400
 
-    def test_endpoint_productr_option_create_internal_api(self):
-        assert False
-
     #######################################
     # Product option bulk create endpoint #
     #######################################
 
-    def test_endpoint_product_option_bulk_create_internal_api(self):
-        assert False
-
     @pytest.mark.parametrize("test_permissions", ["product.management"], indirect=True)
-    def test_authenticated_privileged_request_product_option_bulk_create_internal_api(
-        self, authenticated_privileged_client, django_assert_max_num_queries
+    def test_endpoint_product_option_bulk_create_internal_api(
+        self,
+        anonymous_client,
+        authenticated_unprivileged_client,
+        authenticated_privileged_client,
+        authenticated_unprivileged_staff_client,
+        authenticated_privileged_staff_client,
+        django_assert_max_num_queries,
+        assert_client_response_is_status_code,
     ):
 
         product = create_product()
@@ -894,6 +1191,8 @@ class TestInternalProductsEndpoints:
             depth=Decimal("5.0"),
             circumference=None,
         )
+
+        endpoint = f"{self.BASE_ENDPOINT}/{product.id}/options/bulk-create/"
 
         payload = [
             {
@@ -956,9 +1255,50 @@ class TestInternalProductsEndpoints:
             },
         ]
 
-        with django_assert_max_num_queries(6):
-            response = authenticated_privileged_client.post(
-                f"{self.BASE_ENDPOINT}/{product.id}/options/bulk-create/",
+        # Anonymous users should get 401.
+        assert_client_response_is_status_code(
+            client=anonymous_client,
+            endpoint=endpoint,
+            max_allowed_queries=0,
+            method="POST",
+            payload=payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated users without the correct permissions should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            method="POST",
+            payload=payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated users with the correct permissions, but are not staff,
+        # should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_privileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            method="POST",
+            payload=payload,
+            expected_status_code=401,
+        )
+
+        # Authenticated staff users without correct permissions should get 403.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_staff_client,
+            endpoint=endpoint,
+            max_allowed_queries=3,
+            method="POST",
+            payload=payload,
+            expected_status_code=403,
+        )
+
+        with django_assert_max_num_queries(8):
+            response = authenticated_privileged_staff_client.post(
+                endpoint,
                 data=payload,
                 content_type="application/json",
             )
