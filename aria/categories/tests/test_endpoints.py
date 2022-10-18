@@ -3,7 +3,6 @@ import json
 from django.core.cache import cache
 
 import pytest
-from django.core.cache import cache
 
 from aria.categories.tests.utils import create_category
 
@@ -238,3 +237,23 @@ class TestPublicCategoriesEndpoints:
             )
 
         assert failed_response.status_code == 404
+
+
+class TestInternalCategoriesEndpoints:
+
+    BASE_ENDPOINT = "/api/v1/internal/categories"
+
+    def test_anonymous_request_category_list_internal_api(
+        self, django_assert_max_num_queries
+    ):
+        assert False
+
+    def test_authenticated_unprivileged_request_category_list_internal_api(
+        self, django_assert_max_num_queries
+    ):
+        assert False
+
+    def test_authenticated_priveleged_request_category_list_internal_api(
+        self, django_assert_max_num_queries
+    ):
+        assert False

@@ -1,4 +1,5 @@
 from django.http import HttpRequest
+
 from ninja import Router, Schema
 
 from aria.api.responses import codes_40x
@@ -19,6 +20,7 @@ class SupplierListInternalOutput(Schema):
     "/",
     response={200: list[SupplierListInternalOutput], codes_40x: ExceptionResponse},
     summary="List all suppliers.",
+    url_name="internal-suppliers-index",  # Temporary.
 )
 @permission_required("suppliers.has_suppliers_list")
 def supplier_list_internal_api(request: HttpRequest):

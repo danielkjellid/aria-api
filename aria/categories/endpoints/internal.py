@@ -1,4 +1,5 @@
 from django.http import HttpRequest
+
 from ninja import Router, Schema
 
 from aria.api.responses import codes_40x
@@ -18,6 +19,7 @@ class CategoryListInternalOutput(Schema):
     "/",
     response={200: list[CategoryListInternalOutput], codes_40x: ExceptionResponse},
     summary="List all categories.",
+    url_name="internal-categories-index",  # Temporary.
 )
 # @permission_required("categories.list")
 def category_list_internal_api(request: HttpRequest):

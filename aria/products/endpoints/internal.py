@@ -33,6 +33,7 @@ router = Router(tags=["Products"])
         codes_40x: ExceptionResponse,
     },
     summary="List all products",
+    url_name="internal-products-index",  # Temporary.
 )
 @paginate(page_size=50)
 @permission_required("products.management")
@@ -99,7 +100,7 @@ class ProductCreateInternalInput(Schema):
         codes_40x: ExceptionResponse,
     },
 )
-def product_create_api(request: HttpRequest):
+def product_create_internal_api(request: HttpRequest):
     pass
 
 

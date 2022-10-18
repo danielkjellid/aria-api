@@ -286,22 +286,6 @@ class TestPublicProductsEndpoints:
             ],
             "options": [
                 {
-                    "id": option_2.id,
-                    "grossPrice": 500.0,
-                    "discount": None,
-                    "status": option_2.status_display,
-                    "variant": {
-                        "id": option_2.variant.id,
-                        "name": option_2.variant.name,
-                        "image": None,
-                        "thumbnail": None,
-                    },
-                    "size": {
-                        "id": option_2.size.id,
-                        "name": option_2.size.name,
-                    },
-                },
-                {
                     "id": option_1.id,
                     "grossPrice": 200.0,
                     "discount": {
@@ -321,6 +305,22 @@ class TestPublicProductsEndpoints:
                     "size": {
                         "id": option_1.size.id,
                         "name": option_1.size.name,
+                    },
+                },
+                {
+                    "id": option_2.id,
+                    "grossPrice": 500.0,
+                    "discount": None,
+                    "status": option_2.status_display,
+                    "variant": {
+                        "id": option_2.variant.id,
+                        "name": option_2.variant.name,
+                        "image": None,
+                        "thumbnail": None,
+                    },
+                    "size": {
+                        "id": option_2.size.id,
+                        "name": option_2.size.name,
                     },
                 },
             ],
@@ -957,6 +957,38 @@ class TestInternalProductsEndpoints:
     # Color list endpoint #
     #######################
 
+    def test_anonymous_request_color_list_internal_api(
+        self, anonymous_client, django_assert_max_num_queries
+    ):
+        assert False
+
+    def test_authenticated_unprivileged_request_color_list_internal_api(
+        self, authenticated_unprivileged_client, django_assert_max_num_queries
+    ):
+        assert False
+
+    @pytest.mark.parametrize("test_permissions", ["product.management"], indirect=True)
+    def test_authenticated_privileged_request_color_list_internal_api(
+        self, authenticated_privileged_client, django_assert_max_num_queries
+    ):
+        assert False
+
     ########################
     # Shapes list endpoint #
     ########################
+
+    def test_anonymous_request_shape_list_internal_api(
+        self, anonymous_client, django_assert_max_num_queries
+    ):
+        assert False
+
+    def test_authenticated_unprivileged_request_shape_list_internal_api(
+        self, authenticated_unprivileged_client, django_assert_max_num_queries
+    ):
+        assert False
+
+    @pytest.mark.parametrize("test_permissions", ["product.management"], indirect=True)
+    def test_authenticated_privileged_request_shape_list_internal_api(
+        self, authenticated_privileged_client, django_assert_max_num_queries
+    ):
+        assert False

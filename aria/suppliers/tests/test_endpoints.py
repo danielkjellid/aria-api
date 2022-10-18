@@ -37,3 +37,23 @@ class TestPublicSuppliersEndpoints:
 
         assert response.status_code == 200
         assert len(json.loads(response.content)) == 3  # 3 out of 4 active
+
+
+class TestInternalSuppliersEndpoints:
+
+    BASE_ENDPOINT = "/api/v1/internal/suppliers"
+
+    def test_anonymous_request_supplier_list_internal_api(
+        self, anonymous_client, django_assert_max_num_queries
+    ):
+        assert False
+
+    def test_authenticated_unprivileged_request_supplier_list_internal_api(
+        self, authenticated_unprivileged_client, django_assert_max_num_queries
+    ):
+        assert False
+
+    def test_authenticated_privileged_request_supplier_list_internal_api(
+        self, django_assert_max_num_queries, authenticated_privileged_client
+    ):
+        assert False
