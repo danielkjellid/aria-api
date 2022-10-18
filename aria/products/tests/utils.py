@@ -6,7 +6,7 @@ from django.utils.text import slugify
 from aria.categories.models import Category
 from aria.categories.tests.utils import create_category
 from aria.products.enums import ProductStatus, ProductUnit
-from aria.products.models import Product, ProductOption, Size, Variant
+from aria.products.models import Color, Product, ProductOption, Shape, Size, Variant
 from aria.suppliers.models import Supplier
 from aria.suppliers.tests.utils import get_or_create_supplier
 
@@ -132,3 +132,30 @@ def create_product_option(
     )
 
     return product_option
+
+
+def create_color(*, name: str, color_hex: str) -> Color:
+    """
+    Test util that creates a color instance.
+    """
+
+    color, _created = Color.objects.get_or_create(
+        name=name, defaults={"color_hex": color_hex}
+    )
+
+    return color
+
+
+def create_shape(*, name: str) -> Shape:
+    """
+    Test util that creates a shape instance.
+    """
+
+    shape, _created = Shape.objects.get_or_create(name=name)
+
+    with tempfile.NamedTemporaryFile(suffix=".jpg") as file:
+        shape.image = file.name
+
+    shape.save()
+
+    return shape
