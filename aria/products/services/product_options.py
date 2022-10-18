@@ -71,10 +71,10 @@ def product_option_bulk_create(
     product_options_to_create = [
         ProductOption(
             product=product,
-            status=option["status"],
-            gross_price=option["gross_price"],
-            size_id=option["size_id"],
-            variant_id=option["variant_id"],
+            status=option.get("status", ProductStatus.AVAILABLE),
+            gross_price=option.get("gross_price", Decimal("0.0")),
+            size_id=option.get("size_id", None),
+            variant_id=option.get("variant_id", None),
         )
         for option in product_options
     ]

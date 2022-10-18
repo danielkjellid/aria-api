@@ -86,8 +86,8 @@ def create_variant(
 
 
 def create_size(
-    width: Decimal | None = Decimal(100.00),
-    height: Decimal | None = Decimal(100.00),
+    width: Decimal | None = None,
+    height: Decimal | None = None,
     depth: Decimal | None = None,
     circumference: Decimal | None = None,
 ) -> Size:
@@ -98,7 +98,7 @@ def create_size(
     if all(param is None for param in {width, height, depth, circumference}):
         raise ValueError("All args cannot be None!")
 
-    size, _created = Size.objects.get_or_create(
+    size = Size.objects.create(
         width=width, height=height, depth=depth, circumference=circumference
     )
 
@@ -121,7 +121,7 @@ def create_product_option(
         variant = create_variant()
 
     if size is None:
-        size = create_size()
+        size = create_size(width=Decimal("100.0"), height=Decimal("100.0"))
 
     product_option, _created = ProductOption.objects.get_or_create(
         product=product,
