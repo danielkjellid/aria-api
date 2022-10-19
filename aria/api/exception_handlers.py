@@ -10,7 +10,6 @@ from pydantic.error_wrappers import ValidationError as PydanticValidationError
 
 from aria.api.exceptions import PageOutOfBoundsError
 from aria.api.schemas.responses import ExceptionResponse
-from aria.api.types import PydanticErrorDict
 from aria.api.utils import translate_pydantic_validation_messages
 from aria.api_auth.exceptions import TokenError
 from aria.core.exceptions import ApplicationError

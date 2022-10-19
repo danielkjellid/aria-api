@@ -150,7 +150,7 @@ def _size_validate(
 
     # Make sure that circumferential sizes only has the circumference param sent in.
     if circumference is not None and any(
-        param is not None for param in {width, height, depth}
+        param is not None for param in (width, height, depth)
     ):
 
         extra_dict = {}
@@ -177,7 +177,7 @@ def _size_validate(
         )
 
     # Make sure that normal sizes at least have width and height specified.
-    if circumference is None and any(param is None for param in {width, height}):
+    if circumference is None and any(param is None for param in (width, height)):
         raise ApplicationError(
             message=_(
                 "Width and height needs to be specified when not making a "
@@ -201,7 +201,7 @@ def size_clean_and_validate_value(
     Clean size values and validate that param combinations are correct.
     """
 
-    if all(param is None for param in {width, height, depth, circumference}):
+    if all(param is None for param in (width, height, depth, circumference)):
         raise ValueError("All size params cannot be None!")
 
     # Convert zero's to None to avoid having dangling 0's in the DB creating multiple

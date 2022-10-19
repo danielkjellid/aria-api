@@ -75,22 +75,6 @@ def product_list_internal_api(
 ####################################
 
 
-class ProductCreateInternalInputFile(Schema):
-    name: str
-    file: str
-
-
-class ProductCreateInternalInputImage(Schema):
-    image: str
-
-
-class ProductCreateInternalInputOption(Schema):
-    variant_id: int | None
-    size_id: int | None
-    gross_price: float
-    status: ProductStatus
-
-
 class ProductCreateInternalInput(Schema):
     name: str
     status: ProductStatus
@@ -114,11 +98,6 @@ class ProductCreateInternalInput(Schema):
     shape_ids: list[int]
     color_ids: list[int]
 
-    # Relationships - needs creation.
-    files: list[ProductCreateInternalInputFile]
-    images: list[ProductCreateInternalInputImage]
-    options: list[ProductCreateInternalInputOption]
-
 
 @router.post(
     "create/",
@@ -126,11 +105,14 @@ class ProductCreateInternalInput(Schema):
         200: ProductCreateInternalInput,
         codes_40x: ExceptionResponse,
     },
+    summary="Create a single product instance.",
 )
 def product_create_internal_api(
     request: HttpRequest,
 ) -> tuple[int, ProductCreateInternalInput]:
-    pass
+    """
+    Create a single product instance.
+    """
 
 
 ##########################################
@@ -312,7 +294,7 @@ class ProductOptionCreateInternalInput(Schema):
 
 class ProductOptionCreateInternalOutput(Schema):
     id: int
-    status: int
+    status: ProductStatus
     gross_price: float
     size_id: int | None
     variant_id: int | None
@@ -330,17 +312,22 @@ class ProductOptionCreateInternalOutput(Schema):
 def product_option_create_internal_api(
     request: HttpRequest, product_id: int, payload: ProductOptionCreateInternalInput
 ) -> tuple[int, ProductOptionCreateInternalOutput]:
-
-    product = get_object_or_404(Product, pk=product_id)
+    """
+    Create a single product option instance belonging to a product based in id.
+    """
     size = None
+    size_record = None
     variant = None
 
-    size_record = size_get_or_create(
-        width=payload.size.width if payload.size else None,
-        height=payload.size.height if payload.size else None,
-        depth=payload.size.depth if payload.size else None,
-        circumference=payload.size.circumference if payload.size else None,
-    )
+    product = get_object_or_404(Product, pk=product_id)
+
+    if payload.size is not None:
+        size_record = size_get_or_create(
+            width=payload.size.width if payload.size else None,
+            height=payload.size.height if payload.size else None,
+            depth=payload.size.depth if payload.size else None,
+            circumference=payload.size.circumference if payload.size else None,
+        )
 
     if size_record:
         size = get_object_or_404(Size, pk=size_record.id)
@@ -372,7 +359,7 @@ class ProductOptionCreateInBulkInternalSizeInput(Schema):
 
 
 class ProductOptionCreateInBulkInternalInput(Schema):
-    status: int
+    status: ProductStatus
     gross_price: float
     variant_id: int | None = None
     size: ProductOptionCreateInBulkInternalSizeInput | None = None
@@ -380,7 +367,7 @@ class ProductOptionCreateInBulkInternalInput(Schema):
 
 class ProductOptionCreateInBulkInternalOutput(Schema):
     id: int
-    status: int
+    status: ProductStatus
     gross_price: float
     size_id: int | None
     variant_id: int | None
@@ -400,6 +387,10 @@ def product_option_bulk_create_internal_api(
     product_id: int,
     payload: list[ProductOptionCreateInBulkInternalInput],
 ) -> list[ProductOptionCreateInBulkInternalOutput]:
+    """
+    Create multiple product options in bulk belonging to a single product instance based
+    on id.
+    """
 
     product = get_object_or_404(Product, pk=product_id)
     options = product_options_bulk_create_options_and_sizes(

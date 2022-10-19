@@ -17,7 +17,7 @@ from aria.api.exception_handlers import (
     validation_error_exception_handler,
 )
 from aria.api.exceptions import PageOutOfBoundsError
-from aria.api_auth.authentication import JWTAuthRequired, JWTAuthStaffRequired
+from aria.api_auth.authentication import JWTAuthStaffRequired
 from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
 from aria.api_auth.exceptions import TokenError
 from aria.categories.endpoints import (

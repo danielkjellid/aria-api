@@ -1,5 +1,5 @@
 import re
-from typing import Any, Pattern, TypedDict
+from typing import Any, Pattern
 
 from django.utils.translation import activate, deactivate, gettext as _
 

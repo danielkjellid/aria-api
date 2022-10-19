@@ -17,10 +17,10 @@ class TestPublicSuppliersEndpoints:
         a valid response.
         """
 
-        get_or_create_supplier(supplier_name="Supplier 1"),
-        get_or_create_supplier(supplier_name="Supplier 2"),
-        get_or_create_supplier(supplier_name="Supplier 3"),
-        get_or_create_supplier(supplier_name="Supplier 4", is_active=False),
+        get_or_create_supplier(supplier_name="Supplier 1")
+        get_or_create_supplier(supplier_name="Supplier 2")
+        get_or_create_supplier(supplier_name="Supplier 3")
+        get_or_create_supplier(supplier_name="Supplier 4", is_active=False)
 
         with django_assert_max_num_queries(1):
             response = anonymous_client.get(f"{self.BASE_ENDPOINT}/")

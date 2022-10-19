@@ -1,4 +1,3 @@
-from django.core.files import File
 from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
 
 from aria.products.models import Product, ProductFile

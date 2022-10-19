@@ -6,7 +6,7 @@ from django.utils.translation import gettext as _
 from aria.core.exceptions import ApplicationError
 from aria.products.enums import ProductStatus
 from aria.products.models import Product, ProductOption, Size, Variant
-from aria.products.records import OptionRecord, ProductOptionRecord, SizeRecord
+from aria.products.records import OptionRecord, ProductOptionRecord
 from aria.products.services.sizes import size_bulk_create, size_clean_and_validate_value
 
 
@@ -46,7 +46,7 @@ def product_option_create(
     return ProductOptionRecord(
         id=product_option.id,
         gross_price=product_option.gross_price,
-        status=product_option.status_display,
+        status=ProductStatus(product_option.status),
         variant_id=product_option.variant_id,
         size_id=product_option.size_id,
     )
@@ -85,7 +85,7 @@ def product_option_bulk_create(
         ProductOptionRecord(
             id=option.id,
             gross_price=option.gross_price,
-            status=option.status_display,
+            status=ProductStatus(option.status),
             variant_id=option.variant_id,
             size_id=option.size_id,
         )

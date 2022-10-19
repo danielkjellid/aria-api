@@ -4,7 +4,6 @@ from ninja import Router, Schema
 
 from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse
-from aria.api_auth.decorators import permission_required
 from aria.suppliers.models import Supplier
 
 router = Router(tags=["Suppliers"])

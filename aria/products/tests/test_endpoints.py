@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 import json
 from datetime import timedelta
 from decimal import Decimal
@@ -467,6 +468,10 @@ class TestInternalProductsEndpoints:
     ###########################
 
     def test_endpoint_product_create_internal_api(self):
+        """
+        Test that privileged staff users gets a valid response on creating a new
+        product, and that all other request return appropriate HTTP status codes.
+        """
         assert False
 
     #################################
@@ -859,7 +864,7 @@ class TestInternalProductsEndpoints:
     ##################################
 
     @pytest.mark.parametrize("test_permissions", ["product.management"], indirect=True)
-    def test_endpoint_product_option_create_internal_api(
+    def test_endpoint_product_option_create_internal_api(  # pylint: disable=too-many-locals, too-many-statements, line-too-long
         self,
         anonymous_client,
         authenticated_unprivileged_client,
@@ -869,6 +874,10 @@ class TestInternalProductsEndpoints:
         django_assert_max_num_queries,
         assert_client_response_is_status_code,
     ):
+        """
+        Test that privileged staff users gets a valid response on creating a new
+        product option and that all other request return appropriate HTTP status codes.
+        """
 
         product = create_product()
         existing_size = create_size(
@@ -1349,6 +1358,10 @@ class TestInternalProductsEndpoints:
         django_assert_max_num_queries,
         assert_client_response_is_status_code,
     ):
+        """
+        Test that privileged staff users gets a valid response on creating new product
+        options in bulk and that all other request return appropriate HTTP status codes.
+        """
 
         product = create_product()
         variant = create_variant(name="Test variant")
@@ -1483,11 +1496,14 @@ class TestInternalProductsEndpoints:
         self,
         anonymous_client,
         authenticated_unprivileged_client,
-        authenticated_privileged_client,
         authenticated_unprivileged_staff_client,
         django_assert_max_num_queries,
         assert_client_response_is_status_code,
     ):
+        """
+        Test that staff users gets a valid response on listing all colors and that all
+        other request return appropriate HTTP status codes.
+        """
 
         endpoint = f"{self.BASE_ENDPOINT}/colors/"
 
@@ -1554,11 +1570,14 @@ class TestInternalProductsEndpoints:
         self,
         anonymous_client,
         authenticated_unprivileged_client,
-        authenticated_privileged_client,
         authenticated_unprivileged_staff_client,
         django_assert_max_num_queries,
         assert_client_response_is_status_code,
     ):
+        """
+        Test that staff users gets a valid response on listing all shapes and that all
+        other request return appropriate HTTP status codes.
+        """
 
         endpoint = f"{self.BASE_ENDPOINT}/shapes/"
 

@@ -80,7 +80,7 @@ class TestDiscountsSelectors:
                 id=product.id,
                 name=product.name,
                 slug=product.slug,
-                status=product.status,
+                status=product.status_display,
                 unit=product.unit_display,
                 supplier=ProductSupplierRecord(
                     id=product.supplier_id,
@@ -294,7 +294,7 @@ class TestDiscountsSelectors:
                 id=product.id,
                 name=product.name,
                 slug=product.slug,
-                status=product.status,
+                status=product.status_display,
                 unit=product.unit_display,
                 supplier=ProductSupplierRecord(
                     id=product.supplier_id,

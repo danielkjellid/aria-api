@@ -1,7 +1,8 @@
 import pytest
 
-pytestmark = pytest.mark.django_db
 from aria.products.services.variants import variant_create
+
+pytestmark = pytest.mark.django_db
 
 
 class TestProductVariantsServices:

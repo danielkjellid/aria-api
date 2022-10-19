@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from aria.categories.records import CategoryDetailRecord
 from aria.core.records import BaseArrayFieldLabelRecord, BaseHeaderImageRecord
+from aria.products.enums import ProductStatus
 
 
 class ProductSupplierRecord(BaseModel):
@@ -47,7 +48,7 @@ class ProductDiscountRecord(BaseModel):
 class ProductOptionRecord(BaseModel):
     id: int
     gross_price: Decimal
-    status: str
+    status: ProductStatus
     variant_id: int | None
     size_id: int | None
 
@@ -61,7 +62,7 @@ class SizeRecord(BaseModel):
 
 class OptionRecord(BaseModel):
     gross_price: Decimal
-    status: str
+    status: ProductStatus
     variant_id: int | None
     size: SizeRecord | None
 

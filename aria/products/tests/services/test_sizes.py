@@ -175,8 +175,7 @@ class TestProductSizesServices:
         assert with_zeros.circumference is None
 
         with django_assert_max_num_queries(0):
-            all_params_none = size_clean_and_validate_value(
-                width=None, height=None, depth=None, circumference=None
-            )
-
-        assert all_params_none is None
+            with pytest.raises(ValueError):
+                size_clean_and_validate_value(
+                    width=None, height=None, depth=None, circumference=None
+                )

@@ -1,6 +1,5 @@
 import os
 
-from django.core.files import File
 from django.core.files.images import ImageFile, get_image_dimensions
 from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
 from django.utils.translation import gettext as _
