@@ -16,6 +16,7 @@ from aria.products.selectors.core import product_list
 from aria.products.selectors.shapes import shape_list
 from aria.products.selectors.variants import variant_list
 from aria.products.services.product_files import product_file_create
+from aria.products.services.product_images import product_image_create
 from aria.products.services.product_options import (
     product_option_create,
     product_options_bulk_create_options_and_sizes,
@@ -104,28 +105,41 @@ def product_create_internal_api(request: HttpRequest):
     pass
 
 
+class ProductImageCreateInternalInput(Schema):
+    apply_filter: bool = False
+
+
+class ProductImageCreateInternalOutput(Schema):
+    id: int
+    product_id: int
+    image_url: str | None
+
+
 @router.post(
     "{product_id}/images/create/",
     response={
-        201: None,
+        201: ProductImageCreateInternalOutput,
         codes_40x: ExceptionResponse,
     },
-    summary="Create a file associated to a product.",
+    summary="Create an image associated to a product.",
 )
-def product_image_create_internal_api(request: HttpRequest):
-    pass
+# @permission_required("products.product.management")
+def product_image_create_internal_api(
+    request: HttpRequest,
+    product_id: int,
+    payload: ProductImageCreateInternalInput = Form(...),
+    file: UploadedFile = File(...),
+):
+    """
+    Create an image associated to a certain product based on a product's id.
+    """
 
+    product = get_object_or_404(Product, pk=product_id)
+    product_image = product_image_create(
+        product=product, image=file, apply_filter=payload.apply_filter
+    )
 
-@router.post(
-    "{product_id}/images/bulk-create/",
-    response={
-        201: None,
-        codes_40x: ExceptionResponse,
-    },
-    summary="Create a file associated to a product.",
-)
-def product_image_bulk_create_internal_api(request: HttpRequest):
-    pass
+    return 201, ProductImageCreateInternalOutput(**product_image.dict())
 
 
 class ProductFileCreateInternalInput(Schema):
@@ -133,6 +147,7 @@ class ProductFileCreateInternalInput(Schema):
 
 
 class ProductFileCreateInternalOutput(Schema):
+    id: int
     product_id: int
     name: str
     file: str | None
@@ -160,23 +175,7 @@ def product_file_create_internal_api(
     product = get_object_or_404(Product, pk=product_id)
     product_file = product_file_create(product=product, name=payload.name, file=file)
 
-    return 201, ProductFileCreateInternalOutput(
-        product_id=product_file.product_id,
-        name=product_file.name,
-        file=product_file.file,
-    )
-
-
-@router.post(
-    "{product_id}/files/bulk-create/",
-    response={
-        201: None,
-        codes_40x: ExceptionResponse,
-    },
-    summary="Create a file associated to a product.",
-)
-def product_file_bulk_create_internal_api(request: HttpRequest):
-    pass
+    return 201, ProductFileCreateInternalOutput(**product_file.dict())
 
 
 class VariantListInternalOutput(Schema):

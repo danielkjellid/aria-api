@@ -1,3 +1,7 @@
+import builtins
+import io
+import os
+import pathlib
 from typing import Any
 
 from django.test import Client
@@ -78,3 +82,9 @@ def assert_client_response_is_status_code(django_assert_max_num_queries):
         return response
 
     return _make_test_util
+
+
+@pytest.fixture(autouse=True)
+def create_temp_storage(settings, tmp_path):
+    settings.MEDIA_ROOT = tmp_path
+    yield

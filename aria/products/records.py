@@ -83,6 +83,12 @@ class ProductFileRecord(BaseModel):
     file: str | None
 
 
+class ProductImageRecord(BaseModel):
+    id: int
+    product_id: int
+    image_url: str | None
+
+
 class ProductShapeRecord(BaseModel):
     id: int
     name: str

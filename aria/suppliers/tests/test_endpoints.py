@@ -37,7 +37,6 @@ class TestInternalSuppliersEndpoints:
         self,
         anonymous_client,
         authenticated_unprivileged_client,
-        authenticated_privileged_client,
         authenticated_unprivileged_staff_client,
         django_assert_max_num_queries,
         assert_client_response_is_status_code,

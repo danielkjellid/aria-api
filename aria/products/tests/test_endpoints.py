@@ -4,13 +4,14 @@ from decimal import Decimal
 from typing import Any
 from unittest.mock import ANY
 
-from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.files.uploadedfile import InMemoryUploadedFile, SimpleUploadedFile
 from django.test.client import MULTIPART_CONTENT
 from django.utils import timezone
 
 import pytest
 
 from aria.categories.tests.utils import create_category
+from aria.core.tests.utils import create_image_file
 from aria.discounts.tests.utils import create_discount
 from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.models import Size
@@ -384,6 +385,13 @@ class TestInternalProductsEndpoints:
     def test_endpoint_product_list_internal_api(self):
         assert False
 
+    ###########################
+    # Product create endpoint #
+    ###########################
+
+    def test_endpoint_product_create_internal_api(self):
+        assert False
+
     #################################
     # Product image create endpoint #
     #################################
@@ -427,7 +435,12 @@ class TestInternalProductsEndpoints:
         file = SimpleUploadedFile("test.pdf", b"data123")
         payload = {"name": "Catalog", "file": file}
 
-        expected_response = {"productId": product.id, "name": "Catalog", "file": ANY}
+        expected_response = {
+            "id": ANY,
+            "productId": product.id,
+            "name": "Catalog",
+            "file": ANY,
+        }
 
         # Anonymous users should get 401.
         assert_client_response_is_status_code(
@@ -493,13 +506,6 @@ class TestInternalProductsEndpoints:
         assert product.files.count() == 1
         assert product.files.first().name == "Catalog"
         assert product.files.first().file is not None
-
-    #####################################
-    # Product file bulk create endpoint #
-    #####################################
-
-    def test_endpoint_product_file_bulk_create_internal_api(self):
-        assert False
 
     ##########################
     # Variants list endpoint #
@@ -629,7 +635,7 @@ class TestInternalProductsEndpoints:
 
         endpoint = f"{self.BASE_ENDPOINT}/variants/create/"
 
-        file = SimpleUploadedFile("test.jpeg", b"data123")
+        file = SimpleUploadedFile("test.jpeg", b"data123", content_type="image/jpeg")
         payload = {"name": "White mist", "is_standard": False, "file": file}
 
         expected_response = {
@@ -648,6 +654,7 @@ class TestInternalProductsEndpoints:
             method="POST",
             payload=payload,
             expected_status_code=401,
+            content_type=MULTIPART_CONTENT,
         )
 
         # Authenticated users without the correct permissions should get 401.
@@ -658,6 +665,7 @@ class TestInternalProductsEndpoints:
             method="POST",
             payload=payload,
             expected_status_code=401,
+            content_type=MULTIPART_CONTENT,
         )
 
         # Authenticated users with the correct permissions, but are not staff,
@@ -669,16 +677,18 @@ class TestInternalProductsEndpoints:
             method="POST",
             payload=payload,
             expected_status_code=401,
+            content_type=MULTIPART_CONTENT,
         )
 
         # Authenticated staff users without correct permissions should get 403.
         assert_client_response_is_status_code(
             client=authenticated_unprivileged_staff_client,
             endpoint=endpoint,
-            max_allowed_queries=1,
+            max_allowed_queries=3,
             method="POST",
             payload=payload,
-            expected_status_code=401,
+            expected_status_code=403,
+            content_type=MULTIPART_CONTENT,
         )
 
         with django_assert_max_num_queries(3):
