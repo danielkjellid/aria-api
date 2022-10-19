@@ -10,7 +10,6 @@ from aria.api_auth.decorators import permission_required
 from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.models import Product, Size, Variant
 from aria.products.schemas.filters import ProductListFilters
-from aria.products.schemas.outputs import ProductInternalListOutput
 from aria.products.selectors.colors import color_list
 from aria.products.selectors.core import product_list
 from aria.products.selectors.shapes import shape_list
@@ -27,26 +26,53 @@ from aria.products.services.variants import variant_create
 router = Router(tags=["Products"])
 
 
+##################################
+# Product list internal endpoint #
+##################################
+
+
+class ProductListInternalOutputSupplier(Schema):
+    name: str
+    origin_country: str
+    origin_country_flag: str
+
+
+class ProductListInternalOutput(Schema):
+    id: int
+    name: str
+    slug: str
+    status: str
+    supplier: ProductListInternalOutputSupplier
+    unit: str
+
+
 @router.get(
     "/",
     response={
-        200: list[ProductInternalListOutput],
+        200: list[ProductListInternalOutput],
         codes_40x: ExceptionResponse,
     },
     summary="List all products",
     url_name="internal-products-index",  # Temporary.
 )
+@permission_required(
+    ["products.product.view", "products.product.management", "products.product.admin"],
+)
 @paginate(page_size=50)
-@permission_required("products.product.view")
 def product_list_internal_api(
     request: HttpRequest, filters: ProductListFilters = Query(...)
-) -> list[ProductInternalListOutput]:
+) -> list[ProductListInternalOutput]:
     """
     Retrieve a list of all products in the application.
     """
 
     products = product_list(filters=filters.dict())
-    return [ProductInternalListOutput(**product.dict()) for product in products]
+    return [ProductListInternalOutput(**product.dict()) for product in products]
+
+
+####################################
+# Product create internal endpoint #
+####################################
 
 
 class ProductCreateInternalInputFile(Schema):
@@ -105,6 +131,11 @@ def product_create_internal_api(request: HttpRequest):
     pass
 
 
+##########################################
+# Product image create internal endpoint #
+##########################################
+
+
 class ProductImageCreateInternalInput(Schema):
     apply_filter: bool = False
 
@@ -123,7 +154,7 @@ class ProductImageCreateInternalOutput(Schema):
     },
     summary="Create an image associated to a product.",
 )
-# @permission_required("products.product.management")
+@permission_required(["products.product.management", "products.product.admin"])
 def product_image_create_internal_api(
     request: HttpRequest,
     product_id: int,
@@ -140,6 +171,11 @@ def product_image_create_internal_api(
     )
 
     return 201, ProductImageCreateInternalOutput(**product_image.dict())
+
+
+#########################################
+# Product file create internal endpoint #
+#########################################
 
 
 class ProductFileCreateInternalInput(Schema):
@@ -161,7 +197,7 @@ class ProductFileCreateInternalOutput(Schema):
     },
     summary="Create a file associated to a product.",
 )
-@permission_required("products.product.management")
+@permission_required(["products.product.management", "products.product.admin"])
 def product_file_create_internal_api(
     request: HttpRequest,
     product_id: int,
@@ -176,6 +212,11 @@ def product_file_create_internal_api(
     product_file = product_file_create(product=product, name=payload.name, file=file)
 
     return 201, ProductFileCreateInternalOutput(**product_file.dict())
+
+
+##################################
+# Variant list internal endpoint #
+##################################
 
 
 class VariantListInternalOutput(Schema):
@@ -194,7 +235,7 @@ class VariantListInternalOutput(Schema):
     },
     summary="List all variants.",
 )
-@permission_required("products.product.management")
+@permission_required(["products.product.management", "products.product.admin"])
 def variant_list_internal_api(request: HttpRequest) -> list[VariantListInternalOutput]:
     """
     Get a list of all variants in the application.
@@ -203,6 +244,11 @@ def variant_list_internal_api(request: HttpRequest) -> list[VariantListInternalO
     variants = variant_list()
 
     return [VariantListInternalOutput(**variant.dict()) for variant in variants]
+
+
+####################################
+# Variant create internal endpoint #
+####################################
 
 
 class VariantCreateInternalInput(Schema):
@@ -226,7 +272,7 @@ class VariantCreateInternalOutput(Schema):
     },
     summary="Create a new variant.",
 )
-@permission_required("products.product.management")
+@permission_required(["products.product.management", "products.product.admin"])
 def variant_create_internal_api(
     request: HttpRequest,
     payload: VariantCreateInternalInput = Form(...),
@@ -241,6 +287,11 @@ def variant_create_internal_api(
     )
 
     return 201, VariantCreateInternalOutput(**variant_record.dict())
+
+
+###########################################
+# Product option create internal endpoint #
+###########################################
 
 
 class ProductOptionCreateInternalSizeInput(Schema):
@@ -306,6 +357,11 @@ def product_option_create_internal_api(
     return 201, ProductOptionCreateInternalOutput(**product_option_record.dict())
 
 
+################################################
+# Product option bulk create internal endpoint #
+################################################
+
+
 class ProductOptionCreateInBulkInternalSizeInput(Schema):
     width: float | None = None
     height: float | None = None
@@ -336,7 +392,7 @@ class ProductOptionCreateInBulkInternalOutput(Schema):
     },
     summary="Create new product options in bulk.",
 )
-@permission_required("products.product.management")
+@permission_required(["products.product.management", "products.product.admin"])
 def product_option_bulk_create_internal_api(
     request: HttpRequest,
     product_id: int,
@@ -351,6 +407,11 @@ def product_option_bulk_create_internal_api(
     return [
         ProductOptionCreateInBulkInternalOutput(**option.dict()) for option in options
     ]
+
+
+################################
+# Color list internal endpoint #
+################################
 
 
 class ColorListInternalOutput(Schema):
@@ -377,6 +438,11 @@ def color_list_internal_api(
     colors = color_list()
 
     return [ColorListInternalOutput(**color.dict()) for color in colors]
+
+
+################################
+# Shape list internal endpoint #
+################################
 
 
 class ShapeListInternalOutput(Schema):

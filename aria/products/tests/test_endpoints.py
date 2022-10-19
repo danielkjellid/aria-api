@@ -1,17 +1,15 @@
 import json
 from datetime import timedelta
 from decimal import Decimal
-from typing import Any
 from unittest.mock import ANY
 
-from django.core.files.uploadedfile import InMemoryUploadedFile, SimpleUploadedFile
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test.client import MULTIPART_CONTENT
 from django.utils import timezone
 
 import pytest
 
 from aria.categories.tests.utils import create_category
-from aria.core.tests.utils import create_image_file
 from aria.discounts.tests.utils import create_discount
 from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.models import Size
@@ -382,8 +380,87 @@ class TestInternalProductsEndpoints:
     # Product list endpoint #
     #########################
 
-    def test_endpoint_product_list_internal_api(self):
-        assert False
+    @pytest.mark.parametrize("test_permissions", ["product.view"], indirect=True)
+    def test_endpoint_product_list_internal_api(
+        self,
+        anonymous_client,
+        authenticated_unprivileged_client,
+        authenticated_privileged_client,
+        authenticated_unprivileged_staff_client,
+        authenticated_privileged_staff_client,
+        django_assert_max_num_queries,
+        assert_client_response_is_status_code,
+    ):
+        """
+        Test that privileged staff users gets a valid response on listing all products,
+        and that all other request return appropriate HTTP status codes.
+        """
+        endpoint = f"{self.BASE_ENDPOINT}/"
+
+        products = create_product(quantity=10)
+
+        expected_response = {
+            "next": None,
+            "previous": None,
+            "currentPage": 1,
+            "total": 10,
+            "currentRange": "1 - 10",
+            "totalPages": 1,
+            "data": [
+                {
+                    "id": product.id,
+                    "name": product.name,
+                    "slug": product.slug,
+                    "status": product.status_display,
+                    "supplier": {
+                        "name": product.supplier.name,
+                        "originCountry": product.supplier.country_name,
+                        "originCountryFlag": product.supplier.unicode_flag,
+                    },
+                    "unit": product.unit_display,
+                }
+                for product in reversed(products)
+            ],
+        }
+
+        # Anonymous users should get 401.
+        assert_client_response_is_status_code(
+            client=anonymous_client,
+            endpoint=endpoint,
+            max_allowed_queries=0,
+            expected_status_code=401,
+        )
+
+        # Authenticated users without the correct permissions should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            expected_status_code=401,
+        )
+
+        # Authenticated users with the correct permissions, but are not staff,
+        # should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_privileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            expected_status_code=401,
+        )
+
+        # Authenticated staff users without correct permissions should get 403.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_staff_client,
+            endpoint=endpoint,
+            max_allowed_queries=3,
+            expected_status_code=403,
+        )
+
+        with django_assert_max_num_queries(10):
+            response = authenticated_privileged_staff_client.get(endpoint)
+
+        assert response.status_code == 200
+        assert response.json() == expected_response
 
     ###########################
     # Product create endpoint #
@@ -396,15 +473,93 @@ class TestInternalProductsEndpoints:
     # Product image create endpoint #
     #################################
 
-    def test_endpoint_product_image_create_internal_api(self):
-        assert False
+    # Skip for now as image creating in the test using the SimpleUploadedFile utility
+    # Causes issues with Pillow. Long term plan is to replace ImageKit and Pillow with
+    # on-demand image CDN.
+    @pytest.mark.skip
+    @pytest.mark.parametrize("test_permissions", ["product.management"], indirect=True)
+    def test_endpoint_product_image_create_internal_api(
+        self,
+        anonymous_client,
+        authenticated_unprivileged_client,
+        authenticated_privileged_client,
+        authenticated_unprivileged_staff_client,
+        authenticated_privileged_staff_client,
+        django_assert_max_num_queries,
+        assert_client_response_is_status_code,
+    ):
+        """
+        Test that privileged staff users gets a valid response on creating a new
+        product image, and that all other request return appropriate HTTP status codes.
+        """
 
-    ######################################
-    # Product image bulk create endpoint #
-    ######################################
+        product = create_product()
 
-    def test_endpoint_product_image_bulk_create_internal_api(self):
-        assert False
+        assert product.images.count() == 0
+
+        endpoint = f"{self.BASE_ENDPOINT}/{product.id}/images/create/"
+
+        image = SimpleUploadedFile("test.jpeg", b"data123", content_type="image/jpeg")
+        payload = {"apply_filter": False, "file": image}
+
+        expected_response = {"id": ANY, "product_id": product.id, "image_url": ANY}
+
+        # Anonymous users should get 401.
+        assert_client_response_is_status_code(
+            client=anonymous_client,
+            endpoint=endpoint,
+            method="POST",
+            max_allowed_queries=0,
+            payload=payload,
+            expected_status_code=401,
+            content_type=MULTIPART_CONTENT,
+        )
+        assert product.images.count() == 0
+
+        # Authenticated users without the correct permissions should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_client,
+            endpoint=endpoint,
+            method="POST",
+            max_allowed_queries=1,
+            payload=payload,
+            expected_status_code=401,
+            content_type=MULTIPART_CONTENT,
+        )
+        assert product.images.count() == 0
+
+        # Authenticated users with the correct permissions, but are not staff,
+        # should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_privileged_client,
+            endpoint=endpoint,
+            method="POST",
+            max_allowed_queries=1,
+            payload=payload,
+            expected_status_code=401,
+            content_type=MULTIPART_CONTENT,
+        )
+        assert product.images.count() == 0
+
+        # Authenticated staff users without correct permissions should get 403.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_staff_client,
+            endpoint=endpoint,
+            method="POST",
+            max_allowed_queries=3,
+            payload=payload,
+            expected_status_code=403,
+            content_type=MULTIPART_CONTENT,
+        )
+        assert product.images.count() == 0
+
+        with django_assert_max_num_queries(0):
+            response = authenticated_privileged_staff_client.post(
+                endpoint, data=payload, content_type=MULTIPART_CONTENT
+            )
+
+        assert response.status_code == 201
+        assert response.json() == expected_response
 
     ################################
     # Product file create endpoint #

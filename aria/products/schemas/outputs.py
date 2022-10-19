@@ -99,12 +99,3 @@ class ProductListOutput(Schema):
     materials: list[BaseArrayFieldLabelRecord]
     rooms: list[BaseArrayFieldLabelRecord]
     variants: list[ProductVariantOutput]
-
-
-class ProductInternalListOutput(Schema):
-    id: int
-    name: str
-    slug: str
-    status: str
-    supplier: ProductSupplierOutput
-    unit: str

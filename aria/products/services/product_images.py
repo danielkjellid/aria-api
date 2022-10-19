@@ -24,10 +24,10 @@ def _validate_product_image(*, image: File | InMemoryUploadedFile | ImageFile) -
             message=_("Image does not have a valid type. We only allow jpg/jpeg types.")
         )
 
-    if width < 1536:
+    if width is not None and width < 1536:
         raise ApplicationError(message=_("Images should be at least 1536px wide."))
 
-    if height < 860:
+    if height is not None and height < 860:
         raise ApplicationError(message=_("Images should be at least 860px high."))
 
 
