@@ -25,7 +25,6 @@ class CamelCaseParser(Parser):
     """
 
     def parse_body(self, request: HttpRequest) -> Any:
-        print(request.body)
         data = orjson.loads(request.body)
 
         if is_camelcase(data):

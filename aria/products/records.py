@@ -4,7 +4,6 @@ from pydantic import BaseModel
 
 from aria.categories.records import CategoryDetailRecord
 from aria.core.records import BaseArrayFieldLabelRecord, BaseHeaderImageRecord
-from aria.products.enums import ProductMaterials
 
 
 class ProductSupplierRecord(BaseModel):

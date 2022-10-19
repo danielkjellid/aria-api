@@ -16,9 +16,6 @@ def permission_required(
     does not have the appropriate permission.
     """
 
-    # if not isinstance(permissions, (list, set)):
-    #     permissions = [permissions]
-
     def decorator(func: Any) -> Callable[..., Any]:
         @functools.wraps(func)
         def inner(*args: Any, **kwargs: Any) -> Any:
