@@ -1,8 +1,10 @@
 import pytest
 
+from aria.categories.models import Category
 from aria.categories.records import CategoryDetailRecord, CategoryRecord
 from aria.categories.selectors import (
     category_children_active_list_for_category,
+    category_children_list,
     category_detail_record,
     category_navigation_active_list,
     category_parent_active_list,
@@ -337,3 +339,93 @@ class TestCategoriesSelectors:
             subcat_1_detail_record = category_detail_record(category=subcat_1)
 
         assert subcat_1_detail_record == expected_child_output
+
+    def test_selector_category_children_list(self, django_assert_max_num_queries):
+        """
+        Test that the category_children_list selector returns expected output within
+        query limits.
+        """
+
+        cat_1 = create_category(name="Parent 1")
+        cat_2 = create_category(name="Parent 2")
+
+        subcat_1 = create_category(name="Child 1", parent=cat_1)
+        subcat_2 = create_category(name="Child 2", parent=cat_1)
+        subcat_3 = create_category(name="Child 3", parent=cat_1)
+        subcat_4 = create_category(name="Child 4", parent=cat_2)
+        subcat_5 = create_category(name="Child 5", parent=cat_2)
+        subcat_6 = create_category(name="Child 6", parent=cat_2)
+
+        def _generate_record(
+            *, instance: Category, parent_id: int, name: str, display_name: str
+        ) -> CategoryRecord:
+            """
+            Generate a record representation to keep test DRY.
+            """
+            return CategoryRecord(
+                id=instance.id,
+                name=name,
+                display_name=display_name,
+                slug=instance.slug,
+                description=instance.description,
+                ordering=instance.ordering,
+                parent=parent_id,
+                images=BaseHeaderImageRecord(
+                    apply_filter=instance.apply_filter,
+                    image_512x512=instance.image_512x512.url,
+                    image_640x275=instance.image_640x275.url,
+                    image_1024x575=instance.image_1024x575.url,
+                    image_1024x1024=instance.image_1024x1024.url,
+                    image_1536x860=instance.image_1536x860.url,
+                    image_2048x1150=instance.image_2048x1150.url,
+                ),
+                list_images=BaseListImageRecord(
+                    image500x305=instance.image500x305.url,
+                    image600x440=instance.image600x440.url,
+                    image850x520=instance.image850x520.url,
+                ),
+            )
+
+        expected_output = [
+            _generate_record(
+                instance=subcat_1,
+                parent_id=cat_1.id,
+                name="Child 1",
+                display_name="Parent 1 > Child 1",
+            ),
+            _generate_record(
+                instance=subcat_2,
+                parent_id=cat_1.id,
+                name="Child 2",
+                display_name="Parent 1 > Child 2",
+            ),
+            _generate_record(
+                instance=subcat_3,
+                parent_id=cat_1.id,
+                name="Child 3",
+                display_name="Parent 1 > Child 3",
+            ),
+            _generate_record(
+                instance=subcat_4,
+                parent_id=cat_2.id,
+                name="Child 4",
+                display_name="Parent 2 > Child 4",
+            ),
+            _generate_record(
+                instance=subcat_5,
+                parent_id=cat_2.id,
+                name="Child 5",
+                display_name="Parent 2 > Child 5",
+            ),
+            _generate_record(
+                instance=subcat_6,
+                parent_id=cat_2.id,
+                name="Child 6",
+                display_name="Parent 2 > Child 6",
+            ),
+        ]
+
+        with django_assert_max_num_queries(1):
+            categories = category_children_list()
+
+        assert categories == expected_output

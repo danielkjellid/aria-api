@@ -1370,15 +1370,6 @@ class TestInternalProductsEndpoints:
             expected_status_code=401,
         )
 
-        # Authenticated users with the correct permissions, but are not staff,
-        # should get 401.
-        assert_client_response_is_status_code(
-            client=authenticated_privileged_client,
-            endpoint=endpoint,
-            max_allowed_queries=1,
-            expected_status_code=401,
-        )
-
         # Staff users should get a valid response regardless of permissions.
         with django_assert_max_num_queries(2):
             response = authenticated_unprivileged_staff_client.get(
@@ -1445,15 +1436,6 @@ class TestInternalProductsEndpoints:
         # Authenticated users without the correct permissions should get 401.
         assert_client_response_is_status_code(
             client=authenticated_unprivileged_client,
-            endpoint=endpoint,
-            max_allowed_queries=1,
-            expected_status_code=401,
-        )
-
-        # Authenticated users with the correct permissions, but are not staff,
-        # should get 401.
-        assert_client_response_is_status_code(
-            client=authenticated_privileged_client,
             endpoint=endpoint,
             max_allowed_queries=1,
             expected_status_code=401,

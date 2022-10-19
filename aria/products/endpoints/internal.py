@@ -36,7 +36,7 @@ router = Router(tags=["Products"])
     url_name="internal-products-index",  # Temporary.
 )
 @paginate(page_size=50)
-@permission_required("products.management")
+@permission_required("products.product.view")
 def product_list_internal_api(
     request: HttpRequest, filters: ProductListFilters = Query(...)
 ) -> list[ProductInternalListOutput]:

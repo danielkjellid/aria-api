@@ -111,7 +111,7 @@ class TestAPIAuthPublicEndpoints:
         decode_token,
     ) -> None:
         """
-        Test blackliting a provided valid token.
+        Test blacklisting a provided valid token.
         """
 
         user = unprivileged_user

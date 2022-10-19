@@ -22,7 +22,6 @@ class SupplierListInternalOutput(Schema):
     summary="List all suppliers.",
     url_name="internal-suppliers-index",  # Temporary.
 )
-@permission_required("suppliers.has_suppliers_list")
 def supplier_list_internal_api(request: HttpRequest):
     """
     Endpoint for getting a list of all suppliers in the application.

@@ -1,6 +1,3 @@
-import json
-import tempfile
-
 import pytest
 
 from aria.suppliers.tests.utils import get_or_create_supplier
@@ -20,40 +17,68 @@ class TestPublicSuppliersEndpoints:
         a valid response.
         """
 
-        suppliers = [
-            get_or_create_supplier(supplier_name="Supplier 1"),
-            get_or_create_supplier(supplier_name="Supplier 2"),
-            get_or_create_supplier(supplier_name="Supplier 3"),
-            get_or_create_supplier(supplier_name="Supplier 4", is_active=False),
-        ]
-
-        for supplier in suppliers:
-            with tempfile.NamedTemporaryFile(suffix=".jpg") as file:
-                supplier.image = file.name
-                supplier.save()
+        get_or_create_supplier(supplier_name="Supplier 1"),
+        get_or_create_supplier(supplier_name="Supplier 2"),
+        get_or_create_supplier(supplier_name="Supplier 3"),
+        get_or_create_supplier(supplier_name="Supplier 4", is_active=False),
 
         with django_assert_max_num_queries(1):
             response = anonymous_client.get(f"{self.BASE_ENDPOINT}/")
 
         assert response.status_code == 200
-        assert len(json.loads(response.content)) == 3  # 3 out of 4 active
+        assert len(response.json()) == 3  # 3 out of 4 active
 
 
 class TestInternalSuppliersEndpoints:
 
     BASE_ENDPOINT = "/api/v1/internal/suppliers"
 
-    def test_anonymous_request_supplier_list_internal_api(
-        self, anonymous_client, django_assert_max_num_queries
+    def test_endpoint_supplier_list_internal_api(
+        self,
+        anonymous_client,
+        authenticated_unprivileged_client,
+        authenticated_privileged_client,
+        authenticated_unprivileged_staff_client,
+        django_assert_max_num_queries,
+        assert_client_response_is_status_code,
     ):
-        assert False
+        """
+        Test that the supplier_list_internal_api endpoint returns an expected output
+        for staff users, and returns correct HTTP error codes for non-staff users.
+        """
 
-    def test_authenticated_unprivileged_request_supplier_list_internal_api(
-        self, authenticated_unprivileged_client, django_assert_max_num_queries
-    ):
-        assert False
+        endpoint = f"{self.BASE_ENDPOINT}/"
 
-    def test_authenticated_privileged_request_supplier_list_internal_api(
-        self, django_assert_max_num_queries, authenticated_privileged_client
-    ):
-        assert False
+        supplier_1 = get_or_create_supplier(supplier_name="Supplier 1")
+        supplier_2 = get_or_create_supplier(supplier_name="Supplier 2")
+        supplier_3 = get_or_create_supplier(supplier_name="Supplier 3")
+        supplier_4 = get_or_create_supplier(supplier_name="Supplier 4", is_active=False)
+
+        expected_output = [
+            {"id": supplier_1.id, "name": "Supplier 1", "isActive": True},
+            {"id": supplier_2.id, "name": "Supplier 2", "isActive": True},
+            {"id": supplier_3.id, "name": "Supplier 3", "isActive": True},
+            {"id": supplier_4.id, "name": "Supplier 4", "isActive": False},
+        ]
+
+        # Anonymous users should get 401.
+        assert_client_response_is_status_code(
+            client=anonymous_client,
+            endpoint=endpoint,
+            max_allowed_queries=0,
+            expected_status_code=401,
+        )
+
+        # Authenticated users which are not staff should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            expected_status_code=401,
+        )
+
+        with django_assert_max_num_queries(2):
+            response = authenticated_unprivileged_staff_client.get(endpoint)
+
+        assert response.status_code == 200
+        assert response.json() == expected_output

@@ -21,7 +21,6 @@ class CategoryListInternalOutput(Schema):
     summary="List all categories.",
     url_name="internal-categories-index",  # Temporary.
 )
-# @permission_required("categories.list")
 def category_list_internal_api(request: HttpRequest):
     """
     Endpoint for getting a list of all categories in the application.

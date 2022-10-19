@@ -62,7 +62,7 @@ def _category_navigation_active_list_key() -> str:
 
 def category_children_list() -> list[CategoryRecord]:
     """
-    Returns a list of all categories.
+    Returns a list of all child categories (leaf nodes).
     """
 
     categories = Category.objects.secondary().select_related("parent")
