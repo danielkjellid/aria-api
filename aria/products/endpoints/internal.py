@@ -109,6 +109,8 @@ class ProductCreateInternalInput(Schema):
 )
 def product_create_internal_api(
     request: HttpRequest,
+    payload: ProductCreateInternalInput = Form(...),
+    thumbnail: UploadedFile = File(...),
 ) -> tuple[int, ProductCreateInternalInput]:
     """
     Create a single product instance.

@@ -5,34 +5,9 @@ from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
 from django.utils.translation import gettext as _
 
 from aria.core.exceptions import ApplicationError
+from aria.core.validators import image_validate
 from aria.products.models import Product, ProductImage
 from aria.products.records import ProductImageRecord
-
-
-def _validate_product_image(
-    *, image: UploadedFile | InMemoryUploadedFile | ImageFile
-) -> None:
-    """
-    Validate an images aspect ratio and file type.
-    """
-
-    file_extension = None
-    allowed_image_types = [".jpg", ".jpeg"]
-    width, height = get_image_dimensions(image)
-
-    if image.name is not None:
-        _file_name, file_extension = os.path.splitext(image.name)
-
-    if file_extension is not None and file_extension not in allowed_image_types:
-        raise ApplicationError(
-            message=_("Image does not have a valid type. We only allow jpg/jpeg types.")
-        )
-
-    if width is not None and width < 1536:
-        raise ApplicationError(message=_("Images should be at least 1536px wide."))
-
-    if height is not None and height < 860:
-        raise ApplicationError(message=_("Images should be at least 860px high."))
 
 
 def product_image_create(
@@ -45,7 +20,14 @@ def product_image_create(
     Create a product image associated to a product.
     """
 
-    _validate_product_image(image=image)
+    image_validate(
+        image=image,
+        allowed_extensions=[".jpg", ".jpeg"],
+        width_min_px=1536,
+        width_max_px=2048,
+        height_min_px=860,
+        height_max_px=1150,
+    )
 
     product_image = ProductImage.objects.create(
         product=product, image=image, apply_filter=apply_filter

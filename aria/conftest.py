@@ -68,7 +68,7 @@ def assert_client_response_is_status_code(django_assert_max_num_queries):
         client_method = getattr(client, method.lower(), None)
 
         if client_method is None:
-            raise NotImplemented("Requested method not implemented.")
+            raise NotImplementedError("Requested method not implemented.")
 
         with django_assert_max_num_queries(max_allowed_queries):
             response = client_method(endpoint, data=payload, content_type=content_type)
