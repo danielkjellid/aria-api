@@ -5,9 +5,7 @@ from django.db.models import Prefetch
 
 from aria.discounts.models import Discount
 from aria.products.models import Product, ProductOption
-from aria.products.records import (
-    ProductDiscountRecord,
-)
+from aria.products.records import ProductDiscountRecord
 from aria.products.selectors.pricing import product_get_price_from_options
 
 

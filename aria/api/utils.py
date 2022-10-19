@@ -2,6 +2,7 @@ import re
 from typing import Any, Pattern
 
 from django.utils.translation import activate, deactivate, gettext as _
+
 from ninja import Schema
 
 MESSAGE_TEMPLATE = {

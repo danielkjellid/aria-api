@@ -1,17 +1,18 @@
 from datetime import timedelta
 from decimal import Decimal
 
-import pytest
 from django.utils import timezone
+
+import pytest
 
 from aria.discounts.tests.utils import create_discount
 from aria.products.models import Product, ProductOption
 from aria.products.selectors.discounts import (
     _calculate_discounted_price,
     product_calculate_discounted_price,
+    product_get_active_discount,
     product_option_calculate_discounted_price,
     product_option_get_active_discount,
-    product_get_active_discount,
 )
 from aria.products.tests.utils import create_product, create_product_option
 

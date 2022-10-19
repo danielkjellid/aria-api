@@ -11,7 +11,6 @@ from aria.products.records import (
 from aria.products.selectors.discounts import product_get_active_discount
 from aria.products.selectors.pricing import product_get_price_from_options
 
-
 #####################
 # Records selectors #
 #####################

@@ -19,7 +19,7 @@ from aria.products.records import (
 from aria.products.schemas.filters import ProductListFilters
 from aria.products.selectors.pricing import product_get_price_from_options
 from aria.products.selectors.product_options import product_options_list_for_product
-from aria.products.selectors.records import product_record, product_list_record
+from aria.products.selectors.records import product_list_record, product_record
 
 
 def product_detail(

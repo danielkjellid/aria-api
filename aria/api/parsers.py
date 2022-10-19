@@ -1,7 +1,8 @@
 from typing import Any
 
-import orjson
 from django.http import HttpRequest
+
+import orjson
 from ninja.parser import Parser
 
 from aria.core.humps import decamelize, is_camelcase
