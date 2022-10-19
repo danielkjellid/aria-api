@@ -2,7 +2,7 @@ from aria.products.models import Color
 from aria.products.records import ProductColorRecord
 
 
-def color_list() -> ProductColorRecord:
+def color_list() -> list[ProductColorRecord]:
     """
     Returns a list of all colors in the application.
     """

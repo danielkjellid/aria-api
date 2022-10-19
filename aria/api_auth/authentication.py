@@ -12,7 +12,7 @@ from aria.users.models import User
 
 
 class JWTAuthRequired(HttpBearer):
-    def authenticate(self, request: HttpRequest, token: str) -> User:
+    def authenticate(self, request: HttpRequest, token: str) -> User | bool:
         try:
             # Decode provided token.
             is_token_valid, decoded_access_token = access_token_is_valid(token)
@@ -45,11 +45,11 @@ class JWTAuthRequired(HttpBearer):
 
 
 class JWTAuthStaffRequired(JWTAuthRequired):
-    def authenticate(self, request: HttpRequest, token: str) -> Optional[Any]:
+    def authenticate(self, request: HttpRequest, token: str) -> User | bool:
         try:
             user = super().authenticate(request=request, token=token)
 
-            if not user.is_staff:
+            if not user or not getattr(user, "is_staff", False):
                 raise ApplicationError(
                     "User with provided id is not staff", status_code=401
                 )

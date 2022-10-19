@@ -1,11 +1,12 @@
 from django.core.files import File
+from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
 
 from aria.products.models import Product, ProductFile
 from aria.products.records import ProductFileRecord
 
 
 def product_file_create(
-    *, product: Product, name: str, file: File
+    *, product: Product, name: str, file: UploadedFile | InMemoryUploadedFile
 ) -> ProductFileRecord:
     """
     Create a product file associated to a product.

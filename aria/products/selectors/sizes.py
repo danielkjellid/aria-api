@@ -16,7 +16,7 @@ def size_list_from_mapped_values(values: list[SizeDict]) -> list[ProductSizeReco
     # Aggregate all values base on key. Will return something like:
     # [{"width": [30.0, 20.0, 10.0], "height": [11.0, 20.0]...}...].
     aggregated_values = {
-        k: [Decimal(val.get(k)) for val in values if val.get(k) is not None]
+        k: [Decimal(val.get(k)) for val in values if val.get(k) is not None]  # type: ignore # pylint: disable=line-too-long
         for k in set().union(*values)
     }
 
