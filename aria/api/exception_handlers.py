@@ -10,6 +10,7 @@ from pydantic.error_wrappers import ValidationError as PydanticValidationError
 
 from aria.api.exceptions import PageOutOfBoundsError
 from aria.api.schemas.responses import ExceptionResponse
+from aria.api.types import PydanticErrorDict
 from aria.api.utils import translate_pydantic_validation_messages
 from aria.api_auth.exceptions import TokenError
 from aria.core.exceptions import ApplicationError
@@ -43,7 +44,7 @@ def pydantic_models_validation_error_exception_handler(
     if isinstance(exc.errors, list):
         error_msg = exc.errors
     else:
-        error_msg = exc.errors()
+        error_msg = exc.errors()  # type: ignore
 
     locale = request.META.get("HTTP_ACCEPT_LANGUAGE", "en")
     errors = translate_pydantic_validation_messages(errors=error_msg, locale=locale)
@@ -52,7 +53,7 @@ def pydantic_models_validation_error_exception_handler(
 
     for error in errors:
         location = error["loc"]
-        field = camelize(location[len(location) - 1])
+        field = camelize(location[len(location) - 1])  # type: ignore
         field_errors[field] = error["msg"]  # type: ignore
 
     activate(locale)

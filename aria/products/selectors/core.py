@@ -75,7 +75,10 @@ def product_detail(
         ],
         files=[
             ProductFileRecord(
-                id=file.id, name=file.name, file=file.file.url if file.file else None
+                id=file.id,
+                product_id=file.product_id,
+                name=file.name,
+                file=file.file.url if file.file else None,
             )
             for file in product.files.all()
         ],

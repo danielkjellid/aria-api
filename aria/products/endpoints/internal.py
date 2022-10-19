@@ -103,7 +103,7 @@ class ProductCreateInternalInput(Schema):
     available_in_special_sizes: bool
     materials: list[str]
     rooms: list[str]
-    absorption: float = None
+    absorption: float | None = None
     display_price: bool
     can_be_purchased_online: bool
     can_be_picked_up: bool
@@ -127,7 +127,9 @@ class ProductCreateInternalInput(Schema):
         codes_40x: ExceptionResponse,
     },
 )
-def product_create_internal_api(request: HttpRequest):
+def product_create_internal_api(
+    request: HttpRequest,
+) -> tuple[int, ProductCreateInternalInput]:
     pass
 
 
@@ -160,7 +162,7 @@ def product_image_create_internal_api(
     product_id: int,
     payload: ProductImageCreateInternalInput = Form(...),
     file: UploadedFile = File(...),
-):
+) -> tuple[int, ProductImageCreateInternalOutput]:
     """
     Create an image associated to a certain product based on a product's id.
     """
@@ -203,7 +205,7 @@ def product_file_create_internal_api(
     product_id: int,
     payload: ProductFileCreateInternalInput = Form(...),
     file: UploadedFile = File(...),
-):
+) -> tuple[int, ProductFileCreateInternalOutput]:
     """
     Create a file associated to a certain product based on a product's id.
     """
@@ -277,7 +279,7 @@ def variant_create_internal_api(
     request: HttpRequest,
     payload: VariantCreateInternalInput = Form(...),
     file: UploadedFile = File(...),
-):
+) -> tuple[int, VariantCreateInternalOutput]:
     """
     Creates a single variant instance.
     """
@@ -302,7 +304,7 @@ class ProductOptionCreateInternalSizeInput(Schema):
 
 
 class ProductOptionCreateInternalInput(Schema):
-    status: int
+    status: ProductStatus
     gross_price: float
     variant_id: int | None = None
     size: ProductOptionCreateInternalSizeInput | None = None
@@ -397,11 +399,11 @@ def product_option_bulk_create_internal_api(
     request: HttpRequest,
     product_id: int,
     payload: list[ProductOptionCreateInBulkInternalInput],
-) -> tuple[int, ProductOptionCreateInBulkInternalOutput]:
+) -> list[ProductOptionCreateInBulkInternalOutput]:
 
     product = get_object_or_404(Product, pk=product_id)
     options = product_options_bulk_create_options_and_sizes(
-        product=product, options=payload
+        product=product, options=payload  # type: ignore
     )
 
     return [

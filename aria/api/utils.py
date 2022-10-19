@@ -1,7 +1,9 @@
 import re
-from typing import Any, Pattern
+from typing import Any, Pattern, TypedDict
 
 from django.utils.translation import activate, deactivate, gettext as _
+
+from aria.api.types import PydanticErrorDict
 
 MESSAGE_TEMPLATE = {
     "field required": _("field required"),
@@ -58,15 +60,15 @@ def _translate(message: str, locale: str) -> str:
 
 
 def translate_pydantic_validation_messages(
-    errors: list[dict[str, Any]], locale: str
-) -> list[dict[str, str]]:
+    errors: list[PydanticErrorDict] | list[dict[str, Any]], locale: str
+) -> list[PydanticErrorDict]:
     """
     Loop over all messages in validation output and translate messages.
     """
 
     return [
         {
-            **error,
+            **error,  # type: ignore
             "msg": _translate(message=error["msg"], locale=locale),
         }
         for error in errors

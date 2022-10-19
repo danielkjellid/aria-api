@@ -1,13 +1,15 @@
 from decimal import Decimal
+from typing import Any
 
 from django.db.models import Q
 
 from aria.products.models import Size
 from aria.products.records import ProductSizeRecord
-from aria.products.types import SizeDict
 
 
-def size_list_from_mapped_values(values: list[SizeDict]) -> list[ProductSizeRecord]:
+def size_list_from_mapped_values(
+    values: list[dict[str, Any]]
+) -> list[ProductSizeRecord]:
     """
     Map a list of unknown sizes to existing size instances in the db, and return a list
     of mapped instances.

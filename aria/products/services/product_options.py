@@ -46,7 +46,7 @@ def product_option_create(
     return ProductOptionRecord(
         id=product_option.id,
         gross_price=product_option.gross_price,
-        status=product_option.status,
+        status=product_option.status_display,
         variant_id=product_option.variant_id,
         size_id=product_option.size_id,
     )
@@ -85,7 +85,7 @@ def product_option_bulk_create(
         ProductOptionRecord(
             id=option.id,
             gross_price=option.gross_price,
-            status=option.status,
+            status=option.status_display,
             variant_id=option.variant_id,
             size_id=option.size_id,
         )
@@ -116,7 +116,7 @@ def product_options_bulk_create_options_and_sizes(
     sizes_from_options = [
         option.size for option in copied_options if option.size is not None
     ]
-    sizes = size_bulk_create(sizes=[size.dict() for size in sizes_from_options])
+    sizes = size_bulk_create(sizes=[size.dict() for size in sizes_from_options])  # type: ignore # pylint: disable=line-too-long
 
     options_to_create = [
         {
@@ -159,6 +159,6 @@ def product_option_delete_related_variants(*, instance: ProductOption) -> None:
     if (
         related_variant is not None
         and related_variant.is_standard is False
-        and len(related_variant.product_options.all()) == 1
+        and len(related_variant.product_options.all()) == 1  # type: ignore
     ):
         related_variant.delete()

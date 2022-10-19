@@ -1,10 +1,7 @@
 import tempfile
 from decimal import Decimal
-from io import BytesIO
 
 from django.utils.text import slugify
-
-from PIL import Image
 
 from aria.categories.models import Category
 from aria.categories.tests.utils import create_category

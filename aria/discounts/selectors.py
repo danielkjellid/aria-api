@@ -146,7 +146,7 @@ def discount_active_list() -> list[DiscountRecord]:
                 ProductListRecord(
                     id=product.id,
                     name=product.name,
-                    status=product.status,
+                    status=product.status_display,
                     slug=product.slug,
                     unit=product.unit_display,
                     supplier=ProductSupplierRecord(

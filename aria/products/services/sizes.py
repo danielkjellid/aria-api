@@ -11,10 +11,10 @@ from aria.products.types import SizeDict
 
 def size_create(
     *,
-    width: Decimal | None = None,
-    height: Decimal | None = None,
-    depth: Decimal | None = None,
-    circumference: Decimal | None = None,
+    width: Decimal | float | None = None,
+    height: Decimal | float | None = None,
+    depth: Decimal | float | None = None,
+    circumference: Decimal | float | None = None,
 ) -> ProductSizeRecord:
     """
     Create a single size instance.
@@ -98,10 +98,10 @@ def size_bulk_create(*, sizes: list[SizeDict]) -> list[ProductSizeRecord]:
 
 def size_get_or_create(
     *,
-    width: Decimal | None,
-    height: Decimal | None,
-    depth: Decimal | None,
-    circumference: Decimal | None,
+    width: Decimal | float | None,
+    height: Decimal | float | None,
+    depth: Decimal | float | None,
+    circumference: Decimal | float | None,
 ) -> ProductSizeRecord | None:
     """
     Creates a Size with given fields, if size does not already exist.
@@ -122,7 +122,7 @@ def size_get_or_create(
             circumference=cleaned_size.circumference,
         )
     except Size.DoesNotExist:
-        size = size_create(
+        size = size_create(  # type: ignore
             width=width, height=height, depth=depth, circumference=circumference
         )
 
@@ -192,17 +192,17 @@ def _size_validate(
 
 def size_clean_and_validate_value(
     *,
-    width: Decimal | None = None,
-    height: Decimal | None = None,
-    depth: Decimal | None = None,
-    circumference: Decimal | None = None,
-) -> SizeRecord | None:
+    width: Decimal | float | None = None,
+    height: Decimal | float | None = None,
+    depth: Decimal | float | None = None,
+    circumference: Decimal | float | None = None,
+) -> SizeRecord:
     """
     Clean size values and validate that param combinations are correct.
     """
 
     if all(param is None for param in {width, height, depth, circumference}):
-        return None
+        raise ValueError("All size params cannot be None!")
 
     # Convert zero's to None to avoid having dangling 0's in the DB creating multiple
     # of the "same" size.
@@ -224,6 +224,10 @@ def size_clean_and_validate_value(
 
 
 def size_clean_and_validate_values(*, sizes: list[SizeDict]) -> list[SizeRecord]:
+    """
+    Clean size values for a list of sizes and validate that param combinations are
+    correct.
+    """
 
     cleaned_sizes = []
 

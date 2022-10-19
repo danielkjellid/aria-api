@@ -21,7 +21,9 @@ class CategoryListInternalOutput(Schema):
     summary="List all categories.",
     url_name="internal-categories-index",  # Temporary.
 )
-def category_list_internal_api(request: HttpRequest):
+def category_list_internal_api(
+    request: HttpRequest,
+) -> list[CategoryListInternalOutput]:
     """
     Endpoint for getting a list of all categories in the application.
     """
