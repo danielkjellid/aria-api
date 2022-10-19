@@ -159,6 +159,6 @@ def product_option_delete_related_variants(*, instance: ProductOption) -> None:
     if (
         related_variant is not None
         and related_variant.is_standard is False
-        and len(related_variant.product_options.all()) == 1  # type: ignore
+        and len(related_variant.product_options.all()) == 1
     ):
         related_variant.delete()
