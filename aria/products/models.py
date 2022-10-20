@@ -273,6 +273,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
     )
     materials = ChoiceArrayField(
         models.CharField(choices=enums.ProductMaterials.choices, max_length=50),
+        blank=True,
         null=True,
         help_text=(
             "Material product is made of. Want to add more options? "
@@ -281,6 +282,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
     )
     rooms = ChoiceArrayField(
         models.CharField(choices=enums.ProductRooms.choices, max_length=50),
+        blank=True,
         null=True,
         help_text="Rooms applicable to product.",
     )

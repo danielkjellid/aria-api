@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from aria.products.enums import ProductUnit
 from aria.products.models import Product
 from aria.products.records import (

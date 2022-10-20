@@ -104,7 +104,7 @@ class ProductRecord(BaseModel):
     search_keywords: str | None
     description: str
     unit: str
-    vat_rate: float
+    vat_rate: Decimal
     available_in_special_sizes: bool = False
     absorption: float | None = None
     is_imported_from_external_source: bool = False

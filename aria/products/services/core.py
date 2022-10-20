@@ -18,8 +18,101 @@ from aria.products.enums import (
     ProductUnit,
 )
 from aria.products.models import Color, Product, Shape
-from aria.products.records import ProductRecord, ProductSupplierRecord
+from aria.products.records import ProductRecord
+from aria.products.selectors.records import product_record
 from aria.suppliers.models import Supplier
+
+
+@transaction.atomic
+def product_create(
+    *,
+    name: str,
+    supplier: Supplier,
+    status: ProductStatus = ProductStatus.AVAILABLE,
+    slug: str,
+    search_keywords: str | None = None,
+    description: str,
+    unit: ProductUnit = ProductUnit.PCS,
+    category_ids: list[int] | None = None,
+    shape_ids: list[int] | None = None,
+    color_ids: list[int] | None = None,
+    vat_rate: Decimal | float = Decimal("0.25"),
+    available_in_special_sizes: bool = False,
+    materials: list[str] | None = None,
+    rooms: list[str] | None = None,
+    absorption: float | None = None,
+    display_price: bool = False,
+    can_be_purchased_online: bool = False,
+    can_be_picked_up: bool = False,
+    is_imported_from_external_source: bool = False,
+    thumbnail: UploadedFile | InMemoryUploadedFile | ImageFile | None = None,
+) -> ProductRecord:
+
+    data = {
+        "name": name,
+        "slug": slug,
+        "supplier_id": supplier.id,
+        "status": status,
+        "search_keywords": search_keywords,
+        "description": description,
+        "unit": unit,
+        "vat_rate": Decimal(vat_rate),
+        "available_in_special_sizes": available_in_special_sizes,
+        "absorption": absorption,
+        "display_price": display_price,
+        "can_be_purchased_online": can_be_purchased_online,
+        "can_be_picked_up": can_be_picked_up,
+        "is_imported_from_external_source": is_imported_from_external_source,
+    }
+
+    product = Product(**data)
+
+    if thumbnail is not None:
+        image_validate(
+            image=thumbnail,
+            allowed_extensions=[".jpg", ".jpeg"],
+            width_min_px=370,
+            width_max_px=450,
+            height_min_px=575,
+            height_max_px=690,
+        )
+        product.thumbnail = thumbnail
+
+    if materials:
+        materials_to_add = [
+            material for material in materials if material in ProductMaterials
+        ]
+        product.materials = materials_to_add
+
+    if rooms:
+        rooms_to_add = [room for room in rooms if room in ProductRooms]
+        product.rooms = rooms_to_add
+
+    product.full_clean()
+    product.save()
+
+    if category_ids:
+        categories = Category.objects.filter(id__in=category_ids)
+
+        for category in categories:
+            if category.is_primary:
+                raise ApplicationError(
+                    message=_("You may only add secondary categories to products.")
+                )
+
+        product.categories.set(categories)
+
+    if shape_ids:
+        shapes = Shape.objects.filter(id__in=shape_ids)
+        product.shapes.set(shapes)
+
+    if color_ids:
+        colors = Color.objects.filter(id__in=color_ids)
+        product.colors.set(colors)
+
+    # TODO: Add audit logging, and make sure log is correctly in test
+
+    return product_record(product=product)
 
 
 @transaction.atomic
@@ -68,7 +161,7 @@ def product_update(
     field_changes = []
     non_side_effect_fields = [k for k in changes.keys()]
 
-    def _update_attribute(
+    def _update_side_effect_attribute(
         *,
         attribute: str,
         qs: BaseQuerySet[Product],
@@ -121,7 +214,7 @@ def product_update(
             )
 
     if category_ids:
-        _update_attribute(
+        _update_side_effect_attribute(
             attribute="categories",
             qs=product.categories.all(),
             ids_to_compare=category_ids,
@@ -130,7 +223,7 @@ def product_update(
         )
 
     if shape_ids:
-        _update_attribute(
+        _update_side_effect_attribute(
             attribute="shapes",
             qs=product.shapes.all(),
             ids_to_compare=shape_ids,
@@ -139,7 +232,7 @@ def product_update(
         )
 
     if color_ids:
-        _update_attribute(
+        _update_side_effect_attribute(
             attribute="colors",
             qs=product.colors.all(),
             ids_to_compare=color_ids,
@@ -147,118 +240,63 @@ def product_update(
             display_property="name",
         )
 
+    if materials:
+        product_materials = product.materials
+        materials_to_add = [
+            material for material in materials if material in ProductMaterials
+        ]
+
+        if product_materials != materials_to_add:
+            product.materials = materials_to_add
+
+            field_changes.append(
+                {
+                    "field": "materials",
+                    "old_value": product_materials,
+                    "new_value": materials_to_add,
+                }
+            )
+
+    if rooms:
+        product_rooms = product.rooms
+        rooms_to_add = [room for room in rooms if room in ProductRooms]
+
+        if product_rooms != rooms_to_add:
+            product.rooms = rooms_to_add
+
+            field_changes.append(
+                {
+                    "field": "rooms",
+                    "old_value": product_rooms,
+                    "new_value": rooms_to_add,
+                }
+            )
+
+    if thumbnail.name is not None and thumbnail.name != product.thumbnail.name:
+        old_thumbnail_url = product.thumbnail.url if product.thumbnail else None
+
+        if product.thumbnail is not None:
+            product.thumbnail.delete(save=True)
+
+        product.thumbnail = thumbnail
+        product.save()
+
+        new_thumbnail_url = product.thumbnail.url if product.thumbnail else None
+
+        field_changes.append(
+            {
+                "field": "thumbnail",
+                "old_value": old_thumbnail_url,
+                "new_value": new_thumbnail_url,
+            }
+        )
+
     product, has_updated, updated_fields = model_update(
         instance=product, fields=non_side_effect_fields, data=changes
     )
 
-    field_changes.extend(updated_fields)
+    if has_updated:
+        field_changes.extend(updated_fields)
+        # TODO: Add audit logging, and make sure log is correctly in test
 
-
-@transaction.atomic
-def product_create(
-    *,
-    name: str,
-    supplier: Supplier,
-    status: ProductStatus = ProductStatus.AVAILABLE,
-    slug: str,
-    search_keywords: str | None = None,
-    description: str,
-    unit: ProductUnit = ProductUnit.PCS,
-    category_ids: list[int] | None = None,
-    shape_ids: list[int] | None = None,
-    color_ids: list[int] | None = None,
-    vat_rate: Decimal | float = Decimal("0.25"),
-    available_in_special_sizes: bool = False,
-    materials: list[str] | None = None,
-    rooms: list[str] | None = None,
-    absorption: float | None = None,
-    display_price: bool = False,
-    can_be_purchased_online: bool = False,
-    can_be_picked_up: bool = False,
-    is_imported_from_external_source: bool = False,
-    thumbnail: UploadedFile | InMemoryUploadedFile | ImageFile | None = None,
-) -> ProductRecord:
-
-    changes = {
-        "name": name,
-        "slug": slug,
-        "supplier_id": supplier.id,
-        "status": status,
-        "search_keywords": search_keywords,
-        "description": description,
-        "unit": unit,
-        "vat_rate": vat_rate,
-        "available_in_special_sizes": available_in_special_sizes,
-        "absorption": absorption,
-        "display_price": display_price,
-        "can_be_purchased_online": can_be_purchased_online,
-        "can_be_picked_up": can_be_picked_up,
-        "is_imported_from_external_source": is_imported_from_external_source,
-    }
-
-    product = Product.objects.create(**changes)
-
-    if category_ids:
-        categories = Category.objects.filter(id__in=category_ids)
-
-        for category in categories:
-            if category.is_primary:
-                raise ApplicationError(
-                    message=_("You may only add secondary categories to products.")
-                )
-
-        product.categories.set(categories)
-
-    if shape_ids:
-        shapes = Shape.objects.filter(id__in=shape_ids)
-        product.shapes.set(shapes)
-
-    if color_ids:
-        colors = Color.objects.filter(id__in=color_ids)
-        product.colors.set(colors)
-
-    if thumbnail is not None:
-        image_validate(
-            image=thumbnail,
-            allowed_extensions=[".jpg", ".jpeg"],
-            width_min_px=370,
-            width_max_px=450,
-            height_min_px=575,
-            height_max_px=690,
-        )
-        product.thumbnail = thumbnail
-
-    if materials:
-        materials_to_add = [
-            material for material in materials if material in ProductMaterials
-        ]
-        product.materials = materials_to_add
-
-    if rooms:
-        rooms_to_add = [room for room in rooms if room in ProductRooms]
-        product.rooms = rooms_to_add
-
-    product.save()
-
-    return ProductRecord(
-        id=product.id,
-        name=product.name,
-        supplier=ProductSupplierRecord(
-            id=supplier.id,
-            name=supplier.name,
-            origin_country=supplier.country_name,
-            origin_country_flag=supplier.unicode_flag,
-        ),
-        status=product.status_display,
-        slug=product.slug,
-        search_keywords=product.search_keywords,
-        description=product.description,
-        unit=product.unit_display,
-        vat_rate=product.vat_rate,
-        available_in_special_sizes=product.available_in_special_sizes,
-        absorption=product.absorption,
-        is_imported_from_external_source=product.is_imported_from_external_source,
-        rooms=product.rooms_display,
-        materials=product.materials_display,
-        thumbnail=product.thumbnail.url if product.thumbnail else None,
-    )
+    return product_record(product=product)

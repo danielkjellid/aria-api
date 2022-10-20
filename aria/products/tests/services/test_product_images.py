@@ -7,46 +7,43 @@ import pytest
 from aria.core.exceptions import ApplicationError
 from aria.core.tests.utils import create_image_file
 from aria.products.records import ProductImageRecord
-from aria.products.services.product_images import (
-    _validate_product_image,
-    product_image_create,
-)
+from aria.products.services.product_images import product_image_create
 from aria.products.tests.utils import create_product
 
 pytestmark = pytest.mark.django_db
 
 
 class TestProductImagesServices:
-    def test_service__validate_product_image(self):
-        """
-        Test that the validate_product_image correctly validates image properties.
-        """
-
-        pdf_file = SimpleUploadedFile("file.pdf", b"")
-        image_too_narrow = create_image_file(
-            name="too-narrow", extension="jpeg", width=100, height=860
-        )
-        image_too_small = create_image_file(
-            name="too-small", extension="jpeg", width=1536, height=50
-        )
-        image = create_image_file(
-            name="right-aspect", extension="jpeg", width=2048, height=1150
-        )
-
-        # Wrong filetype.
-        with pytest.raises(ApplicationError):
-            _validate_product_image(image=pdf_file)
-
-        # Not wide enough.
-        with pytest.raises(ApplicationError):
-            _validate_product_image(image=image_too_narrow)
-
-        # Not tall enough.
-        with pytest.raises(ApplicationError):
-            _validate_product_image(image=image_too_small)
-
-        # Everything correct, should not raise any exceptions.
-        _validate_product_image(image=image)
+    # def test_service__validate_product_image(self):
+    #     """
+    #     Test that the validate_product_image correctly validates image properties.
+    #     """
+    #
+    #     pdf_file = SimpleUploadedFile("file.pdf", b"")
+    #     image_too_narrow = create_image_file(
+    #         name="too-narrow", extension="jpeg", width=100, height=860
+    #     )
+    #     image_too_small = create_image_file(
+    #         name="too-small", extension="jpeg", width=1536, height=50
+    #     )
+    #     image = create_image_file(
+    #         name="right-aspect", extension="jpeg", width=2048, height=1150
+    #     )
+    #
+    #     # Wrong filetype.
+    #     with pytest.raises(ApplicationError):
+    #         _validate_product_image(image=pdf_file)
+    #
+    #     # Not wide enough.
+    #     with pytest.raises(ApplicationError):
+    #         _validate_product_image(image=image_too_narrow)
+    #
+    #     # Not tall enough.
+    #     with pytest.raises(ApplicationError):
+    #         _validate_product_image(image=image_too_small)
+    #
+    #     # Everything correct, should not raise any exceptions.
+    #     _validate_product_image(image=image)
 
     def test_service_product_image_create(self, django_assert_max_num_queries):
         """
