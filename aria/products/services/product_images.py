@@ -1,10 +1,6 @@
-import os
-
-from django.core.files.images import ImageFile, get_image_dimensions
+from django.core.files.images import ImageFile
 from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
-from django.utils.translation import gettext as _
 
-from aria.core.exceptions import ApplicationError
 from aria.core.validators import image_validate
 from aria.products.models import Product, ProductImage
 from aria.products.records import ProductImageRecord

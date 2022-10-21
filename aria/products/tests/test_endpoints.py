@@ -13,7 +13,7 @@ import pytest
 from aria.categories.tests.utils import create_category
 from aria.discounts.tests.utils import create_discount
 from aria.products.enums import ProductStatus, ProductUnit
-from aria.products.models import Size
+from aria.products.models import Product, Size
 from aria.products.tests.utils import (
     create_color,
     create_product,
@@ -22,6 +22,7 @@ from aria.products.tests.utils import (
     create_size,
     create_variant,
 )
+from aria.suppliers.tests.utils import get_or_create_supplier
 
 pytestmark = pytest.mark.django_db
 
@@ -467,12 +468,139 @@ class TestInternalProductsEndpoints:
     # Product create endpoint #
     ###########################
 
-    def test_endpoint_product_create_internal_api(self):
+    @pytest.mark.parametrize("test_permissions", ["product.management"], indirect=True)
+    def test_endpoint_product_create_internal_api(  # pylint: disable=R0914
+        self,
+        anonymous_client,
+        authenticated_unprivileged_client,
+        authenticated_privileged_client,
+        authenticated_unprivileged_staff_client,
+        authenticated_privileged_staff_client,
+        django_assert_max_num_queries,
+        assert_client_response_is_status_code,
+    ):
         """
         Test that privileged staff users gets a valid response on creating a new
         product, and that all other request return appropriate HTTP status codes.
         """
-        assert False
+
+        endpoint = f"{self.BASE_ENDPOINT}/create/"
+
+        supplier = get_or_create_supplier()
+        main_category = create_category(name="Main")
+        sub_category = create_category(name="Sub", parent=main_category)
+        shape_square = create_shape(name="Square")
+        color_white = create_color(name="White", color_hex="#FFFFFF")
+        color_gray = create_color(name="Gray", color_hex="#CCCCCC")
+
+        products_in_db_count = Product.objects.count()
+
+        # thumbnail = SimpleUploadedFile(
+        #     "test.jpeg", b"data123", content_type="image/jpeg"
+        # )
+
+        payload = {
+            "name": "New product",
+            "status": ProductStatus.AVAILABLE,
+            "slug": "new-product",
+            "search_keywords": "keyword1",
+            "description": "A new product!",
+            "unit": 2,
+            "vat_rate": 0.25,
+            "available_in_special_sizes": False,
+            "materials": ["kompositt"],
+            "rooms": ["bardom"],
+            "display_price": True,
+            "can_be_purchased_online": True,
+            "can_be_picked_up": True,
+            "supplier_id": supplier.id,
+            "category_ids": [sub_category.id],
+            "shape_ids": [shape_square.id],
+            "color_ids": [color_white.id, color_gray.id],
+            # "thumbnail": thumbnail,  # TODO: Replace when image migration is done.
+        }
+
+        expected_output = {
+            "id": ANY,
+            "name": "New product",
+            "supplierId": supplier.id,
+            "status": ProductStatus.AVAILABLE.label,
+            "slug": "new-product",
+            "description": "A new product!",
+            "unit": ProductUnit.PCS.label,
+            "vatRate": 0.25,
+        }
+
+        # Anonymous users should get 401.
+        assert_client_response_is_status_code(
+            client=anonymous_client,
+            endpoint=endpoint,
+            method="POST",
+            max_allowed_queries=0,
+            payload=payload,
+            expected_status_code=401,
+            content_type=MULTIPART_CONTENT,
+        )
+
+        # Authenticated users without the correct permissions should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_client,
+            endpoint=endpoint,
+            method="POST",
+            max_allowed_queries=1,
+            payload=payload,
+            expected_status_code=401,
+            content_type=MULTIPART_CONTENT,
+        )
+
+        # Authenticated users with the correct permissions, but are not staff,
+        # should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_privileged_client,
+            endpoint=endpoint,
+            method="POST",
+            max_allowed_queries=1,
+            payload=payload,
+            expected_status_code=401,
+            content_type=MULTIPART_CONTENT,
+        )
+
+        # Authenticated staff users without correct permissions should get 403.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_staff_client,
+            endpoint=endpoint,
+            method="POST",
+            max_allowed_queries=3,
+            payload=payload,
+            expected_status_code=403,
+            content_type=MULTIPART_CONTENT,
+        )
+
+        with django_assert_max_num_queries(20):
+            response = authenticated_privileged_staff_client.post(
+                endpoint, data=payload
+            )
+
+        assert response.status_code == 201
+        assert response.json() == expected_output
+        assert Product.objects.count() == products_in_db_count + 1
+
+        product = Product.objects.get(id=response.json()["id"])
+
+        assert list(product.categories.all()) == [sub_category]
+        assert list(product.shapes.all()) == [shape_square]
+        assert list(product.colors.all()) == [color_white, color_gray]
+
+        payload["supplier_id"] = 999
+
+        with django_assert_max_num_queries(4):
+            error_response = authenticated_privileged_staff_client.post(
+                endpoint,
+                data=payload,
+                content_type=MULTIPART_CONTENT,
+            )
+
+        assert error_response.status_code == 404
 
     #################################
     # Product image create endpoint #

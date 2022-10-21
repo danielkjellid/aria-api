@@ -7,13 +7,14 @@ from aria.api.decorators import paginate
 from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse
 from aria.api_auth.decorators import permission_required
-from aria.products.enums import ProductStatus, ProductUnit
+from aria.products.enums import ProductStatus
 from aria.products.models import Product, Size, Variant
 from aria.products.schemas.filters import ProductListFilters
 from aria.products.selectors.colors import color_list
 from aria.products.selectors.core import product_list
 from aria.products.selectors.shapes import shape_list
 from aria.products.selectors.variants import variant_list
+from aria.products.services.core import product_create
 from aria.products.services.product_files import product_file_create
 from aria.products.services.product_images import product_image_create
 from aria.products.services.product_options import (
@@ -22,6 +23,7 @@ from aria.products.services.product_options import (
 )
 from aria.products.services.sizes import size_get_or_create
 from aria.products.services.variants import variant_create
+from aria.suppliers.models import Supplier
 
 router = Router(tags=["Products"])
 
@@ -75,14 +77,24 @@ def product_list_internal_api(
 ####################################
 
 
+class ProductCreateInternalOutput(Schema):
+    id: int
+    name: str
+    supplier_id: int
+    status: str
+    slug: str
+    description: str
+    unit: str
+    vat_rate: float
+
+
 class ProductCreateInternalInput(Schema):
     name: str
-    status: ProductStatus
+    status: int
     slug: str
-    thumbnail: str
     search_keywords: str
     description: str
-    unit: ProductUnit
+    unit: int
     vat_rate: float
     available_in_special_sizes: bool
     materials: list[str]
@@ -102,19 +114,29 @@ class ProductCreateInternalInput(Schema):
 @router.post(
     "create/",
     response={
-        200: ProductCreateInternalInput,
+        201: ProductCreateInternalOutput,
         codes_40x: ExceptionResponse,
     },
     summary="Create a single product instance.",
 )
+@permission_required(["products.product.management", "products.product.admin"])
 def product_create_internal_api(
     request: HttpRequest,
     payload: ProductCreateInternalInput = Form(...),
-    thumbnail: UploadedFile = File(...),
-) -> tuple[int, ProductCreateInternalInput]:
+    thumbnail: UploadedFile | None = File(None),
+) -> tuple[int, ProductCreateInternalOutput]:
     """
     Create a single product instance.
     """
+
+    supplier = get_object_or_404(Supplier, pk=payload.supplier_id)
+    product_record = product_create(
+        supplier=supplier, thumbnail=thumbnail, **payload.dict()
+    )
+
+    return 201, ProductCreateInternalOutput(
+        supplier_id=product_record.supplier.id, **product_record.dict()
+    )
 
 
 ##########################################

@@ -53,7 +53,10 @@ def _translate(message: str, locale: str) -> str:
 
     # Activate locale passed by request to get translated string.
     activate(locale)
-    translated_string = _(MESSAGE_TEMPLATE[key]).replace("{}", placeholder)
+    try:
+        translated_string = _(MESSAGE_TEMPLATE[key]).replace("{}", placeholder)
+    except KeyError:
+        translated_string = key
     deactivate()
 
     return translated_string
