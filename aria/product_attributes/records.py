@@ -17,3 +17,9 @@ class SizeDetailRecord(BaseModel):
     height: Decimal | None = None
     depth: Decimal | None = None
     circumference: Decimal | None = None
+
+
+class ShapeDetailRecord(BaseModel):
+    id: int
+    name: str
+    image: str | None

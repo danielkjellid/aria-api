@@ -2,8 +2,40 @@ from decimal import Decimal
 
 from django.db.models import Q
 
-from aria.product_attributes.models import Size
-from aria.product_attributes.records import SizeDetailRecord, SizeRecord
+from aria.product_attributes.models import Shape, Size
+from aria.product_attributes.records import (
+    ShapeDetailRecord,
+    SizeDetailRecord,
+    SizeRecord,
+)
+
+###################
+# Color selectors #
+###################
+
+###################
+# Shape selectors #
+###################
+
+
+def shape_list() -> list[ShapeDetailRecord]:
+    """
+    Returns a list of all shapes in the application.
+    """
+
+    shapes = Shape.objects.all().order_by("-id")
+
+    return [
+        ShapeDetailRecord(
+            id=shape.id, name=shape.name, image=shape.image.url if shape.image else None
+        )
+        for shape in shapes
+    ]
+
+
+##################
+# Size selectors #
+##################
 
 
 def size_list_from_mapped_values(values: list[SizeRecord]) -> list[SizeDetailRecord]:
@@ -48,3 +80,8 @@ def size_list_from_mapped_values(values: list[SizeRecord]) -> list[SizeDetailRec
         )
         for size in sizes
     ]
+
+
+#####################
+# Variant selectors #
+#####################

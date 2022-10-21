@@ -1,6 +1,22 @@
+import tempfile
 from decimal import Decimal
 
-from aria.product_attributes.models import Size
+from aria.product_attributes.models import Shape, Size
+
+
+def create_shape(*, name: str) -> Shape:
+    """
+    Test util that creates a shape instance.
+    """
+
+    shape, _created = Shape.objects.get_or_create(name=name)
+
+    with tempfile.NamedTemporaryFile(suffix=".jpg") as file:
+        shape.image = file.name
+
+    shape.save()
+
+    return shape
 
 
 def create_size(
