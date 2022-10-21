@@ -33,7 +33,7 @@ router = Router(tags=["Products"])
 ##################################
 
 
-class ProductListInternalOutputSupplier(Schema):
+class ProductListSupplierInternalOutput(Schema):
     name: str
     origin_country: str
     origin_country_flag: str
@@ -44,7 +44,7 @@ class ProductListInternalOutput(Schema):
     name: str
     slug: str
     status: str
-    supplier: ProductListInternalOutputSupplier
+    supplier: ProductListSupplierInternalOutput
     unit: str
 
 
@@ -302,7 +302,7 @@ def variant_create_internal_api(
 ###########################################
 
 
-class ProductOptionCreateInternalSizeInput(Schema):
+class ProductOptionCreateSizeInternalInput(Schema):
     width: float | None = None
     height: float | None = None
     depth: float | None = None
@@ -313,7 +313,7 @@ class ProductOptionCreateInternalInput(Schema):
     status: ProductStatus
     gross_price: float
     variant_id: int | None = None
-    size: ProductOptionCreateInternalSizeInput | None = None
+    size: ProductOptionCreateSizeInternalInput | None = None
 
 
 class ProductOptionCreateInternalOutput(Schema):
@@ -375,7 +375,7 @@ def product_option_create_internal_api(
 ################################################
 
 
-class ProductOptionCreateInBulkInternalSizeInput(Schema):
+class ProductOptionCreateInBulkSizeInternalInput(Schema):
     width: float | None = None
     height: float | None = None
     depth: float | None = None
@@ -386,7 +386,7 @@ class ProductOptionCreateInBulkInternalInput(Schema):
     status: ProductStatus
     gross_price: float
     variant_id: int | None = None
-    size: ProductOptionCreateInBulkInternalSizeInput | None = None
+    size: ProductOptionCreateInBulkSizeInternalInput | None = None
 
 
 class ProductOptionCreateInBulkInternalOutput(Schema):
