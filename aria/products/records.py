@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from aria.categories.records import CategoryDetailRecord
 from aria.core.records import BaseArrayFieldLabelRecord, BaseHeaderImageRecord
+from aria.products.enums import ProductStatus
 
 
 class ProductSupplierRecord(BaseModel):
@@ -46,6 +47,28 @@ class ProductDiscountRecord(BaseModel):
 
 class ProductOptionRecord(BaseModel):
     id: int
+    gross_price: Decimal
+    status: ProductStatus
+    variant_id: int | None
+    size_id: int | None
+
+
+class SizeRecord(BaseModel):
+    width: Decimal | None = None
+    height: Decimal | None = None
+    depth: Decimal | None = None
+    circumference: Decimal | None = None
+
+
+class OptionRecord(BaseModel):
+    gross_price: Decimal
+    status: ProductStatus
+    variant_id: int | None
+    size: SizeRecord | None
+
+
+class ProductOptionDetailRecord(BaseModel):
+    id: int
     discount: ProductDiscountRecord | None
     gross_price: Decimal
     status: str
@@ -55,8 +78,15 @@ class ProductOptionRecord(BaseModel):
 
 class ProductFileRecord(BaseModel):
     id: int
+    product_id: int
     name: str
     file: str | None
+
+
+class ProductImageRecord(BaseModel):
+    id: int
+    product_id: int
+    image_url: str | None
 
 
 class ProductShapeRecord(BaseModel):
@@ -74,7 +104,7 @@ class ProductRecord(BaseModel):
     search_keywords: str | None
     description: str
     unit: str
-    vat_rate: float
+    vat_rate: Decimal
     available_in_special_sizes: bool = False
     absorption: float | None = None
     is_imported_from_external_source: bool = False
@@ -91,7 +121,7 @@ class ProductDetailRecord(ProductRecord):
     colors: list[ProductColorRecord] = []
     shapes: list[ProductShapeRecord] = []
     categories: list[CategoryDetailRecord]
-    options: list[ProductOptionRecord] = []
+    options: list[ProductOptionDetailRecord] = []
     images: list[BaseHeaderImageRecord] = []
     files: list[ProductFileRecord] = []
 
@@ -101,6 +131,7 @@ class ProductListRecord(BaseModel):
     name: str
     slug: str
     unit: str
+    status: str
     supplier: ProductSupplierRecord
     thumbnail: str | None = None
     display_price: bool

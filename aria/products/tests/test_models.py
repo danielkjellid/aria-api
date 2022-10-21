@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import pytest
 
 from aria.products.enums import ProductStatus, ProductUnit
@@ -114,7 +116,7 @@ class TestProductsModels:
 
         product = create_product()
         variant = create_variant()
-        size = create_size()
+        size = create_size(width=Decimal("100.0"), height=Decimal("100.0"))
 
         options = {
             "product": product,

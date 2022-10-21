@@ -53,11 +53,11 @@ class TestInternalNotesEndpoints:
                 f"{self.BASE_ENDPOINT}/{note.id}/delete/"
             )
 
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     @pytest.mark.parametrize("test_permissions", ["has_note_delete"], indirect=True)
-    def test_authenticated_privileged_client_note_delete_api(
-        self, authenticated_privileged_client, django_assert_max_num_queries
+    def test_authenticated_privileged_staff_client_note_delete_api(
+        self, authenticated_privileged_staff_client, django_assert_max_num_queries
     ) -> None:
         """
         Test that privileged users gets a valid response on deleting notes.
@@ -72,7 +72,7 @@ class TestInternalNotesEndpoints:
         # Uses 5 queries: 1 for getting the user, 2 for checking permissions,
         # 1 for getting note and 1 for deleting note.
         with django_assert_max_num_queries(5):
-            response = authenticated_privileged_client.delete(
+            response = authenticated_privileged_staff_client.delete(
                 f"{self.BASE_ENDPOINT}/{note.id}/delete/"
             )
 

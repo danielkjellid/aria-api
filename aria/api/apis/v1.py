@@ -17,10 +17,13 @@ from aria.api.exception_handlers import (
     validation_error_exception_handler,
 )
 from aria.api.exceptions import PageOutOfBoundsError
-from aria.api_auth.authentication import JWTAuthRequired
+from aria.api_auth.authentication import JWTAuthStaffRequired
 from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
 from aria.api_auth.exceptions import TokenError
-from aria.categories.endpoints import public_endpoints as public_categories_endpoints
+from aria.categories.endpoints import (
+    internal_endpoints as internal_categories_endpoints,
+    public_endpoints as public_categories_endpoints,
+)
 from aria.core.endpoints import public_endpoints as public_core_endpoints
 from aria.core.exceptions import ApplicationError
 from aria.discounts.endpoints import public_endpoints as public_discount_endpoints
@@ -28,8 +31,14 @@ from aria.employees.endpoints import public_endpoints as public_employees_endpoi
 from aria.front.endpoints import public_endpoints as public_front_endpoints
 from aria.kitchens.endpoints import public_endpoints as public_kitchens_endpoints
 from aria.notes.endpoints import internal_endpoints as internal_notes_endpoints
-from aria.products.endpoints import public_endpoints as public_products_endpoints
-from aria.suppliers.endpoints import public_endpoints as public_suppliers_endpoints
+from aria.products.endpoints import (
+    internal_endpoints as internal_products_endpoints,
+    public_endpoints as public_products_endpoints,
+)
+from aria.suppliers.endpoints import (
+    internal_endpoints as internal_suppliers_endpoints,
+    public_endpoints as public_suppliers_endpoints,
+)
 from aria.users.endpoints import (
     internal_endpoints as internal_users_endpoints,
     public_endpoints as public_users_endpoints,
@@ -86,13 +95,29 @@ public_router.add_router("/users/", public_users_endpoints, auth=None)
 # Internal routers #
 ####################
 
-internal_router = Router(auth=JWTAuthRequired())
+internal_router = Router(auth=JWTAuthStaffRequired())
+
+internal_router.add_router(
+    "/categories/", internal_categories_endpoints, auth=JWTAuthStaffRequired()
+)
 
 # Notes endpoints
-internal_router.add_router("/notes/", internal_notes_endpoints, auth=JWTAuthRequired())
+internal_router.add_router(
+    "/notes/", internal_notes_endpoints, auth=JWTAuthStaffRequired()
+)
 
 # Users endpoints
-internal_router.add_router("/users/", internal_users_endpoints, auth=JWTAuthRequired())
+internal_router.add_router(
+    "/users/", internal_users_endpoints, auth=JWTAuthStaffRequired()
+)
+
+internal_router.add_router(
+    "/products/", internal_products_endpoints, auth=JWTAuthStaffRequired()
+)
+
+internal_router.add_router(
+    "/suppliers/", internal_suppliers_endpoints, auth=JWTAuthStaffRequired()
+)
 
 ###############
 # API routers #

@@ -14,11 +14,9 @@ from aria.products.records import (
     ProductSupplierRecord,
     ProductVariantRecord,
 )
-from aria.products.selectors import (
-    product_calculate_discounted_price,
-    product_get_price_from_options,
-    product_list_for_sale_for_qs,
-)
+from aria.products.selectors.core import product_list_for_sale_for_qs
+from aria.products.selectors.discounts import product_calculate_discounted_price
+from aria.products.selectors.pricing import product_get_price_from_options
 
 
 def discount_record(discount_product: Discount) -> DiscountRecord:
@@ -148,6 +146,7 @@ def discount_active_list() -> list[DiscountRecord]:
                 ProductListRecord(
                     id=product.id,
                     name=product.name,
+                    status=product.status_display,
                     slug=product.slug,
                     unit=product.unit_display,
                     supplier=ProductSupplierRecord(

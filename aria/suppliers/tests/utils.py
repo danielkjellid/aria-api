@@ -1,3 +1,5 @@
+import tempfile
+
 from aria.suppliers.models import Supplier
 
 
@@ -24,5 +26,10 @@ def get_or_create_supplier(
             "is_active": is_active,
         },
     )
+
+    with tempfile.NamedTemporaryFile(suffix=".jpg") as file:
+        supplier.image = file.name
+
+    supplier.save()
 
     return supplier

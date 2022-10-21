@@ -6,6 +6,7 @@ from aria.core.records import BaseHeaderImageRecord, BaseListImageRecord
 class CategoryRecord(BaseModel):
     id: int
     name: str
+    display_name: str
     slug: str
     description: str
     ordering: int
@@ -17,6 +18,7 @@ class CategoryRecord(BaseModel):
 class CategoryDetailRecord(BaseModel):
     id: int
     name: str
+    display_name: str
     ordering: int
     slug: str
     description: str

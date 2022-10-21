@@ -237,3 +237,69 @@ class TestPublicCategoriesEndpoints:
             )
 
         assert failed_response.status_code == 404
+
+
+class TestInternalCategoriesEndpoints:
+
+    BASE_ENDPOINT = "/api/v1/internal/categories"
+
+    def test_endpoint_category_list_internal_api(
+        self,
+        anonymous_client,
+        authenticated_unprivileged_client,
+        authenticated_unprivileged_staff_client,
+        django_assert_max_num_queries,
+        assert_client_response_is_status_code,
+    ):
+        """
+        Test that the category_list_internal_api endpoint returns an expected output
+        for staff users, and returns correct HTTP error codes for non-staff users.
+        """
+
+        endpoint = f"{self.BASE_ENDPOINT}/"
+
+        cat_1 = create_category(name="Parent 1")
+        cat_2 = create_category(name="Parent 2")
+
+        subcat_1 = create_category(name="Child 1", parent=cat_1)
+        subcat_2 = create_category(name="Child 2", parent=cat_1)
+        subcat_3 = create_category(name="Child 3", parent=cat_1)
+        subcat_4 = create_category(name="Child 4", parent=cat_2)
+        subcat_5 = create_category(name="Child 5", parent=cat_2)
+        subcat_6 = create_category(name="Child 6", parent=cat_2)
+
+        expected_response = [
+            {"id": subcat_1.id, "name": "Child 1", "displayName": "Parent 1 > Child 1"},
+            {"id": subcat_2.id, "name": "Child 2", "displayName": "Parent 1 > Child 2"},
+            {"id": subcat_3.id, "name": "Child 3", "displayName": "Parent 1 > Child 3"},
+            {"id": subcat_4.id, "name": "Child 4", "displayName": "Parent 2 > Child 4"},
+            {"id": subcat_5.id, "name": "Child 5", "displayName": "Parent 2 > Child 5"},
+            {"id": subcat_6.id, "name": "Child 6", "displayName": "Parent 2 > Child 6"},
+        ]
+
+        # Anonymous users should get 401.
+        assert_client_response_is_status_code(
+            client=anonymous_client,
+            endpoint=endpoint,
+            max_allowed_queries=0,
+            expected_status_code=401,
+        )
+
+        # Authenticated users which are not staff should get 401.
+        assert_client_response_is_status_code(
+            client=authenticated_unprivileged_client,
+            endpoint=endpoint,
+            max_allowed_queries=1,
+            expected_status_code=401,
+        )
+
+        # Staff users should get a valid response regardless of permissions.
+        with django_assert_max_num_queries(2):
+            response = authenticated_unprivileged_staff_client.get(
+                endpoint,
+                content_type="application/json",
+            )
+
+        assert response.status_code == 200
+        assert len(response.json()) == 6
+        assert response.json() == expected_response

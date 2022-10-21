@@ -13,6 +13,7 @@ def category_record(*, category: Category) -> CategoryRecord:
     return CategoryRecord(
         id=category.id,
         name=category.name,
+        display_name=category.get_category_display(),
         slug=category.slug,
         description=category.description,
         ordering=category.ordering,
@@ -33,6 +34,7 @@ def category_detail_record(*, category: Category) -> CategoryDetailRecord:
     return CategoryDetailRecord(
         id=category.id,
         name=category.name,
+        display_name=category.get_category_display(),
         ordering=category.ordering,
         slug=category.slug,
         description=category.description,
@@ -56,6 +58,16 @@ def category_navigation_active_list() -> list[CategoryDetailRecord]:
 
 def _category_navigation_active_list_key() -> str:
     return "categories"
+
+
+def category_children_list() -> list[CategoryRecord]:
+    """
+    Returns a list of all child categories (leaf nodes).
+    """
+
+    categories = Category.objects.secondary().select_related("parent")
+
+    return [category_record(category=category) for category in categories]
 
 
 @cached(key=_category_navigation_active_list_key, timeout=5 * 60)
@@ -89,7 +101,9 @@ def category_parents_active_list_for_category(
     technically are parents of passed category, will be dropped.
     """
 
-    parents = category.get_ancestors().active().get_cached_trees()
+    parents = (
+        category.get_ancestors().select_related("parent").active().get_cached_trees()
+    )
 
     return [category_record(category=parent) for parent in parents]
 
@@ -104,9 +118,14 @@ def category_children_active_list_for_category(
     # Check if cached children exist. If not cached, filter
     # children to get active, as it gets all children by default.
     if hasattr(category, "_cached_children"):
-        children = category.get_children().order_by("ordering")
+        children = category.get_children().select_related("parent").order_by("ordering")
     else:
-        children = category.get_children().active().order_by("ordering")
+        children = (
+            category.get_children()
+            .select_related("parent")
+            .active()
+            .order_by("ordering")
+        )
 
     return [category_record(category=child) for child in children]
 
@@ -130,6 +149,8 @@ def category_tree_active_list_for_product(
         active_categories = prefetched_active_categories
     else:
         # If prefetched value does not exist, fall back to a queryset.
-        active_categories = product.categories.active().order_by("-mptt_level")
+        active_categories = (
+            product.categories.active().select_related("parent").order_by("-mptt_level")
+        )
 
     return [category_detail_record(category=category) for category in active_categories]

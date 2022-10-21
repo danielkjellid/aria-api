@@ -35,3 +35,12 @@ class TestPublicCategoriesUrls:
             args=["category_slug"],
         )
         assert url == "/api/v1/categories/category_slug/children/"
+
+
+class TestInternalCategoriesUrls:
+    def test_url_category_list_internal_api(self) -> None:
+        """
+        Test reverse match of category_list_internal_api endpoint.
+        """
+        url = reverse("api-1.0.0:internal-categories-index")
+        assert url == "/api/v1/internal/categories/"

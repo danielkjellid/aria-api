@@ -40,16 +40,19 @@ def pydantic_models_validation_error_exception_handler(
     Exception handler for handling schema and record validation errors.
     """
 
+    if isinstance(exc.errors, list):
+        error_msg = exc.errors
+    else:
+        error_msg = exc.errors()  # type: ignore
+
     locale = request.META.get("HTTP_ACCEPT_LANGUAGE", "en")
-    errors = translate_pydantic_validation_messages(
-        errors=exc.errors, locale=locale  # type: ignore # pylint: disable=line-too-long
-    )
+    errors = translate_pydantic_validation_messages(errors=error_msg, locale=locale)
 
     field_errors: dict[str, Any] = {}
 
     for error in errors:
         location = error["loc"]
-        field = camelize(location[len(location) - 1])
+        field = camelize(location[len(location) - 1])  # type: ignore
         field_errors[field] = error["msg"]  # type: ignore
 
     activate(locale)

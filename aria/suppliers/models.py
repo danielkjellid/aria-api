@@ -60,6 +60,6 @@ class Supplier(BaseModel, BaseImageModel):
     @property
     def country_name(self) -> str:
         """
-        Retrieve a origin country's human readable name.
+        Retrieve an origin country's human-readable name.
         """
         return self.origin_country.name

@@ -156,7 +156,7 @@ class TestAPIAuthServices:
         # db entry + 1 for looking up user.
         with django_assert_max_num_queries(2):
             token_pair = token_pair_obtain_for_unauthenticated_user(
-                email="testuser@example.com", password="supersecretpassword"
+                email="unprivileged_user@example.com", password="supersecretpassword"
             )
 
         # Assert that service creating tokens is called with correct

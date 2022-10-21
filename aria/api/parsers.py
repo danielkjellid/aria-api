@@ -20,7 +20,7 @@ class ORJSONParser(Parser):
 class CamelCaseParser(Parser):
     """
     A parser that parses data from camel case to snake case,
-    if the data sent is camel case. If not, it returnes parsed
+    if the data sent is camel case. If not, it returns parsed
     data with orjson.
     """
 

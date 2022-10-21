@@ -3,6 +3,8 @@ from typing import Any, Pattern
 
 from django.utils.translation import activate, deactivate, gettext as _
 
+from aria.api.types import PydanticErrorDict
+
 MESSAGE_TEMPLATE = {
     "field required": _("field required"),
     "none is not an allowed value": _("none is not an allowed value"),
@@ -51,22 +53,25 @@ def _translate(message: str, locale: str) -> str:
 
     # Activate locale passed by request to get translated string.
     activate(locale)
-    translated_string = _(MESSAGE_TEMPLATE[key]).replace("{}", placeholder)
+    try:
+        translated_string = _(MESSAGE_TEMPLATE[key]).replace("{}", placeholder)
+    except KeyError:
+        translated_string = key
     deactivate()
 
     return translated_string
 
 
 def translate_pydantic_validation_messages(
-    errors: list[dict[str, Any]], locale: str
-) -> list[dict[str, str]]:
+    errors: list[PydanticErrorDict] | list[dict[str, Any]], locale: str
+) -> list[PydanticErrorDict]:
     """
     Loop over all messages in validation output and translate messages.
     """
 
     return [
         {
-            **error,
+            **error,  # type: ignore
             "msg": _translate(message=error["msg"], locale=locale),
         }
         for error in errors

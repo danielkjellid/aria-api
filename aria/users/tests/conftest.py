@@ -9,7 +9,10 @@ import pytest
 
 @pytest.fixture
 def test_permissions(request):
-    return [request.param]
+    try:
+        return [request.param]
+    except AttributeError:
+        return []
 
 
 @pytest.fixture
@@ -52,27 +55,33 @@ def anonymous_user():
 
 @pytest.fixture
 def unprivileged_user(create_user_with_permissions):
-    return create_user_with_permissions([])
+    return create_user_with_permissions([], email="unprivileged_user@example.com")
 
 
 @pytest.fixture
 def unprivileged_staff_user(create_user_with_permissions):
-    return create_user_with_permissions([], is_staff=True)
+    return create_user_with_permissions(
+        [], email="unprivileged_staff_user@example.com", is_staff=True
+    )
 
 
 @pytest.fixture
 def privileged_user(create_user_with_permissions, test_permissions):
     return create_user_with_permissions(
-        test_permissions,
+        test_permissions, email="privileged_user@example.com"
     )
 
 
 @pytest.fixture
 def privileged_staff_user(create_user_with_permissions, test_permissions):
 
-    return create_user_with_permissions(test_permissions, is_staff=True)
+    return create_user_with_permissions(
+        test_permissions, email="privileged_staff_user@example.com", is_staff=True
+    )
 
 
 @pytest.fixture
 def superuser(create_user_with_permissions):
-    return create_user_with_permissions([], is_superuser=True, is_staff=True)
+    return create_user_with_permissions(
+        [], email="superuser@example.com", is_superuser=True, is_staff=True
+    )

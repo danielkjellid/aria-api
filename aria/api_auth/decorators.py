@@ -8,16 +8,13 @@ F = TypeVar("F", bound=Callable[..., Any])
 
 
 def permission_required(
-    permissions: str | list[str] | set[str], *, all_required: bool = True
+    permissions: str | list[str] | set[str], *, all_required: bool = False
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """
-    Decorator that can be used alongside the any function to check if a user
+    Decorator that can be used alongside any function to check if a user
     has a particular permission. Raises a PermissionDenied exception if user
     does not have the appropriate permission.
     """
-
-    if not isinstance(permissions, (list, set)):
-        permissions = [permissions]
 
     def decorator(func: Any) -> Callable[..., Any]:
         @functools.wraps(func)
@@ -37,6 +34,11 @@ def permission_required(
                     if not user.has_perms(permissions):
                         raise PermissionDenied(
                             _("You do not have all the required permissions.")
+                        )
+                elif isinstance(permissions, (list, set)):
+                    if not any(user.has_perm(perm) for perm in permissions):
+                        raise PermissionDenied(
+                            _("You do not have any of the required permissions.")
                         )
                 else:
                     if not user.has_perm(permissions):

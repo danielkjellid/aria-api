@@ -1,12 +1,13 @@
 import tempfile
 from decimal import Decimal
+from typing import Any
 
 from django.utils.text import slugify
 
 from aria.categories.models import Category
 from aria.categories.tests.utils import create_category
 from aria.products.enums import ProductStatus, ProductUnit
-from aria.products.models import Product, ProductOption, Size, Variant
+from aria.products.models import Color, Product, ProductOption, Shape, Size, Variant
 from aria.suppliers.models import Supplier
 from aria.suppliers.tests.utils import get_or_create_supplier
 
@@ -17,12 +18,12 @@ def create_product(
     slug: str | None = None,
     status: ProductStatus = ProductStatus.AVAILABLE,
     unit: ProductUnit = ProductUnit.PCS,
-    available_in_special_sizes: bool = True,
     category_name: str | None = None,
     category_parent: Category | None = None,
     supplier: Supplier | None = None,
     options: list[ProductOption] | None = None,
     quantity: int = 1,
+    **kwargs: dict[str, Any],
 ) -> Product | list[Product]:
     """
     Test util that creates a product instance.
@@ -42,10 +43,9 @@ def create_product(
             supplier=supplier,
             status=status,
             slug=slug or slugify(product_name),
-            search_keywords="",
             unit=unit,
-            vat_rate=0.25,
-            available_in_special_sizes=available_in_special_sizes,
+            vat_rate=kwargs.get("vat_rate", 0.25),
+            **kwargs,
         )
 
         if category_name is not None:
@@ -86,8 +86,8 @@ def create_variant(
 
 
 def create_size(
-    width: Decimal | None = Decimal(100.00),
-    height: Decimal | None = Decimal(100.00),
+    width: Decimal | None = None,
+    height: Decimal | None = None,
     depth: Decimal | None = None,
     circumference: Decimal | None = None,
 ) -> Size:
@@ -95,7 +95,7 @@ def create_size(
     Test util that creates a size instance.
     """
 
-    if width and height and depth and circumference is None:
+    if all(param is None for param in (width, height, depth, circumference)):
         raise ValueError("All args cannot be None!")
 
     size = Size.objects.create(
@@ -121,7 +121,7 @@ def create_product_option(
         variant = create_variant()
 
     if size is None:
-        size = create_size()
+        size = create_size(width=Decimal("100.0"), height=Decimal("100.0"))
 
     product_option, _created = ProductOption.objects.get_or_create(
         product=product,
@@ -132,3 +132,30 @@ def create_product_option(
     )
 
     return product_option
+
+
+def create_color(*, name: str, color_hex: str) -> Color:
+    """
+    Test util that creates a color instance.
+    """
+
+    color, _created = Color.objects.get_or_create(
+        name=name, defaults={"color_hex": color_hex}
+    )
+
+    return color
+
+
+def create_shape(*, name: str) -> Shape:
+    """
+    Test util that creates a shape instance.
+    """
+
+    shape, _created = Shape.objects.get_or_create(name=name)
+
+    with tempfile.NamedTemporaryFile(suffix=".jpg") as file:
+        shape.image = file.name
+
+    shape.save()
+
+    return shape

@@ -86,24 +86,14 @@ class Size(models.Model):
         ]
 
     def __str__(self) -> str:
-        if (
-            self.depth is not None
-            and self.width is not None
-            and self.height is not None
-            and self.circumference is None
-        ):
+        if self.depth and self.width and self.height and not self.circumference:
             return (
                 f"B{self.convert_to_self_repr(self.width)} "
                 f"x H{self.convert_to_self_repr(self.height)} "
                 f"x D{self.convert_to_self_repr(self.depth)}"
             )
 
-        if (
-            self.circumference is not None
-            and self.width is None
-            and self.height is None
-            and self.depth is None
-        ):
+        if self.circumference and not self.width and not self.height and not self.depth:
             return f"Ø{self.convert_to_self_repr(self.circumference)}"
 
         return (
@@ -265,7 +255,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
         blank=True,
         null=True,
     )
-    description = models.TextField("new description")
+    description = models.TextField("description")
     unit = models.IntegerField(
         "unit",
         choices=enums.ProductUnit.choices,
@@ -283,6 +273,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
     )
     materials = ChoiceArrayField(
         models.CharField(choices=enums.ProductMaterials.choices, max_length=50),
+        blank=True,
         null=True,
         help_text=(
             "Material product is made of. Want to add more options? "
@@ -291,6 +282,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
     )
     rooms = ChoiceArrayField(
         models.CharField(choices=enums.ProductRooms.choices, max_length=50),
+        blank=True,
         null=True,
         help_text="Rooms applicable to product.",
     )
@@ -319,12 +311,20 @@ class Product(BaseModel, BaseThumbnailImageModel):
     class Meta:
         verbose_name = "Product"
         verbose_name_plural = "Products"
-        permissions = (
-            ("has_products_list", "Can list products"),
-            ("has_product_edit", "Can edit a single product instance"),
-            ("has_product_add", "Can add a single product instance"),
-            ("has_product_delete", "Can delete a single product instance"),
-        )
+        permissions = [
+            (
+                "product.view",
+                "Has access to view limited info about a product.",
+            ),
+            (
+                "product.management",
+                "Has access to manage products (add, edit, etc).",
+            ),
+            (
+                "product.admin",
+                "Has admin access to all product functionality, including all info.",
+            ),
+        ]
 
     def __str__(self) -> str:
         return self.name
@@ -370,7 +370,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
         related options.
         """
 
-        from aria.products.selectors import product_get_price_from_options
+        from aria.products.selectors.pricing import product_get_price_from_options
 
         return product_get_price_from_options(product=self)
 

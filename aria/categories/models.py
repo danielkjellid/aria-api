@@ -86,6 +86,18 @@ class Category(MPTTModel, BaseModel, BaseHeaderImageModel, BaseListImageModel):
         )
 
     def get_category_display(self) -> str:
+        # TODO: Replace with property instead
+        """
+        Get formatted display name of category.
+        """
+        return (
+            f"{self.parent.get_category_display()} > {self.name}"
+            if self.parent
+            else self.name
+        )
+
+    @property
+    def display_name(self) -> str:
         """
         Get formatted display name of category.
         """

@@ -46,7 +46,7 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
 
         from aria.categories.models import Category
 
-        active_categories = Category.objects.active()
+        active_categories = Category.objects.active().select_related("parent")
 
         prefetched_children = Prefetch(
             "children", queryset=active_categories, to_attr="active_children"
@@ -183,7 +183,7 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         available.
         """
 
-        from_price = self.annotate(
+        from_price = self.prefetch_related("options").annotate(
             annotated_from_price=Min(
                 "options__gross_price", filter=Q(options__gross_price__gt=0)
             )

@@ -8,7 +8,7 @@ from ninja import Query, Router
 from aria.categories.models import Category
 from aria.products.schemas.filters import ProductListFilters
 from aria.products.schemas.outputs import ProductDetailOutput, ProductListOutput
-from aria.products.selectors import (
+from aria.products.selectors.core import (
     product_detail,
     product_list_by_category_from_cache,
     product_list_for_sale_from_cache,
