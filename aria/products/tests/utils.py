@@ -18,7 +18,6 @@ def create_product(
     slug: str | None = None,
     status: ProductStatus = ProductStatus.AVAILABLE,
     unit: ProductUnit = ProductUnit.PCS,
-    available_in_special_sizes: bool = True,
     category_name: str | None = None,
     category_parent: Category | None = None,
     supplier: Supplier | None = None,
