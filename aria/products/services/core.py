@@ -70,7 +70,10 @@ def product_create(
         for category in categories:
             if category.is_primary:
                 raise ApplicationError(
-                    message=_("You may only add secondary categories to products.")
+                    message=_(
+                        "You can not add a primary category to products. Tried to add %s."  # pylint: disable=C0209, line-too-long
+                        % category.name
+                    )
                 )
 
         product.categories.set(categories)

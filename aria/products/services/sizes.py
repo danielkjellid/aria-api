@@ -184,8 +184,8 @@ def _size_validate(
                 "circumferential size."
             ),
             extra={
-                "width": _("This field needs to be specified."),
-                "height": _("This field needs to be specified."),
+                "width": _("field required."),
+                "height": _("field required."),
             },
         )
 

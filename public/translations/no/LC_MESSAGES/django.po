@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-02 19:09+0200\n"
+"POT-Creation-Date: 2022-10-21 16:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,52 +17,52 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: aria/api/api.py:116
+#: aria/api/exception_handlers.py:59
 msgid "There were errors in the form. Please correct them and try again."
 msgstr ""
 "Noen av feltene i skjemaet er feil. Vennligst rett dem opp og prøv igjen."
 
-#: aria/api/api.py:177
+#: aria/api/exception_handlers.py:119 aria/users/services.py:252
 msgid "Something went wrong. Please double check the form and try again."
 msgstr "Noe gikk galt. Vennligst dobbelsjekk skjemaet og prøv igjen."
 
-#: aria/api/pagination.py:44
+#: aria/api/pagination.py:45
 msgid "The page does not exist."
 msgstr "Denne siden eksisterer ikke."
 
-#: aria/api/utils.py:7
+#: aria/api/utils.py:9 aria/products/services/product_options.py:28
 msgid "field required"
 msgstr "Dette feltet må fylles ut."
 
-#: aria/api/utils.py:8
+#: aria/api/utils.py:10
 msgid "none is not an allowed value"
 msgstr "Dette feltet kan ikke være blankt."
 
-#: aria/api/utils.py:9
+#: aria/api/utils.py:11
 msgid "value is not none"
 msgstr "Dette feltet aksepterer ikke verdier."
 
-#: aria/api_auth/authentication.py:31
+#: aria/api_auth/authentication.py:29
 msgid "No user with provided id exist."
 msgstr "Brukeren med gitt id eksisterer ikke."
 
-#: aria/api_auth/decorators.py:30
+#: aria/api_auth/decorators.py:28
 msgid "User from context is unknown."
 msgstr "Fant ikke brukeren fra kontekst."
 
-#: aria/api_auth/decorators.py:33
+#: aria/api_auth/decorators.py:31
 msgid "User is unauthenticated."
 msgstr "Brukeren er ikke autentisert."
 
-#: aria/api_auth/decorators.py:38
+#: aria/api_auth/decorators.py:36
 msgid "You do not have all the required permissions."
 msgstr "Du har ikke alle påkrevde tilganger for å utføre denne handlingen."
 
-#: aria/api_auth/decorators.py:43
+#: aria/api_auth/decorators.py:41 aria/api_auth/decorators.py:46
 msgid "You do not have any of the required permissions."
 msgstr "Du har ikke tilgang til å utføre denne handlingen."
 
-#: aria/api_auth/endpoints/public.py:45
+#: aria/api_auth/endpoints/public.py:43
 msgid "We're unable to log you in, please try again later."
 msgstr "Vi kunne ikke logge deg inn, vennligst prøv igjen senere."
 
@@ -74,53 +74,114 @@ msgstr ""
 "Feil e-postadresse eller passord. Merk at du må skille mellom store og små "
 "bokstaver."
 
-#: aria/kitchens/endpoints/public.py:48
+#: aria/core/validators.py:38
+#, python-format
+msgid "Image does not have a valid type. We only allow types ending with %s."
+msgstr "Bilde har ikke gyldig filtype. We tillter kun typene %s."
+
+#: aria/core/validators.py:47
+#, python-format
+msgid "Images should be in the range %(range)spx wide."
+msgstr "Bildets bredde burde være i intervallet %(range)spx."
+
+#: aria/core/validators.py:59
+#, python-format
+msgid "Images should be in the range %(range)spx high."
+msgstr "Bildets høyde burde være i intervallet %(range)spx."
+
+#: aria/kitchens/endpoints/public.py:41
 msgid "Kitchen does not exist"
 msgstr "Kjøkkenet eksisterer ikke."
 
-#: aria/products/endpoints/public.py:56
+#: aria/products/endpoints/public.py:70
 msgid "Product does not exist"
 msgstr "Produktet eksisterer ikke."
 
-#: aria/users/endpoints/public.py:43 aria/users/endpoints/public.py:81
-#: aria/users/services.py:177 aria/users/services.py:203
+#: aria/products/services/core.py:74 aria/products/signals.py:37
+#, fuzzy, python-format
+msgid "You can not add a primary category to products. Tried to add %s."
+msgstr ""
+"Du kan kun legge til underkategorier til produkter. Prøvde å legge til %s."
+
+#: aria/products/services/product_options.py:27
+msgid "Product must be defined."
+msgstr "Produktet må defineres."
+
+#: aria/products/services/product_options.py:32
+msgid "Either size or variant must be defined."
+msgstr "Enten størrelse eller variant må være definert."
+
+#: aria/products/services/sizes.py:160 aria/products/services/sizes.py:164
+#: aria/products/services/sizes.py:168
+msgid "Field cannot be specified when making a circumferential size"
+msgstr "Felt kan ikke spesifiseres når du lager en omkretsstørrelse"
+
+#: aria/products/services/sizes.py:173
+msgid ""
+"Width, height or depth cannot be specified when making a circumferential "
+"size."
+msgstr ""
+"Bredde, høyde eller dybde kan ikke spesifiseres når du lager en "
+"omkretsstørrelse."
+
+#: aria/products/services/sizes.py:183
+msgid ""
+"Width and height needs to be specified when not making a circumferential "
+"size."
+msgstr "Bredde og høyde må spesifiseres når du ikke lager en omkretsstørrelse."
+
+#: aria/products/services/sizes.py:187 aria/products/services/sizes.py:188
+#, fuzzy
+#| msgid "field required"
+msgid "field required."
+msgstr "Dette feltet må fylles ut."
+
+#: aria/users/endpoints/public.py:40 aria/users/endpoints/public.py:74
+#: aria/users/services.py:176 aria/users/services.py:202
 msgid "User does not exist."
 msgstr "Brukeren eksisterer ikke."
 
-#: aria/users/services.py:44 aria/users/services.py:46
-#: aria/users/services.py:47 aria/users/services.py:213
-#: aria/users/services.py:215 aria/users/services.py:216
-msgid "The two password fields didn’t match."
+#: aria/users/services.py:43 aria/users/services.py:45
+#: aria/users/services.py:46
+#, fuzzy
+#| msgid "The two password fields didn’t match."
+msgid "The two password fields didn't match."
 msgstr "De to passordene stemmer ikke overens."
 
-#: aria/users/services.py:55 aria/users/services.py:56
+#: aria/users/services.py:54 aria/users/services.py:55
 msgid "Email is already registered."
 msgstr "Denne e-postadressen er allerede registrert."
 
-#: aria/users/services.py:180
+#: aria/users/services.py:179
 msgid "Account is already verified."
 msgstr "Kontoen er allerede bekreftet."
 
-#: aria/users/services.py:185 aria/users/services.py:208
+#: aria/users/services.py:184 aria/users/services.py:207
 msgid "Token is invalid, please try again."
 msgstr "Nøkkelen er ugyldig, vennligst prøv igjen."
 
-#: aria/users/services.py:228
+#: aria/users/services.py:212 aria/users/services.py:214
+#: aria/users/services.py:215
+msgid "The two password fields didn’t match."
+msgstr "De to passordene stemmer ikke overens."
+
+#: aria/users/services.py:230
 msgid "This password is entirely numeric."
 msgstr "Dette passordet består kun av tall."
 
-#: aria/users/services.py:229
+#: aria/users/services.py:231
 msgid "This password is too common."
 msgstr "Dette passordet er for vanlig."
 
-#: aria/users/services.py:231
+#: aria/users/services.py:233
 #, python-format
 msgid "The password is too similar to the %(verbose_name)s."
 msgstr "Passordet er for likt %(verbose_name)s."
 
-#: aria/users/services.py:234
+#: aria/users/services.py:236
 #, python-format
 msgid ""
 "This password is too short. It must contain at least %(min_length)d "
 "characters."
 msgstr "Passordet er for kort. Det må inneholde minst %(min_length)d tegn."
+
