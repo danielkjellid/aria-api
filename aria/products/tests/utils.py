@@ -44,7 +44,7 @@ def create_product(
             status=status,
             slug=slug or slugify(product_name),
             unit=unit,
-            vat_rate=0.25,
+            vat_rate=kwargs.get("vat_rate", 0.25),
             **kwargs,
         )
 
