@@ -2,8 +2,9 @@ from decimal import Decimal
 
 from django.db.models import Q
 
-from aria.product_attributes.models import Shape, Size
+from aria.product_attributes.models import Color, Shape, Size
 from aria.product_attributes.records import (
+    ColorDetailRecord,
     ShapeDetailRecord,
     SizeDetailRecord,
     SizeRecord,
@@ -12,6 +13,24 @@ from aria.product_attributes.records import (
 ###################
 # Color selectors #
 ###################
+
+
+def color_list() -> list[ColorDetailRecord]:
+    """
+    Returns a list of all colors in the application.
+    """
+
+    colors = Color.objects.all().order_by("-id")
+
+    return [
+        ColorDetailRecord(
+            id=color.id,
+            name=color.name,
+            color_hex=color.color_hex,
+        )
+        for color in colors
+    ]
+
 
 ###################
 # Shape selectors #

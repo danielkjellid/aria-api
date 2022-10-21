@@ -3,14 +3,83 @@ from unittest.mock import ANY
 
 import pytest
 
-from aria.product_attributes.records import SizeDetailRecord, SizeRecord
-from aria.product_attributes.selectors import size_list_from_mapped_values
-from aria.product_attributes.tests.utils import create_size
+from aria.product_attributes.records import (
+    ColorDetailRecord,
+    ShapeDetailRecord,
+    SizeDetailRecord,
+    SizeRecord,
+)
+from aria.product_attributes.selectors import (
+    color_list,
+    shape_list,
+    size_list_from_mapped_values,
+)
+from aria.product_attributes.tests.utils import create_color, create_shape, create_size
 
 pytestmark = pytest.mark.django_db
 
 
 class TestProductAttributesSelectors:
+    def test_selector_color_list(self, django_assert_max_num_queries):
+        """
+        Test that the color_list selector returns expected output withing query limits.
+        """
+
+        color_1 = create_color(name="Test color 1", color_hex="#FFFFFF")
+        color_2 = create_color(name="Test color 2", color_hex="#CCCCCC")
+        color_3 = create_color(name="Test color 3", color_hex="#BBBBBB")
+        color_4 = create_color(name="Test color 4", color_hex="#333333")
+
+        expected_output = [
+            ColorDetailRecord(id=color_4.id, name="Test color 4", color_hex="#333333"),
+            ColorDetailRecord(id=color_3.id, name="Test color 3", color_hex="#BBBBBB"),
+            ColorDetailRecord(id=color_2.id, name="Test color 2", color_hex="#CCCCCC"),
+            ColorDetailRecord(id=color_1.id, name="Test color 1", color_hex="#FFFFFF"),
+        ]
+
+        with django_assert_max_num_queries(1):
+            colors = color_list()
+
+        assert colors == expected_output
+
+    def test_selector_shape_list(self, django_assert_max_num_queries):
+        """
+        Test that the shapes_list selector returns expected output within query limits.
+        """
+
+        shape_1 = create_shape(name="Shape 1")
+        shape_2 = create_shape(name="Shape 2")
+        shape_3 = create_shape(name="Shape 3")
+        shape_4 = create_shape(name="Shape 4")
+
+        expected_output = [
+            ShapeDetailRecord(
+                id=shape_4.id,
+                name="Shape 4",
+                image=shape_4.image.url if shape_4.image else None,
+            ),
+            ShapeDetailRecord(
+                id=shape_3.id,
+                name="Shape 3",
+                image=shape_3.image.url if shape_3.image else None,
+            ),
+            ShapeDetailRecord(
+                id=shape_2.id,
+                name="Shape 2",
+                image=shape_2.image.url if shape_2.image else None,
+            ),
+            ShapeDetailRecord(
+                id=shape_1.id,
+                name="Shape 1",
+                image=shape_1.image.url if shape_1.image else None,
+            ),
+        ]
+
+        with django_assert_max_num_queries(1):
+            shapes = shape_list()
+
+        assert shapes == expected_output
+
     def test_selector_size_list_from_mapped_values(self, django_assert_max_num_queries):
         """
         Test that the size_list_from_mapped_values correctly mappes unique values to

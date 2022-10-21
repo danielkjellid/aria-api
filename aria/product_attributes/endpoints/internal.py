@@ -4,9 +4,44 @@ from ninja import Router, Schema
 
 from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse
-from aria.product_attributes.selectors import shape_list
+from aria.product_attributes.selectors import color_list, shape_list
 
 router = Router(tags=["Product attributes"])
+
+################################
+# Color list internal endpoint #
+################################
+
+
+class ColorListInternalOutput(Schema):
+    id: int
+    name: str
+    color_hex: str
+
+
+@router.get(
+    "colors/",
+    response={
+        200: list[ColorListInternalOutput],
+        codes_40x: ExceptionResponse,
+    },
+    summary="List all colors available.",
+)
+def color_list_internal_api(
+    request: HttpRequest,
+) -> list[ColorListInternalOutput]:
+    """
+    Endpoint for getting a list of all sizes in the application.
+    """
+
+    colors = color_list()
+
+    return [ColorListInternalOutput(**color.dict()) for color in colors]
+
+
+################################
+# Shape list internal endpoint #
+################################
 
 
 class ShapeListInternalOutput(Schema):

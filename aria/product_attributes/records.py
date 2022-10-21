@@ -3,6 +3,12 @@ from decimal import Decimal
 from pydantic import BaseModel
 
 
+class ColorDetailRecord(BaseModel):
+    id: int
+    name: str
+    color_hex: str
+
+
 class SizeRecord(BaseModel):
     width: Decimal | None = None
     height: Decimal | None = None
