@@ -170,6 +170,7 @@ PROJECT_APPS = [
     "aria.front",
     "aria.kitchens",
     "aria.notes",
+    "aria.product_attributes",
     "aria.products",
     "aria.suppliers",
     "aria.users",
