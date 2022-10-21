@@ -3,8 +3,10 @@ from typing import Any
 from django.db.models import Model
 from django.db.models.signals import m2m_changed, post_delete, pre_delete
 from django.dispatch import receiver
+from django.utils.translation import gettext as _
 
 from aria.categories.models import Category
+from aria.core.exceptions import ApplicationError
 from aria.core.utils import cleanup_files_from_deleted_instance
 from aria.products.models import (
     Product,
@@ -30,9 +32,11 @@ def _validate_category(**kwargs: Any) -> None:
         categories = Category.objects.filter(id__in=categories_pk_set)
         for category in categories:
             if category.is_primary:
-                raise Exception(
-                    f"You can not add a primary category to categories. "
-                    f"Tried to add {category.name}."
+                raise ApplicationError(
+                    message=_(
+                        "You can not add a primary category to categories. Tried to "
+                        "add %s." % category.name
+                    )
                 )
 
 

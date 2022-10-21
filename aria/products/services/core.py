@@ -28,44 +28,16 @@ def product_create(
     *,
     name: str,
     supplier: Supplier,
-    status: ProductStatus = ProductStatus.AVAILABLE,
-    slug: str,
-    search_keywords: str | None = None,
-    description: str,
-    unit: ProductUnit = ProductUnit.PCS,
     category_ids: list[int] | None = None,
     shape_ids: list[int] | None = None,
     color_ids: list[int] | None = None,
-    vat_rate: Decimal | float = Decimal("0.25"),
-    available_in_special_sizes: bool = False,
     materials: list[str] | None = None,
     rooms: list[str] | None = None,
-    absorption: float | None = None,
-    display_price: bool = False,
-    can_be_purchased_online: bool = False,
-    can_be_picked_up: bool = False,
-    is_imported_from_external_source: bool = False,
     thumbnail: UploadedFile | InMemoryUploadedFile | ImageFile | None = None,
+    **kwargs: dict[str, Any],
 ) -> ProductRecord:
 
-    data = {
-        "name": name,
-        "slug": slug,
-        "supplier_id": supplier.id,
-        "status": status,
-        "search_keywords": search_keywords,
-        "description": description,
-        "unit": unit,
-        "vat_rate": Decimal(vat_rate),
-        "available_in_special_sizes": available_in_special_sizes,
-        "absorption": absorption,
-        "display_price": display_price,
-        "can_be_purchased_online": can_be_purchased_online,
-        "can_be_picked_up": can_be_picked_up,
-        "is_imported_from_external_source": is_imported_from_external_source,
-    }
-
-    product = Product(**data)
+    product = Product(name=name, supplier_id=supplier.id, **kwargs)
 
     if thumbnail is not None:
         image_validate(
@@ -118,48 +90,35 @@ def product_create(
 @transaction.atomic
 def product_update(
     *,
-    product: Product | None = None,
-    name: str,
-    supplier: Supplier,
-    status: ProductStatus = ProductStatus.AVAILABLE,
-    slug: str,
-    search_keywords: str | None = None,
-    description: str,
-    unit: ProductUnit = ProductUnit.PCS,
+    product: Product,
     category_ids: list[int] | None = None,
     shape_ids: list[int] | None = None,
     color_ids: list[int] | None = None,
-    vat_rate: Decimal | float = Decimal("0.25"),
-    available_in_special_sizes: bool = False,
     materials: list[str] | None = None,
     rooms: list[str] | None = None,
-    absorption: float | None = None,
-    display_price: bool = False,
-    can_be_purchased_online: bool = False,
-    can_be_picked_up: bool = False,
-    is_imported_from_external_source: bool = False,
     thumbnail: UploadedFile | InMemoryUploadedFile | ImageFile | None = None,
+    **kwargs: dict[str, Any],
 ) -> ProductRecord:
 
-    changes = {
-        "name": name,
-        "slug": slug,
-        "supplier_id": supplier.id,
-        "status": status,
-        "search_keywords": search_keywords,
-        "description": description,
-        "unit": unit,
-        "vat_rate": vat_rate,
-        "available_in_special_sizes": available_in_special_sizes,
-        "absorption": absorption,
-        "display_price": display_price,
-        "can_be_purchased_online": can_be_purchased_online,
-        "can_be_picked_up": can_be_picked_up,
-        "is_imported_from_external_source": is_imported_from_external_source,
-    }
-
     field_changes = []
-    non_side_effect_fields = [k for k in changes.keys()]
+    non_side_effect_fields = [
+        "name",
+        "slug",
+        "supplier",
+        "supplier_id",
+        "status",
+        "search_keywords",
+        "description",
+        "unit",
+        "vat_rate",
+        "available_in_special_sizes",
+        "absorption",
+        "display_price",
+        "can_be_purchased_online",
+        "can_be_picked_up",
+        "is_imported_from_external_source",
+        "thumbnail",
+    ]
 
     def _update_side_effect_attribute(
         *,
@@ -240,6 +199,38 @@ def product_update(
             display_property="name",
         )
 
+    if (
+        thumbnail
+        and thumbnail.name is not None
+        and thumbnail.name != product.thumbnail.name
+    ):
+
+        image_validate(
+            image=thumbnail,
+            allowed_extensions=[".jpg", ".jpeg"],
+            width_min_px=370,
+            width_max_px=450,
+            height_min_px=575,
+            height_max_px=690,
+        )
+
+        old_thumbnail_url = product.thumbnail.url if product.thumbnail else None
+        new_thumbnail_url = product.thumbnail.url if product.thumbnail else None
+
+        if product.thumbnail is not None:
+            # This change needs to be saved here for the cleanup signal to be fired.
+            product.thumbnail.delete(save=True)
+
+        product.thumbnail = thumbnail
+
+        field_changes.append(
+            {
+                "field": "thumbnail",
+                "old_value": old_thumbnail_url,
+                "new_value": new_thumbnail_url,
+            }
+        )
+
     if materials:
         product_materials = product.materials
         materials_to_add = [
@@ -272,27 +263,8 @@ def product_update(
                 }
             )
 
-    if thumbnail.name is not None and thumbnail.name != product.thumbnail.name:
-        old_thumbnail_url = product.thumbnail.url if product.thumbnail else None
-
-        if product.thumbnail is not None:
-            product.thumbnail.delete(save=True)
-
-        product.thumbnail = thumbnail
-        product.save()
-
-        new_thumbnail_url = product.thumbnail.url if product.thumbnail else None
-
-        field_changes.append(
-            {
-                "field": "thumbnail",
-                "old_value": old_thumbnail_url,
-                "new_value": new_thumbnail_url,
-            }
-        )
-
     product, has_updated, updated_fields = model_update(
-        instance=product, fields=non_side_effect_fields, data=changes
+        instance=product, fields=non_side_effect_fields, data=kwargs
     )
 
     if has_updated:

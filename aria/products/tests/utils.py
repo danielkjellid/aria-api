@@ -1,5 +1,6 @@
 import tempfile
 from decimal import Decimal
+from typing import Any
 
 from django.utils.text import slugify
 
@@ -23,6 +24,7 @@ def create_product(
     supplier: Supplier | None = None,
     options: list[ProductOption] | None = None,
     quantity: int = 1,
+    **kwargs: dict[str, Any],
 ) -> Product | list[Product]:
     """
     Test util that creates a product instance.
@@ -42,10 +44,10 @@ def create_product(
             supplier=supplier,
             status=status,
             slug=slug or slugify(product_name),
-            search_keywords="",
             unit=unit,
             vat_rate=0.25,
             available_in_special_sizes=available_in_special_sizes,
+            **kwargs,
         )
 
         if category_name is not None:
