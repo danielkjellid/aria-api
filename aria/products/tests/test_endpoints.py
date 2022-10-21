@@ -99,7 +99,7 @@ class TestPublicProductsEndpoints:
             )
         )
 
-        # Uses 7 queries:
+        # Uses 8 queries:
         # - 1 for getting products,
         # - 1 for preloading colors,
         # - 1 for preloading shapes,
@@ -107,7 +107,8 @@ class TestPublicProductsEndpoints:
         # - 1 for preloading discounts
         # - 1 for preloading options,
         # - 1 for preloading discounts for options
-        with django_assert_max_num_queries(7):
+        # - 1 for preloading option prices
+        with django_assert_max_num_queries(8):
             response = anonymous_client.get(f"{self.BASE_ENDPOINT}/")
 
         actual_response = json.loads(response.content)
@@ -203,16 +204,16 @@ class TestPublicProductsEndpoints:
             )
         )
 
-        # Uses 8 queries:
+        # Uses 9 queries:
         # - 1 for resolving category
         # - 1 for getting products,
         # - 1 for preloading colors,
         # - 1 for preloading shapes,
         # - 1 for preloading options variants,
         # - 1 for preloading discounts
-        # - 1 for preloading options,
         # - 1 for preloading discounts for options
-        with django_assert_max_num_queries(8):
+        # - 1 for preloading options
+        with django_assert_max_num_queries(9):
             response = anonymous_client.get(
                 f"{self.BASE_ENDPOINT}/category/{subcat_1.slug}/"
             )
@@ -357,7 +358,8 @@ class TestPublicProductsEndpoints:
         # - 1x for filtering categories
         # - 1x for selecting related supplier
         # - 1x for prefetching images
-        with django_assert_max_num_queries(12):
+        # - 1x for prefetching option prices
+        with django_assert_max_num_queries(13):
             response = anonymous_client.get(f"{self.BASE_ENDPOINT}/{product.slug}/")
 
         actual_response = json.loads(response.content)
@@ -458,7 +460,7 @@ class TestInternalProductsEndpoints:
             expected_status_code=403,
         )
 
-        with django_assert_max_num_queries(10):
+        with django_assert_max_num_queries(11):
             response = authenticated_privileged_staff_client.get(endpoint)
 
         assert response.status_code == 200

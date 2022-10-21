@@ -183,7 +183,7 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         available.
         """
 
-        from_price = self.annotate(
+        from_price = self.prefetch_related("options").annotate(
             annotated_from_price=Min(
                 "options__gross_price", filter=Q(options__gross_price__gt=0)
             )

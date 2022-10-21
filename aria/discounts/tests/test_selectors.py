@@ -123,8 +123,8 @@ class TestDiscountsSelectors:
                 **kwargs,
             )
 
-        # Uses 10 queries.
-        with django_assert_max_num_queries(10):
+        # Uses 11 queries.
+        with django_assert_max_num_queries(11):
             active_discounts = discount_active_list()
 
         assert len(active_discounts) == 3
@@ -337,7 +337,7 @@ class TestDiscountsSelectors:
                 **kwargs,
             )
 
-        with django_assert_max_num_queries(10):
+        with django_assert_max_num_queries(11):
             discount_active_list_from_cache()
 
         # After first hit, instances should have been added to cache.

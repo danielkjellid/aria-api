@@ -295,7 +295,7 @@ class TestPublicDiscountsEndpoints:
         ]
 
         # Uses 10 queries.
-        with django_assert_max_num_queries(10):
+        with django_assert_max_num_queries(11):
             response = anonymous_client.get(f"{self.BASE_ENDPOINT}/")
 
         actual_response = json.loads(response.content)
