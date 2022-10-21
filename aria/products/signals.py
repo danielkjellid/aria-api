@@ -34,7 +34,7 @@ def _validate_category(**kwargs: Any) -> None:
             if category.is_primary:
                 raise ApplicationError(
                     message=_(
-                        "You can not add a primary category to categories. Tried to "
+                        "You can not add a primary category to categories. Tried to "  # pylint: disable=C0209, line-too-long
                         "add %s." % category.name
                     )
                 )

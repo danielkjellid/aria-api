@@ -4,8 +4,10 @@ from typing import Any
 from django.core.files.images import ImageFile
 from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
 from django.db import transaction
+from django.db.models import QuerySet
 from django.utils.translation import gettext as _
 
+from aria.audit_logs.types import ChangeMessage
 from aria.categories.models import Category
 from aria.core.exceptions import ApplicationError
 from aria.core.models import BaseQuerySet
@@ -36,6 +38,9 @@ def product_create(
     thumbnail: UploadedFile | InMemoryUploadedFile | ImageFile | None = None,
     **kwargs: dict[str, Any],
 ) -> ProductRecord:
+    """
+    Create a new product instance.
+    """
 
     product = Product(name=name, supplier_id=supplier.id, **kwargs)
 
@@ -99,6 +104,9 @@ def product_update(
     thumbnail: UploadedFile | InMemoryUploadedFile | ImageFile | None = None,
     **kwargs: dict[str, Any],
 ) -> ProductRecord:
+    """
+    Updates an existing product instance.
+    """
 
     field_changes = []
     non_side_effect_fields = [
@@ -120,12 +128,27 @@ def product_update(
         "thumbnail",
     ]
 
+    def _create_log_message(
+        *, field: str, old_value: Any, new_value: Any
+    ) -> ChangeMessage:
+        """
+        Quickly create a log message in the expected format.
+        """
+
+        log_message: ChangeMessage = {
+            "field": field,
+            "old_value": old_value,
+            "new_value": new_value,
+        }
+
+        return log_message
+
     def _update_side_effect_attribute(
         *,
         attribute: str,
-        qs: BaseQuerySet[Product],
+        qs: BaseQuerySet[Any] | QuerySet[Any],
         ids_to_compare: list[int],
-        attribute_qs: BaseQuerySet[Any],
+        attribute_qs: BaseQuerySet[Any] | QuerySet[Any],
         display_property: str,
     ) -> None:
         """
@@ -161,15 +184,15 @@ def product_update(
             product_attribute.set(update_instances)
 
             field_changes.append(
-                {
-                    "field": attribute,
-                    "old_value": [
+                _create_log_message(
+                    field=attribute,
+                    old_value=[
                         getattr(attr, display_property) for attr in product_attribute_qs
                     ],
-                    "new_value": [
+                    new_value=[
                         getattr(attr, display_property) for attr in update_instances
                     ],
-                }
+                )
             )
 
     if category_ids:
@@ -221,15 +244,15 @@ def product_update(
             # This change needs to be saved here for the cleanup signal to be fired.
             product.thumbnail.delete(save=True)
 
-        product.thumbnail = thumbnail
+            product.thumbnail = thumbnail
 
-        field_changes.append(
-            {
-                "field": "thumbnail",
-                "old_value": old_thumbnail_url,
-                "new_value": new_thumbnail_url,
-            }
-        )
+            field_changes.append(
+                _create_log_message(
+                    field="thumbnail",
+                    old_value=old_thumbnail_url,
+                    new_value=new_thumbnail_url,
+                )
+            )
 
     if materials:
         product_materials = product.materials
@@ -241,11 +264,11 @@ def product_update(
             product.materials = materials_to_add
 
             field_changes.append(
-                {
-                    "field": "materials",
-                    "old_value": product_materials,
-                    "new_value": materials_to_add,
-                }
+                _create_log_message(
+                    field="materials",
+                    old_value=product_materials,
+                    new_value=materials_to_add,
+                )
             )
 
     if rooms:
@@ -256,11 +279,9 @@ def product_update(
             product.rooms = rooms_to_add
 
             field_changes.append(
-                {
-                    "field": "rooms",
-                    "old_value": product_rooms,
-                    "new_value": rooms_to_add,
-                }
+                _create_log_message(
+                    field="rooms", old_value=product_rooms, new_value=rooms_to_add
+                )
             )
 
     product, has_updated, updated_fields = model_update(

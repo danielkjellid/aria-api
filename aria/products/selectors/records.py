@@ -37,7 +37,7 @@ def product_record(product: Product) -> ProductRecord:
         search_keywords=product.search_keywords,
         description=product.description,
         unit=ProductUnit(product.unit).label,
-        vat_rate=product.vat_rate,
+        vat_rate=Decimal(product.vat_rate),
         available_in_special_sizes=product.available_in_special_sizes,
         absorption=product.absorption,
         is_imported_from_external_source=product.is_imported_from_external_source,
