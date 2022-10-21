@@ -1,12 +1,25 @@
 from decimal import Decimal
 
-from aria.product_attributes.models import Size
-from aria.product_attributes.records import SizeDetailRecord, SizeRecord
+from django.core.files.images import ImageFile
+from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
+from django.utils.text import slugify
+
+from aria.core.validators import image_validate
+from aria.product_attributes.models import Size, Variant
+from aria.product_attributes.records import (
+    SizeDetailRecord,
+    SizeRecord,
+    VariantDetailRecord,
+)
 from aria.product_attributes.selectors import size_list_from_mapped_values
 from aria.product_attributes.utils import (
     size_clean_and_validate_value,
     size_clean_and_validate_values,
 )
+
+#################
+# Size services #
+#################
 
 
 def size_create(
@@ -131,4 +144,47 @@ def size_get_or_create(
         height=size.height,
         depth=size.depth,
         circumference=size.circumference,
+    )
+
+
+####################
+# Variant services #
+####################
+
+
+def variant_create(
+    *,
+    name: str,
+    thumbnail: ImageFile | InMemoryUploadedFile | UploadedFile | None = None,
+    is_standard: bool = False,
+) -> VariantDetailRecord:
+    """
+    Creates a Variant with given fields.
+    """
+
+    assert name, "Name is required to create a variant."
+
+    new_variant = Variant.objects.create(name=name.title(), is_standard=is_standard)
+
+    # Variants needs an id to save files because the folder structure is
+    # <id>-<name>/file, therefore we have to create the variant first,
+    # then save the thumbnail file.
+    if thumbnail:
+        image_validate(
+            image=thumbnail,
+            allowed_extensions=[".jpg", ".jpeg"],
+            width_min_px=370,
+            width_max_px=450,
+            height_min_px=575,
+            height_max_px=690,
+        )
+
+        new_variant.thumbnail.save(f"{slugify(new_variant.name)}", thumbnail)
+
+    return VariantDetailRecord(
+        id=new_variant.id,
+        name=new_variant.name,
+        image_url=new_variant.image.url if new_variant.image else None,
+        thumbnail_url=new_variant.thumbnail.url if new_variant.thumbnail else None,
+        is_standard=new_variant.is_standard,
     )

@@ -1,7 +1,7 @@
 import tempfile
 from decimal import Decimal
 
-from aria.product_attributes.models import Color, Shape, Size
+from aria.product_attributes.models import Color, Shape, Size, Variant
 
 
 def create_color(*, name: str, color_hex: str) -> Color:
@@ -49,3 +49,20 @@ def create_size(
     )
 
     return size
+
+
+def create_variant(
+    *, name: str = "Example variant", is_standard: bool = False
+) -> Variant:
+    """
+    Test util that creates a variant instance.
+    """
+
+    variant = Variant.objects.create(name=name, is_standard=is_standard)
+
+    with tempfile.NamedTemporaryFile(suffix=".jpg") as file:
+        variant.image = file.name
+
+    variant.save()
+
+    return variant

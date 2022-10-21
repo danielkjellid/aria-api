@@ -8,6 +8,7 @@ from aria.product_attributes.services import (
     size_bulk_create,
     size_create,
     size_get_or_create,
+    variant_create,
 )
 from aria.product_attributes.tests.utils import create_size
 
@@ -107,3 +108,18 @@ class TestProductAttributesServices:
 
         assert non_existent_size is not None
         assert Size.objects.count() == sizes_in_db_count + 1
+
+    def test_service_variant_create(self, django_assert_max_num_queries):
+        """
+        Test that variants are created using the variant_create service.
+        """
+
+        with django_assert_max_num_queries(1):
+            new_variant = variant_create(
+                name="New Variant",
+            )
+
+        assert new_variant.name == "New Variant"
+
+        with pytest.raises(AssertionError):
+            variant_create(name="")

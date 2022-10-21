@@ -9,6 +9,12 @@ class ColorDetailRecord(BaseModel):
     color_hex: str
 
 
+class ShapeDetailRecord(BaseModel):
+    id: int
+    name: str
+    image: str | None
+
+
 class SizeRecord(BaseModel):
     width: Decimal | None = None
     height: Decimal | None = None
@@ -25,7 +31,9 @@ class SizeDetailRecord(BaseModel):
     circumference: Decimal | None = None
 
 
-class ShapeDetailRecord(BaseModel):
+class VariantDetailRecord(BaseModel):
     id: int
     name: str
-    image: str | None
+    image_url: str | None
+    thumbnail_url: str | None
+    is_standard: bool = False

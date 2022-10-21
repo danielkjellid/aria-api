@@ -2,12 +2,13 @@ from decimal import Decimal
 
 from django.db.models import Q
 
-from aria.product_attributes.models import Color, Shape, Size
+from aria.product_attributes.models import Color, Shape, Size, Variant
 from aria.product_attributes.records import (
     ColorDetailRecord,
     ShapeDetailRecord,
     SizeDetailRecord,
     SizeRecord,
+    VariantDetailRecord,
 )
 
 ###################
@@ -104,3 +105,22 @@ def size_list_from_mapped_values(values: list[SizeRecord]) -> list[SizeDetailRec
 #####################
 # Variant selectors #
 #####################
+
+
+def variant_list() -> list[VariantDetailRecord]:
+    """
+    Returns a list of all variants in the application.
+    """
+
+    variants = Variant.objects.all().order_by("-id")
+
+    return [
+        VariantDetailRecord(
+            id=variant.id,
+            name=variant.name,
+            is_standard=variant.is_standard,
+            image_url=variant.image.url if variant.image else None,
+            thumbnail_url=variant.thumbnail.url if variant.thumbnail else None,
+        )
+        for variant in variants
+    ]

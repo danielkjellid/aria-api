@@ -7,7 +7,7 @@ from aria.product_attributes.utils import _size_validate, size_clean_and_validat
 
 
 class TestProductAttributesUtils:
-    def test_service__size_validate(self):
+    def test_util__size_validate(self):
         """
         Test that the _size_validate util raises expected exceptions.
         """
@@ -54,7 +54,7 @@ class TestProductAttributesUtils:
                 circumference=None,
             )
 
-    def test_service_size_clean_and_validate_value(self):
+    def test_util_size_clean_and_validate_value(self):
         """
         Test that the size_clean_and_validate util clean's values appropriately.
         Validation testing is handled in the test above.

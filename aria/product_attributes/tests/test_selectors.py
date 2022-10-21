@@ -8,13 +8,20 @@ from aria.product_attributes.records import (
     ShapeDetailRecord,
     SizeDetailRecord,
     SizeRecord,
+    VariantDetailRecord,
 )
 from aria.product_attributes.selectors import (
     color_list,
     shape_list,
     size_list_from_mapped_values,
+    variant_list,
 )
-from aria.product_attributes.tests.utils import create_color, create_shape, create_size
+from aria.product_attributes.tests.utils import (
+    create_color,
+    create_shape,
+    create_size,
+    create_variant,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -189,3 +196,50 @@ class TestProductAttributesSelectors:
         # is not returned twice.
         assert len(mapped_values) == len(size_values_to_map) - 1
         assert mapped_values == expected_output
+
+    def test_selector_variant_list(self, django_assert_max_num_queries):
+        """
+        Test that the variant_list selector returns expected output withing query
+        limits.
+        """
+
+        variant_1 = create_variant(name="Variant 1", is_standard=False)
+        variant_2 = create_variant(name="Variant 2", is_standard=False)
+        variant_3 = create_variant(name="Variant 3", is_standard=True)
+        variant_4 = create_variant(name="Variant 4", is_standard=False)
+
+        expected_output = [
+            VariantDetailRecord(
+                id=variant_4.id,
+                name="Variant 4",
+                is_standard=False,
+                image_url=variant_4.image.url if variant_4.image else None,
+                thumbnail_url=variant_4.thumbnail.url if variant_4.thumbnail else None,
+            ),
+            VariantDetailRecord(
+                id=variant_3.id,
+                name="Variant 3",
+                is_standard=True,
+                image_url=variant_3.image.url if variant_3.image else None,
+                thumbnail_url=variant_3.thumbnail.url if variant_3.thumbnail else None,
+            ),
+            VariantDetailRecord(
+                id=variant_2.id,
+                name="Variant 2",
+                is_standard=False,
+                image_url=variant_2.image.url if variant_2.image else None,
+                thumbnail_url=variant_2.thumbnail.url if variant_2.thumbnail else None,
+            ),
+            VariantDetailRecord(
+                id=variant_1.id,
+                name="Variant 1",
+                is_standard=False,
+                image_url=variant_1.image.url if variant_1.image else None,
+                thumbnail_url=variant_1.thumbnail.url if variant_1.thumbnail else None,
+            ),
+        ]
+
+        with django_assert_max_num_queries(1):
+            variants = variant_list()
+
+        assert variants == expected_output
