@@ -45,7 +45,6 @@ def create_product(
             slug=slug or slugify(product_name),
             unit=unit,
             vat_rate=0.25,
-            available_in_special_sizes=available_in_special_sizes,
             **kwargs,
         )
 
