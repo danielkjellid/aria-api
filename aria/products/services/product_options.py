@@ -4,10 +4,11 @@ from typing import Any
 from django.utils.translation import gettext as _
 
 from aria.core.exceptions import ApplicationError
+from aria.product_attributes.services import size_bulk_create
+from aria.product_attributes.utils import size_clean_and_validate_value
 from aria.products.enums import ProductStatus
 from aria.products.models import Product, ProductOption, Size, Variant
 from aria.products.records import OptionRecord, ProductOptionRecord
-from aria.products.services.sizes import size_bulk_create, size_clean_and_validate_value
 
 
 def product_option_create(

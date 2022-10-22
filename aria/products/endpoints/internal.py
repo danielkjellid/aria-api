@@ -7,6 +7,7 @@ from aria.api.decorators import paginate
 from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse
 from aria.api_auth.decorators import permission_required
+from aria.product_attributes.services import size_get_or_create
 from aria.products.enums import ProductStatus
 from aria.products.models import Product, Size, Variant
 from aria.products.schemas.filters import ProductListFilters
@@ -18,7 +19,6 @@ from aria.products.services.product_options import (
     product_option_create,
     product_options_bulk_create_options_and_sizes,
 )
-from aria.products.services.sizes import size_get_or_create
 from aria.suppliers.models import Supplier
 
 router = Router(tags=["Products"])
