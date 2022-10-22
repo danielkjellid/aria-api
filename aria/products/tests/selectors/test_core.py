@@ -5,6 +5,7 @@ from django.core.cache import cache
 import pytest
 
 from aria.categories.tests.utils import create_category
+from aria.product_attributes.records import VariantDetailRecord
 from aria.products.enums import ProductStatus
 from aria.products.models import Product
 from aria.products.records import (
@@ -12,7 +13,6 @@ from aria.products.records import (
     ProductListRecord,
     ProductShapeRecord,
     ProductSupplierRecord,
-    ProductVariantRecord,
 )
 from aria.products.selectors.core import (
     product_detail,
@@ -394,7 +394,7 @@ class TestProductCoreSelectors:
                     for shape in product_2.shapes.all()
                 ],
                 variants=[
-                    ProductVariantRecord(
+                    VariantDetailRecord(
                         id=option.variant.id,
                         name=option.variant.name,
                         image=option.variant.image.url
@@ -438,7 +438,7 @@ class TestProductCoreSelectors:
                     for shape in product_1.shapes.all()
                 ],
                 variants=[
-                    ProductVariantRecord(
+                    VariantDetailRecord(
                         id=option.variant.id,
                         name=option.variant.name,
                         image=option.variant.image.url
@@ -513,7 +513,7 @@ class TestProductCoreSelectors:
                     for shape in product_1.shapes.all()
                 ],
                 variants=[
-                    ProductVariantRecord(
+                    VariantDetailRecord(
                         id=option.variant.id,
                         name=option.variant.name,
                         image=option.variant.image.url

@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from aria.product_attributes.records import VariantDetailRecord
 from aria.products.enums import ProductUnit
 from aria.products.models import Product
 from aria.products.records import (
@@ -8,7 +9,6 @@ from aria.products.records import (
     ProductRecord,
     ProductShapeRecord,
     ProductSupplierRecord,
-    ProductVariantRecord,
 )
 from aria.products.selectors.discounts import product_get_active_discount
 from aria.products.selectors.pricing import product_get_price_from_options
@@ -95,7 +95,7 @@ def product_list_record(product: Product) -> ProductListRecord:
             for shape in product.shapes.all()
         ],
         variants=[
-            ProductVariantRecord(
+            VariantDetailRecord(
                 id=option.variant.id,
                 name=option.variant.name,
                 image=option.variant.image.url if option.variant.image else None,

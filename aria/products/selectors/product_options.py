@@ -1,13 +1,10 @@
 from django.db.models import Prefetch
 
 from aria.discounts.models import Discount
+from aria.product_attributes.records import SizeDetailRecord, VariantDetailRecord
 from aria.products.enums import ProductStatus
 from aria.products.models import Product
-from aria.products.records import (
-    ProductOptionDetailRecord,
-    ProductSizeRecord,
-    ProductVariantRecord,
-)
+from aria.products.records import ProductOptionDetailRecord
 from aria.products.selectors.discounts import product_option_get_active_discount
 
 
@@ -50,7 +47,7 @@ def product_options_list_for_product(
             discount=product_option_get_active_discount(product_option=option),
             gross_price=option.gross_price,
             status=option.status_display,
-            variant=ProductVariantRecord(
+            variant=VariantDetailRecord(
                 id=option.variant.id,
                 name=option.variant.name,
                 image=option.variant.image.url if option.variant.image else None,
@@ -61,7 +58,7 @@ def product_options_list_for_product(
             )
             if option.variant
             else None,
-            size=ProductSizeRecord(
+            size=SizeDetailRecord(
                 id=option.size.id,
                 width=option.size.width,
                 height=option.size.height,

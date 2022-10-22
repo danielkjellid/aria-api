@@ -4,6 +4,11 @@ from pydantic import BaseModel
 
 from aria.categories.records import CategoryDetailRecord
 from aria.core.records import BaseArrayFieldLabelRecord, BaseHeaderImageRecord
+from aria.product_attributes.records import (
+    SizeDetailRecord,
+    SizeRecord,
+    VariantDetailRecord,
+)
 from aria.products.enums import ProductStatus
 
 
@@ -18,14 +23,6 @@ class ProductColorRecord(BaseModel):
     id: int
     name: str
     color_hex: str
-
-
-class ProductVariantRecord(BaseModel):
-    id: int
-    name: str
-    image: str | None
-    thumbnail: str | None
-    is_standard: bool = False
 
 
 class ProductSizeRecord(BaseModel):
@@ -53,13 +50,6 @@ class ProductOptionRecord(BaseModel):
     size_id: int | None
 
 
-class SizeRecord(BaseModel):
-    width: Decimal | None = None
-    height: Decimal | None = None
-    depth: Decimal | None = None
-    circumference: Decimal | None = None
-
-
 class OptionRecord(BaseModel):
     gross_price: Decimal
     status: ProductStatus
@@ -72,8 +62,8 @@ class ProductOptionDetailRecord(BaseModel):
     discount: ProductDiscountRecord | None
     gross_price: Decimal
     status: str
-    variant: ProductVariantRecord | None
-    size: ProductSizeRecord | None
+    variant: VariantDetailRecord | None
+    size: SizeDetailRecord | None
 
 
 class ProductFileRecord(BaseModel):
@@ -141,4 +131,4 @@ class ProductListRecord(BaseModel):
     rooms: list[BaseArrayFieldLabelRecord]
     colors: list[ProductColorRecord]
     shapes: list[ProductShapeRecord]
-    variants: list[ProductVariantRecord]
+    variants: list[VariantDetailRecord]
