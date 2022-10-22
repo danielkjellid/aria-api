@@ -10,7 +10,7 @@ class ColorQuerySet(BaseQuerySet["models.Color"]):
     pass
 
 
-class VariantQuerySet(BaseQuerySet["models.Variant"]):
+class ShapeQuerySet(BaseQuerySet["models.Shape"]):
     pass
 
 
@@ -18,5 +18,5 @@ class SizeQuerySet(BaseQuerySet["models.Size"]):
     pass
 
 
-class ShapeQuerySet(BaseQuerySet["models.Shape"]):
+class VariantQuerySet(BaseQuerySet["models.Variant"]):
     pass
