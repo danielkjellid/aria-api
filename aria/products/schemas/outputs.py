@@ -12,8 +12,8 @@ class ProductSupplierOutput(Schema):
 class ProductVariantOutput(Schema):
     id: int
     name: str
-    image: str | None
-    thumbnail: str | None
+    image_url: str | None
+    thumbnail_url: str | None
 
 
 class ProductSizeOutput(Schema):
@@ -53,7 +53,7 @@ class ProductColorOutput(Schema):
 class ProductShapeOutput(Schema):
     id: int
     name: str
-    image: str | None
+    image_url: str | None
 
 
 class ProductFileOutput(Schema):
