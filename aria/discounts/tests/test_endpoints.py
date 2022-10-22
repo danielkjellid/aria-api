@@ -95,7 +95,7 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": shape.id,
                                 "name": shape.name,
-                                "image": shape.image.id,
+                                "imageUrl": shape.image.id,
                             }
                             for shape in product_4.shapes.all()
                         ],
@@ -105,10 +105,10 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "thumbnail": option.variant.thumbnail.url
+                                "thumbnailUrl": option.variant.thumbnail.url
                                 if option.variant.thumbnail
                                 else None,
-                                "image": option.variant.image.id
+                                "imageUrl": option.variant.image.id
                                 if option.variant.image
                                 else None,
                             }
@@ -150,7 +150,7 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": shape.id,
                                 "name": shape.name,
-                                "image": shape.image.id,
+                                "imageUrl": shape.image.id,
                             }
                             for shape in product_2_option_1.product.shapes.all()
                         ],
@@ -160,10 +160,10 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "thumbnail": option.variant.thumbnail.url
+                                "thumbnailUrl": option.variant.thumbnail.url
                                 if option.variant.thumbnail
                                 else None,
-                                "image": option.variant.image.id
+                                "imageUrl": option.variant.image.id
                                 if option.variant.image
                                 else None,
                             }
@@ -205,7 +205,7 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": shape.id,
                                 "name": shape.name,
-                                "image": shape.image.id,
+                                "imageUrl": shape.image.id,
                             }
                             for shape in product_1.shapes.all()
                         ],
@@ -215,10 +215,10 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "thumbnail": option.variant.thumbnail.url
+                                "thumbnailUrl": option.variant.thumbnail.url
                                 if option.variant.thumbnail
                                 else None,
-                                "image": option.variant.image.id
+                                "imageUrl": option.variant.image.id
                                 if option.variant.image
                                 else None,
                             }
@@ -269,7 +269,7 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": shape.id,
                                 "name": shape.name,
-                                "image": shape.image.id,
+                                "imageUrl": shape.image.id,
                             }
                             for shape in product_3.shapes.all()
                         ],
@@ -279,10 +279,10 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "thumbnail": option.variant.thumbnail.url
+                                "thumbnailUrl": option.variant.thumbnail.url
                                 if option.variant.thumbnail
                                 else None,
-                                "image": option.variant.image.id
+                                "imageUrl": option.variant.image.id
                                 if option.variant.image
                                 else None,
                             }

@@ -73,7 +73,7 @@ class TestPublicProductsEndpoints:
                             {
                                 "id": shape.id,
                                 "name": shape.name,
-                                "image": shape.image.id,
+                                "imageUrl": shape.image.id,
                             }
                             for shape in product.shapes.all()
                         ],
@@ -83,10 +83,10 @@ class TestPublicProductsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "thumbnail": option.variant.thumbnail.url
+                                "thumbnailUrl": option.variant.thumbnail.url
                                 if option.variant.thumbnail
                                 else None,
-                                "image": option.variant.image.id
+                                "imageUrl": option.variant.image.id
                                 if option.variant.image
                                 else None,
                             }
@@ -178,7 +178,7 @@ class TestPublicProductsEndpoints:
                             {
                                 "id": shape.id,
                                 "name": shape.name,
-                                "image": shape.image.id,
+                                "imageUrl": shape.image.id,
                             }
                             for shape in product.shapes.all()
                         ],
@@ -188,10 +188,10 @@ class TestPublicProductsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "thumbnail": option.variant.thumbnail.url
+                                "thumbnailUrl": option.variant.thumbnail.url
                                 if option.variant.thumbnail
                                 else None,
-                                "image": option.variant.image.id
+                                "imageUrl": option.variant.image.id
                                 if option.variant.image
                                 else None,
                             }
@@ -305,8 +305,8 @@ class TestPublicProductsEndpoints:
                     "variant": {
                         "id": option_1.variant.id,
                         "name": option_1.variant.name,
-                        "image": None,
-                        "thumbnail": None,
+                        "imageUrl": None,
+                        "thumbnailUrl": None,
                     },
                     "size": {
                         "id": option_1.size.id,
@@ -321,8 +321,8 @@ class TestPublicProductsEndpoints:
                     "variant": {
                         "id": option_2.variant.id,
                         "name": option_2.variant.name,
-                        "image": None,
-                        "thumbnail": None,
+                        "imageUrl": None,
+                        "thumbnailUrl": None,
                     },
                     "size": {
                         "id": option_2.size.id,
