@@ -41,7 +41,7 @@ _SizeManager = models.Manager.from_queryset(SizeQuerySet)
 _ShapeManager = models.Manager.from_queryset(ShapeQuerySet)
 
 
-class Shape(BaseImageModel):
+class Shape(BaseImageModel, BaseModel):
     """
     Shapes a product might exist in.
     """
@@ -151,7 +151,7 @@ class Size(BaseModel):
 _VariantManager = models.Manager.from_queryset(VariantQuerySet)
 
 
-class Variant(BaseThumbnailImageModel):
+class Variant(BaseThumbnailImageModel, BaseModel):
     """
     A variant is another version of the product, which is not strictly connected to
     filtering attributes.
