@@ -7,14 +7,13 @@ from aria.categories.selectors import category_tree_active_list_for_product
 from aria.core.decorators import cached
 from aria.core.models import BaseQuerySet
 from aria.core.selectors import base_header_image_record
+from aria.product_attributes.records import ColorDetailRecord, ShapeDetailRecord
 from aria.products.filters import ProductSearchFilter
 from aria.products.models import Product
 from aria.products.records import (
-    ProductColorRecord,
     ProductDetailRecord,
     ProductFileRecord,
     ProductListRecord,
-    ProductShapeRecord,
 )
 from aria.products.schemas.filters import ProductListFilters
 from aria.products.selectors.pricing import product_get_price_from_options
@@ -62,11 +61,11 @@ def product_detail(
         can_be_picked_up=product.can_be_picked_up,
         can_be_purchased_online=product.can_be_purchased_online,
         colors=[
-            ProductColorRecord(id=color.id, name=color.name, color_hex=color.color_hex)
+            ColorDetailRecord(id=color.id, name=color.name, color_hex=color.color_hex)
             for color in product.colors.all()
         ],
         shapes=[
-            ProductShapeRecord(
+            ShapeDetailRecord(
                 id=shape.id,
                 name=shape.name,
                 image=shape.image.url if shape.image else None,

@@ -5,15 +5,14 @@ from django.core.cache import cache
 import pytest
 
 from aria.categories.tests.utils import create_category
-from aria.product_attributes.records import VariantDetailRecord
+from aria.product_attributes.records import (
+    ColorDetailRecord,
+    ShapeDetailRecord,
+    VariantDetailRecord,
+)
 from aria.products.enums import ProductStatus
 from aria.products.models import Product
-from aria.products.records import (
-    ProductColorRecord,
-    ProductListRecord,
-    ProductShapeRecord,
-    ProductSupplierRecord,
-)
+from aria.products.records import ProductListRecord, ProductSupplierRecord
 from aria.products.selectors.core import (
     product_detail,
     product_list_by_category,
@@ -382,13 +381,13 @@ class TestProductCoreSelectors:
                 materials=product_2.materials_display,
                 rooms=product_2.rooms_display,
                 colors=[
-                    ProductColorRecord(
+                    ColorDetailRecord(
                         id=color.id, name=color.name, color_hex=color.color_hex
                     )
                     for color in product_2.colors.all()
                 ],
                 shapes=[
-                    ProductShapeRecord(
+                    ShapeDetailRecord(
                         id=shape.id, name=shape.name, image=shape.image.url
                     )
                     for shape in product_2.shapes.all()
@@ -426,13 +425,13 @@ class TestProductCoreSelectors:
                 materials=product_1.materials_display,
                 rooms=product_1.rooms_display,
                 colors=[
-                    ProductColorRecord(
+                    ColorDetailRecord(
                         id=color.id, name=color.name, color_hex=color.color_hex
                     )
                     for color in product_1.colors.all()
                 ],
                 shapes=[
-                    ProductShapeRecord(
+                    ShapeDetailRecord(
                         id=shape.id, name=shape.name, image=shape.image.url
                     )
                     for shape in product_1.shapes.all()
@@ -501,13 +500,13 @@ class TestProductCoreSelectors:
                 materials=product_1.materials_display,
                 rooms=product_1.rooms_display,
                 colors=[
-                    ProductColorRecord(
+                    ColorDetailRecord(
                         id=color.id, name=color.name, color_hex=color.color_hex
                     )
                     for color in product_1.colors.all()
                 ],
                 shapes=[
-                    ProductShapeRecord(
+                    ShapeDetailRecord(
                         id=shape.id, name=shape.name, image=shape.image.url
                     )
                     for shape in product_1.shapes.all()

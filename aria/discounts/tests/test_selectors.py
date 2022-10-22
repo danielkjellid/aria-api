@@ -12,13 +12,15 @@ from aria.discounts.selectors import (
     discount_active_list_from_cache,
 )
 from aria.discounts.tests.utils import create_discount
-from aria.product_attributes.records import VariantDetailRecord
+from aria.product_attributes.records import (
+    ColorDetailRecord,
+    ShapeDetailRecord,
+    VariantDetailRecord,
+)
 from aria.products.models import Product
 from aria.products.records import (
-    ProductColorRecord,
     ProductDiscountRecord,
     ProductListRecord,
-    ProductShapeRecord,
     ProductSupplierRecord,
 )
 from aria.products.tests.utils import create_product, create_product_option
@@ -94,13 +96,13 @@ class TestDiscountsSelectors:
                 materials=product.materials_display,
                 rooms=product.rooms_display,
                 colors=[
-                    ProductColorRecord(
+                    ColorDetailRecord(
                         id=color.id, name=color.name, color_hex=color.color_hex
                     )
                     for color in product.colors.all()
                 ],
                 shapes=[
-                    ProductShapeRecord(
+                    ShapeDetailRecord(
                         id=shape.id, name=shape.name, image=shape.image.url
                     )
                     for shape in product.shapes.all()
@@ -308,13 +310,13 @@ class TestDiscountsSelectors:
                 materials=product.materials_display,
                 rooms=product.rooms_display,
                 colors=[
-                    ProductColorRecord(
+                    ColorDetailRecord(
                         id=color.id, name=color.name, color_hex=color.color_hex
                     )
                     for color in product.colors.all()
                 ],
                 shapes=[
-                    ProductShapeRecord(
+                    ShapeDetailRecord(
                         id=shape.id, name=shape.name, image=shape.image.url
                     )
                     for shape in product.shapes.all()

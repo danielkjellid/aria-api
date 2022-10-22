@@ -1,13 +1,15 @@
 from decimal import Decimal
 
-from aria.product_attributes.records import VariantDetailRecord
+from aria.product_attributes.records import (
+    ColorDetailRecord,
+    ShapeDetailRecord,
+    VariantDetailRecord,
+)
 from aria.products.enums import ProductUnit
 from aria.products.models import Product
 from aria.products.records import (
-    ProductColorRecord,
     ProductListRecord,
     ProductRecord,
-    ProductShapeRecord,
     ProductSupplierRecord,
 )
 from aria.products.selectors.discounts import product_get_active_discount
@@ -87,11 +89,11 @@ def product_list_record(product: Product) -> ProductListRecord:
         materials=product.materials_display,
         rooms=product.rooms_display,
         colors=[
-            ProductColorRecord(id=color.id, name=color.name, color_hex=color.color_hex)
+            ColorDetailRecord(id=color.id, name=color.name, color_hex=color.color_hex)
             for color in product.colors.all()
         ],
         shapes=[
-            ProductShapeRecord(id=shape.id, name=shape.name, image=shape.image.url)
+            ShapeDetailRecord(id=shape.id, name=shape.name, image=shape.image.url)
             for shape in product.shapes.all()
         ],
         variants=[

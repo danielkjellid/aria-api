@@ -5,6 +5,8 @@ from pydantic import BaseModel
 from aria.categories.records import CategoryDetailRecord
 from aria.core.records import BaseArrayFieldLabelRecord, BaseHeaderImageRecord
 from aria.product_attributes.records import (
+    ColorDetailRecord,
+    ShapeDetailRecord,
     SizeDetailRecord,
     SizeRecord,
     VariantDetailRecord,
@@ -17,21 +19,6 @@ class ProductSupplierRecord(BaseModel):
     name: str
     origin_country: str
     origin_country_flag: str
-
-
-class ProductColorRecord(BaseModel):
-    id: int
-    name: str
-    color_hex: str
-
-
-class ProductSizeRecord(BaseModel):
-    id: int
-    width: Decimal | None = None
-    height: Decimal | None = None
-    depth: Decimal | None = None
-    circumference: Decimal | None = None
-    name: str
 
 
 class ProductDiscountRecord(BaseModel):
@@ -79,12 +66,6 @@ class ProductImageRecord(BaseModel):
     image_url: str | None
 
 
-class ProductShapeRecord(BaseModel):
-    id: int
-    name: str
-    image: str | None
-
-
 class ProductRecord(BaseModel):
     id: int
     name: str
@@ -108,8 +89,8 @@ class ProductDetailRecord(ProductRecord):
     display_price: bool
     can_be_picked_up: bool
     can_be_purchased_online: bool
-    colors: list[ProductColorRecord] = []
-    shapes: list[ProductShapeRecord] = []
+    colors: list[ColorDetailRecord] = []
+    shapes: list[ShapeDetailRecord] = []
     categories: list[CategoryDetailRecord]
     options: list[ProductOptionDetailRecord] = []
     images: list[BaseHeaderImageRecord] = []
@@ -129,6 +110,6 @@ class ProductListRecord(BaseModel):
     discount: ProductDiscountRecord | None
     materials: list[BaseArrayFieldLabelRecord]
     rooms: list[BaseArrayFieldLabelRecord]
-    colors: list[ProductColorRecord]
-    shapes: list[ProductShapeRecord]
+    colors: list[ColorDetailRecord]
+    shapes: list[ShapeDetailRecord]
     variants: list[VariantDetailRecord]

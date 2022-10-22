@@ -5,13 +5,15 @@ from django.db.models import Prefetch
 from aria.core.decorators import cached
 from aria.discounts.models import Discount
 from aria.discounts.records import DiscountRecord
-from aria.product_attributes.records import VariantDetailRecord
+from aria.product_attributes.records import (
+    ColorDetailRecord,
+    ShapeDetailRecord,
+    VariantDetailRecord,
+)
 from aria.products.models import Product, ProductOption
 from aria.products.records import (
-    ProductColorRecord,
     ProductDiscountRecord,
     ProductListRecord,
-    ProductShapeRecord,
     ProductSupplierRecord,
 )
 from aria.products.selectors.core import product_list_for_sale_for_qs
@@ -180,13 +182,13 @@ def discount_active_list() -> list[DiscountRecord]:
                     materials=product.materials_display,
                     rooms=product.rooms_display,
                     colors=[
-                        ProductColorRecord(
+                        ColorDetailRecord(
                             id=color.id, name=color.name, color_hex=color.color_hex
                         )
                         for color in product.colors.all()
                     ],
                     shapes=[
-                        ProductShapeRecord(
+                        ShapeDetailRecord(
                             id=shape.id, name=shape.name, image=shape.image.url
                         )
                         for shape in product.shapes.all()
