@@ -463,8 +463,22 @@ class ProductOption(BaseModel):
         null=True,
         blank=True,
     )
+    variant_attr = models.ForeignKey(
+        "product_attributes.Variant",
+        on_delete=models.SET_NULL,
+        related_name="product_options",
+        null=True,
+        blank=True,
+    )
     size = models.ForeignKey(
         "products.Size",
+        on_delete=models.PROTECT,
+        related_name="product_options",
+        null=True,
+        blank=True,
+    )
+    size_attr = models.ForeignKey(
+        "product_attributes.Size",
         on_delete=models.PROTECT,
         related_name="product_options",
         null=True,

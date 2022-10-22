@@ -31,6 +31,9 @@ from aria.employees.endpoints import public_endpoints as public_employees_endpoi
 from aria.front.endpoints import public_endpoints as public_front_endpoints
 from aria.kitchens.endpoints import public_endpoints as public_kitchens_endpoints
 from aria.notes.endpoints import internal_endpoints as internal_notes_endpoints
+from aria.product_attributes.endpoints import (
+    internal_endpoints as internal_product_attributes_endpoints,
+)
 from aria.products.endpoints import (
     internal_endpoints as internal_products_endpoints,
     public_endpoints as public_products_endpoints,
@@ -109,6 +112,13 @@ internal_router.add_router(
 # Users endpoints
 internal_router.add_router(
     "/users/", internal_users_endpoints, auth=JWTAuthStaffRequired()
+)
+
+# Product attributes
+internal_router.add_router(
+    "/product-attributes/",
+    internal_product_attributes_endpoints,
+    auth=JWTAuthStaffRequired(),
 )
 
 internal_router.add_router(

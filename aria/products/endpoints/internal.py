@@ -10,10 +10,7 @@ from aria.api_auth.decorators import permission_required
 from aria.products.enums import ProductStatus
 from aria.products.models import Product, Size, Variant
 from aria.products.schemas.filters import ProductListFilters
-from aria.products.selectors.colors import color_list
 from aria.products.selectors.core import product_list
-from aria.products.selectors.shapes import shape_list
-from aria.products.selectors.variants import variant_list
 from aria.products.services.core import product_create
 from aria.products.services.product_files import product_file_create
 from aria.products.services.product_images import product_image_create
@@ -22,7 +19,6 @@ from aria.products.services.product_options import (
     product_options_bulk_create_options_and_sizes,
 )
 from aria.products.services.sizes import size_get_or_create
-from aria.products.services.variants import variant_create
 from aria.suppliers.models import Supplier
 
 router = Router(tags=["Products"])
@@ -222,81 +218,6 @@ def product_file_create_internal_api(
     return 201, ProductFileCreateInternalOutput(**product_file.dict())
 
 
-##################################
-# Variant list internal endpoint #
-##################################
-
-
-class VariantListInternalOutput(Schema):
-    id: int
-    name: str
-    is_standard: bool
-    image: str | None
-    thumbnail: str | None
-
-
-@router.get(
-    "variants/",
-    response={
-        200: list[VariantListInternalOutput],
-        codes_40x: ExceptionResponse,
-    },
-    summary="List all variants.",
-)
-@permission_required(["products.product.management", "products.product.admin"])
-def variant_list_internal_api(request: HttpRequest) -> list[VariantListInternalOutput]:
-    """
-    Get a list of all variants in the application.
-    """
-
-    variants = variant_list()
-
-    return [VariantListInternalOutput(**variant.dict()) for variant in variants]
-
-
-####################################
-# Variant create internal endpoint #
-####################################
-
-
-class VariantCreateInternalInput(Schema):
-    name: str
-    is_standard: bool
-
-
-class VariantCreateInternalOutput(Schema):
-    id: int
-    name: str
-    is_standard: bool
-    image: str | None
-    thumbnail: str | None
-
-
-@router.post(
-    "variants/create/",
-    response={
-        201: VariantCreateInternalOutput,
-        codes_40x: ExceptionResponse,
-    },
-    summary="Create a new variant.",
-)
-@permission_required(["products.product.management", "products.product.admin"])
-def variant_create_internal_api(
-    request: HttpRequest,
-    payload: VariantCreateInternalInput = Form(...),
-    file: UploadedFile = File(...),
-) -> tuple[int, VariantCreateInternalOutput]:
-    """
-    Creates a single variant instance.
-    """
-
-    variant_record = variant_create(
-        name=payload.name, is_standard=payload.is_standard, thumbnail=file
-    )
-
-    return 201, VariantCreateInternalOutput(**variant_record.dict())
-
-
 ###########################################
 # Product option create internal endpoint #
 ###########################################
@@ -424,63 +345,3 @@ def product_option_bulk_create_internal_api(
     return [
         ProductOptionCreateInBulkInternalOutput(**option.dict()) for option in options
     ]
-
-
-################################
-# Color list internal endpoint #
-################################
-
-
-class ColorListInternalOutput(Schema):
-    id: int
-    name: str
-    color_hex: str
-
-
-@router.get(
-    "colors/",
-    response={
-        200: list[ColorListInternalOutput],
-        codes_40x: ExceptionResponse,
-    },
-    summary="List all colors available.",
-)
-def color_list_internal_api(
-    request: HttpRequest,
-) -> list[ColorListInternalOutput]:
-    """
-    Endpoint for getting a list of all sizes in the application.
-    """
-
-    colors = color_list()
-
-    return [ColorListInternalOutput(**color.dict()) for color in colors]
-
-
-################################
-# Shape list internal endpoint #
-################################
-
-
-class ShapeListInternalOutput(Schema):
-    id: int
-    name: str
-    image: str
-
-
-@router.get(
-    "shapes/",
-    response={
-        200: list[ShapeListInternalOutput],
-        codes_40x: ExceptionResponse,
-    },
-    summary="List all shapes available.",
-)
-def shape_list_internal_api(request: HttpRequest) -> list[ShapeListInternalOutput]:
-    """
-    Endpoint for getting a list of all shapes in the application.
-    """
-
-    shapes = shape_list()
-
-    return [ShapeListInternalOutput(**shape.dict()) for shape in shapes]
