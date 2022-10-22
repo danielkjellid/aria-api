@@ -10,7 +10,6 @@ from aria.core.fields import ChoiceArrayField
 from aria.core.models import (
     BaseFileModel,
     BaseHeaderImageModel,
-    BaseImageModel,
     BaseModel,
     BaseThumbnailImageModel,
 )
