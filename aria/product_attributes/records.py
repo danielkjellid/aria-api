@@ -19,7 +19,7 @@ class SizeRecord(BaseModel):
     width: Decimal | None = None
     height: Decimal | None = None
     depth: Decimal | None = None
-    circumference: Decimal = None
+    circumference: Decimal | None = None
 
 
 class SizeDetailRecord(BaseModel):

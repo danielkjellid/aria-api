@@ -11,7 +11,6 @@ from aria.products.enums import ProductStatus
 from aria.products.models import Product, Size, Variant
 from aria.products.schemas.filters import ProductListFilters
 from aria.products.selectors.core import product_list
-from aria.products.selectors.variants import variant_list
 from aria.products.services.core import product_create
 from aria.products.services.product_files import product_file_create
 from aria.products.services.product_images import product_image_create
@@ -20,7 +19,6 @@ from aria.products.services.product_options import (
     product_options_bulk_create_options_and_sizes,
 )
 from aria.products.services.sizes import size_get_or_create
-from aria.products.services.variants import variant_create
 from aria.suppliers.models import Supplier
 
 router = Router(tags=["Products"])
