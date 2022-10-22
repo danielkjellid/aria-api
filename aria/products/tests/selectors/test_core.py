@@ -5,15 +5,14 @@ from django.core.cache import cache
 import pytest
 
 from aria.categories.tests.utils import create_category
+from aria.product_attributes.records import (
+    ColorDetailRecord,
+    ShapeDetailRecord,
+    VariantDetailRecord,
+)
 from aria.products.enums import ProductStatus
 from aria.products.models import Product
-from aria.products.records import (
-    ProductColorRecord,
-    ProductListRecord,
-    ProductShapeRecord,
-    ProductSupplierRecord,
-    ProductVariantRecord,
-)
+from aria.products.records import ProductListRecord, ProductSupplierRecord
 from aria.products.selectors.core import (
     product_detail,
     product_list_by_category,
@@ -382,25 +381,25 @@ class TestProductCoreSelectors:
                 materials=product_2.materials_display,
                 rooms=product_2.rooms_display,
                 colors=[
-                    ProductColorRecord(
+                    ColorDetailRecord(
                         id=color.id, name=color.name, color_hex=color.color_hex
                     )
                     for color in product_2.colors.all()
                 ],
                 shapes=[
-                    ProductShapeRecord(
-                        id=shape.id, name=shape.name, image=shape.image.url
+                    ShapeDetailRecord(
+                        id=shape.id, name=shape.name, image_url=shape.image.url
                     )
                     for shape in product_2.shapes.all()
                 ],
                 variants=[
-                    ProductVariantRecord(
+                    VariantDetailRecord(
                         id=option.variant.id,
                         name=option.variant.name,
-                        image=option.variant.image.url
+                        image_url=option.variant.image.url
                         if option.variant.image
                         else None,
-                        thumbnail=option.variant.thumbnail.url
+                        thumbnail_url=option.variant.thumbnail.url
                         if option.variant.thumbnail
                         else None,
                         is_standard=option.variant.is_standard,
@@ -426,25 +425,25 @@ class TestProductCoreSelectors:
                 materials=product_1.materials_display,
                 rooms=product_1.rooms_display,
                 colors=[
-                    ProductColorRecord(
+                    ColorDetailRecord(
                         id=color.id, name=color.name, color_hex=color.color_hex
                     )
                     for color in product_1.colors.all()
                 ],
                 shapes=[
-                    ProductShapeRecord(
-                        id=shape.id, name=shape.name, image=shape.image.url
+                    ShapeDetailRecord(
+                        id=shape.id, name=shape.name, image_url=shape.image.url
                     )
                     for shape in product_1.shapes.all()
                 ],
                 variants=[
-                    ProductVariantRecord(
+                    VariantDetailRecord(
                         id=option.variant.id,
                         name=option.variant.name,
-                        image=option.variant.image.url
+                        image_url=option.variant.image.url
                         if option.variant.image
                         else None,
-                        thumbnail=option.variant.thumbnail.url
+                        thumbnail_url=option.variant.thumbnail.url
                         if option.variant.thumbnail
                         else None,
                         is_standard=option.variant.is_standard,
@@ -501,25 +500,25 @@ class TestProductCoreSelectors:
                 materials=product_1.materials_display,
                 rooms=product_1.rooms_display,
                 colors=[
-                    ProductColorRecord(
+                    ColorDetailRecord(
                         id=color.id, name=color.name, color_hex=color.color_hex
                     )
                     for color in product_1.colors.all()
                 ],
                 shapes=[
-                    ProductShapeRecord(
-                        id=shape.id, name=shape.name, image=shape.image.url
+                    ShapeDetailRecord(
+                        id=shape.id, name=shape.name, image_url=shape.image.url
                     )
                     for shape in product_1.shapes.all()
                 ],
                 variants=[
-                    ProductVariantRecord(
+                    VariantDetailRecord(
                         id=option.variant.id,
                         name=option.variant.name,
-                        image=option.variant.image.url
+                        image_url=option.variant.image.url
                         if option.variant.image
                         else None,
-                        thumbnail=option.variant.thumbnail.url
+                        thumbnail_url=option.variant.thumbnail.url
                         if option.variant.thumbnail
                         else None,
                         is_standard=option.variant.is_standard,

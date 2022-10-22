@@ -63,22 +63,22 @@ class TestProductAttributesSelectors:
             ShapeDetailRecord(
                 id=shape_4.id,
                 name="Shape 4",
-                image=shape_4.image.url if shape_4.image else None,
+                image_url=shape_4.image.url if shape_4.image else None,
             ),
             ShapeDetailRecord(
                 id=shape_3.id,
                 name="Shape 3",
-                image=shape_3.image.url if shape_3.image else None,
+                image_url=shape_3.image.url if shape_3.image else None,
             ),
             ShapeDetailRecord(
                 id=shape_2.id,
                 name="Shape 2",
-                image=shape_2.image.url if shape_2.image else None,
+                image_url=shape_2.image.url if shape_2.image else None,
             ),
             ShapeDetailRecord(
                 id=shape_1.id,
                 name="Shape 1",
-                image=shape_1.image.url if shape_1.image else None,
+                image_url=shape_1.image.url if shape_1.image else None,
             ),
         ]
 

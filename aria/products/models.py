@@ -3,8 +3,6 @@ from decimal import Decimal
 from django.db import models
 from django.utils.text import slugify
 
-from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill
 from mptt.models import TreeManyToManyField
 
 from aria.categories.models import Category
@@ -12,7 +10,6 @@ from aria.core.fields import ChoiceArrayField
 from aria.core.models import (
     BaseFileModel,
     BaseHeaderImageModel,
-    BaseImageModel,
     BaseModel,
     BaseThumbnailImageModel,
 )
@@ -20,197 +17,12 @@ from aria.core.records import BaseArrayFieldLabelRecord
 from aria.core.utils import get_array_field_labels
 from aria.products import enums
 from aria.products.managers import (
-    ColorQuerySet,
     ProductFileQuerySet,
     ProductImageQuerySet,
     ProductOptionQuerySet,
     ProductQuerySet,
-    ShapeQuerySet,
-    SizeQuerySet,
-    VariantQuerySet,
 )
 from aria.suppliers.models import Supplier
-
-_SizeManager = models.Manager.from_queryset(SizeQuerySet)
-
-
-class Size(models.Model):
-    """
-    A dimension of which a product exists in.
-    """
-
-    width = models.DecimalField(
-        "width",
-        decimal_places=2,
-        max_digits=6,
-        blank=True,
-        null=True,
-        help_text="Width in centimeters",
-    )
-    height = models.DecimalField(
-        "height",
-        decimal_places=2,
-        max_digits=6,
-        blank=True,
-        null=True,
-        help_text="Height in centimeters",
-    )
-    depth = models.DecimalField(
-        "depth",
-        decimal_places=2,
-        max_digits=6,
-        blank=True,
-        null=True,
-        help_text="Depth in centimeters",
-    )
-    circumference = models.DecimalField(
-        "circumference",
-        decimal_places=2,
-        max_digits=6,
-        blank=True,
-        null=True,
-        help_text="Circumference in centimeters",
-    )
-
-    objects = _SizeManager()
-
-    class Meta:
-        verbose_name = "Size"
-        verbose_name_plural = "Sizes"
-        ordering = ["width", "height", "depth", "circumference"]
-        constraints = [
-            models.UniqueConstraint(
-                fields=["width", "height", "depth", "circumference"],
-                name="size_combo_unique",
-            )
-        ]
-
-    def __str__(self) -> str:
-        if self.depth and self.width and self.height and not self.circumference:
-            return (
-                f"B{self.convert_to_self_repr(self.width)} "
-                f"x H{self.convert_to_self_repr(self.height)} "
-                f"x D{self.convert_to_self_repr(self.depth)}"
-            )
-
-        if self.circumference and not self.width and not self.height and not self.depth:
-            return f"Ø{self.convert_to_self_repr(self.circumference)}"
-
-        return (
-            f"B{self.convert_to_self_repr(self.width)} "
-            f"x H{self.convert_to_self_repr(self.height)}"
-        )
-
-    @property
-    def name(self) -> str:
-        """
-        Name of size, as string representation.
-        """
-        return self.__str__()  # pylint: disable=unnecessary-dunder-call
-
-    @staticmethod
-    def convert_to_self_repr(dec: Decimal | None) -> str | None:
-        """
-        Returns a whole number if decimals is .0
-        """
-
-        return str(round(dec, 1) if dec % 1 else int(dec)) if dec else None
-
-
-_VariantManager = models.Manager.from_queryset(VariantQuerySet)
-
-
-class Variant(BaseThumbnailImageModel):
-    """
-    A variant is another version of the product, for
-    example color, pattern etc.
-    """
-
-    @property
-    def variant_upload_path(self) -> str:
-        """Path of which to upload static assets"""
-        return f"media/products/variants/{self.id}-{slugify(self.name)}/"
-
-    UPLOAD_PATH = variant_upload_path  # type: ignore
-
-    name = models.CharField(
-        "product variant name",
-        max_length=255,
-    )
-    image = ImageSpecField(
-        source="thumbnail",
-        processors=[ResizeToFill(80, 80)],
-        format="JPEG",
-        options={"quality": 90},
-    )
-    is_standard = models.BooleanField(
-        "standard",
-        default=False,
-        help_text=(
-            "Designates if a variant should be treated as standard. "
-            "This is to avoid multiple instances of the same variant. "
-            "This field will also prevent cleanup deletion of these models."
-        ),
-    )
-
-    objects = _VariantManager()
-
-    class Meta:
-        verbose_name = "Variant"
-        verbose_name_plural = "Variants"
-
-    def __str__(self) -> str:
-        return self.name
-
-
-_ColorManager = models.Manager.from_queryset(ColorQuerySet)
-
-
-class Color(models.Model):
-    """
-    Color categories belonging to products. Used for
-    filtering frontend.
-    """
-
-    name = models.CharField("name", max_length=100, unique=True)
-    color_hex = models.CharField("color code", max_length=7, unique=True)
-
-    objects = _ColorManager()
-
-    def __str__(self) -> str:
-        return self.name
-
-    class Meta:
-        verbose_name = "Color"
-        verbose_name_plural = "Colors"
-
-
-_ShapeManager = models.Manager.from_queryset(ShapeQuerySet)
-
-
-class Shape(BaseImageModel):
-    """
-    Shape belonging to a product. Used for filtering frontend.
-    """
-
-    @property
-    def shape_upload_path(self) -> str:
-        """Path of which to upload static assets"""
-        return f"media/products/sizes/{slugify(self.name)}/"
-
-    UPLOAD_PATH = shape_upload_path  # type: ignore
-
-    name = models.CharField("name", max_length=30, unique=True)
-
-    objects = _ShapeManager()
-
-    def __str__(self) -> str:
-        return self.name
-
-    class Meta:
-        verbose_name = "Shape"
-        verbose_name_plural = "Shapes"
-
 
 _ProductManager = models.Manager.from_queryset(ProductQuerySet)
 
@@ -267,9 +79,11 @@ class Product(BaseModel, BaseThumbnailImageModel):
         default=False,
         help_text="Designates whether the product comes in sizes out of the ordinary",
     )
-    colors = models.ManyToManyField("products.Color", related_name="products")
+    colors = models.ManyToManyField(
+        "product_attributes.Color", related_name="products", blank=True
+    )
     shapes = models.ManyToManyField(
-        "products.Shape", related_name="products", blank=True
+        "product_attributes.Shape", related_name="products", blank=True
     )
     materials = ChoiceArrayField(
         models.CharField(choices=enums.ProductMaterials.choices, max_length=50),
@@ -457,13 +271,6 @@ class ProductOption(BaseModel):
         "products.Product", on_delete=models.CASCADE, related_name="options"
     )
     variant = models.ForeignKey(
-        "products.Variant",
-        on_delete=models.SET_NULL,
-        related_name="product_options",
-        null=True,
-        blank=True,
-    )
-    variant_attr = models.ForeignKey(
         "product_attributes.Variant",
         on_delete=models.SET_NULL,
         related_name="product_options",
@@ -471,13 +278,6 @@ class ProductOption(BaseModel):
         blank=True,
     )
     size = models.ForeignKey(
-        "products.Size",
-        on_delete=models.PROTECT,
-        related_name="product_options",
-        null=True,
-        blank=True,
-    )
-    size_attr = models.ForeignKey(
         "product_attributes.Size",
         on_delete=models.PROTECT,
         related_name="product_options",

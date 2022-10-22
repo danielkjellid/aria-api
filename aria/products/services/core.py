@@ -12,8 +12,9 @@ from aria.core.exceptions import ApplicationError
 from aria.core.models import BaseQuerySet
 from aria.core.services import model_update
 from aria.core.validators import image_validate
+from aria.product_attributes.models import Color, Shape
 from aria.products.enums import ProductMaterials, ProductRooms
-from aria.products.models import Color, Product, Shape
+from aria.products.models import Product
 from aria.products.records import ProductRecord
 from aria.products.selectors.records import product_record
 from aria.suppliers.models import Supplier

@@ -8,13 +8,7 @@ from django.utils.translation import gettext as _
 from aria.categories.models import Category
 from aria.core.exceptions import ApplicationError
 from aria.core.utils import cleanup_files_from_deleted_instance
-from aria.products.models import (
-    Product,
-    ProductFile,
-    ProductImage,
-    ProductOption,
-    Variant,
-)
+from aria.products.models import Product, ProductFile, ProductImage, ProductOption
 from aria.products.services.product_options import (
     product_option_delete_related_variants,
 )
@@ -57,7 +51,6 @@ def validate_category_being_added(
 @receiver(post_delete, sender=Product)
 @receiver(post_delete, sender=ProductImage)
 @receiver(post_delete, sender=ProductFile)
-@receiver(post_delete, sender=Variant)
 def delete_product_files(
     sender: Model,  # pylint: disable=unused-argument
     instance: Model,
@@ -65,7 +58,7 @@ def delete_product_files(
     **kwargs: Any,
 ) -> None:
     """
-    Delete static assets bellonging to deleted instance.
+    Delete static assets belonging to deleted instance.
     """
 
     cleanup_files_from_deleted_instance(instance=instance)

@@ -4,10 +4,12 @@ from typing import Any
 from django.utils.translation import gettext as _
 
 from aria.core.exceptions import ApplicationError
+from aria.product_attributes.models import Size, Variant
+from aria.product_attributes.services import size_bulk_create
+from aria.product_attributes.utils import size_clean_and_validate_value
 from aria.products.enums import ProductStatus
-from aria.products.models import Product, ProductOption, Size, Variant
+from aria.products.models import Product, ProductOption
 from aria.products.records import OptionRecord, ProductOptionRecord
-from aria.products.services.sizes import size_bulk_create, size_clean_and_validate_value
 
 
 def product_option_create(
@@ -116,7 +118,7 @@ def product_options_bulk_create_options_and_sizes(
     sizes_from_options = [
         option.size for option in copied_options if option.size is not None
     ]
-    sizes = size_bulk_create(sizes=[size.dict() for size in sizes_from_options])  # type: ignore # pylint: disable=line-too-long
+    sizes = size_bulk_create(sizes=sizes_from_options)
 
     options_to_create = [
         {

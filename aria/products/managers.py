@@ -11,22 +11,6 @@ if TYPE_CHECKING:
     from aria.products import models
 
 
-class SizeQuerySet(BaseQuerySet["models.Size"]):
-    pass
-
-
-class VariantQuerySet(BaseQuerySet["models.Variant"]):
-    pass
-
-
-class ColorQuerySet(BaseQuerySet["models.Color"]):
-    pass
-
-
-class ShapeQuerySet(BaseQuerySet["models.Shape"]):
-    pass
-
-
 class ProductQuerySet(BaseQuerySet["models.Product"]):
     def available(self) -> BaseQuerySet["models.Product"]:
         """
