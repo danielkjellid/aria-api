@@ -168,48 +168,49 @@ def backfill_product_option_relations(apps, schema_editor):
         option.variant_attr_id = option.variant_id
         objs_to_update.append(option)
 
-    first_size_id = objs_to_update[0].size_id
-    last_size_id = objs_to_update[-1].size_id
+    if objs_to_update:
+        first_size_id = objs_to_update[0].size_id
+        last_size_id = objs_to_update[-1].size_id
 
-    product_size_1 = ProductSize.objects.get(id=first_size_id)
-    size_1 = Size.objects.get(id=first_size_id)
+        product_size_1 = ProductSize.objects.get(id=first_size_id)
+        size_1 = Size.objects.get(id=first_size_id)
 
-    assert size_1.id == product_size_1.id
-    assert size_1.width == product_size_1.width
-    assert size_1.height == product_size_1.height
-    assert size_1.depth == product_size_1.depth
-    assert size_1.circumference == product_size_1.circumference
+        assert size_1.id == product_size_1.id
+        assert size_1.width == product_size_1.width
+        assert size_1.height == product_size_1.height
+        assert size_1.depth == product_size_1.depth
+        assert size_1.circumference == product_size_1.circumference
 
 
-    product_size_2 = ProductSize.objects.get(id=last_size_id)
-    size_2 = Size.objects.get(id=last_size_id)
+        product_size_2 = ProductSize.objects.get(id=last_size_id)
+        size_2 = Size.objects.get(id=last_size_id)
 
-    assert size_2.id == product_size_2.id
-    assert size_2.width == product_size_2.width
-    assert size_2.height == product_size_2.height
-    assert size_2.depth == product_size_2.depth
-    assert size_2.circumference == product_size_2.circumference
+        assert size_2.id == product_size_2.id
+        assert size_2.width == product_size_2.width
+        assert size_2.height == product_size_2.height
+        assert size_2.depth == product_size_2.depth
+        assert size_2.circumference == product_size_2.circumference
 
-    first_variant_id = objs_to_update[0].variant_id
-    last_variant_id = objs_to_update[-1].variant_id
+        first_variant_id = objs_to_update[0].variant_id
+        last_variant_id = objs_to_update[-1].variant_id
 
-    product_variant_1 = ProductVariant.objects.get(id=first_variant_id)
-    variant_1 = Variant.objects.get(id=first_variant_id)
+        product_variant_1 = ProductVariant.objects.get(id=first_variant_id)
+        variant_1 = Variant.objects.get(id=first_variant_id)
 
-    assert variant_1.id == product_variant_1.id
-    assert variant_1.name == product_variant_1.name
-    assert variant_1.thumbnail == product_variant_1.thumbnail
-    assert variant_1.is_standard == product_variant_1.is_standard
+        assert variant_1.id == product_variant_1.id
+        assert variant_1.name == product_variant_1.name
+        assert variant_1.thumbnail == product_variant_1.thumbnail
+        assert variant_1.is_standard == product_variant_1.is_standard
 
-    product_variant_2 = ProductVariant.objects.get(id=last_variant_id)
-    variant_2 = Variant.objects.get(id=last_variant_id)
+        product_variant_2 = ProductVariant.objects.get(id=last_variant_id)
+        variant_2 = Variant.objects.get(id=last_variant_id)
 
-    assert variant_2.id == product_variant_2.id
-    assert variant_2.name == product_variant_2.name
-    assert variant_2.thumbnail == product_variant_2.thumbnail
-    assert variant_2.is_standard == product_variant_2.is_standard
+        assert variant_2.id == product_variant_2.id
+        assert variant_2.name == product_variant_2.name
+        assert variant_2.thumbnail == product_variant_2.thumbnail
+        assert variant_2.is_standard == product_variant_2.is_standard
 
-    ProductOption.objects.bulk_update(objs_to_update, ["size_attr_id", "variant_attr_id"])
+        ProductOption.objects.bulk_update(objs_to_update, ["size_attr_id", "variant_attr_id"])
 
 
 class Migration(migrations.Migration):
