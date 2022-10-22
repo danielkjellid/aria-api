@@ -21,7 +21,7 @@ jobs:
           - name: "isort"
             check: isort -c aria --check-only --diff
           - name: "pylint"
-            check: pylint aria  --output-format=parseable --reports=no
+            check: pylint aria --output-format=parseable --reports=no
     name: ${{ matrix.name }}
     steps:
       - name: Checkout project
@@ -29,7 +29,7 @@ jobs:
       - name: Setup project
         uses: ./.github/actions/setup
       - name: Run ${{ matrix.name }}
-        run:  poetry run ${{ matrix.check }}
+        run: DJANGO_SETTINGS_MODULE=aria.settings poetry run ${{ matrix.check }}
 
   python-tests:
     name: tests
