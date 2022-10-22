@@ -2,8 +2,9 @@ from decimal import Decimal
 
 import pytest
 
+from aria.product_attributes.models import Size, Variant
+from aria.product_attributes.tests.utils import create_size, create_variant
 from aria.products.enums import ProductStatus
-from aria.products.models import Size, Variant
 from aria.products.records import OptionRecord, SizeRecord
 from aria.products.services.product_options import (
     product_option_bulk_create,
@@ -11,12 +12,7 @@ from aria.products.services.product_options import (
     product_option_delete_related_variants,
     product_options_bulk_create_options_and_sizes,
 )
-from aria.products.tests.utils import (
-    create_product,
-    create_product_option,
-    create_size,
-    create_variant,
-)
+from aria.products.tests.utils import create_product, create_product_option
 
 pytestmark = pytest.mark.django_db
 

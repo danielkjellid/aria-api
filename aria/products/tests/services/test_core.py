@@ -8,11 +8,12 @@ from aria.categories.tests.utils import create_category
 from aria.core.exceptions import ApplicationError
 from aria.core.records import BaseArrayFieldLabelRecord
 from aria.core.tests.utils import create_image_file
+from aria.product_attributes.tests.utils import create_color, create_shape
 from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.models import Product
 from aria.products.records import ProductRecord, ProductSupplierRecord
 from aria.products.services.core import product_create, product_update
-from aria.products.tests.utils import create_color, create_product, create_shape
+from aria.products.tests.utils import create_product
 from aria.suppliers.tests.utils import get_or_create_supplier
 
 pytestmark = pytest.mark.django_db

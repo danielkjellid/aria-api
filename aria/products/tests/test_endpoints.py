@@ -12,16 +12,16 @@ import pytest
 
 from aria.categories.tests.utils import create_category
 from aria.discounts.tests.utils import create_discount
-from aria.products.enums import ProductStatus, ProductUnit
-from aria.products.models import Product, Size
-from aria.products.tests.utils import (
+from aria.product_attributes.models import Size
+from aria.product_attributes.tests.utils import (
     create_color,
-    create_product,
-    create_product_option,
     create_shape,
     create_size,
     create_variant,
 )
+from aria.products.enums import ProductStatus, ProductUnit
+from aria.products.models import Product
+from aria.products.tests.utils import create_product, create_product_option
 from aria.suppliers.tests.utils import get_or_create_supplier
 
 pytestmark = pytest.mark.django_db

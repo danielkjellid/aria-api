@@ -118,7 +118,7 @@ def product_options_bulk_create_options_and_sizes(
     sizes_from_options = [
         option.size for option in copied_options if option.size is not None
     ]
-    sizes = size_bulk_create(sizes=[size.dict() for size in sizes_from_options])  # type: ignore # pylint: disable=line-too-long
+    sizes = size_bulk_create(sizes=sizes_from_options)
 
     options_to_create = [
         {
