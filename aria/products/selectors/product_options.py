@@ -50,8 +50,8 @@ def product_options_list_for_product(
             variant=VariantDetailRecord(
                 id=option.variant.id,
                 name=option.variant.name,
-                image=option.variant.image.url if option.variant.image else None,
-                thumbnail=option.variant.thumbnail.url
+                image_url=option.variant.image.url if option.variant.image else None,
+                thumbnail_url=option.variant.thumbnail.url
                 if option.variant.thumbnail
                 else None,
                 is_standard=option.variant.is_standard,

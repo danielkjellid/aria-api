@@ -49,7 +49,7 @@ def color_list_internal_api(
 class ShapeListInternalOutput(Schema):
     id: int
     name: str
-    image: str
+    image_url: str
 
 
 @router.get(
@@ -79,8 +79,8 @@ class VariantListInternalOutput(Schema):
     id: int
     name: str
     is_standard: bool
-    image: str | None
-    thumbnail: str | None
+    image_url: str | None
+    thumbnail_url: str | None
 
 
 @router.get(
@@ -116,8 +116,8 @@ class VariantCreateInternalOutput(Schema):
     id: int
     name: str
     is_standard: bool
-    image: str | None
-    thumbnail: str | None
+    image_url: str | None
+    thumbnail_url: str | None
 
 
 @router.post(

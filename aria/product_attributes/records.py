@@ -12,7 +12,7 @@ class ColorDetailRecord(BaseModel):
 class ShapeDetailRecord(BaseModel):
     id: int
     name: str
-    image: str | None
+    image_url: str | None
 
 
 class SizeRecord(BaseModel):

@@ -68,7 +68,7 @@ def product_detail(
             ShapeDetailRecord(
                 id=shape.id,
                 name=shape.name,
-                image=shape.image.url if shape.image else None,
+                image_url=shape.image.url if shape.image else None,
             )
             for shape in product.shapes.all()
         ],

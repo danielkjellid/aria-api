@@ -8,8 +8,8 @@ from aria.core.utils import cleanup_files_from_deleted_instance
 from aria.product_attributes.models import Shape, Variant
 
 
-@receiver(post_delete, Variant)
-@receiver(post_delete, Shape)
+@receiver(post_delete, sender=Variant)
+@receiver(post_delete, sender=Shape)
 def delete_images(
     sender: Model,  # pylint: disable=unused-argument
     instance: Model,

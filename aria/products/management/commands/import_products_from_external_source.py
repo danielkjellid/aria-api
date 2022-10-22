@@ -10,8 +10,9 @@ from django.utils.text import slugify
 import requests
 
 from aria.categories.models import Category
+from aria.product_attributes.models import Size, Variant
 from aria.products.enums import ProductStatus
-from aria.products.models import Product, ProductFile, ProductOption, Size, Variant
+from aria.products.models import Product, ProductFile, ProductOption
 from aria.suppliers.models import Supplier
 
 

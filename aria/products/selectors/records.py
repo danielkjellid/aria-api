@@ -93,15 +93,15 @@ def product_list_record(product: Product) -> ProductListRecord:
             for color in product.colors.all()
         ],
         shapes=[
-            ShapeDetailRecord(id=shape.id, name=shape.name, image=shape.image.url)
+            ShapeDetailRecord(id=shape.id, name=shape.name, image_url=shape.image.url)
             for shape in product.shapes.all()
         ],
         variants=[
             VariantDetailRecord(
                 id=option.variant.id,
                 name=option.variant.name,
-                image=option.variant.image.url if option.variant.image else None,
-                thumbnail=option.variant.thumbnail.url
+                image_url=option.variant.image.url if option.variant.image else None,
+                thumbnail_url=option.variant.thumbnail.url
                 if option.variant.thumbnail
                 else None,
                 is_standard=option.variant.is_standard,

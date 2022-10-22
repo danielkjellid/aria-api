@@ -388,7 +388,7 @@ class TestProductCoreSelectors:
                 ],
                 shapes=[
                     ShapeDetailRecord(
-                        id=shape.id, name=shape.name, image=shape.image.url
+                        id=shape.id, name=shape.name, image_url=shape.image.url
                     )
                     for shape in product_2.shapes.all()
                 ],
@@ -396,10 +396,10 @@ class TestProductCoreSelectors:
                     VariantDetailRecord(
                         id=option.variant.id,
                         name=option.variant.name,
-                        image=option.variant.image.url
+                        image_url=option.variant.image.url
                         if option.variant.image
                         else None,
-                        thumbnail=option.variant.thumbnail.url
+                        thumbnail_url=option.variant.thumbnail.url
                         if option.variant.thumbnail
                         else None,
                         is_standard=option.variant.is_standard,
@@ -432,7 +432,7 @@ class TestProductCoreSelectors:
                 ],
                 shapes=[
                     ShapeDetailRecord(
-                        id=shape.id, name=shape.name, image=shape.image.url
+                        id=shape.id, name=shape.name, image_url=shape.image.url
                     )
                     for shape in product_1.shapes.all()
                 ],
@@ -440,10 +440,10 @@ class TestProductCoreSelectors:
                     VariantDetailRecord(
                         id=option.variant.id,
                         name=option.variant.name,
-                        image=option.variant.image.url
+                        image_url=option.variant.image.url
                         if option.variant.image
                         else None,
-                        thumbnail=option.variant.thumbnail.url
+                        thumbnail_url=option.variant.thumbnail.url
                         if option.variant.thumbnail
                         else None,
                         is_standard=option.variant.is_standard,
@@ -507,7 +507,7 @@ class TestProductCoreSelectors:
                 ],
                 shapes=[
                     ShapeDetailRecord(
-                        id=shape.id, name=shape.name, image=shape.image.url
+                        id=shape.id, name=shape.name, image_url=shape.image.url
                     )
                     for shape in product_1.shapes.all()
                 ],
@@ -515,10 +515,10 @@ class TestProductCoreSelectors:
                     VariantDetailRecord(
                         id=option.variant.id,
                         name=option.variant.name,
-                        image=option.variant.image.url
+                        image_url=option.variant.image.url
                         if option.variant.image
                         else None,
-                        thumbnail=option.variant.thumbnail.url
+                        thumbnail_url=option.variant.thumbnail.url
                         if option.variant.thumbnail
                         else None,
                         is_standard=option.variant.is_standard,

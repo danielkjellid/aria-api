@@ -47,7 +47,9 @@ def shape_list() -> list[ShapeDetailRecord]:
 
     return [
         ShapeDetailRecord(
-            id=shape.id, name=shape.name, image=shape.image.url if shape.image else None
+            id=shape.id,
+            name=shape.name,
+            image_url=shape.image.url if shape.image else None,
         )
         for shape in shapes
     ]

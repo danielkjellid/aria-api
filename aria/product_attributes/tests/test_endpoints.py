@@ -120,22 +120,22 @@ class TestProductAttributesInternalEndpoints:
             {
                 "id": shape_4.id,
                 "name": shape_4.name,
-                "image": shape_4.image.url if shape_4.image else None,
+                "imageUrl": shape_4.image.url if shape_4.image else None,
             },
             {
                 "id": shape_3.id,
                 "name": shape_3.name,
-                "image": shape_3.image.url if shape_3.image else None,
+                "imageUrl": shape_3.image.url if shape_3.image else None,
             },
             {
                 "id": shape_2.id,
                 "name": shape_2.name,
-                "image": shape_2.image.url if shape_2.image else None,
+                "imageUrl": shape_2.image.url if shape_2.image else None,
             },
             {
                 "id": shape_1.id,
                 "name": shape_1.name,
-                "image": shape_1.image.url if shape_1.image else None,
+                "imageUrl": shape_1.image.url if shape_1.image else None,
             },
         ]
 
@@ -199,29 +199,29 @@ class TestProductAttributesInternalEndpoints:
                 "id": ANY,
                 "name": "Variant 4",
                 "isStandard": True,
-                "image": None,
-                "thumbnail": None,
+                "imageUrl": None,
+                "thumbnailUrl": None,
             },
             {
                 "id": ANY,
                 "name": "Variant 3",
                 "isStandard": False,
-                "image": None,
-                "thumbnail": None,
+                "imageUrl": None,
+                "thumbnailUrl": None,
             },
             {
                 "id": ANY,
                 "name": "Variant 2",
                 "isStandard": False,
-                "image": None,
-                "thumbnail": None,
+                "imageUrl": None,
+                "thumbnailUrl": None,
             },
             {
                 "id": ANY,
                 "name": "Variant 1",
                 "isStandard": False,
-                "image": None,
-                "thumbnail": None,
+                "imageUrl": None,
+                "thumbnailUrl": None,
             },
         ]
 
@@ -301,8 +301,8 @@ class TestProductAttributesInternalEndpoints:
             "id": ANY,
             "name": "White mist",
             "isStandard": False,
-            "image": None,
-            "thumbnail": None,
+            "imageUrl": None,
+            "thumbnailUrl": None,
         }
 
         # Anonymous users should get 401.
