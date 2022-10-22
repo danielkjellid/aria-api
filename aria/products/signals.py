@@ -51,7 +51,6 @@ def validate_category_being_added(
 @receiver(post_delete, sender=Product)
 @receiver(post_delete, sender=ProductImage)
 @receiver(post_delete, sender=ProductFile)
-# @receiver(post_delete, sender=Variant)
 def delete_product_files(
     sender: Model,  # pylint: disable=unused-argument
     instance: Model,
@@ -59,7 +58,7 @@ def delete_product_files(
     **kwargs: Any,
 ) -> None:
     """
-    Delete static assets bellonging to deleted instance.
+    Delete static assets belonging to deleted instance.
     """
 
     cleanup_files_from_deleted_instance(instance=instance)
