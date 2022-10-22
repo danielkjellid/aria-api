@@ -7,9 +7,10 @@ from aria.api.decorators import paginate
 from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse
 from aria.api_auth.decorators import permission_required
+from aria.product_attributes.models import Size, Variant
 from aria.product_attributes.services import size_get_or_create
 from aria.products.enums import ProductStatus
-from aria.products.models import Product, Size, Variant
+from aria.products.models import Product
 from aria.products.schemas.filters import ProductListFilters
 from aria.products.selectors.core import product_list
 from aria.products.services.core import product_create

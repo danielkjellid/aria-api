@@ -1,15 +1,6 @@
 from django.contrib import admin
 
-from aria.products.models import (
-    Color,
-    Product,
-    ProductFile,
-    ProductImage,
-    ProductOption,
-    Shape,
-    Size,
-    Variant,
-)
+from aria.products.models import Product, ProductFile, ProductImage, ProductOption
 
 
 class ProductImageInline(admin.StackedInline):
@@ -22,32 +13,6 @@ class ProductFileInline(admin.StackedInline):
 
 class ProductOptionsInline(admin.StackedInline):
     model = ProductOption
-
-
-@admin.register(Color)
-class ColorAdmin(admin.ModelAdmin):
-    list_display = ("name", "color_hex")
-    ordering = ["name"]
-
-
-@admin.register(Size)
-class SizeAdmin(admin.ModelAdmin):
-    list_display = ("width", "height", "depth", "circumference")
-    ordering = ("width", "height")
-
-
-@admin.register(Shape)
-class ShapeAdmin(admin.ModelAdmin):
-    list_display = ("name", "image")
-    ordering = ("name",)
-
-
-@admin.register(Variant)
-class VariantAdmin(admin.ModelAdmin):
-    search_fields = ["name"]
-    list_display = ("id", "name", "image", "is_standard")
-    list_filter = ("is_standard",)
-    ordering = ["-id"]
 
 
 @admin.register(ProductOption)
