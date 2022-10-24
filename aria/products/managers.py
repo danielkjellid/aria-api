@@ -9,7 +9,6 @@ from django.db.models import (
     Min,
     OuterRef,
     Prefetch,
-    Q,
     Value,
     When,
 )
