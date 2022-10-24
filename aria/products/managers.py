@@ -1,7 +1,17 @@
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from django.db.models import F, Min, Prefetch, Q
+from django.db.models import (
+    Case,
+    DecimalField,
+    Exists,
+    F,
+    Min,
+    OuterRef,
+    Prefetch,
+    Value,
+    When,
+)
 
 from aria.core.models import BaseQuerySet
 from aria.products.enums import ProductStatus
@@ -167,16 +177,25 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         available.
         """
 
-        from_price = self.prefetch_related("options").annotate(
-            annotated_from_price=Min(
-                "options__gross_price", filter=Q(options__gross_price__gt=0)
+        from aria.products.models import ProductOption
+
+        return self.annotate(
+            annotated_from_price=Case(
+                When(
+                    Exists(
+                        ProductOption.objects.available().filter(
+                            product_id=OuterRef("pk"),
+                            gross_price__isnull=False,
+                            gross_price__gt=0,
+                        )
+                    ),
+                    then=Min(
+                        F("options__gross_price"),
+                    ),
+                ),
+                default=Value(Decimal("0.00"), output_field=DecimalField()),
             )
         )
-
-        if from_price is None:
-            return Decimal("0.00")
-
-        return from_price
 
     def preload_for_list(self) -> BaseQuerySet["models.Product"]:
         """
