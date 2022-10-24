@@ -19,7 +19,6 @@ class SupplierListInternalOutput(Schema):
     "/",
     response={200: list[SupplierListInternalOutput], codes_40x: ExceptionResponse},
     summary="List all suppliers.",
-    url_name="internal-suppliers-index",  # Temporary.
 )
 def supplier_list_internal_api(
     request: HttpRequest,

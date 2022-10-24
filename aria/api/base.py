@@ -66,4 +66,4 @@ class AriaAPI(NinjaAPI):  # pylint: disable=too-many-instance-attributes
             if len(tags) > 1:
                 raise ValueError("Router object must only have one tag!")
 
-        return tags[0].lower()
+        return tags[0].lower().replace(" ", "-")

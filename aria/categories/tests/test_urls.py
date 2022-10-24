@@ -42,5 +42,5 @@ class TestInternalCategoriesUrls:
         """
         Test reverse match of category_list_internal_api endpoint.
         """
-        url = reverse("api-1.0.0:internal-categories-index")
+        url = reverse("api-internal-1.0.0:categories-index")
         assert url == "/api/v1/internal/categories/"

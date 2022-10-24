@@ -19,7 +19,6 @@ class CategoryListInternalOutput(Schema):
     "/",
     response={200: list[CategoryListInternalOutput], codes_40x: ExceptionResponse},
     summary="List all categories.",
-    url_name="internal-categories-index",  # Temporary.
 )
 def category_list_internal_api(
     request: HttpRequest,

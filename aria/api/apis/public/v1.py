@@ -1,8 +1,6 @@
-from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.http import HttpRequest, HttpResponse
 
-from ninja import Router
 from ninja.errors import ValidationError as NinjaValidationError
 from pydantic.error_wrappers import ValidationError as PydanticValidationError
 
@@ -17,35 +15,18 @@ from aria.api.exception_handlers import (
     validation_error_exception_handler,
 )
 from aria.api.exceptions import PageOutOfBoundsError
-from aria.api_auth.authentication import JWTAuthStaffRequired
 from aria.api_auth.endpoints import public_endpoints as public_auth_endpoints
 from aria.api_auth.exceptions import TokenError
-from aria.categories.endpoints import (
-    internal_endpoints as internal_categories_endpoints,
-    public_endpoints as public_categories_endpoints,
-)
+from aria.categories.endpoints import public_endpoints as public_categories_endpoints
 from aria.core.endpoints import public_endpoints as public_core_endpoints
 from aria.core.exceptions import ApplicationError
 from aria.discounts.endpoints import public_endpoints as public_discount_endpoints
 from aria.employees.endpoints import public_endpoints as public_employees_endpoints
 from aria.front.endpoints import public_endpoints as public_front_endpoints
 from aria.kitchens.endpoints import public_endpoints as public_kitchens_endpoints
-from aria.notes.endpoints import internal_endpoints as internal_notes_endpoints
-from aria.product_attributes.endpoints import (
-    internal_endpoints as internal_product_attributes_endpoints,
-)
-from aria.products.endpoints import (
-    internal_endpoints as internal_products_endpoints,
-    public_endpoints as public_products_endpoints,
-)
-from aria.suppliers.endpoints import (
-    internal_endpoints as internal_suppliers_endpoints,
-    public_endpoints as public_suppliers_endpoints,
-)
-from aria.users.endpoints import (
-    internal_endpoints as internal_users_endpoints,
-    public_endpoints as public_users_endpoints,
-)
+from aria.products.endpoints import public_endpoints as public_products_endpoints
+from aria.suppliers.endpoints import public_endpoints as public_suppliers_endpoints
+from aria.users.endpoints import public_endpoints as public_users_endpoints
 
 #####################
 # API configuration #
@@ -55,86 +36,20 @@ api = AriaAPI(
     title="Aria API",
     version="1.0.0",
     urls_namespace="api",
-    docs_decorator=staff_member_required,
+    auth=None,
 )
 
-##################
-# Public routers #
-##################
+api.add_router("/auth/", public_auth_endpoints)
+api.add_router("/categories/", public_categories_endpoints)
+api.add_router("/core/", public_core_endpoints)
+api.add_router("/discounts/", public_discount_endpoints)
+api.add_router("/employees/", public_employees_endpoints)
+api.add_router("/front/", public_front_endpoints)
+api.add_router("/kitchens/", public_kitchens_endpoints)
+api.add_router("/products/", public_products_endpoints)
+api.add_router("/suppliers/", public_suppliers_endpoints)
+api.add_router("/users/", public_users_endpoints)
 
-public_router = Router(auth=None)
-
-# API auth endpoints
-public_router.add_router("/auth/", public_auth_endpoints, auth=None)
-
-# Categories endpoints
-public_router.add_router("/categories/", public_categories_endpoints, auth=None)
-
-# Core endpoints
-public_router.add_router("/core/", public_core_endpoints, auth=None)
-
-# Discount endpoints
-public_router.add_router("/discounts/", public_discount_endpoints, auth=None)
-
-# Employees endpoints
-public_router.add_router("/employees/", public_employees_endpoints, auth=None)
-
-# Front endpoints
-public_router.add_router("/front/", public_front_endpoints, auth=None)
-
-# Kitchens endpoints
-public_router.add_router("/kitchens/", public_kitchens_endpoints, auth=None)
-
-# Products endpoints
-public_router.add_router("/products/", public_products_endpoints, auth=None)
-
-# Suppliers endpoints
-public_router.add_router("/suppliers/", public_suppliers_endpoints, auth=None)
-
-# Users endpoints
-public_router.add_router("/users/", public_users_endpoints, auth=None)
-
-####################
-# Internal routers #
-####################
-
-internal_router = Router(auth=JWTAuthStaffRequired())
-
-internal_router.add_router(
-    "/categories/", internal_categories_endpoints, auth=JWTAuthStaffRequired()
-)
-
-# Notes endpoints
-internal_router.add_router(
-    "/notes/", internal_notes_endpoints, auth=JWTAuthStaffRequired()
-)
-
-# Users endpoints
-internal_router.add_router(
-    "/users/", internal_users_endpoints, auth=JWTAuthStaffRequired()
-)
-
-# Product attributes
-internal_router.add_router(
-    "/product-attributes/",
-    internal_product_attributes_endpoints,
-    auth=JWTAuthStaffRequired(),
-)
-
-internal_router.add_router(
-    "/products/", internal_products_endpoints, auth=JWTAuthStaffRequired()
-)
-
-internal_router.add_router(
-    "/suppliers/", internal_suppliers_endpoints, auth=JWTAuthStaffRequired()
-)
-
-###############
-# API routers #
-###############
-
-api.add_router("", public_router)
-api.add_router("/internal/", internal_router)
 
 ######################
 # Exception handlers #

@@ -52,7 +52,6 @@ class ProductListInternalOutput(Schema):
         codes_40x: ExceptionResponse,
     },
     summary="List all products",
-    url_name="internal-products-index",  # Temporary.
 )
 @permission_required(
     ["products.product.view", "products.product.management", "products.product.admin"],

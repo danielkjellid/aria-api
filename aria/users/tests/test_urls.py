@@ -43,19 +43,19 @@ class TestInternalUsersUrls:
         """
         Test reverse match of user_list_api endpoint.
         """
-        url = reverse("api-1.0.0:users-index")
+        url = reverse("api-internal-1.0.0:users-index")
         assert url == "/api/v1/internal/users/"
 
     def test_url_user_detail_api(self) -> None:
         """
         Test reverse match of user_detail_api endpoint.
         """
-        url = reverse("api-1.0.0:users-{user_id}", args=["user_id"])
+        url = reverse("api-internal-1.0.0:users-{user_id}", args=["user_id"])
         assert url == "/api/v1/internal/users/user_id/"
 
     def test_url_user_update_api(self) -> None:
         """
         Test reverse match of user_update_api endpoint.
         """
-        url = reverse("api-1.0.0:users-{user_id}-update", args=["user_id"])
+        url = reverse("api-internal-1.0.0:users-{user_id}-update", args=["user_id"])
         assert url == "/api/v1/internal/users/user_id/update/"
