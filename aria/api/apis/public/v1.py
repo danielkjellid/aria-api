@@ -37,7 +37,6 @@ api = AriaAPI(
     title="Aria API",
     version="1.0.0",
     urls_namespace="api",
-    docs_decorator=staff_member_required,
     auth=None,
 )
 
