@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
     help = "Export Open API schema"
 
-    def _get_api_instance(self, *, api_path: str | None = None) -> AriaAPI:
+    def _get_api_instance(self, *, api_path: str) -> AriaAPI:
         try:
             api = import_string(api_path)
         except ImportError as exc:
@@ -29,11 +29,11 @@ class Command(BaseCommand):
 
     def _merge_schemas(self, *, apis: list[AriaAPI]) -> OpenAPISchema:
 
-        schema: OpenAPISchema = {
-            "openapi": None,
+        schema: OpenAPISchema = {  # type: ignore
+            "openapi": "",
             "info": {
                 "title": "Aria API",
-                "version": None,
+                "version": "",
                 "description": "",
             },
             "paths": {},
@@ -50,7 +50,7 @@ class Command(BaseCommand):
 
             # Set the version if it's empty or if the version in the current iteration
             # is higher than the one already set.
-            if schema["info"]["version"] is None or (
+            if not schema["info"]["version"] or (
                 version.parse(schema["info"]["version"])
                 < version.parse(api_schema["info"]["version"])
             ):
