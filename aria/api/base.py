@@ -42,14 +42,7 @@ class AriaAPI(NinjaAPI):  # pylint: disable=too-many-instance-attributes
         """
 
         router_tag = self._get_and_validate_router_tag(tags=operation.tags)
-        formatted_path = (
-            operation.path.replace(" ", "-")
-            .replace(
-                "/",
-                "-",
-            )
-            .rstrip("-")
-        )
+        formatted_path = operation.path.replace("/", "-").rstrip("-")
         url_name = f"{router_tag}-{formatted_path}"
 
         # If the name ends with a "-", it means that we're dealing
@@ -73,4 +66,4 @@ class AriaAPI(NinjaAPI):  # pylint: disable=too-many-instance-attributes
             if len(tags) > 1:
                 raise ValueError("Router object must only have one tag!")
 
-        return tags[0].lower()
+        return tags[0].lower().replace(" ", "-")

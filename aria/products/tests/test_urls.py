@@ -31,14 +31,14 @@ class TestInternalProductUrls:
         """
         Test reverse match of product_list_internal_api endpoint.
         """
-        url = reverse("api-1.0.0:internal-products-index")
+        url = reverse("api-internal-1.0.0:products-index")
         assert url == "/api/v1/internal/products/"
 
     def test_url_product_create_internal_api(self) -> None:
         """
         Test reverse match of product_create_internal_api endpoint.
         """
-        url = reverse("api-1.0.0:products-create")
+        url = reverse("api-internal-1.0.0:products-create")
         assert url == "/api/v1/internal/products/create/"
 
     def test_url_product_image_create_internal_api(self) -> None:
@@ -46,7 +46,8 @@ class TestInternalProductUrls:
         Test reverse match of product_image_create_internal_api endpoint.
         """
         url = reverse(
-            "api-1.0.0:products-{product_id}-images-create", args=["product_id"]
+            "api-internal-1.0.0:products-{product_id}-images-create",
+            args=["product_id"],
         )
         assert url == "/api/v1/internal/products/product_id/images/create/"
 
@@ -55,7 +56,7 @@ class TestInternalProductUrls:
         Test reverse match of product_file_create_internal_api endpoint.
         """
         url = reverse(
-            "api-1.0.0:products-{product_id}-files-create", args=["product_id"]
+            "api-internal-1.0.0:products-{product_id}-files-create", args=["product_id"]
         )
         assert url == "/api/v1/internal/products/product_id/files/create/"
 
@@ -64,7 +65,8 @@ class TestInternalProductUrls:
         Test reverse match of product_option_create_internal_api endpoint.
         """
         url = reverse(
-            "api-1.0.0:products-{product_id}-options-create", args=["product_id"]
+            "api-internal-1.0.0:products-{product_id}-options-create",
+            args=["product_id"],
         )
         assert url == "/api/v1/internal/products/product_id/options/create/"
 
@@ -73,6 +75,7 @@ class TestInternalProductUrls:
         Test reverse match of product_option_bulk_create_internal_api endpoint.
         """
         url = reverse(
-            "api-1.0.0:products-{product_id}-options-bulk-create", args=["product_id"]
+            "api-internal-1.0.0:products-{product_id}-options-bulk-create",
+            args=["product_id"],
         )
         assert url == "/api/v1/internal/products/product_id/options/bulk-create/"

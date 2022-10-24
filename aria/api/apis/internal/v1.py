@@ -30,10 +30,14 @@ from aria.products.endpoints import internal_endpoints as internal_products_endp
 from aria.suppliers.endpoints import internal_endpoints as internal_suppliers_endpoints
 from aria.users.endpoints import internal_endpoints as internal_users_endpoints
 
+#####################
+# API configuration #
+#####################
+
 api_internal = AriaAPI(
     title="Aria Internal API",
     version="1.0.0",
-    urls_namespace="internal-api",
+    urls_namespace="api-internal",
     docs_decorator=staff_member_required,
     auth=JWTAuthStaffRequired(),
 )

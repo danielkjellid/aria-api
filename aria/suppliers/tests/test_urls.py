@@ -15,5 +15,5 @@ class TestInternalSuppliersUrls:
         """
         Test reverse match of supplier_list_internal_api endpoint.
         """
-        url = reverse("api-1.0.0:internal-suppliers-index")
+        url = reverse("api-internal-1.0.0:suppliers-index")
         assert url == "/api/v1/internal/suppliers/"
