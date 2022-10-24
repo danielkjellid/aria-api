@@ -17,8 +17,10 @@ class Command(BaseCommand):
     def _get_api_instance(self, *, api_path: str | None = None) -> AriaAPI:
         try:
             api = import_string(api_path)
-        except ImportError:
-            raise CommandError(f"Module or attribute for {api_path} not found!")
+        except ImportError as exc:
+            raise CommandError(
+                f"Module or attribute for {api_path} not found!"
+            ) from exc
 
         if not isinstance(api, AriaAPI):
             raise CommandError(f"{api_path} is not instance of AriaAPI!")
