@@ -54,6 +54,13 @@ class BaseImageModel(models.Model):
         null=False,
     )
 
+    def _build_customer_facing_url(self, width: int, height: int) -> str:
+        pass
+
+    @property
+    def image512x512_url(self) -> str:
+        pass
+
 
 class BaseHeaderImageModel(BaseImageModel):
     """
