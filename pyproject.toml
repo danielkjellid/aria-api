@@ -17,7 +17,7 @@ django-extensions = "3.2.1"
 django-filter = "22.1"
 django-imagekit = "4.1.0"
 django-mptt = "0.14.0"
-django-s3-storage = "^0.13.9"
+django-s3-storage = "0.13.9"
 gunicorn = "20.1.0"
 ipython = "8.5.0"
 jedi = "0.18.1"
@@ -42,11 +42,14 @@ dacite = "1.6.0"
 hiredis = "2.0.0"
 celery = "5.2.7"
 pytest-celery = "0.0.0"
-thumbor-aws = "0.4.3"
 
 ############################
 # Development dependencies #
 ############################
+boto3 = "1.14.63"
+botocore = "1.17.63"
+pillow = "9.2.0"
+s3transfer = "0.3.7"
 
 [tool.poetry.dev-dependencies]
 black = "22.10.0"
