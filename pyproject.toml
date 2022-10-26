@@ -50,6 +50,7 @@ pytest-celery = "0.0.0"
 ############################
 # Development dependencies #
 ############################
+libthumbor = "^2.0.2"
 
 [tool.poetry.dev-dependencies]
 black = "22.10.0"
