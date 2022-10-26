@@ -182,10 +182,10 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 # Files backend: django_s3_storage #
 ####################################
 
-AWS_REGION = "eu-north-1"
-AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID", default="")
-AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY", default="")
-AWS_S3_BUCKET_NAME = env.str("AWS_S3_BUCKET_NAME", default="")
+AWS_REGION = env.str("AWS_REGION", default="local")
+AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID", default="aria")
+AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY", default="ariatestpassword")
+AWS_S3_BUCKET_NAME = env.str("AWS_S3_BUCKET_NAME", default="flishuset")
 
 AWS_S3_ADDRESSING_STYLE = "auto"
 AWS_S3_BUCKET_AUTH = False
@@ -193,8 +193,16 @@ AWS_S3_MAX_AGE_SECONDS = 60 * 60 * 24 * 365  # 1 year.
 AWS_S3_SIGNATURE_VERSION = None
 AWS_S3_FILE_OVERWRITE = False
 AWS_S3_BUCKET_AUTH_STATIC = False
-AWS_S3_BUCKET_NAME_STATIC = env.str("AWS_S3_BUCKET_NAME_STATIC", default="")
+AWS_S3_BUCKET_NAME_STATIC = env.str("AWS_S3_BUCKET_NAME_STATIC", default="flishuset")
 AWS_S3_CUSTOM_DOMAIN = f"{AWS_S3_BUCKET_NAME}.s3.amazonaws.com"
+
+##########################
+# Files backend: thumbor #
+##########################
+
+THUMBOR_SECURITY_KEY = env.str("THUMBOR_SECURITY_KEY", default="supersecret")
+THUMBOR_CACHE_UNSAFE = env.bool("THUMBOR_CACHE_UNSAFE", default=False)
+THUMBOR_ALLOW_UNSAFE = env.bool("THUMBOR_ALLOW_UNSAFE", default=DEBUG)
 
 ##########
 # Files #

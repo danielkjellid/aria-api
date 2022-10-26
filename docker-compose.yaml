@@ -2,6 +2,10 @@ version: "3"
 
 volumes:
   postgres:
+  thumbor_data:
+    driver: local
+  minio_data:
+    driver: local
 
 services:
   postgres:
@@ -25,46 +29,75 @@ services:
     ports:
       - 6379:6379
 
-  minio:
-    image: quay.io/minio/minio
-    ports:
-      - '127.0.0.1:9000:9001'
-#      - '127.0.0.1:9001:9001'
-    environment:
-      - MINIO_ACCESS_KEY=aria-dev
-      - MINIO_SECRET_KEY=aria-dev
-      - MINIO_ROOT_USER=aria
-      - MINIO_ROOT_PASSWORD=ariatestpassword
-    command: server /data --console-address ":9001"
-
   thumbor:
-    image: minimalcompact/thumbor
+    image: beeyev/thumbor-s3:7.1-slim-alpine
+    restart: unless-stopped
+    tty: true
     ports:
-      - "127.0.0.1:10000:80"
+      - '8888:8888'
     environment:
-      SECURITY_KEY: 'aria-dev'
-      MAX_WIDTH: 2048
-      MAX_HEIGHT: 1150
-      QUALITY: 98
-      AUTO_WEBP: 'True'
-      ALLOW_UNSAFE_URL: 1
-      ALLOW_OLD_URLS: 0
-#      LOADER: 'thumbor_aws.loaders.s3_loader'
-#      STORAGE: 'thumbor_aws.storage'
-#      RESULT_STORAGE: 'thumbor_aws.result_storage'
+      - AUTO_PNG_TO_JPG='True'
+      - AUTO_WEBP='True'
+      - ALLOW_OLD_URLS='False'
+      - ALLOW_UNSAFE_URL='True'
 
-#      AWS_ACCESS_KEY_ID: 'aria-dev'
-#      AWS_SECRET_ACCESS_KEY: 'aria-dev'
+      - AWS_LOADER_REGION_NAME=${AWS_REGION}
+      - AWS_LOADER_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
+      - AWS_LOADER_S3_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_LOADER_S3_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_LOADER_S3_ENDPOINT_URL=${AWS_ENDPOINT_URL}
 
-      # NEW
-      AWS_LOADER_REGION_NAME: "eu-north-1"
-      AWS_LOADER_BUCKET_NAME: ${AWS_S3_BUCKET_NAME}
-      AWS_LOADER_S3_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_LOADER_S3_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      - AWS_RESULT_STORAGE_S3_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_RESULT_STORAGE_S3_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_RESULT_STORAGE_S3_ENDPOINT_URL=${AWS_ENDPOINT_URL}
+      - AWS_RESULT_STORAGE_ROOT_PATH=rs
+      - AWS_RESULT_STORAGE_BUCKET_NAME=${AWS_S3_IMG_CACHE_BUCKET_NAME}
 
+      - LOG_LEVEL=info
+      - LOADER=thumbor_aws.loader
 
-#      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      # Max AGE sent as a header for the image served by thumbor in seconds (86400 is a day of caching)
+      - MAX_AGE=86400
+      - MAX_WIDTH=2048
+      - MAX_HEIGHT=1150
 
-    links:
+      - RESULT_STORAGE=thumbor_aws.result_storage
+      # Expiration in seconds of generated images in the result storage. (2629746 is a month is seconds)
+      - RESULT_STORAGE_EXPIRATION_SECONDS=2629746
+      - RESULT_STORAGE_STORES_UNSAFE='False'
+
+      - SECURITY_KEY=${THUMBOR_SECURITY_KEY}
+      - SENTRY_DSN_URL=${SENTRY_DSN}
+
+      - QUALITY=99
+    depends_on:
       - minio
+    volumes:
+      - thumbor_data:/data
+    networks:
+      - network1
+
+  minio:
+    image: bitnami/minio:latest
+    container_name: 'minio'
+    restart: unless-stopped
+    tty: true
+    environment:
+      - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
+      - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
+      - MINIO_DEFAULT_BUCKETS=${AWS_S3_BUCKET_NAME}:none,${AWS_S3_IMG_CACHE_BUCKET_NAME}:none
+      - MINIO_BROWSER=on
+      - CONSOLE_SECURE_TLS_REDIRECT=off
+    ports:
+      - '9001:9001'
+    volumes:
+      - minio_data:/data
+    networks:
+      - network1
+
+networks:
+  network1:
+    driver: bridge
+
+
 
