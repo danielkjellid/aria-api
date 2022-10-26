@@ -7,6 +7,7 @@ from imagekit.models import ImageSpecField
 from imagekit.models.fields import ProcessedImageField
 from imagekit.processors import ResizeToFill
 
+from aria.core.thumbor import generate_signed_url
 from aria.core.utils import get_static_asset_upload_path
 
 T = TypeVar("T", bound=models.Model)
@@ -54,12 +55,9 @@ class BaseImageModel(models.Model):
         null=False,
     )
 
-    def _build_customer_facing_url(self, width: int, height: int) -> str:
-        pass
-
     @property
     def image512x512_url(self) -> str:
-        pass
+        return generate_signed_url(image_name=self.image.name, width=512, height=512)
 
 
 class BaseHeaderImageModel(BaseImageModel):
