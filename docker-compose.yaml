@@ -2,10 +2,17 @@ version: "3"
 
 volumes:
   postgres:
+  public_media:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./public/media
   thumbor_data:
     driver: local
   minio_data:
     driver: local
+
 
 networks:
   app-to-app:
@@ -13,6 +20,7 @@ networks:
 
 services:
   postgres:
+    container_name: Postgres
     image: postgres:14.3
     environment:
       - POSTGRES_USER=aria
@@ -29,11 +37,13 @@ services:
     ports:
       - "5433:5432"
   redis:
+    container_name: Redis
     image: redis:7.0.1-alpine
     ports:
       - 6379:6379
 
   thumbor:
+    container_name: Thumbor
     image: beeyev/thumbor-s3:7.1-slim-alpine
     restart: unless-stopped
     tty: true
@@ -75,22 +85,21 @@ services:
 
       - QUALITY=99
     depends_on:
-      - minio-server
+      - minio
     volumes:
       - thumbor_data:/data
     networks:
       - app-to-app
 
-  minio-server:
+  minio:
+    container_name: MinIO
     image: bitnami/minio:latest
     restart: unless-stopped
     tty: true
     environment:
       - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
       - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
-      - MINIO_SERVER_ACCESS_KEY=${AWS_ACCESS_KEY_ID}
-      - MINIO_SERVER_SECRET_KEY=${AWS_SECRET_ACCESS_KEY}
-#      - MINIO_DEFAULT_BUCKETS=${AWS_S3_BUCKET_NAME}:none,${AWS_S3_IMG_CACHE_BUCKET_NAME}:none
+      - MINIO_DEFAULT_BUCKETS=${AWS_S3_BUCKET_NAME}:none,${AWS_S3_IMG_CACHE_BUCKET_NAME}:none
       - MINIO_BROWSER=on
       - CONSOLE_SECURE_TLS_REDIRECT=off
     ports:
@@ -98,26 +107,9 @@ services:
       - '9001:9001'
     volumes:
       - 'minio_data:/data'
-#      - './public/media:/media'
-#      - './public/media:/data'
+      - 'public_media:/media'
     networks:
       - app-to-app
-
-  minio-client:
-    image: minio/mc
-    depends_on:
-      - minio-server
-    networks:
-      - app-to-app
-    volumes:
-      - './public/media:/media'
-    entrypoint: >
-      /bin/sh -c "
-        until (/usr/bin/mc config host add minio http://minio-server:9000 aria ariatestpassword) do echo '...waiting...' && sleep 1; done;
-        /usr/bin/mc rm --recursive minio/test-bucket --force;
-        /usr/bin/mc cp --recursive /media/. minio/test-bucket/;
-        /usr/bin/mc mirror --watch /media/. minio/test-bucket/;
-      "
 
 
 
