@@ -5,7 +5,7 @@ from libthumbor import CryptoURL
 crypto_url = CryptoURL(key=settings.THUMBOR_SECURITY_KEY)
 
 
-def generate_signed_url(image_name: str, width: int, height: int) -> str:
+def image_generate_signed_url(image_name: str, width: int, height: int) -> str:
     """
     Generate a signed
     """

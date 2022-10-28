@@ -1,4 +1,4 @@
-from typing import TypeVar
+from typing import Iterable, TypeVar
 
 from django.db import models
 from django.db.models.expressions import Case, When
@@ -7,8 +7,9 @@ from imagekit.models import ImageSpecField
 from imagekit.models.fields import ProcessedImageField
 from imagekit.processors import ResizeToFill
 
-from aria.core.thumbor import generate_signed_url
 from aria.core.utils import get_static_asset_upload_path
+from aria.core.validators import image_validate
+from aria.files.thumbor import image_generate_signed_url
 
 T = TypeVar("T", bound=models.Model)
 
@@ -39,8 +40,8 @@ class BaseModel(models.Model):
 
 class BaseImageModel(models.Model):
     """
-    Generic image model, usually inherited by models with
-    specified ImageKit fields.
+    Generic image model. Comes ready with upload path, validation and most used
+    dimension properties.
     """
 
     class Meta:
@@ -55,9 +56,145 @@ class BaseImageModel(models.Model):
         null=False,
     )
 
+    def save(
+        self,
+        force_insert: bool = False,
+        force_update: bool = False,
+        using: str | None = None,
+        update_fields: Iterable[str] | None = None,
+    ) -> None:
+        """
+        Validate images on save.
+        """
+
+        image_validate(
+            image=self.image,
+            allowed_extensions=[".jpg", ".jpeg"],
+            width_min_px=1440,
+            width_max_px=2048,
+            height_min_px=810,
+            height_max_px=1150,
+        )
+
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+        )
+
     @property
-    def image512x512_url(self) -> str:
-        return generate_signed_url(image_name=self.image.name, width=512, height=512)
+    def image1440x810_url(self) -> str:
+        return image_generate_signed_url(
+            image_name=self.image.name, width=1440, height=810
+        )
+
+    @property
+    def image1280x720_url(self) -> str:
+        return image_generate_signed_url(
+            image_name=self.image.name, width=1280, height=720
+        )
+
+    @property
+    def image1024x576_url(self) -> str:
+        return image_generate_signed_url(
+            image_name=self.image.name, width=1024, height=576
+        )
+
+    @property
+    def image960x540_url(self) -> str:
+        return image_generate_signed_url(
+            image_name=self.image.name, width=960, height=540
+        )
+
+    @property
+    def image768x432_url(self) -> str:
+        return image_generate_signed_url(
+            image_name=self.image.name, width=768, height=432
+        )
+
+    @property
+    def image640x360_url(self) -> str:
+        return image_generate_signed_url(
+            image_name=self.image.name, width=640, height=360
+        )
+
+    @property
+    def image576x324_url(self) -> str:
+        return image_generate_signed_url(
+            image_name=self.image.name, width=1440, height=810
+        )
+
+
+class _BaseHeaderImageModel(BaseImageModel):
+    """
+    Generic model for storing and uploading all version needed for a header image.
+    To add this to a model, create a subclass with the UPLOAD_FILE_PATH
+    attribute specified to the path where the image should be uploaded.
+
+    Convention is media/category/supplier/item_name/file_name.extension. All provided
+    path variables should be slugified.
+    """
+
+    UPLOAD_PATH: str
+
+    # Validation of one main image per related set needs to be implemented on a
+    # model-to-model basis.
+    is_main_image = models.BooleanField(
+        "Is main image",
+        default=False,
+        help_text=(
+            "The image we display first in a series of related images. Should only "
+            "apply to one of the images in relation."
+        ),
+    )
+    apply_filter = models.BooleanField(
+        "Apply filter",
+        default=False,
+        help_text=(
+            "Apply filter to image if the image is light to "
+            "maintain an acceptable contrast"
+        ),
+    )
+
+    class Meta:
+        abstract = True
+
+    @property
+    def image1440x810_url(self) -> str:
+        return image_generate_signed_url(
+            image_name=self.image.name, width=1440, height=810
+        )
+
+    @property
+    def image1280x720_url(self) -> str:
+        return image_generate_signed_url(
+            image_name=self.image.name, width=1280, height=720
+        )
+
+    @property
+    def image1024x576_url(self) -> str:
+        return image_generate_signed_url(
+            image_name=self.image.name, width=1024, height=576
+        )
+
+    @property
+    def image960x540_url(self) -> str:
+        return image_generate_signed_url(
+            image_name=self.image.name, width=960, height=540
+        )
+
+    @property
+    def image768x432_url(self) -> str:
+        return image_generate_signed_url(
+            image_name=self.image.name, width=768, height=432
+        )
+
+    @property
+    def image640x360_url(self) -> str:
+        return image_generate_signed_url(
+            image_name=self.image.name, width=640, height=360
+        )
 
 
 class BaseHeaderImageModel(BaseImageModel):
