@@ -62,6 +62,16 @@ services:
           name: aria-redis-prod
           property: connectionString
 
+  - type: web
+    region: frankfurt
+    plan: starter
+    name: aria-thumbor-prod
+    env: docker
+    dockerCommand: "./docker-entrypoint.sh thumbor"
+    autoDeploy: false
+    envVars:
+      - fromGroup: Thumbor
+
   #############
   ## Staging ##
   #############
