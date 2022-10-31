@@ -1,5 +1,3 @@
-from django.core.files.images import ImageFile
-
 from pydantic import BaseModel
 
 
@@ -26,35 +24,3 @@ class BaseListImageRecord(BaseModel):
 
 class BaseArrayFieldLabelRecord(BaseModel):
     name: str
-
-
-class BaseImageFullScreenWidthRecord(BaseModel):
-    image1440x810: str
-
-
-# class BaseImageRecord(BaseModel):
-#     host: str
-#     image_name: str
-#     plain_url: str
-#     signing_key: str
-#     width: int | None
-#     height: int | None
-#     url: str
-#
-#     @classmethod
-#     def from_image(cls, image: ImageFile) -> "BaseImageRecord":
-#         return cls(
-#             host=THUMBOR_SERVER_URL,
-#             signing_key=generate_signing_key(
-#                 image_name=image.name, width=image.width, height=image.height
-#             ),
-#             plain_url=generate_thumbor_plain_url(
-#                 image_name=image.name, width=image.width, height=image.height
-#             ),
-#             image_name=image.name,
-#             width=image.width,
-#             height=image.height,
-#             url=generate_signed_url(
-#                 image_name=image.name, width=image.width, height=image.height
-#             ),
-#         )

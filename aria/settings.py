@@ -167,6 +167,7 @@ PROJECT_APPS = [
     "aria.core",
     "aria.discounts",
     "aria.employees",
+    "aria.files",
     "aria.front",
     "aria.kitchens",
     "aria.notes",

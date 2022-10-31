@@ -23,8 +23,8 @@ class BaseHeaderImageRecord(BaseModel):
     image960x540_url: str
     image768x432_url: str
     image640x360_url: str
-    created_at: datetime | None
-    updated_at: datetime | None
+    created_at: datetime
+    updated_at: datetime
 
     @classmethod
     def from_image(cls, image: T_IMAGE_HEADER) -> BaseHeaderImageRecord:
@@ -47,8 +47,8 @@ class BaseCollectionListImageRecord(BaseModel):
     image_url: str
     image960x540: str
     image576x324: str
-    created_at: datetime | None
-    updated_at: datetime | None
+    created_at: datetime
+    updated_at: datetime
 
     @classmethod
     def from_image(
