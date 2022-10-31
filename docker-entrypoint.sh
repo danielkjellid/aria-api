@@ -42,7 +42,7 @@ if  [ "$1" = 'restore_db' ]; then
 fi
 
 if [ "$1" == 'thumbor' ]; then
-  exec thumbor
+  exec poetry run python thumbor --port=8889
 fi
 
 exec "$@"
