@@ -7,7 +7,7 @@ import pytest
 from aria.categories.tests.utils import create_category
 from aria.core.exceptions import ApplicationError
 from aria.core.records import BaseArrayFieldLabelRecord
-from aria.core.tests.utils import create_image_file
+from aria.files.tests.utils import create_image_file
 from aria.product_attributes.tests.utils import create_color, create_shape
 from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.models import Product

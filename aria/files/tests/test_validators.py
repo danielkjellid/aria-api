@@ -3,11 +3,11 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 import pytest
 
 from aria.core.exceptions import ApplicationError
-from aria.core.tests.utils import create_image_file
-from aria.core.validators import image_validate
+from aria.files.tests.utils import create_image_file
+from aria.files.validators import image_validate
 
 
-class TestCoreValidators:
+class TestFilesValidators:
     def test_validator_image_validate(self):
         """
         Test that the image_validate correctly validates image properties.
