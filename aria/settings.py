@@ -202,8 +202,6 @@ AWS_S3_CUSTOM_DOMAIN = f"{AWS_S3_BUCKET_NAME}.s3.amazonaws.com"
 ##########################
 
 THUMBOR_SECURITY_KEY = env.str("THUMBOR_SECURITY_KEY", default="supersecret")
-THUMBOR_CACHE_UNSAFE = env.bool("THUMBOR_CACHE_UNSAFE", default=False)
-THUMBOR_ALLOW_UNSAFE = env.bool("THUMBOR_ALLOW_UNSAFE", default=DEBUG)
 THUMBOR_SERVER_URL = env.str("THUMBOR_SERVER_URL", default="http://localhost:8888")
 
 ##########

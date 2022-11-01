@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from io import BytesIO
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar
 
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -20,16 +20,17 @@ from PIL import Image as PilImage
 if TYPE_CHECKING:
     from aria.files.models import BaseImageModel
 
+    T_BASE_IMAGE_MODEL = TypeVar("T_BASE_IMAGE_MODEL", bound=BaseImageModel)
 
 crypto_url = CryptoURL(key=settings.THUMBOR_SECURITY_KEY)
 
 
-def asset_get_static_upload_path(instance: BaseImageModel, filename: str) -> str:
+def asset_get_static_upload_path(instance: T_BASE_IMAGE_MODEL, filename: str) -> str:
     """
     Get the path of which to upload the image.
     """
 
-    # Each image model is required to specify where images should be uploaded
+    # Each image model is required to specify where images should be uploaded.
     try:
         path = instance.UPLOAD_PATH.lower()
     except AttributeError as exc:
@@ -102,7 +103,7 @@ def image_resize(
         path = image.temporary_file_path()
         pil_image = PilImage.open(path)
 
-        if pil_image.width > max_width or pil_image > max_height:
+        if pil_image.width > max_width or pil_image.height > max_height:
             pil_image.thumbnail(size)
             pil_image.save(path)
             image.size = os.stat(path).st_size
@@ -112,7 +113,7 @@ def image_resize(
         path = image.path
         pil_image = PilImage.open(path)
 
-        if pil_image.width > max_width or pil_image > max_height:
+        if pil_image.width > max_width or pil_image.height > max_height:
             pil_image.thumbnail(size)
             pil_image.save(path)
 
