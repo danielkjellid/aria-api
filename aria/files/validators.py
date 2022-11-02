@@ -16,10 +16,10 @@ def image_validate(
     *,
     image: UploadedFile | InMemoryUploadedFile | ImageFile,
     allowed_extensions: Iterable[str],
-    width_min_px: int | float | None = None,
-    width_max_px: int | float | None = None,
-    height_min_px: int | float | None = None,
-    height_max_px: int | float | None = None,
+    width_min_px: int | None = None,
+    width_max_px: int | None = None,
+    height_min_px: int | None = None,
+    height_max_px: int | None = None,
 ) -> None:
     """
     Validate a single image's properties.
