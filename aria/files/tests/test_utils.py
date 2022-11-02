@@ -59,7 +59,7 @@ class TestFilesUtils:
 
         # Thumbor uses standard HMAC with SHA1 signing with the native base64 module to
         # encode an urlsafe string.
-        url_path = bytes(f"300x300/smart/{image_name}".encode("utf-8"))
+        url_path = bytes(f"300x300/smart/media/{image_name}".encode("utf-8"))
         key = bytes(security_key.encode("utf-8"))
         digester = hmac.new(key, url_path, hashlib.sha1)
         signature = digester.digest()
@@ -67,7 +67,8 @@ class TestFilesUtils:
         url_safe_signature = base64.urlsafe_b64encode(signature).decode("ascii")
 
         expected_url = (
-            f"{thumbor_server_url}/{url_safe_signature}/300x300/smart/{image_name}"
+            f"{thumbor_server_url}/{url_safe_signature}/300x300/smart/"
+            f"media/{image_name}"
         )
 
         with django_assert_max_num_queries(0):
