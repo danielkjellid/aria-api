@@ -43,6 +43,9 @@ class BaseImageModel(BaseModel):
 
     @property
     def image_url(self) -> str:
+        """
+        Get the url for the native dimensions of the image.
+        """
         return image_generate_signed_url(image_name=self.image.name)
 
     def save(
@@ -109,36 +112,54 @@ class BaseHeaderImageModel(BaseImageModel):
 
     @property
     def image1440x810_url(self) -> str:
+        """
+        Get the url for the 1440x810 version of the image.
+        """
         return image_generate_signed_url(
             image_name=self.image.name, width=1440, height=810
         )
 
     @property
     def image1280x720_url(self) -> str:
+        """
+        Get the url for the 1280x720 version of the image.
+        """
         return image_generate_signed_url(
             image_name=self.image.name, width=1280, height=720
         )
 
     @property
     def image1024x576_url(self) -> str:
+        """
+        Get the url for the 1024x576 version of the image.
+        """
         return image_generate_signed_url(
             image_name=self.image.name, width=1024, height=576
         )
 
     @property
     def image960x540_url(self) -> str:
+        """
+        Get the url for the 960x540 version of the image.
+        """
         return image_generate_signed_url(
             image_name=self.image.name, width=960, height=540
         )
 
     @property
     def image768x432_url(self) -> str:
+        """
+        Get the url for the 768x432 version of the image.
+        """
         return image_generate_signed_url(
             image_name=self.image.name, width=768, height=432
         )
 
     @property
     def image640x360_url(self) -> str:
+        """
+        Get the url for the 640x360 version of the image.
+        """
         return image_generate_signed_url(
             image_name=self.image.name, width=640, height=360
         )
@@ -161,12 +182,18 @@ class BaseCollectionListImageModel(BaseImageModel):
 
     @property
     def image960x540_url(self) -> str:
+        """
+        Get the url for the 960x540 version of the image.
+        """
         return image_generate_signed_url(
             image_name=self.image.name, width=960, height=540
         )
 
     @property
     def image576x324_url(self) -> str:
+        """
+        Get the url for the 576x324 version of the image.
+        """
         return image_generate_signed_url(
             image_name=self.image.name, width=576, height=324
         )
@@ -194,12 +221,18 @@ class BaseThumbnailImage(BaseImageModel):
 
     @property
     def image80x80_url(self) -> str:
+        """
+        Get the url for the 80x80 version of the image.
+        """
         return image_generate_signed_url(
             image_name=self.image.name, width=80, height=80
         )
 
     @property
     def image380x575_url(self) -> str:
+        """
+        Get the url for the 380x575 version of the image.
+        """
         return image_generate_signed_url(
             image_name=self.image.name, width=380, height=575
         )

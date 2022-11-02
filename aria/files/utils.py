@@ -43,7 +43,9 @@ def asset_get_static_upload_path(instance: T_BASE_IMAGE_MODEL, filename: str) ->
     return f"{path}/{slugify(name)}{extension}"
 
 
-def image_generate_signed_url(image_name: str, width: int, height: int) -> str:
+def image_generate_signed_url(
+    image_name: str, width: int | None = None, height: int | None = None
+) -> str:
     """
     Generate a thumbor signed image url.
     """
@@ -77,27 +79,28 @@ def image_resize(
 
     # Uploaded file is in memory.
     if isinstance(image, (InMemoryUploadedFile, UploadedFile)):
-        memory_image = BytesIO(image.read())
-        pil_image = PilImage.open(memory_image)
-        img_format = os.path.splitext(image.name)[1][1:].upper()
-        img_format = "JPEG" if img_format == "JPG" else img_format
+        if image and image.name:
+            memory_image = BytesIO(image.read())
+            pil_image = PilImage.open(memory_image)
+            img_format = os.path.splitext(image.name)[1][1:].upper()
+            img_format = "JPEG" if img_format == "JPG" else img_format
 
-        if pil_image.width > max_width or pil_image.height > max_height:
-            pil_image.thumbnail(size)
+            if pil_image.width > max_width or pil_image.height > max_height:
+                pil_image.thumbnail(size)
 
-        new_image = BytesIO()
-        pil_image.save(new_image, format=img_format)
+            new_image = BytesIO()
+            pil_image.save(new_image, format=img_format)
 
-        new_image = ContentFile(new_image.getvalue())
+            new_image = ContentFile(new_image.getvalue())  # type: ignore
 
-        return InMemoryUploadedFile(
-            file=new_image,
-            field_name=None,
-            name=image.name,
-            content_type=image.content_type,
-            size=None,
-            charset=None,
-        )
+            return InMemoryUploadedFile(
+                file=new_image,
+                field_name=None,
+                name=image.name,
+                content_type=image.content_type,
+                size=None,
+                charset=None,
+            )
 
     # Uploaded file is already on temp-disk.
     elif isinstance(image, TemporaryUploadedFile):
@@ -111,7 +114,7 @@ def image_resize(
 
     # Uploaded file is already on disk.
     elif isinstance(image, ImageFile):
-        path = image.path
+        path = image.path  # type: ignore
         pil_image = PilImage.open(path)
 
         if pil_image.width > max_width or pil_image.height > max_height:

@@ -28,6 +28,9 @@ class BaseHeaderImageRecord(BaseModel):
 
     @classmethod
     def from_image(cls, image: T_IMAGE_HEADER) -> BaseHeaderImageRecord:
+        """
+        Generate record from image.
+        """
         return cls(
             image_url=image.image_url,
             is_main_image=image.is_main_image,
@@ -45,8 +48,8 @@ class BaseHeaderImageRecord(BaseModel):
 
 class BaseCollectionListImageRecord(BaseModel):
     image_url: str
-    image960x540: str
-    image576x324: str
+    image960x540_url: str
+    image576x324_url: str
     created_at: datetime
     updated_at: datetime
 
@@ -54,10 +57,13 @@ class BaseCollectionListImageRecord(BaseModel):
     def from_image(
         cls, image: T_IMAGE_COLLECTION_LIST
     ) -> BaseCollectionListImageRecord:
+        """
+        Generate record from image.
+        """
         return cls(
             image_url=image.image_url,
             image960x540_url=image.image960x540_url,
-            image576x324=image.image576x324_url,
+            image576x324_url=image.image576x324_url,
             created_at=image.created_at,
             updated_at=image.updated_at,
         )
