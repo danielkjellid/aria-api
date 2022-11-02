@@ -193,6 +193,12 @@ class BaseThumbnailImage(BaseImageModel):
         abstract = True
 
     @property
+    def image80x80_url(self) -> str:
+        return image_generate_signed_url(
+            image_name=self.image.name, width=80, height=80
+        )
+
+    @property
     def image380x575_url(self) -> str:
         return image_generate_signed_url(
             image_name=self.image.name, width=380, height=575

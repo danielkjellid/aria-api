@@ -64,6 +64,17 @@ services:
           name: aria-redis-prod
           property: connectionString
 
+  - type: web
+    region: frankfurt
+    plan: starter
+    name: aria-thumbor-prod
+    env: docker
+    dockerFilePath: "./docker/thumbor/Dockerfile"
+    autoDeploy: false
+    envVars:
+      - fromEnv: Thumbor
+      - fromEnv: AWS
+
   #############
   ## Staging ##
   #############
@@ -114,6 +125,17 @@ services:
           type: redis
           name: aria-redis-staging
           property: connectionString
+
+  - type: web
+    region: frankfurt
+    plan: free
+    name: aria-thumbor-staging
+    env: docker
+    dockerFilePath: "./docker/thumbor/Dockerfile"
+    autoDeploy: false
+    envVars:
+      - fromEnv: Thumbor
+      - fromEnv: AWS
 
   ###############
   ## Cron jobs ##
