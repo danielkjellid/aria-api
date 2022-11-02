@@ -49,8 +49,9 @@ def image_generate_signed_url(image_name: str, width: int, height: int) -> str:
     """
 
     thumbor_server_url = settings.THUMBOR_SERVER_URL.rstrip("/")
+    # The media prefix is a temporary quick fix while we fix image paths.
     signed_url = crypto_url.generate(
-        image_url=image_name, width=width, height=height, smart=True
+        image_url=f"media/{image_name}", width=width, height=height, smart=True
     ).strip("/")
 
     return f"{thumbor_server_url}/{signed_url}"
