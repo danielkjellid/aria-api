@@ -22,7 +22,8 @@ services:
     plan: starter
     name: aria-celery-prod
     env: docker
-    dockerCommand: "./docker-entrypoint.sh celery celery,important,newsletter,misc-tasks"
+    dockerFilePath: "./docker/web/Dockerfile"
+    dockerCommand: "./docker/web/docker-entrypoint.sh celery celery,important,newsletter,misc-tasks"
     envVars:
       - key: CELERY_BROKER_URL
         fromService:
@@ -43,7 +44,8 @@ services:
     plan: Starter Plus
     name: aria-api-prod
     env: docker
-    dockerCommand: "./docker-entrypoint.sh start"
+    dockerFilePath: "./docker/web/Dockerfile"
+    dockerCommand: "./docker/web/docker-entrypoint.sh start"
     autoDeploy: false
     envVars:
       - key: DATABASE_URL
@@ -71,7 +73,8 @@ services:
   #    plan: starter
   #    name: aria-celery-staging
   #    env: docker
-  #    dockerCommand: "./docker-entrypoint.sh celery celery,important,newsletter,misc-tasks"
+  #    dockerFilePath: "./docker/web/Dockerfile"
+  #    dockerCommand: "./docker/web/docker-entrypoint.sh celery celery,important,newsletter,misc-tasks"
   #    envVars:
   #      - key: CELERY_BROKER_URL
   #        fromService:
@@ -92,7 +95,8 @@ services:
     plan: starter
     name: aria-api-staging
     env: docker
-    dockerCommand: "./docker-entrypoint.sh start"
+    dockerFilePath: "./docker/web/Dockerfile"
+    dockerCommand: "./docker/web/docker-entrypoint.sh start"
     autoDeploy: false
     envVars:
       - key: DATABASE_URL
@@ -120,7 +124,8 @@ services:
     plan: Starter
     name: aria-cron-dump-db
     env: docker
-    dockerCommand: "./docker-entrypoint.sh db_dump"
+    dockerFilePath: "./docker/web/Dockerfile"
+    dockerCommand: "./docker/web/docker-entrypoint.sh db_dump"
     envVars:
       - fromGroup: AWS
       - key: DATABASE_URL
@@ -140,7 +145,8 @@ services:
     plan: Starter
     name: aria-cron-restore-db
     env: docker
-    dockerCommand: "./docker-entrypoint.sh restore_db --no-swap-db"
+    dockerFilePath: "./docker/web/Dockerfile"
+    dockerCommand: "./docker/web/docker-entrypoint.sh restore_db --no-swap-db"
     envVars:
       - fromGroup: AWS
       - key: DATABASE_URL

@@ -90,6 +90,9 @@ services:
       - thumbor_data:/data
     networks:
       - app-to-app
+    build:
+      context: .
+      dockerfile: 'docker/thumbor/Dockerfile'
 
   minio:
     container_name: MinIO
