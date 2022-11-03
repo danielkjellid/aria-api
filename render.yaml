@@ -23,7 +23,7 @@ services:
     name: aria-celery-prod
     env: docker
     dockerfilePath: "./docker/web/Dockerfile"
-    dockerCommand: "./docker/web/docker-entrypoint.sh celery celery,important,newsletter,misc-tasks"
+    dockerCommand: "./docker-entrypoint.sh celery celery,important,newsletter,misc-tasks"
     envVars:
       - key: CELERY_BROKER_URL
         fromService:
@@ -45,7 +45,7 @@ services:
     name: aria-api-prod
     env: docker
     dockerfilePath: "./docker/web/Dockerfile"
-    dockerCommand: "./docker/web/docker-entrypoint.sh start"
+    dockerCommand: "./docker-entrypoint.sh start"
     autoDeploy: false
     envVars:
       - key: DATABASE_URL
@@ -147,7 +147,7 @@ services:
     name: aria-cron-dump-db
     env: docker
     dockerfilePath: "./docker/web/Dockerfile"
-    dockerCommand: "./docker/web/docker-entrypoint.sh db_dump"
+    dockerCommand: "./docker-entrypoint.sh db_dump"
     envVars:
       - fromGroup: AWS
       - key: DATABASE_URL
@@ -168,7 +168,7 @@ services:
     name: aria-cron-restore-db
     env: docker
     dockerfilePath: "./docker/web/Dockerfile"
-    dockerCommand: "./docker/web/docker-entrypoint.sh restore_db --no-swap-db"
+    dockerCommand: "./docker-entrypoint.sh restore_db --no-swap-db"
     envVars:
       - fromGroup: AWS
       - key: DATABASE_URL
