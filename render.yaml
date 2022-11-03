@@ -126,17 +126,6 @@ services:
           name: aria-redis-staging
           property: connectionString
 
-  - type: web
-    region: frankfurt
-    plan: free
-    name: aria-thumbor-staging
-    env: docker
-    dockerfilePath: "./docker/thumbor/Dockerfile"
-    autoDeploy: false
-    envVars:
-      - fromGroup: Thumbor
-      - fromGroup: AWS
-
   ###############
   ## Cron jobs ##
   ###############
