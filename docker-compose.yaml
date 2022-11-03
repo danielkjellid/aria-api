@@ -67,7 +67,7 @@ services:
       - AWS_RESULT_STORAGE_ROOT_PATH=media/media-cache
       - AWS_RESULT_STORAGE_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
 
-      - LOG_LEVEL=info
+      - LOG_LEVEL=debug
       - LOADER=thumbor_aws.loader
 
       # Max AGE sent as a header for the image served by thumbor in seconds (86400 is a day of caching)
