@@ -30,20 +30,20 @@ RUN pip install --no-cache poetry==1.2.0
 USER aria
 WORKDIR /app
 
-COPY --chown=aria ../../poetry.lock pyproject.toml poetry.toml manage.py .env.test setup.cfg /app/
+COPY --chown=aria poetry.lock pyproject.toml poetry.toml manage.py .env.test setup.cfg /app/
 RUN poetry install --no-root --no-dev --no-interaction --no-ansi
 
 # Render needs a .ssh folder to make ssh tunneling work.
 RUN mkdir ./.ssh && chmod 700 ./.ssh
 
 # Copy application files
-COPY --chown=aria ../../aria /app/aria/
-COPY --chown=aria ../../public /app/public/
-COPY --chown=aria ../../bin /app/bin/
+COPY --chown=aria aria/ /app/aria/
+COPY --chown=aria public/ /app/public/
+COPY --chown=aria bin/ /app/bin/
 
 # Collect static files
 RUN poetry run python manage.py collectstatic --noinput
 
-COPY --chown=aria docker-entrypoint.sh /app
+COPY --chown=aria docker/web/docker-entrypoint.sh /app
 RUN chmod +x docker-entrypoint.sh
 ENTRYPOINT ["./docker-entrypoint.sh"]
