@@ -195,7 +195,7 @@ AWS_S3_SIGNATURE_VERSION = None
 AWS_S3_FILE_OVERWRITE = False
 AWS_S3_BUCKET_AUTH_STATIC = False
 AWS_S3_BUCKET_NAME_STATIC = env.str("AWS_S3_BUCKET_NAME_STATIC", default="dev")
-AWS_S3_CUSTOM_DOMAIN = env.str("AWS_ENDPOINT_URL", default="localhost:9001")
+AWS_S3_CUSTOM_DOMAIN = env.str("AWS_S3_CUSTOM_DOMAIN", default="localhost:9001")
 
 ##########################
 # Files backend: thumbor #
