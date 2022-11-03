@@ -765,6 +765,17 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "libthumbor"
+version = "2.0.2"
+description = "libthumbor is the python extension to generate thumbor URLs"
+category = "main"
+optional = false
+python-versions = ">=3.6,<4.0"
+
+[package.dependencies]
+six = ">=1.14.0,<2.0.0"
+
+[[package]]
 name = "matplotlib-inline"
 version = "0.1.3"
 description = "Inline Matplotlib backend for Jupyter"
@@ -1526,7 +1537,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "3.10.2"
-content-hash = "f4a8daeaecc89f796213f2d010ea0051c599bd726143232615374b470374001f"
+content-hash = "2f5343716f59afb120b162dd01c789bf49ab57ac59a473c675f1a3a82e78ae96"
 
 [metadata.files]
 amqp = [
@@ -1898,6 +1909,10 @@ lazy-object-proxy = [
     {file = "lazy_object_proxy-1.7.1-cp39-cp39-win32.whl", hash = "sha256:2130db8ed69a48a3440103d4a520b89d8a9405f1b06e2cc81640509e8bf6548f"},
     {file = "lazy_object_proxy-1.7.1-cp39-cp39-win_amd64.whl", hash = "sha256:677ea950bef409b47e51e733283544ac3d660b709cfce7b187f5ace137960d61"},
     {file = "lazy_object_proxy-1.7.1-pp37.pp38-none-any.whl", hash = "sha256:d66906d5785da8e0be7360912e99c9188b70f52c422f9fc18223347235691a84"},
+]
+libthumbor = [
+    {file = "libthumbor-2.0.2-py3-none-any.whl", hash = "sha256:4d4dc0cef2c4d5b24dd7b8b25f62097508f10820aaf31eada7d924d6ac0d5378"},
+    {file = "libthumbor-2.0.2.tar.gz", hash = "sha256:d4fb22159ad30d542acbc0379e468ce4b74f881a2b8918079249533a273337e8"},
 ]
 matplotlib-inline = [
     {file = "matplotlib-inline-0.1.3.tar.gz", hash = "sha256:a04bfba22e0d1395479f866853ec1ee28eea1485c1d69a6faf00dc3e24ff34ee"},

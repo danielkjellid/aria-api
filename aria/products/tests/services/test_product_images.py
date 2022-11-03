@@ -2,7 +2,7 @@ from unittest.mock import ANY
 
 import pytest
 
-from aria.core.tests.utils import create_image_file
+from aria.files.tests.utils import create_image_file
 from aria.products.records import ProductImageRecord
 from aria.products.services.product_images import product_image_create
 from aria.products.tests.utils import create_product
