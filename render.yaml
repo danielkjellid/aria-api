@@ -72,8 +72,8 @@ services:
     dockerfilePath: "./docker/thumbor/Dockerfile"
     autoDeploy: false
     envVars:
-      - fromEnv: Thumbor
-      - fromEnv: AWS
+      - fromGroup: Thumbor
+      - fromGroup: AWS
 
   #############
   ## Staging ##
@@ -134,8 +134,8 @@ services:
     dockerfilePath: "./docker/thumbor/Dockerfile"
     autoDeploy: false
     envVars:
-      - fromEnv: Thumbor
-      - fromEnv: AWS
+      - fromGroup: Thumbor
+      - fromGroup: AWS
 
   ###############
   ## Cron jobs ##
