@@ -107,7 +107,7 @@ services:
     name: aria-api-staging
     env: docker
     dockerfilePath: "./docker/web/Dockerfile"
-    dockerCommand: "./docker/web/docker-entrypoint.sh start"
+    dockerCommand: "./docker-entrypoint.sh start"
     autoDeploy: false
     envVars:
       - key: DATABASE_URL
