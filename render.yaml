@@ -22,7 +22,7 @@ services:
     plan: starter
     name: aria-celery-prod
     env: docker
-    dockerFilePath: "./docker/web/Dockerfile"
+    dockerfilePath: "./docker/web/Dockerfile"
     dockerCommand: "./docker/web/docker-entrypoint.sh celery celery,important,newsletter,misc-tasks"
     envVars:
       - key: CELERY_BROKER_URL
@@ -44,7 +44,7 @@ services:
     plan: Starter Plus
     name: aria-api-prod
     env: docker
-    dockerFilePath: "./docker/web/Dockerfile"
+    dockerfilePath: "./docker/web/Dockerfile"
     dockerCommand: "./docker/web/docker-entrypoint.sh start"
     autoDeploy: false
     envVars:
@@ -69,7 +69,7 @@ services:
     plan: starter
     name: aria-thumbor-prod
     env: docker
-    dockerFilePath: "./docker/thumbor/Dockerfile"
+    dockerfilePath: "./docker/thumbor/Dockerfile"
     autoDeploy: false
     envVars:
       - fromEnv: Thumbor
@@ -84,7 +84,7 @@ services:
   #    plan: starter
   #    name: aria-celery-staging
   #    env: docker
-  #    dockerFilePath: "./docker/web/Dockerfile"
+  #    dockerfilePath: "./docker/web/Dockerfile"
   #    dockerCommand: "./docker/web/docker-entrypoint.sh celery celery,important,newsletter,misc-tasks"
   #    envVars:
   #      - key: CELERY_BROKER_URL
@@ -106,7 +106,7 @@ services:
     plan: starter
     name: aria-api-staging
     env: docker
-    dockerFilePath: "./docker/web/Dockerfile"
+    dockerfilePath: "./docker/web/Dockerfile"
     dockerCommand: "./docker/web/docker-entrypoint.sh start"
     autoDeploy: false
     envVars:
@@ -131,7 +131,7 @@ services:
     plan: free
     name: aria-thumbor-staging
     env: docker
-    dockerFilePath: "./docker/thumbor/Dockerfile"
+    dockerfilePath: "./docker/thumbor/Dockerfile"
     autoDeploy: false
     envVars:
       - fromEnv: Thumbor
@@ -146,7 +146,7 @@ services:
     plan: Starter
     name: aria-cron-dump-db
     env: docker
-    dockerFilePath: "./docker/web/Dockerfile"
+    dockerfilePath: "./docker/web/Dockerfile"
     dockerCommand: "./docker/web/docker-entrypoint.sh db_dump"
     envVars:
       - fromGroup: AWS
@@ -167,7 +167,7 @@ services:
     plan: Starter
     name: aria-cron-restore-db
     env: docker
-    dockerFilePath: "./docker/web/Dockerfile"
+    dockerfilePath: "./docker/web/Dockerfile"
     dockerCommand: "./docker/web/docker-entrypoint.sh restore_db --no-swap-db"
     envVars:
       - fromGroup: AWS
