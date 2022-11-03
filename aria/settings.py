@@ -179,49 +179,46 @@ PROJECT_APPS = [
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
-####################################
-# Files backend: django_s3_storage #
-####################################
+#########
+# Files #
+#########
 
+DEFAULT_FILE_STORAGE = "aria.core.storage.S3Storage"
+STATICFILES_STORAGE = "django_s3_storage.storage.StaticS3Storage"
+
+# Files auth.
 AWS_REGION = env.str("AWS_REGION", default="local")
 AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID", default="aria")
 AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY", default="ariatestpassword")
-AWS_S3_BUCKET_NAME = env.str("AWS_S3_BUCKET_NAME", default="dev")
+AWS_ENDPOINT_URL = env.str("AWS_ENDPOINT_URL", default="http://localhost:9000")
 
+# Files.
+MEDIA_URL = env.str("MEDIA_URL", default="/media/")
 AWS_S3_ADDRESSING_STYLE = "auto"
 AWS_S3_BUCKET_AUTH = False
+AWS_S3_BUCKET_NAME = env.str("AWS_S3_BUCKET_NAME", default="dev")
+AWS_S3_ENDPOINT_URL = AWS_ENDPOINT_URL
+AWS_S3_FILE_OVERWRITE = False
 AWS_S3_MAX_AGE_SECONDS = 60 * 60 * 24 * 365  # 1 year.
 AWS_S3_SIGNATURE_VERSION = None
-AWS_S3_FILE_OVERWRITE = False
+
+# Static files.
+STATIC_URL = env.str("STATIC_URL", default="/static/")
 AWS_S3_BUCKET_AUTH_STATIC = False
 AWS_S3_BUCKET_NAME_STATIC = env.str("AWS_S3_BUCKET_NAME_STATIC", default="dev")
-AWS_S3_CUSTOM_DOMAIN = env.str("AWS_ENDPOINT_URL", default="localhost:9001")
+AWS_S3_ENDPOINT_URL_STATIC = AWS_ENDPOINT_URL
+AWS_S3_KEY_PREFIX_STATIC = "static"
 
-##########################
-# Files backend: thumbor #
-##########################
+##################
+# Files: thumbor #
+##################
 
 THUMBOR_SECURITY_KEY = env.str("THUMBOR_SECURITY_KEY", default="supersecret")
 THUMBOR_SERVER_URL = env.str("THUMBOR_SERVER_URL", default="http://localhost:8888")
 
-##########
+#########
 # Files #
 #########
-
-if ENVIRONMENT == "dev":
-    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-else:
-    DEFAULT_FILE_STORAGE = "aria.core.storage.S3Storage"
-    STATICFILES_STORAGE = "django_s3_storage.storage.StaticS3Storage"
-
-PUBLIC_ROOT_PATH = BASE_DIR / "public"
-
-MEDIA_ROOT = str(PUBLIC_ROOT_PATH / "media")
-MEDIA_URL = env.str("MEDIA_URL", default="/media/")
-
-# Static files
-STATIC_ROOT = str(PUBLIC_ROOT_PATH / "static")
-STATIC_URL = env.str("STATIC_URL", default="/static/")
 
 IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = "imagekit.cachefiles.strategies.Optimistic"
 
