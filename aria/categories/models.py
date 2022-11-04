@@ -5,11 +5,14 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 from aria.categories.enums import PromotionType
 from aria.categories.managers import CategoryManager, CategoryQueryset
-from aria.core.records import BaseHeaderImageRecord, BaseListImageRecord
+from aria.core.models import BaseModel
 from aria.files.models import BaseCollectionListImageModel, BaseHeaderImageModel
+from aria.files.records import BaseCollectionListImageRecord, BaseHeaderImageRecord
 
 
-class Category(MPTTModel, BaseHeaderImageModel, BaseCollectionListImageModel):
+class Category(
+    MPTTModel, BaseModel, BaseHeaderImageModel, BaseCollectionListImageModel
+):
     """
     A category of which a product belongs to.
     """
@@ -141,23 +144,11 @@ class Category(MPTTModel, BaseHeaderImageModel, BaseCollectionListImageModel):
         """
         Get category header images.
         """
-        return BaseHeaderImageRecord(
-            apply_filter=self.apply_filter,
-            image_512x512=self.image_512x512.url,
-            image_640x275=self.image_640x275.url,
-            image_1024x575=self.image_1024x575.url,
-            image_1024x1024=self.image_1024x1024.url,
-            image_1536x860=self.image_1536x860.url,
-            image_2048x1150=self.image_2048x1150.url,
-        )
+        return BaseHeaderImageRecord.from_model(model=self)
 
     @property
-    def list_images(self) -> BaseListImageRecord:
+    def list_images(self) -> BaseCollectionListImageRecord:
         """
         Get category list images.
         """
-        return BaseListImageRecord(
-            image500x305=self.image500x305.url,
-            image600x440=self.image600x440.url,
-            image850x520=self.image850x520.url,
-        )
+        return BaseCollectionListImageRecord.from_model(model=self)

@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from pydantic import BaseModel
 
-from aria.core.records import BaseHeaderImageRecord, BaseListImageRecord
+from aria.files.records import BaseCollectionListImageRecord, BaseHeaderImageRecord
 
 
 class KitchenVariantRecord(BaseModel):
@@ -28,7 +28,7 @@ class KitchenRecord(BaseModel):
     slug: str
     supplier: KitchenSupplierRecord
     thumbnail_description: str
-    list_images: BaseListImageRecord
+    list_images: BaseCollectionListImageRecord
 
 
 class KitchenDetailRecord(KitchenRecord):

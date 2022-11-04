@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from aria.core.records import BaseHeaderImageRecord, BaseListImageRecord
+from aria.files.records import BaseCollectionListImageRecord, BaseHeaderImageRecord
 
 
 class CategoryRecord(BaseModel):
@@ -12,7 +12,7 @@ class CategoryRecord(BaseModel):
     ordering: int
     parent: int | None
     images: BaseHeaderImageRecord
-    list_images: BaseListImageRecord
+    list_images: BaseCollectionListImageRecord
 
 
 class CategoryDetailRecord(BaseModel):
@@ -26,4 +26,4 @@ class CategoryDetailRecord(BaseModel):
     parents: list[CategoryRecord]
     children: list[CategoryRecord]
     images: BaseHeaderImageRecord
-    list_images: BaseListImageRecord
+    list_images: BaseCollectionListImageRecord

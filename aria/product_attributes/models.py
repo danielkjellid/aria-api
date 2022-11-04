@@ -6,7 +6,8 @@ from django.utils.text import slugify
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
-from aria.core.models import BaseImageModel, BaseModel, BaseThumbnailImageModel
+from aria.core.models import BaseModel
+from aria.files.models import BaseImageModel, BaseThumbnailImageModel
 from aria.product_attributes.managers import (
     ColorQuerySet,
     ShapeQuerySet,

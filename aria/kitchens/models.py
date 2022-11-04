@@ -4,6 +4,7 @@ from django.utils.text import slugify
 from imagekit.models.fields import ProcessedImageField
 from imagekit.processors import ResizeToFill
 
+from aria.core.models import BaseModel
 from aria.files.models import BaseCollectionListImageModel, BaseHeaderImageModel
 from aria.kitchens.managers import KitchenQuerySet
 from aria.products.enums import ProductStatus
@@ -12,7 +13,7 @@ from aria.suppliers.models import Supplier
 _KitchenManager = models.Manager.from_queryset(KitchenQuerySet)
 
 
-class Kitchen(BaseHeaderImageModel, BaseCollectionListImageModel):
+class Kitchen(BaseModel, BaseHeaderImageModel, BaseCollectionListImageModel):
     """
     A representation of a kitchen line we sell.
     """

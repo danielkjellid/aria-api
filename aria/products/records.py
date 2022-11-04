@@ -3,7 +3,8 @@ from decimal import Decimal
 from pydantic import BaseModel
 
 from aria.categories.records import CategoryDetailRecord
-from aria.core.records import BaseArrayFieldLabelRecord, BaseHeaderImageRecord
+from aria.core.records import BaseArrayFieldLabelRecord
+from aria.files.records import BaseHeaderImageRecord
 from aria.product_attributes.records import (
     ColorDetailRecord,
     ShapeDetailRecord,

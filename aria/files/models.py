@@ -2,7 +2,6 @@ from typing import Iterable
 
 from django.db import models
 
-from aria.core.models import BaseModel
 from aria.files.utils import (
     asset_get_static_upload_path,
     image_generate_signed_url,
@@ -11,7 +10,7 @@ from aria.files.utils import (
 from aria.files.validators import image_validate
 
 
-class BaseFileModel(BaseModel):
+class BaseFileModel(models.Model):
     """
     Generic file model. Comes ready with upload path validation.
     """
@@ -24,7 +23,7 @@ class BaseFileModel(BaseModel):
         abstract = True
 
 
-class BaseImageModel(BaseModel):
+class BaseImageModel(models.Model):
     """
     Generic image model. Comes ready with upload path and image validation.
     """

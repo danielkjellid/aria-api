@@ -2,12 +2,6 @@ version: "3"
 
 volumes:
   postgres:
-  public_media:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./public/media
   thumbor_data:
     driver: local
   minio_data:
@@ -53,7 +47,7 @@ services:
       - AUTO_PNG_TO_JPG='True'
       - AUTO_WEBP='True'
       - ALLOW_OLD_URLS='False'
-      - ALLOW_UNSAFE_URL='False'
+      - ALLOW_UNSAFE_URL='True'
 
       - AWS_LOADER_REGION_NAME=${AWS_REGION}
       - AWS_LOADER_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
@@ -110,7 +104,6 @@ services:
       - '9001:9001'
     volumes:
       - 'minio_data:/data'
-      - 'public_media:/media'
     networks:
       - app-to-app
 

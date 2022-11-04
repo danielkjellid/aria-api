@@ -1,6 +1,6 @@
 from django.db.models import Q
 
-from aria.core.selectors import base_header_image_record, base_list_image_record
+from aria.files.records import BaseCollectionListImageRecord, BaseHeaderImageRecord
 from aria.kitchens.models import Kitchen
 from aria.kitchens.records import (
     KitchenDetailRecord,
@@ -24,7 +24,7 @@ def kitchen_record(*, kitchen: Kitchen) -> KitchenRecord:
             id=kitchen.supplier.id, name=kitchen.supplier.name
         ),
         thumbnail_description=kitchen.thumbnail_description,
-        list_images=base_list_image_record(instance=kitchen),
+        list_images=BaseCollectionListImageRecord.from_model(model=kitchen),
     )
 
 
@@ -95,7 +95,7 @@ def kitchen_detail(
             KitchenVariantColorRecord(id=obj.id, name=obj.name, color_hex=obj.color_hex)
             for obj in kitchen.trend_variants.all()
         ],
-        images=base_header_image_record(instance=kitchen),
+        images=BaseHeaderImageRecord.from_model(model=kitchen),
     )
 
     return record
