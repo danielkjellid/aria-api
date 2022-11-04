@@ -5,7 +5,7 @@ from django.db.models import Q
 from aria.categories.models import Category
 from aria.categories.selectors import category_tree_active_list_for_product
 from aria.core.decorators import cached
-from aria.core.models import BaseQuerySet
+from aria.core.managers import BaseQuerySet
 from aria.core.selectors import base_header_image_record
 from aria.product_attributes.records import ColorDetailRecord, ShapeDetailRecord
 from aria.products.filters import ProductSearchFilter

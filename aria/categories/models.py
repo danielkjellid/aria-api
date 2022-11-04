@@ -5,11 +5,11 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 from aria.categories.enums import PromotionType
 from aria.categories.managers import CategoryManager, CategoryQueryset
-from aria.core.models import BaseHeaderImageModel, BaseListImageModel, BaseModel
 from aria.core.records import BaseHeaderImageRecord, BaseListImageRecord
+from aria.files.models import BaseCollectionListImageModel, BaseHeaderImageModel
 
 
-class Category(MPTTModel, BaseModel, BaseHeaderImageModel, BaseListImageModel):
+class Category(MPTTModel, BaseHeaderImageModel, BaseCollectionListImageModel):
     """
     A category of which a product belongs to.
     """

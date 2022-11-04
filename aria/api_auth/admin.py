@@ -7,7 +7,7 @@ from django.db.models import Model
 from django.http import HttpRequest
 
 from aria.api_auth.models import BlacklistedToken, OutstandingToken
-from aria.core.models import BaseQuerySet
+from aria.core.managers import BaseQuerySet
 from aria.users.models import User
 
 

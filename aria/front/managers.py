@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from django.db.models import Prefetch
 from django.utils import timezone
 
-from aria.core.models import BaseQuerySet
+from aria.core.managers import BaseQuerySet
 
 if TYPE_CHECKING:
     from aria.front import models

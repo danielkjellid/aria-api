@@ -199,7 +199,7 @@ class BaseCollectionListImageModel(BaseImageModel):
         )
 
 
-class BaseThumbnailImage(BaseImageModel):
+class BaseThumbnailImageModel(models.Model):
     """
     Generic model for storing and uploading all version needed for a thumbnail
     image. To add this to a model, create a subclass with the UPLOAD_FILE_PATH
@@ -216,8 +216,22 @@ class BaseThumbnailImage(BaseImageModel):
     THUMBNAIL_WIDTH = 350
     THUMBNAIL_HEIGHT = 575
 
+    thumbnail = models.ImageField(
+        "thumbnail",
+        upload_to=asset_get_static_upload_path,
+        blank=True,
+        null=False,
+    )
+
     class Meta:
         abstract = True
+
+    @property
+    def image_url(self) -> str:
+        """
+        Get the url for the native dimensions of the image.
+        """
+        return image_generate_signed_url(image_name=self.image.name)
 
     @property
     def image80x80_url(self) -> str:
@@ -247,6 +261,15 @@ class BaseThumbnailImage(BaseImageModel):
         """
         Resize and validate image on save.
         """
+
+        image_validate(
+            image=self.image,
+            allowed_extensions=[".jpg", ".jpeg"],
+            width_min_px=370,
+            width_max_px=450,
+            height_min_px=575,
+            height_max_px=690,
+        )
 
         image_resize(
             image=self.image,

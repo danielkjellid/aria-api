@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from aria.core.models import BaseQuerySet
+from aria.core.managers import BaseQuerySet
 
 if TYPE_CHECKING:
     from aria.suppliers import models  # noqa
