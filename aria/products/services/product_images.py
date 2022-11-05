@@ -22,7 +22,7 @@ def product_image_create(
         width_min_px=1536,
         width_max_px=2048,
         height_min_px=860,
-        height_max_px=1150,
+        height_max_px=1500,
     )
 
     product_image = ProductImage.objects.create(

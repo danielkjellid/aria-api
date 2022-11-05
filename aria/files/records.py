@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import datetime
 from typing import TypeVar
 
 from pydantic import BaseModel
@@ -14,15 +13,15 @@ T_IMAGE_COLLECTION_LIST = TypeVar(
 
 
 class BaseHeaderImageRecord(BaseModel):
-    image_url: str
     is_main_image: bool
     apply_filter: bool
-    image1440x810_url: str
-    image1280x720_url: str
-    image1024x576_url: str
-    image960x540_url: str
-    image768x432_url: str
-    image640x360_url: str
+    image_url: str | None
+    image1440x810_url: str | None
+    image1280x720_url: str | None
+    image1024x576_url: str | None
+    image960x540_url: str | None
+    image768x432_url: str | None
+    image640x360_url: str | None
 
     @classmethod
     def from_model(cls, model: T_IMAGE_HEADER) -> BaseHeaderImageRecord:
@@ -43,9 +42,9 @@ class BaseHeaderImageRecord(BaseModel):
 
 
 class BaseCollectionListImageRecord(BaseModel):
-    image_url: str
-    image960x540_url: str
-    image576x324_url: str
+    image_url: str | None
+    image960x540_url: str | None
+    image576x324_url: str | None
 
     @classmethod
     def from_model(

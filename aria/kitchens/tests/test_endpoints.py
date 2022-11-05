@@ -35,9 +35,9 @@ class TestPublicKitchensEndpoints:
                 "slug": available_kitchen_3.slug,
                 "thumbnailDescription": available_kitchen_3.thumbnail_description,
                 "listImages": {
-                    "image500x305": available_kitchen_3.image500x305.url,
-                    "image600x440": available_kitchen_3.image600x440.url,
-                    "image850x520": available_kitchen_3.image850x520.url,
+                    "imageUrl": available_kitchen_3.image_url,
+                    "image960x540Url": available_kitchen_3.image960x540_url,
+                    "image576x324Url": available_kitchen_3.image576x324_url,
                 },
             },
             {
@@ -46,9 +46,9 @@ class TestPublicKitchensEndpoints:
                 "slug": available_kitchen_2.slug,
                 "thumbnailDescription": available_kitchen_2.thumbnail_description,
                 "listImages": {
-                    "image500x305": available_kitchen_2.image500x305.url,
-                    "image600x440": available_kitchen_2.image600x440.url,
-                    "image850x520": available_kitchen_2.image850x520.url,
+                    "imageUrl": available_kitchen_2.image_url,
+                    "image960x540Url": available_kitchen_2.image960x540_url,
+                    "image576x324Url": available_kitchen_2.image576x324_url,
                 },
             },
             {
@@ -57,9 +57,9 @@ class TestPublicKitchensEndpoints:
                 "slug": available_kitchen_1.slug,
                 "thumbnailDescription": available_kitchen_1.thumbnail_description,
                 "listImages": {
-                    "image500x305": available_kitchen_1.image500x305.url,
-                    "image600x440": available_kitchen_1.image600x440.url,
-                    "image850x520": available_kitchen_1.image850x520.url,
+                    "imageUrl": available_kitchen_1.image_url,
+                    "image960x540Url": available_kitchen_1.image960x540_url,
+                    "image576x324Url": available_kitchen_1.image576x324_url,
                 },
             },
         ]
@@ -117,12 +117,14 @@ class TestPublicKitchensEndpoints:
             ],
             "images": {
                 "applyFilter": kitchen.apply_filter,
-                "image512x512": kitchen.image_512x512.url,
-                "image640x275": kitchen.image_640x275.url,
-                "image1024x575": kitchen.image_1024x575.url,
-                "image1024x1024": kitchen.image_1024x1024.url,
-                "image1536x860": kitchen.image_1536x860.url,
-                "image2048x1150": kitchen.image_2048x1150.url,
+                "isMainImage": kitchen.is_main_image,
+                "imageUrl": kitchen.image_url,
+                "image1440x810Url": kitchen.image1440x810_url,
+                "image1280x720Url": kitchen.image1280x720_url,
+                "image1024x576Url": kitchen.image1024x576_url,
+                "image960x540Url": kitchen.image960x540_url,
+                "image768x432Url": kitchen.image768x432_url,
+                "image640x360Url": kitchen.image640x360_url,
             },
         }
 
