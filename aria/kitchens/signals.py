@@ -4,7 +4,7 @@ from django.db.models import Model
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 
-from aria.core.utils import cleanup_files_from_deleted_instance
+from aria.files.s3_utils import s3_assets_cleanup
 from aria.kitchens.models import Decor, Kitchen, Plywood
 
 
@@ -20,4 +20,4 @@ def delete_kitchen_files(
     """
     Signal that deletes related images when a kitchen is deleted.
     """
-    cleanup_files_from_deleted_instance(instance=instance)
+    s3_assets_cleanup(instance=instance)

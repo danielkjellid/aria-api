@@ -1,7 +1,7 @@
 from django.core.files.images import ImageFile
 from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
 
-from aria.core.validators import image_validate
+from aria.files.validators import image_validate
 from aria.products.models import Product, ProductImage
 from aria.products.records import ProductImageRecord
 

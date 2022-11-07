@@ -4,7 +4,7 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 
 from aria.categories.models import Category
-from aria.core.utils import cleanup_files_from_deleted_instance
+from aria.files.s3_utils import s3_assets_cleanup
 
 
 @receiver(post_delete, sender=Category)
@@ -17,4 +17,4 @@ def delete_product_files(
     """
     Delete related static assets upon product deletion.
     """
-    cleanup_files_from_deleted_instance(instance=instance)
+    s3_assets_cleanup(instance=instance)

@@ -44,7 +44,7 @@ def asset_get_static_upload_path(instance: T_BASE_IMAGE_MODEL, filename: str) ->
 
 
 def image_generate_signed_url(
-    image_name: str, width: int | None = None, height: int | None = None
+    *, image_name: str, width: int | None = None, height: int | None = None
 ) -> str:
     """
     Generate a thumbor signed image url.
@@ -60,6 +60,7 @@ def image_generate_signed_url(
 
 
 def image_resize(
+    *,
     image: ImageFile | InMemoryUploadedFile | UploadedFile | TemporaryUploadedFile,
     max_width: int,
     max_height: int,

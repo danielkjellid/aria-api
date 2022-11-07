@@ -4,7 +4,7 @@ from django.core.files.images import ImageFile
 from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
 from django.utils.text import slugify
 
-from aria.core.validators import image_validate
+from aria.files.validators import image_validate
 from aria.product_attributes.models import Size, Variant
 from aria.product_attributes.records import (
     SizeDetailRecord,
