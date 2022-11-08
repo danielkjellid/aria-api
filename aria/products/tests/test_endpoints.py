@@ -83,12 +83,9 @@ class TestPublicProductsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "thumbnailUrl": option.variant.thumbnail.url
-                                if option.variant.thumbnail
-                                else None,
-                                "imageUrl": option.variant.image.id
-                                if option.variant.image
-                                else None,
+                                "imageUrl": option.variant.image_url,
+                                "image80x80Url": option.variant.image80x80_url,
+                                "image380x575Url": option.variant.image380x575_url,
                             }
                             for option in product.options.all()
                             if option.variant
@@ -187,12 +184,9 @@ class TestPublicProductsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "thumbnailUrl": option.variant.thumbnail.url
-                                if option.variant.thumbnail
-                                else None,
-                                "imageUrl": option.variant.image.id
-                                if option.variant.image
-                                else None,
+                                "imageUrl": option.variant.image_url,
+                                "image80x80Url": option.variant.image80x80_url,
+                                "image380x575Url": option.variant.image380x575_url,
                             }
                             for option in product.options.all()
                             if option.variant
@@ -304,7 +298,8 @@ class TestPublicProductsEndpoints:
                         "id": option_1.variant.id,
                         "name": option_1.variant.name,
                         "imageUrl": None,
-                        "thumbnailUrl": None,
+                        "image80x80Url": None,
+                        "image380x575Url": None,
                     },
                     "size": {
                         "id": option_1.size.id,
@@ -320,7 +315,8 @@ class TestPublicProductsEndpoints:
                         "id": option_2.variant.id,
                         "name": option_2.variant.name,
                         "imageUrl": None,
-                        "thumbnailUrl": None,
+                        "image80x80Url": None,
+                        "image380x575Url": None,
                     },
                     "size": {
                         "id": option_2.size.id,

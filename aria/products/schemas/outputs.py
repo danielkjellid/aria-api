@@ -14,7 +14,8 @@ class ProductVariantOutput(Schema):
     id: int
     name: str
     image_url: str | None
-    thumbnail_url: str | None
+    image80x80_url: str | None
+    image380x575_url: str | None
 
 
 class ProductSizeOutput(Schema):
