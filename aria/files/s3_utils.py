@@ -3,12 +3,13 @@ from typing import TypeVar
 from django.conf import settings
 from django.db.models import FileField, ImageField, Model
 
+from django_resized.forms import ResizedImageField, ResizedImageFieldFile
 from django_s3_storage.storage import S3Storage
 
 T_MODEL = TypeVar("T_MODEL", bound=Model)
 
 
-def s3_folder_cleanup(*, storage_key: str | None = None) -> None:
+def s3_asset_delete(*, storage_key: str | None = None) -> None:
     """
     Delete dangling folders in S3 storage.
     """
@@ -35,11 +36,14 @@ def s3_asset_cleanup(*, instance: T_MODEL, field: str) -> None:
 
     instance_field = getattr(instance, field, None)
 
-    if instance_field and isinstance(instance_field, (ImageField, FileField)):
+    if instance_field and isinstance(
+        instance_field,
+        (ImageField, FileField, ResizedImageField, ResizedImageFieldFile),
+    ):
         storage_key = instance_field.name
         instance_field.delete(save=False)  # type: ignore
 
-        s3_folder_cleanup(storage_key=storage_key)
+        s3_asset_delete(storage_key=storage_key)
 
 
 def s3_assets_cleanup(*, instance: T_MODEL) -> None:

@@ -19,4 +19,5 @@ def delete_images(
     """
     Delete static assets belonging to deleted instance.
     """
+    print("received signal")
     s3_assets_cleanup(instance=instance)
