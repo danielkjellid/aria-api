@@ -3,7 +3,8 @@ from django.utils.text import slugify
 
 from django_countries.fields import CountryField
 
-from aria.core.models import BaseImageModel, BaseModel
+from aria.core.models import BaseModel
+from aria.files.models import BaseImageModel
 from aria.suppliers.managers import SupplierQuerySet
 
 _SupplierManager = models.Manager.from_queryset(SupplierQuerySet)

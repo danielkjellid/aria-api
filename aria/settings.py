@@ -153,8 +153,8 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "corsheaders",
     "django_countries",
+    "django_resized",
     "django_s3_storage",
-    "imagekit",
     "mptt",
     "ninja",
 ]
@@ -183,7 +183,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 # Files #
 #########
 
-DEFAULT_FILE_STORAGE = "aria.core.storage.S3Storage"
+DEFAULT_FILE_STORAGE = "aria.files.storage.S3Storage"
 STATICFILES_STORAGE = "django_s3_storage.storage.StaticS3Storage"
 
 # Files auth.

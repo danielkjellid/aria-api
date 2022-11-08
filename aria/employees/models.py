@@ -3,8 +3,7 @@ from typing import Iterable
 from django.core.cache import cache
 from django.db import models
 
-from imagekit.models.fields import ProcessedImageField
-from imagekit.processors import ResizeToFill
+from django_resized import ResizedImageField
 
 from aria.employees.managers import EmployeeInfoQuerySet
 
@@ -29,11 +28,9 @@ class EmployeeInfo(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     company_email = models.EmailField()
-    profile_picture = ProcessedImageField(
+    profile_picture = ResizedImageField(
         upload_to="media/employees/",
-        processors=[ResizeToFill(540, 540)],
-        format="JPEG",
-        options={"quality": 100},
+        size=[540, 540],
         blank=True,
         null=True,
     )
