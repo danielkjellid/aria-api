@@ -1,15 +1,8 @@
-from typing import Iterable
-
 from django.db import models
 
 from django_resized import ResizedImageField
 
-from aria.files.utils import (
-    asset_get_static_upload_path,
-    image_generate_signed_url,
-    image_resize,
-)
-from aria.files.validators import image_validate
+from aria.files.utils import asset_get_static_upload_path, image_generate_signed_url
 
 
 class BaseFileModel(models.Model):
