@@ -153,8 +153,8 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "corsheaders",
     "django_countries",
+    "django_resized",
     "django_s3_storage",
-    "imagekit",
     "mptt",
     "ninja",
 ]
