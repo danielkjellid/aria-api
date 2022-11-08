@@ -91,7 +91,7 @@ services:
 
   minio:
     container_name: MinIO
-    image: bitnami/minio:2022.10.24
+    image: bitnami/minio:latest
     restart: unless-stopped
     tty: true
     environment:

@@ -3,7 +3,7 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
-import aria.core.utils
+import aria.files.utils
 
 
 class Migration(migrations.Migration):

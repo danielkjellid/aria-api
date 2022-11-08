@@ -31,9 +31,4 @@ def get_or_create_supplier(
         },
     )
 
-    # with tempfile.NamedTemporaryFile(suffix=".jpg") as file:
-    #     supplier.image = file.name
-
-    # supplier.save()
-
     return supplier

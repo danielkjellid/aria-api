@@ -6,7 +6,7 @@ from django.db import migrations, models
 import mptt.fields
 
 import aria.core.fields
-import aria.core.utils
+import aria.files.utils
 
 
 class Migration(migrations.Migration):
