@@ -74,6 +74,8 @@ def image_resize(
     image_width, image_height = get_image_dimensions(image)
     size = (max_width, max_height)
 
+    print("FIRED")
+
     # If image is already the required size, shortcircuit and return early.
     if image_width == max_width and image_height == max_height:
         return image

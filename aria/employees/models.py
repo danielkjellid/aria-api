@@ -3,10 +3,8 @@ from typing import Iterable
 from django.core.cache import cache
 from django.db import models
 
-from imagekit.models.fields import ProcessedImageField
-from imagekit.processors import ResizeToFill
-
 from aria.employees.managers import EmployeeInfoQuerySet
+from aria.files.utils import image_resize
 
 _EmployeeInfoManager = models.Manager.from_queryset(EmployeeInfoQuerySet)
 
@@ -29,11 +27,8 @@ class EmployeeInfo(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     company_email = models.EmailField()
-    profile_picture = ProcessedImageField(
+    profile_picture = models.ImageField(
         upload_to="media/employees/",
-        processors=[ResizeToFill(540, 540)],
-        format="JPEG",
-        options={"quality": 100},
         blank=True,
         null=True,
     )
@@ -78,6 +73,11 @@ class EmployeeInfo(models.Model):
         """
         Uncache employees list upon save.
         """
+
+        if update_fields["image"] != self.image:
+            update_fields["image"] = image_resize(
+                image=update_fields["image"], max_width=540, max_height=540
+            )
 
         super().save(
             force_insert=force_insert,

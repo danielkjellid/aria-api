@@ -2,6 +2,8 @@ from typing import Iterable
 
 from django.db import models
 
+from django_resized import ResizedImageField
+
 from aria.files.utils import (
     asset_get_static_upload_path,
     image_generate_signed_url,
@@ -185,9 +187,10 @@ class BaseThumbnailImageModel(models.Model):
     THUMBNAIL_WIDTH = 350
     THUMBNAIL_HEIGHT = 575
 
-    thumbnail = models.ImageField(
+    thumbnail = ResizedImageField(
         "thumbnail",
         upload_to=asset_get_static_upload_path,
+        size=[THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT],
         blank=True,
         null=True,
     )

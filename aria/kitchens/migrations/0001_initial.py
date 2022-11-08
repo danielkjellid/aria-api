@@ -3,8 +3,6 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
-import imagekit.models.fields
-
 import aria.core.utils
 
 
@@ -21,8 +19,8 @@ class Migration(migrations.Migration):
             name='Decor',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('thumbnail', imagekit.models.fields.ProcessedImageField(blank=True, default='media/front/default_380x575.jpeg', help_text='Image must be above 380x575px', upload_to=aria.files.utils.asset_get_static_upload_path)),
-                ('image', imagekit.models.fields.ProcessedImageField(blank=True, null=True, upload_to='t')),
+                ('thumbnail', models.ImageField(blank=True, help_text='Image must be above 380x575px', upload_to=aria.files.utils.asset_get_static_upload_path)),
+                ('image', models.ImageField(blank=True, null=True, upload_to='t')),
                 ('name', models.CharField(max_length=255, verbose_name='Kitchen decor name')),
             ],
             options={
@@ -58,8 +56,8 @@ class Migration(migrations.Migration):
             name='Plywood',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('thumbnail', imagekit.models.fields.ProcessedImageField(blank=True, default='media/front/default_380x575.jpeg', help_text='Image must be above 380x575px', upload_to=aria.files.utils.asset_get_static_upload_path)),
-                ('image', imagekit.models.fields.ProcessedImageField(blank=True, null=True, upload_to='t')),
+                ('thumbnail', models.ImageField(blank=True, help_text='Image must be above 380x575px', upload_to=aria.files.utils.asset_get_static_upload_path)),
+                ('image', models.ImageField(blank=True, null=True, upload_to='t')),
                 ('name', models.CharField(max_length=255, verbose_name='Kitchen playwood name')),
             ],
             options={

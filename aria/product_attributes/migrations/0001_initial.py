@@ -2,8 +2,6 @@
 
 from django.db import migrations, models
 
-import imagekit.models.fields
-
 import aria.core.utils
 
 
@@ -189,7 +187,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "thumbnail",
-                    imagekit.models.fields.ProcessedImageField(
+                    models.ImageField(
                         blank=True,
                         help_text="Image must be above 380x575px",
                         upload_to=aria.files.utils.asset_get_static_upload_path,

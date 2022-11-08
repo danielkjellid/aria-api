@@ -1,11 +1,12 @@
 from django.db import models
 from django.utils.text import slugify
 
-from imagekit.models.fields import ProcessedImageField
-from imagekit.processors import ResizeToFill
-
 from aria.core.models import BaseModel
-from aria.files.models import BaseCollectionListImageModel, BaseHeaderImageModel
+from aria.files.models import (
+    BaseCollectionListImageModel,
+    BaseHeaderImageModel,
+    BaseThumbnailImageModel,
+)
 from aria.kitchens.managers import KitchenQuerySet
 from aria.products.enums import ProductStatus
 from aria.suppliers.models import Supplier
@@ -109,7 +110,7 @@ class SilkColor(models.Model):
         return self.name
 
 
-class Decor(models.Model):
+class Decor(BaseThumbnailImageModel):
     """
     Plywood is a range of different color patterns offered by our kitchen supplier.
     """
@@ -118,14 +119,6 @@ class Decor(models.Model):
         """Path of which to upload static assets."""
         return f"media/kitchens/decors/{slugify(self.name)}"
 
-    image = ProcessedImageField(
-        upload_to=kitchen_decor_upload_path,
-        processors=[ResizeToFill(80, 80)],
-        format="JPEG",
-        options={"quality": 90},
-        blank=True,
-        null=True,
-    )
     name = models.CharField("Kitchen decor name", max_length=255, unique=False)
 
     class Meta:
@@ -136,7 +129,7 @@ class Decor(models.Model):
         return self.name
 
 
-class Plywood(models.Model):
+class Plywood(BaseThumbnailImageModel):
     """
     Plywood is a range of different plywoods offered by our kitchen supplier.
     """
@@ -145,14 +138,8 @@ class Plywood(models.Model):
         """Path of which to upload static assets."""
         return f"media/kitchens/plywoods/{slugify(self.name)}"
 
-    image = ProcessedImageField(
-        upload_to=kitchen_plywood_upload_path,
-        processors=[ResizeToFill(80, 80)],
-        format="JPEG",
-        options={"quality": 90},
-        blank=True,
-        null=True,
-    )
+    UPLOAD_PATH = kitchen_plywood_upload_path
+
     name = models.CharField("Kitchen playwood name", max_length=255, unique=False)
 
     class Meta:

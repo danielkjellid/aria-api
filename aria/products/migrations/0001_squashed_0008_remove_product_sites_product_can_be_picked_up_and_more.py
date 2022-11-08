@@ -3,7 +3,6 @@
 import django.db.models.manager
 from django.db import migrations, models
 
-import imagekit.models.fields
 import mptt.fields
 
 import aria.core.fields
@@ -40,7 +39,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created time')),
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='modified time')),
-                ('thumbnail', imagekit.models.fields.ProcessedImageField(blank=True, default='media/front/default_380x575.jpeg', help_text='Image must be above 380x575px', upload_to=aria.files.utils.asset_get_static_upload_path)),
+                ('thumbnail', models.ImageField(blank=True, help_text='Image must be above 380x575px', upload_to=aria.files.utils.asset_get_static_upload_path)),
                 ('name', models.CharField(max_length=255, verbose_name='Product name')),
                 ('status', models.IntegerField(choices=[(1, 'Draft'), (2, 'Hidden'), (3, 'Available'), (4, 'Discontinued')], default=1, verbose_name='Status')),
                 ('slug', models.SlugField(help_text='A slug is a short label for something, containing only letters, numbers, underscores or hyphens. They’re generally used in URLs.', max_length=255, verbose_name='Slug')),
@@ -160,7 +159,7 @@ class Migration(migrations.Migration):
             name='Variant',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('thumbnail', imagekit.models.fields.ProcessedImageField(blank=True, default='media/front/default_380x575.jpeg', help_text='Image must be above 380x575px', upload_to=aria.files.utils.asset_get_static_upload_path)),
+                ('thumbnail', models.ImageField(blank=True, help_text='Image must be above 380x575px', upload_to=aria.files.utils.asset_get_static_upload_path)),
                 ('name', models.CharField(max_length=255, verbose_name='Product variant name')),
                 ('is_standard', models.BooleanField(default=False, help_text='designates if a variant should be treated as standard. This is to avoid multiple instances of the same variant. This field will also prevent cleanup deletion of these models.', verbose_name='standard')),
             ],
@@ -367,7 +366,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='product',
             name='thumbnail',
-            field=imagekit.models.fields.ProcessedImageField(blank=True, help_text='Image must be above 380x575px', upload_to=aria.files.utils.asset_get_static_upload_path),
+            field=models.ImageField(blank=True, help_text='Image must be above 380x575px', upload_to=aria.files.utils.asset_get_static_upload_path),
         ),
         migrations.AlterField(
             model_name='productimage',
@@ -382,7 +381,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='variant',
             name='thumbnail',
-            field=imagekit.models.fields.ProcessedImageField(blank=True, help_text='Image must be above 380x575px', upload_to=aria.files.utils.asset_get_static_upload_path),
+            field=models.ImageField(blank=True, help_text='Image must be above 380x575px', upload_to=aria.files.utils.asset_get_static_upload_path),
         ),
         migrations.AlterField(
             model_name='product',
