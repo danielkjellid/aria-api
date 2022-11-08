@@ -177,7 +177,7 @@ class BaseThumbnailImageModel(models.Model):
 
     UPLOAD_PATH: str
 
-    THUMBNAIL_WIDTH = 350
+    THUMBNAIL_WIDTH = 380
     THUMBNAIL_HEIGHT = 575
 
     thumbnail = ResizedImageField(
