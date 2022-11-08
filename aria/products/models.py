@@ -11,7 +11,6 @@ from aria.core.models import BaseModel
 from aria.core.records import BaseArrayFieldLabelRecord
 from aria.core.utils import get_array_field_labels
 from aria.files.models import (
-    BaseCollectionListImageModel,
     BaseFileModel,
     BaseHeaderImageModel,
     BaseThumbnailImageModel,

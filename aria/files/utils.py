@@ -1,21 +1,12 @@
 from __future__ import annotations
 
 import os
-from io import BytesIO
 from typing import TYPE_CHECKING, TypeVar
 
 from django.conf import settings
-from django.core.files.base import ContentFile
-from django.core.files.images import ImageFile, get_image_dimensions
-from django.core.files.uploadedfile import (
-    InMemoryUploadedFile,
-    TemporaryUploadedFile,
-    UploadedFile,
-)
 from django.utils.text import slugify
 
 from libthumbor import CryptoURL
-from PIL import Image as PilImage
 
 if TYPE_CHECKING:
     from aria.files.models import BaseImageModel

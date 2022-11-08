@@ -1,5 +1,3 @@
-import tempfile
-
 from aria.files.tests.utils import create_image_file
 from aria.suppliers.models import Supplier
 
