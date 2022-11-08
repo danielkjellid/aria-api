@@ -11,7 +11,7 @@ T_MODEL = TypeVar("T_MODEL", bound=Model)
 
 def s3_asset_delete(*, storage_key: str | None = None) -> None:
     """
-    Delete dangling folders in S3 storage.
+    Delete s3 assets based on storage key.
     """
 
     if not storage_key:
