@@ -8,7 +8,8 @@ from aria.files.records import BaseCollectionListImageRecord, BaseHeaderImageRec
 class KitchenVariantRecord(BaseModel):
     id: int
     name: str
-    image: str
+    image_url: str | None
+    image80x80_url: str | None
 
 
 class KitchenVariantColorRecord(BaseModel):

@@ -37,7 +37,7 @@ def s3_asset_cleanup(*, instance: T_MODEL, field: str) -> None:
 
     if instance_field and isinstance(instance_field, (ImageField, FileField)):
         storage_key = instance_field.name
-        instance_field.delete(save=False)
+        instance_field.delete(save=False)  # type: ignore
 
         s3_folder_cleanup(storage_key=storage_key)
 

@@ -115,9 +115,12 @@ class Decor(BaseThumbnailImageModel):
     Plywood is a range of different color patterns offered by our kitchen supplier.
     """
 
+    @property
     def kitchen_decor_upload_path(self) -> str:
         """Path of which to upload static assets."""
         return f"media/kitchens/decors/{slugify(self.name)}"
+
+    UPLOAD_PATH = kitchen_decor_upload_path  # type: ignore
 
     name = models.CharField("Kitchen decor name", max_length=255, unique=False)
 
@@ -134,11 +137,12 @@ class Plywood(BaseThumbnailImageModel):
     Plywood is a range of different plywoods offered by our kitchen supplier.
     """
 
+    @property
     def kitchen_plywood_upload_path(self) -> str:
         """Path of which to upload static assets."""
         return f"media/kitchens/plywoods/{slugify(self.name)}"
 
-    UPLOAD_PATH = kitchen_plywood_upload_path
+    UPLOAD_PATH = kitchen_plywood_upload_path  # type: ignore
 
     name = models.CharField("Kitchen playwood name", max_length=255, unique=False)
 

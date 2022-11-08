@@ -197,9 +197,9 @@ class BaseThumbnailImageModel(models.Model):
         """
         Generate a signed image url with dimensions.
         """
-        if self.image and self.image.name:
+        if self.thumbnail and self.thumbnail.name:
             return image_generate_signed_url(
-                image_name=self.image.name, width=width, height=height
+                image_name=self.thumbnail.name, width=width, height=height
             )
 
         return None

@@ -76,11 +76,21 @@ def kitchen_detail(
             for obj in kitchen.silk_variants.all()
         ],
         decor_variants=[
-            KitchenVariantRecord(id=obj.id, name=obj.name, image=obj.image.url)
+            KitchenVariantRecord(
+                id=obj.id,
+                name=obj.name,
+                image_url=obj.image_url,
+                image80x80_url=obj.image80x80_url,
+            )
             for obj in kitchen.decor_variants.all()
         ],
         plywood_variants=[
-            KitchenVariantRecord(id=obj.id, name=obj.name, image=obj.image.url)
+            KitchenVariantRecord(
+                id=obj.id,
+                name=obj.name,
+                image_url=obj.image_url,
+                image80x80_url=obj.image80x80_url,
+            )
             for obj in kitchen.plywood_variants.all()
         ],
         laminate_variants=[
