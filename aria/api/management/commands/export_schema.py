@@ -37,7 +37,7 @@ class Command(BaseCommand):
                 "description": "",
             },
             "paths": {},
-            "components": {},
+            "components": {"schemas": {}, "securitySchemes": {}},
         }
 
         # Merge paths and components across schemas.
@@ -45,8 +45,16 @@ class Command(BaseCommand):
             api_schema = api.get_openapi_schema()
 
             schema["openapi"] = api_schema["openapi"]
-            schema["paths"].update(api_schema["paths"])
-            schema["components"].update(api_schema["components"])
+
+            # Merge schema dicts from all apis with the same properties.
+            schema["paths"] = schema["paths"] | api_schema["paths"]
+            schema["components"]["schemas"] = (
+                schema["components"]["schemas"] | api_schema["components"]["schemas"]
+            )
+            schema["components"]["securitySchemes"] = (
+                schema["components"]["securitySchemes"]
+                | api_schema["components"]["securitySchemes"]
+            )
 
             # Set the version if it's empty or if the version in the current iteration
             # is higher than the one already set.
