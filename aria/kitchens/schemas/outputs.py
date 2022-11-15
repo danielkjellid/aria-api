@@ -13,7 +13,8 @@ class KitchenListOutput(Schema):
 
 class KitchenVariantOutput(Schema):
     name: str
-    image: str
+    image80x80_url: str | None
+    image380x575_url: str | None
 
 
 class KitchenVariantColorOutput(Schema):

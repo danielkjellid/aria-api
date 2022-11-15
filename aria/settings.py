@@ -216,12 +216,6 @@ AWS_S3_KEY_PREFIX_STATIC = "static"
 THUMBOR_SECURITY_KEY = env.str("THUMBOR_SECURITY_KEY", default="supersecret")
 THUMBOR_SERVER_URL = env.str("THUMBOR_SERVER_URL", default="http://localhost:8888")
 
-#########
-# Files #
-#########
-
-IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = "imagekit.cachefiles.strategies.Optimistic"
-
 ##################
 # Authentication #
 ##################

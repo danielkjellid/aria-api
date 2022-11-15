@@ -81,6 +81,7 @@ def kitchen_detail(
                 name=obj.name,
                 image_url=obj.image_url,
                 image80x80_url=obj.image80x80_url,
+                image380x575_url=obj.image380x575_url,
             )
             for obj in kitchen.decor_variants.all()
         ],
@@ -90,6 +91,7 @@ def kitchen_detail(
                 name=obj.name,
                 image_url=obj.image_url,
                 image80x80_url=obj.image80x80_url,
+                image380x575_url=obj.image380x575_url,
             )
             for obj in kitchen.plywood_variants.all()
         ],

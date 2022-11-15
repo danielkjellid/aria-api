@@ -91,6 +91,13 @@ class BaseHeaderImageModel(BaseImageModel):
         abstract = True
 
     @property
+    def image1920x1080_url(self) -> str | None:
+        """
+        Get the url for the 1920x1080 version of the image.
+        """
+        return self._generate_image_url(width=1920, height=1080)
+
+    @property
     def image1440x810_url(self) -> str | None:
         """
         Get the url for the 1440x810 version of the image.
