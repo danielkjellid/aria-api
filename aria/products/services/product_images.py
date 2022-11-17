@@ -1,7 +1,7 @@
 from django.core.files.images import ImageFile
 from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
 
-from aria.core.validators import image_validate
+from aria.files.validators import image_validate
 from aria.products.models import Product, ProductImage
 from aria.products.records import ProductImageRecord
 
@@ -22,7 +22,7 @@ def product_image_create(
         width_min_px=1536,
         width_max_px=2048,
         height_min_px=860,
-        height_max_px=1150,
+        height_max_px=1500,
     )
 
     product_image = ProductImage.objects.create(

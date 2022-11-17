@@ -7,14 +7,14 @@ from mptt.models import TreeManyToManyField
 
 from aria.categories.models import Category
 from aria.core.fields import ChoiceArrayField
-from aria.core.models import (
-    BaseFileModel,
-    BaseHeaderImageModel,
-    BaseModel,
-    BaseThumbnailImageModel,
-)
+from aria.core.models import BaseModel
 from aria.core.records import BaseArrayFieldLabelRecord
 from aria.core.utils import get_array_field_labels
+from aria.files.models import (
+    BaseFileModel,
+    BaseHeaderImageModel,
+    BaseThumbnailImageModel,
+)
 from aria.products import enums
 from aria.products.managers import (
     ProductFileQuerySet,
@@ -192,7 +192,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
 _ProductImageManager = models.Manager.from_queryset(ProductImageQuerySet)
 
 
-class ProductImage(BaseHeaderImageModel):
+class ProductImage(BaseModel, BaseHeaderImageModel):
     """
     Images belonging to a product. Inherits an image
     models, which creates all needed versions of the
@@ -225,7 +225,7 @@ class ProductImage(BaseHeaderImageModel):
 _ProductFileManager = models.Manager.from_queryset(ProductFileQuerySet)
 
 
-class ProductFile(BaseFileModel):
+class ProductFile(BaseModel, BaseFileModel):
     """
     A single file belonging to a products. This is
     typically a supplier catalog etc.

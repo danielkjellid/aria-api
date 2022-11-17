@@ -5,8 +5,8 @@ from django.db.models import Q
 from aria.categories.models import Category
 from aria.categories.selectors import category_tree_active_list_for_product
 from aria.core.decorators import cached
-from aria.core.models import BaseQuerySet
-from aria.core.selectors import base_header_image_record
+from aria.core.managers import BaseQuerySet
+from aria.files.records import BaseHeaderImageRecord
 from aria.product_attributes.records import ColorDetailRecord, ShapeDetailRecord
 from aria.products.filters import ProductSearchFilter
 from aria.products.models import Product
@@ -82,7 +82,8 @@ def product_detail(
             for file in product.files.all()
         ],
         images=[
-            base_header_image_record(instance=image) for image in product.images.all()
+            BaseHeaderImageRecord.from_model(model=image)
+            for image in product.images.all()
         ],
         options=options,
     )

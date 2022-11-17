@@ -121,8 +121,9 @@ def variant_list() -> list[VariantDetailRecord]:
             id=variant.id,
             name=variant.name,
             is_standard=variant.is_standard,
-            image_url=variant.image.url if variant.image else None,
-            thumbnail_url=variant.thumbnail.url if variant.thumbnail else None,
+            image_url=variant.image_url,
+            image80x80_url=variant.image80x80_url,
+            image380x575_url=variant.image380x575_url,
         )
         for variant in variants
     ]

@@ -83,12 +83,8 @@ class TestPublicProductsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "thumbnailUrl": option.variant.thumbnail.url
-                                if option.variant.thumbnail
-                                else None,
-                                "imageUrl": option.variant.image.id
-                                if option.variant.image
-                                else None,
+                                "image80x80Url": option.variant.image80x80_url,
+                                "image380x575Url": option.variant.image380x575_url,
                             }
                             for option in product.options.all()
                             if option.variant
@@ -187,12 +183,8 @@ class TestPublicProductsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "thumbnailUrl": option.variant.thumbnail.url
-                                if option.variant.thumbnail
-                                else None,
-                                "imageUrl": option.variant.image.id
-                                if option.variant.image
-                                else None,
+                                "image80x80Url": option.variant.image80x80_url,
+                                "image380x575Url": option.variant.image380x575_url,
                             }
                             for option in product.options.all()
                             if option.variant
@@ -279,12 +271,15 @@ class TestPublicProductsEndpoints:
             "images": [
                 {
                     "applyFilter": image.apply_filter,
-                    "image512x512": image.image_512x512.url,
-                    "image640x275": image.image_640x275.url,
-                    "image1024x575": image.image_1024x575.url,
-                    "image1024x1024": image.image_1024x1024.url,
-                    "image1536x860": image.image_1536x860.url,
-                    "image2048x1150": image.image_2048x1150.url,
+                    "isMainImage": image.is_main_image,
+                    "imageUrl": image.image_url,
+                    "image1920x1080Url": image.image1920x1080_url,
+                    "image1440x810Url": image.image1440x810_url,
+                    "image1280x720Url": image.image1280x720_url,
+                    "image1024x576Url": image.image1024x576_url,
+                    "image960x540Url": image.image960x540_url,
+                    "image768x432Url": image.image768x432_url,
+                    "image640x360Url": image.image640x360_url,
                 }
                 for image in product.images.all()
             ],
@@ -303,8 +298,8 @@ class TestPublicProductsEndpoints:
                     "variant": {
                         "id": option_1.variant.id,
                         "name": option_1.variant.name,
-                        "imageUrl": None,
-                        "thumbnailUrl": None,
+                        "image80x80Url": None,
+                        "image380x575Url": None,
                     },
                     "size": {
                         "id": option_1.size.id,
@@ -319,8 +314,8 @@ class TestPublicProductsEndpoints:
                     "variant": {
                         "id": option_2.variant.id,
                         "name": option_2.variant.name,
-                        "imageUrl": None,
-                        "thumbnailUrl": None,
+                        "image80x80Url": None,
+                        "image380x575Url": None,
                     },
                     "size": {
                         "id": option_2.size.id,

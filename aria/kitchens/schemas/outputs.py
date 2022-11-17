@@ -1,6 +1,6 @@
 from ninja import Schema
 
-from aria.core.records import BaseHeaderImageRecord, BaseListImageRecord
+from aria.files.records import BaseCollectionListImageRecord, BaseHeaderImageRecord
 
 
 class KitchenListOutput(Schema):
@@ -8,12 +8,13 @@ class KitchenListOutput(Schema):
     name: str
     slug: str
     thumbnail_description: str
-    list_images: BaseListImageRecord
+    list_images: BaseCollectionListImageRecord
 
 
 class KitchenVariantOutput(Schema):
     name: str
-    image: str
+    image80x80_url: str | None
+    image380x575_url: str | None
 
 
 class KitchenVariantColorOutput(Schema):
