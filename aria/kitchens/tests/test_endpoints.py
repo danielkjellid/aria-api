@@ -119,6 +119,7 @@ class TestPublicKitchensEndpoints:
                 "applyFilter": kitchen.apply_filter,
                 "isMainImage": kitchen.is_main_image,
                 "imageUrl": kitchen.image_url,
+                "image1920x1080Url": kitchen.image1920x1080_url,
                 "image1440x810Url": kitchen.image1440x810_url,
                 "image1280x720Url": kitchen.image1280x720_url,
                 "image1024x576Url": kitchen.image1024x576_url,

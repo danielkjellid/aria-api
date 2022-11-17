@@ -105,7 +105,6 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "imageUrl": option.variant.image_url,
                                 "image80x80Url": option.variant.image80x80_url,
                                 "image380x575Url": option.variant.image380x575_url,
                             }
@@ -157,7 +156,6 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "imageUrl": option.variant.image_url,
                                 "image80x80Url": option.variant.image80x80_url,
                                 "image380x575Url": option.variant.image380x575_url,
                             }
@@ -209,7 +207,6 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "imageUrl": option.variant.image_url,
                                 "image80x80Url": option.variant.image80x80_url,
                                 "image380x575Url": option.variant.image380x575_url,
                             }
@@ -270,7 +267,6 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "imageUrl": option.variant.image_url,
                                 "image80x80Url": option.variant.image80x80_url,
                                 "image380x575Url": option.variant.image380x575_url,
                             }
