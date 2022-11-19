@@ -105,7 +105,7 @@ class ProductListRecord(BaseModel):
     unit: str
     status: str
     supplier: ProductSupplierRecord
-    thumbnail: str | None = None
+    image380x575_url: str | None = None
     display_price: bool
     from_price: Decimal
     discount: ProductDiscountRecord | None
