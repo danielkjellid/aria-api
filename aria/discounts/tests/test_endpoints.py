@@ -71,7 +71,9 @@ class TestPublicDiscountsEndpoints:
                             "originCountry": product_4.supplier.country_name,
                             "originCountryFlag": product_4.supplier.unicode_flag,
                         },
-                        "image380x575Url": product_4.image380x575_url,
+                        "thumbnail": product_4.thumbnail.url
+                        if product_4.thumbnail
+                        else None,
                         "discount": {
                             "isDiscounted": True,
                             "discountedGrossPrice": 160.0,
@@ -120,7 +122,9 @@ class TestPublicDiscountsEndpoints:
                             "originCountry": product_2_option_1.product.supplier.country_name,  # pylint: disable=line-too-long
                             "originCountryFlag": product_2_option_1.product.supplier.unicode_flag,  # pylint: disable=line-too-long
                         },
-                        "image380x575Url": product_2.image380x575_url,
+                        "thumbnail": product_2_option_1.product.thumbnail.url
+                        if product_2_option_1.product.thumbnail
+                        else None,
                         "discount": {
                             "isDiscounted": True,
                             "discountedGrossPrice": 160.0,
@@ -169,7 +173,9 @@ class TestPublicDiscountsEndpoints:
                             "originCountry": product_1.supplier.country_name,
                             "originCountryFlag": product_1.supplier.unicode_flag,
                         },
-                        "image380x575Url": product_1.image380x575_url,
+                        "thumbnail": product_1.thumbnail.url
+                        if product_1.thumbnail
+                        else None,
                         "discount": {
                             "isDiscounted": True,
                             "discountedGrossPrice": 160.0,
@@ -227,7 +233,9 @@ class TestPublicDiscountsEndpoints:
                             "originCountry": product_3.supplier.country_name,
                             "originCountryFlag": product_3.supplier.unicode_flag,
                         },
-                        "image380x575Url": product_3.image380x575_url,
+                        "thumbnail": product_3.thumbnail.url
+                        if product_3.thumbnail
+                        else None,
                         "discount": {
                             "isDiscounted": True,
                             "discountedGrossPrice": 120.0,

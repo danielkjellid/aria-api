@@ -91,7 +91,7 @@ class ProductListOutput(Schema):
     slug: str
     unit: str
     supplier: ProductSupplierOutput
-    image380x575_url: str | None
+    thumbnail: str | None
     display_price: bool
     from_price: float
     discount: ProductDiscountOutput | None
