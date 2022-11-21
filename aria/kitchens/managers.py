@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from aria.core.managers import BaseQuerySet
+from aria.core.models import BaseQuerySet
 from aria.products.enums import ProductStatus
 
 if TYPE_CHECKING:

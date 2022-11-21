@@ -1,11 +1,17 @@
+from typing import Iterable
+
 from django.db import models
 
-from django_resized import ResizedImageField
+from aria.core.models import BaseModel
+from aria.files.utils import (
+    asset_get_static_upload_path,
+    image_generate_signed_url,
+    image_resize,
+)
+from aria.files.validators import image_validate
 
-from aria.files.utils import asset_get_static_upload_path, image_generate_signed_url
 
-
-class BaseFileModel(models.Model):
+class BaseFileModel(BaseModel):
     """
     Generic file model. Comes ready with upload path validation.
     """
@@ -18,7 +24,7 @@ class BaseFileModel(models.Model):
         abstract = True
 
 
-class BaseImageModel(models.Model):
+class BaseImageModel(BaseModel):
     """
     Generic image model. Comes ready with upload path and image validation.
     """
@@ -29,31 +35,45 @@ class BaseImageModel(models.Model):
         "Image",
         upload_to=asset_get_static_upload_path,
         blank=True,
-        null=True,
+        null=False,
     )
 
     class Meta:
         abstract = True
 
-    def _generate_image_url(
-        self, *, width: int | None = None, height: int | None = None
-    ) -> str | None:
-        """
-        Generate a signed image url with dimensions.
-        """
-        if self.image and self.image.name:
-            return image_generate_signed_url(
-                image_name=self.image.name, width=width, height=height
-            )
-
-        return None
-
     @property
-    def image_url(self) -> str | None:
+    def image_url(self) -> str:
         """
         Get the url for the native dimensions of the image.
         """
-        return self._generate_image_url()
+        return image_generate_signed_url(image_name=self.image.name)
+
+    def save(
+        self,
+        force_insert: bool = False,
+        force_update: bool = False,
+        using: str | None = None,
+        update_fields: Iterable[str] | None = None,
+    ) -> None:
+        """
+        Validate images on save.
+        """
+
+        image_validate(
+            image=self.image,
+            allowed_extensions=[".jpg", ".jpeg"],
+            width_min_px=1440,
+            width_max_px=2048,
+            height_min_px=810,
+            height_max_px=1150,
+        )
+
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+        )
 
 
 class BaseHeaderImageModel(BaseImageModel):
@@ -91,53 +111,58 @@ class BaseHeaderImageModel(BaseImageModel):
         abstract = True
 
     @property
-    def image1920x1080_url(self) -> str | None:
-        """
-        Get the url for the 1920x1080 version of the image.
-        """
-        return self._generate_image_url(width=1920, height=1080)
-
-    @property
-    def image1440x810_url(self) -> str | None:
+    def image1440x810_url(self) -> str:
         """
         Get the url for the 1440x810 version of the image.
         """
-        return self._generate_image_url(width=1440, height=810)
+        return image_generate_signed_url(
+            image_name=self.image.name, width=1440, height=810
+        )
 
     @property
-    def image1280x720_url(self) -> str | None:
+    def image1280x720_url(self) -> str:
         """
         Get the url for the 1280x720 version of the image.
         """
-        return self._generate_image_url(width=1280, height=720)
+        return image_generate_signed_url(
+            image_name=self.image.name, width=1280, height=720
+        )
 
     @property
-    def image1024x576_url(self) -> str | None:
+    def image1024x576_url(self) -> str:
         """
         Get the url for the 1024x576 version of the image.
         """
-        return self._generate_image_url(width=1024, height=576)
+        return image_generate_signed_url(
+            image_name=self.image.name, width=1024, height=576
+        )
 
     @property
-    def image960x540_url(self) -> str | None:
+    def image960x540_url(self) -> str:
         """
         Get the url for the 960x540 version of the image.
         """
-        return self._generate_image_url(width=960, height=540)
+        return image_generate_signed_url(
+            image_name=self.image.name, width=960, height=540
+        )
 
     @property
-    def image768x432_url(self) -> str | None:
+    def image768x432_url(self) -> str:
         """
         Get the url for the 768x432 version of the image.
         """
-        return self._generate_image_url(width=768, height=432)
+        return image_generate_signed_url(
+            image_name=self.image.name, width=768, height=432
+        )
 
     @property
-    def image640x360_url(self) -> str | None:
+    def image640x360_url(self) -> str:
         """
         Get the url for the 640x360 version of the image.
         """
-        return self._generate_image_url(width=640, height=360)
+        return image_generate_signed_url(
+            image_name=self.image.name, width=640, height=360
+        )
 
 
 class BaseCollectionListImageModel(BaseImageModel):
@@ -156,21 +181,25 @@ class BaseCollectionListImageModel(BaseImageModel):
         abstract = True
 
     @property
-    def image960x540_url(self) -> str | None:
+    def image960x540_url(self) -> str:
         """
         Get the url for the 960x540 version of the image.
         """
-        return self._generate_image_url(width=960, height=540)
+        return image_generate_signed_url(
+            image_name=self.image.name, width=960, height=540
+        )
 
     @property
-    def image576x324_url(self) -> str | None:
+    def image576x324_url(self) -> str:
         """
         Get the url for the 576x324 version of the image.
         """
-        return self._generate_image_url(width=576, height=324)
+        return image_generate_signed_url(
+            image_name=self.image.name, width=576, height=324
+        )
 
 
-class BaseThumbnailImageModel(models.Model):
+class BaseThumbnailImage(BaseImageModel):
     """
     Generic model for storing and uploading all version needed for a thumbnail
     image. To add this to a model, create a subclass with the UPLOAD_FILE_PATH
@@ -184,50 +213,50 @@ class BaseThumbnailImageModel(models.Model):
 
     UPLOAD_PATH: str
 
-    THUMBNAIL_WIDTH = 380
+    THUMBNAIL_WIDTH = 350
     THUMBNAIL_HEIGHT = 575
-
-    thumbnail = ResizedImageField(
-        "thumbnail",
-        upload_to=asset_get_static_upload_path,
-        size=[THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT],
-        blank=True,
-        null=True,
-    )
 
     class Meta:
         abstract = True
 
-    def _generate_image_url(
-        self, *, width: int | None = None, height: int | None = None
-    ) -> str | None:
-        """
-        Generate a signed image url with dimensions.
-        """
-        if self.thumbnail and self.thumbnail.name:
-            return image_generate_signed_url(
-                image_name=self.thumbnail.name, width=width, height=height
-            )
-
-        return None
-
     @property
-    def image_url(self) -> str | None:
-        """
-        Get the url for the native dimensions of the image.
-        """
-        return self._generate_image_url()
-
-    @property
-    def image80x80_url(self) -> str | None:
+    def image80x80_url(self) -> str:
         """
         Get the url for the 80x80 version of the image.
         """
-        return self._generate_image_url(width=80, height=80)
+        return image_generate_signed_url(
+            image_name=self.image.name, width=80, height=80
+        )
 
     @property
-    def image380x575_url(self) -> str | None:
+    def image380x575_url(self) -> str:
         """
         Get the url for the 380x575 version of the image.
         """
-        return self._generate_image_url(width=380, height=575)
+        return image_generate_signed_url(
+            image_name=self.image.name, width=380, height=575
+        )
+
+    def save(
+        self,
+        force_insert: bool = False,
+        force_update: bool = False,
+        using: str | None = None,
+        update_fields: Iterable[str] | None = None,
+    ) -> None:
+        """
+        Resize and validate image on save.
+        """
+
+        image_resize(
+            image=self.image,
+            max_width=self.THUMBNAIL_WIDTH,
+            max_height=self.THUMBNAIL_HEIGHT,
+        )
+
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+        )

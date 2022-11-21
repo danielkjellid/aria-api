@@ -4,7 +4,7 @@ from django.core.files.images import ImageFile
 from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
 from django.utils.text import slugify
 
-from aria.files.validators import image_validate
+from aria.core.validators import image_validate
 from aria.product_attributes.models import Size, Variant
 from aria.product_attributes.records import (
     SizeDetailRecord,
@@ -184,8 +184,7 @@ def variant_create(
     return VariantDetailRecord(
         id=new_variant.id,
         name=new_variant.name,
+        image_url=new_variant.image.url if new_variant.image else None,
+        thumbnail_url=new_variant.thumbnail.url if new_variant.thumbnail else None,
         is_standard=new_variant.is_standard,
-        image_url=new_variant.image_url,
-        image80x80_url=new_variant.image80x80_url,
-        image380x575_url=new_variant.image380x575_url,
     )

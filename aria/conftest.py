@@ -82,6 +82,5 @@ def assert_client_response_is_status_code(django_assert_max_num_queries):
 
 @pytest.fixture(autouse=True)
 def create_temp_storage(settings, tmp_path):
-    settings.DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
     settings.MEDIA_ROOT = tmp_path
     yield

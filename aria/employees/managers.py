@@ -1,4 +1,4 @@
-from aria.core.managers import BaseQuerySet
+from aria.core.models import BaseQuerySet
 
 
 class EmployeeInfoQuerySet(BaseQuerySet["models.EmployeeInfo"]):  # type: ignore

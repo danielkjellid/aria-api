@@ -389,9 +389,12 @@ class TestProductCoreSelectors:
                     VariantDetailRecord(
                         id=option.variant.id,
                         name=option.variant.name,
-                        image_url=option.variant.image_url,
-                        image80x80_url=option.variant.image80x80_url,
-                        image380x575_url=option.variant.image380x575_url,
+                        image_url=option.variant.image.url
+                        if option.variant.image
+                        else None,
+                        thumbnail_url=option.variant.thumbnail.url
+                        if option.variant.thumbnail
+                        else None,
                         is_standard=option.variant.is_standard,
                     )
                     for option in product_2.options.all()
@@ -430,9 +433,12 @@ class TestProductCoreSelectors:
                     VariantDetailRecord(
                         id=option.variant.id,
                         name=option.variant.name,
-                        image_url=option.variant.image_url,
-                        image80x80_url=option.variant.image80x80_url,
-                        image380x575_url=option.variant.image380x575_url,
+                        image_url=option.variant.image.url
+                        if option.variant.image
+                        else None,
+                        thumbnail_url=option.variant.thumbnail.url
+                        if option.variant.thumbnail
+                        else None,
                         is_standard=option.variant.is_standard,
                     )
                     for option in product_1.options.all()
@@ -502,9 +508,12 @@ class TestProductCoreSelectors:
                     VariantDetailRecord(
                         id=option.variant.id,
                         name=option.variant.name,
-                        image_url=option.variant.image_url,
-                        image80x80_url=option.variant.image80x80_url,
-                        image380x575_url=option.variant.image380x575_url,
+                        image_url=option.variant.image.url
+                        if option.variant.image
+                        else None,
+                        thumbnail_url=option.variant.thumbnail.url
+                        if option.variant.thumbnail
+                        else None,
                         is_standard=option.variant.is_standard,
                     )
                     for option in product_1.options.all()

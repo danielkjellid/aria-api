@@ -1,6 +1,6 @@
 from django.db.models import Q
 
-from aria.files.records import BaseCollectionListImageRecord, BaseHeaderImageRecord
+from aria.core.selectors import base_header_image_record, base_list_image_record
 from aria.kitchens.models import Kitchen
 from aria.kitchens.records import (
     KitchenDetailRecord,
@@ -24,7 +24,7 @@ def kitchen_record(*, kitchen: Kitchen) -> KitchenRecord:
             id=kitchen.supplier.id, name=kitchen.supplier.name
         ),
         thumbnail_description=kitchen.thumbnail_description,
-        list_images=BaseCollectionListImageRecord.from_model(model=kitchen),
+        list_images=base_list_image_record(instance=kitchen),
     )
 
 
@@ -76,23 +76,11 @@ def kitchen_detail(
             for obj in kitchen.silk_variants.all()
         ],
         decor_variants=[
-            KitchenVariantRecord(
-                id=obj.id,
-                name=obj.name,
-                image_url=obj.image_url,
-                image80x80_url=obj.image80x80_url,
-                image380x575_url=obj.image380x575_url,
-            )
+            KitchenVariantRecord(id=obj.id, name=obj.name, image=obj.image.url)
             for obj in kitchen.decor_variants.all()
         ],
         plywood_variants=[
-            KitchenVariantRecord(
-                id=obj.id,
-                name=obj.name,
-                image_url=obj.image_url,
-                image80x80_url=obj.image80x80_url,
-                image380x575_url=obj.image380x575_url,
-            )
+            KitchenVariantRecord(id=obj.id, name=obj.name, image=obj.image.url)
             for obj in kitchen.plywood_variants.all()
         ],
         laminate_variants=[
@@ -107,7 +95,7 @@ def kitchen_detail(
             KitchenVariantColorRecord(id=obj.id, name=obj.name, color_hex=obj.color_hex)
             for obj in kitchen.trend_variants.all()
         ],
-        images=BaseHeaderImageRecord.from_model(model=kitchen),
+        images=base_header_image_record(instance=kitchen),
     )
 
     return record
