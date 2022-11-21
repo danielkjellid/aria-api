@@ -55,7 +55,9 @@ class TestPublicProductsEndpoints:
                             "originCountry": product.supplier.country_name,
                             "originCountryFlag": product.supplier.unicode_flag,
                         },
-                        "image380x575Url": product.image380x575_url,
+                        "thumbnail": product.thumbnail.url
+                        if product.thumbnail
+                        else None,
                         "discount": None,
                         "displayPrice": True,
                         "fromPrice": 200.0,
@@ -145,7 +147,9 @@ class TestPublicProductsEndpoints:
                             "originCountry": product.supplier.country_name,
                             "originCountryFlag": product.supplier.unicode_flag,
                         },
-                        "image380x575Url": product.image380x575_url,
+                        "thumbnail": product.thumbnail.url
+                        if product.thumbnail
+                        else None,
                         "discount": {
                             "isDiscounted": True,
                             "discountedGrossPrice": 160.0,

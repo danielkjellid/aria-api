@@ -82,7 +82,7 @@ def product_list_record(product: Product) -> ProductListRecord:
             origin_country=product.supplier.country_name,
             origin_country_flag=product.supplier.unicode_flag,
         ),
-        image380x575_url=product.image380x575_url,
+        thumbnail=product.thumbnail.url if product.thumbnail else None,
         display_price=product.display_price,
         from_price=product_get_price_from_options(product=product),
         discount=product_get_active_discount(product=product),
