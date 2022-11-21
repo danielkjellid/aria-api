@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                 ('origin_country', django_countries.fields.CountryField(max_length=2)),
                 ('is_active', models.BooleanField(default=True, help_text='Designates whether the category should be treated as active.', verbose_name='Active')),
                 ('created_at', models.DateTimeField(auto_now_add=True, default=datetime.datetime(2022, 2, 25, 21, 13, 19, 459286, tzinfo=utc), verbose_name='created time')),
-                ('image', models.ImageField(blank=True, upload_to=aria.files.utils.asset_get_static_upload_path, verbose_name='Image')),
+                ('image', models.ImageField(blank=True, upload_to=aria.core.utils.get_static_asset_upload_path, verbose_name='Image')),
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='modified time')),
                 ('website_link', models.CharField(default='https://example.com', max_length=255)),
             ],

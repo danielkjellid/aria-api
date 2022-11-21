@@ -9,9 +9,9 @@ from django.utils.translation import gettext as _
 from aria.audit_logs.types import ChangeMessage
 from aria.categories.models import Category
 from aria.core.exceptions import ApplicationError
-from aria.core.managers import BaseQuerySet
+from aria.core.models import BaseQuerySet
 from aria.core.services import model_update
-from aria.files.validators import image_validate
+from aria.core.validators import image_validate
 from aria.product_attributes.models import Color, Shape
 from aria.products.enums import ProductMaterials, ProductRooms
 from aria.products.models import Product

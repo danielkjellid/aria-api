@@ -7,7 +7,7 @@ from django.utils.translation import gettext as _
 
 from aria.categories.models import Category
 from aria.core.exceptions import ApplicationError
-from aria.files.s3_utils import s3_assets_cleanup
+from aria.core.utils import cleanup_files_from_deleted_instance
 from aria.products.models import Product, ProductFile, ProductImage, ProductOption
 from aria.products.services.product_options import (
     product_option_delete_related_variants,
@@ -61,7 +61,7 @@ def delete_product_files(
     Delete static assets belonging to deleted instance.
     """
 
-    s3_assets_cleanup(instance=instance)
+    cleanup_files_from_deleted_instance(instance=instance)
 
 
 @receiver(pre_delete, sender=ProductOption)

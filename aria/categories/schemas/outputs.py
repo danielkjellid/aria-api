@@ -2,7 +2,7 @@ from typing import List
 
 from ninja import Schema
 
-from aria.files.records import BaseCollectionListImageRecord, BaseHeaderImageRecord
+from aria.core.records import BaseHeaderImageRecord, BaseListImageRecord
 
 
 class CategoryListOutput(Schema):
@@ -29,7 +29,7 @@ class CategoryChildrenListOutput(Schema):
     slug: str
     ordering: int
     description: str
-    list_images: BaseCollectionListImageRecord
+    list_images: BaseListImageRecord
 
 
 class CategoryDetailOutput(Schema):

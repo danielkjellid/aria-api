@@ -1,4 +1,5 @@
-from aria.files.tests.utils import create_image_file
+import tempfile
+
 from aria.suppliers.models import Supplier
 
 
@@ -23,10 +24,12 @@ def get_or_create_supplier(
             "website_link": website_link,
             "origin_country": origin_country,
             "is_active": is_active,
-            "image": create_image_file(
-                name=supplier_name, extension="JPEG", width=2048, height=1150
-            ),
         },
     )
+
+    with tempfile.NamedTemporaryFile(suffix=".jpg") as file:
+        supplier.image = file.name
+
+    supplier.save()
 
     return supplier

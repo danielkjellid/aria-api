@@ -17,7 +17,7 @@ class TestProductImagesServices:
         limits.
         """
 
-        product = create_product(images=[])
+        product = create_product()
         product_image = create_image_file(
             name="image1", extension="jpeg", width=2048, height=1150
         )

@@ -4,7 +4,7 @@ from django.db.models import Q
 
 from django_filters import FilterSet, filters
 
-from aria.core.managers import BaseQuerySet
+from aria.core.models import BaseQuerySet
 from aria.products.models import Product
 
 

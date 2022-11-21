@@ -105,8 +105,12 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "image80x80Url": option.variant.image80x80_url,
-                                "image380x575Url": option.variant.image380x575_url,
+                                "thumbnailUrl": option.variant.thumbnail.url
+                                if option.variant.thumbnail
+                                else None,
+                                "imageUrl": option.variant.image.id
+                                if option.variant.image
+                                else None,
                             }
                             for option in product_4.options.all()
                             if option.variant
@@ -156,8 +160,12 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "image80x80Url": option.variant.image80x80_url,
-                                "image380x575Url": option.variant.image380x575_url,
+                                "thumbnailUrl": option.variant.thumbnail.url
+                                if option.variant.thumbnail
+                                else None,
+                                "imageUrl": option.variant.image.id
+                                if option.variant.image
+                                else None,
                             }
                             for option in product_2_option_1.product.options.all()
                             if option.variant
@@ -207,8 +215,12 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "image80x80Url": option.variant.image80x80_url,
-                                "image380x575Url": option.variant.image380x575_url,
+                                "thumbnailUrl": option.variant.thumbnail.url
+                                if option.variant.thumbnail
+                                else None,
+                                "imageUrl": option.variant.image.id
+                                if option.variant.image
+                                else None,
                             }
                             for option in product_1.options.all()
                             if option.variant
@@ -267,8 +279,12 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "image80x80Url": option.variant.image80x80_url,
-                                "image380x575Url": option.variant.image380x575_url,
+                                "thumbnailUrl": option.variant.thumbnail.url
+                                if option.variant.thumbnail
+                                else None,
+                                "imageUrl": option.variant.image.id
+                                if option.variant.image
+                                else None,
                             }
                             for option in product_3.options.all()
                             if option.variant

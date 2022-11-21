@@ -3,8 +3,10 @@ from decimal import Decimal
 from django.db import models
 from django.utils.text import slugify
 
-from aria.core.models import BaseModel
-from aria.files.models import BaseImageModel, BaseThumbnailImageModel
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
+
+from aria.core.models import BaseImageModel, BaseModel, BaseThumbnailImageModel
 from aria.product_attributes.managers import (
     ColorQuerySet,
     ShapeQuerySet,
@@ -168,6 +170,12 @@ class Variant(BaseThumbnailImageModel, BaseModel):
     name = models.CharField(
         "product variant name",
         max_length=255,
+    )
+    image = ImageSpecField(
+        source="thumbnail",
+        processors=[ResizeToFill(80, 80)],
+        format="JPEG",
+        options={"quality": 90},
     )
     is_standard = models.BooleanField(
         "standard",

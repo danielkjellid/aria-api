@@ -1,7 +1,7 @@
 from aria.categories.models import Category
 from aria.categories.records import CategoryDetailRecord, CategoryRecord
 from aria.core.decorators import cached
-from aria.files.records import BaseCollectionListImageRecord, BaseHeaderImageRecord
+from aria.core.selectors import base_header_image_record, base_list_image_record
 from aria.products.models import Product
 
 
@@ -18,8 +18,8 @@ def category_record(*, category: Category) -> CategoryRecord:
         description=category.description,
         ordering=category.ordering,
         parent=category.parent_id,
-        images=BaseHeaderImageRecord.from_model(model=category),
-        list_images=BaseCollectionListImageRecord.from_model(model=category),
+        images=base_header_image_record(instance=category),
+        list_images=base_list_image_record(instance=category),
     )
 
 
@@ -41,8 +41,8 @@ def category_detail_record(*, category: Category) -> CategoryDetailRecord:
         parent=category.parent_id,
         parents=parents,
         children=children,
-        images=BaseHeaderImageRecord.from_model(model=category),
-        list_images=BaseCollectionListImageRecord.from_model(model=category),
+        images=base_header_image_record(instance=category),
+        list_images=base_list_image_record(instance=category),
     )
 
 
