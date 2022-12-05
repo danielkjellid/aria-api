@@ -1,6 +1,9 @@
 from django.db import models
 
 from django_resized import ResizedImageField
+from imagekit.models import ImageSpecField
+from imagekit.models.fields import ProcessedImageField
+from imagekit.processors import ResizeToFill
 
 from aria.files.utils import asset_get_static_upload_path, image_generate_signed_url
 
@@ -35,16 +38,13 @@ class BaseImageModel(models.Model):
     class Meta:
         abstract = True
 
-    def _generate_image_url(
-        self, *, width: int | None = None, height: int | None = None
-    ) -> str | None:
+    @staticmethod
+    def _get_image_url(field: models.ImageField | ImageSpecField) -> str | None:
         """
-        Generate a signed image url with dimensions.
+        Get url of image variant with safeguard.
         """
-        if self.image and self.image.name:
-            return image_generate_signed_url(
-                image_name=self.image.name, width=width, height=height
-            )
+        if field and hasattr(field, "url"):
+            return field.url
 
         return None
 
@@ -53,7 +53,7 @@ class BaseImageModel(models.Model):
         """
         Get the url for the native dimensions of the image.
         """
-        return self._generate_image_url()
+        return self._get_image_url(field=self.image)
 
 
 class BaseHeaderImageModel(BaseImageModel):
@@ -86,6 +86,48 @@ class BaseHeaderImageModel(BaseImageModel):
             "maintain an acceptable contrast"
         ),
     )
+    image1920x1080 = ImageSpecField(
+        source="image",
+        processors=[ResizeToFill(1920, 1080)],
+        format="WEBP",
+        options={"quality": 95},
+    )
+    image1440x810 = ImageSpecField(
+        source="image",
+        processors=[ResizeToFill(1440, 810)],
+        format="WEBP",
+        options={"quality": 95},
+    )
+    image1280x720 = ImageSpecField(
+        source="image",
+        processors=[ResizeToFill(1280, 720)],
+        format="WEBP",
+        options={"quality": 95},
+    )
+    image1024x576 = ImageSpecField(
+        source="image",
+        processors=[ResizeToFill(1024, 576)],
+        format="WEBP",
+        options={"quality": 95},
+    )
+    image960x540 = ImageSpecField(
+        source="image",
+        processors=[ResizeToFill(960, 540)],
+        format="WEBP",
+        options={"quality": 95},
+    )
+    image768x432 = ImageSpecField(
+        source="image",
+        processors=[ResizeToFill(768, 432)],
+        format="WEBP",
+        options={"quality": 95},
+    )
+    image640x360 = ImageSpecField(
+        source="image",
+        processors=[ResizeToFill(640, 360)],
+        format="WEBP",
+        options={"quality": 95},
+    )
 
     class Meta:
         abstract = True
@@ -95,49 +137,49 @@ class BaseHeaderImageModel(BaseImageModel):
         """
         Get the url for the 1920x1080 version of the image.
         """
-        return self._generate_image_url(width=1920, height=1080)
+        return self._get_image_url(field=self.image1920x1080)
 
     @property
     def image1440x810_url(self) -> str | None:
         """
         Get the url for the 1440x810 version of the image.
         """
-        return self._generate_image_url(width=1440, height=810)
+        return self._get_image_url(field=self.image1440x810)
 
     @property
     def image1280x720_url(self) -> str | None:
         """
         Get the url for the 1280x720 version of the image.
         """
-        return self._generate_image_url(width=1280, height=720)
+        return self._get_image_url(field=self.image1280x720)
 
     @property
     def image1024x576_url(self) -> str | None:
         """
         Get the url for the 1024x576 version of the image.
         """
-        return self._generate_image_url(width=1024, height=576)
+        return self._get_image_url(field=self.image1024x576)
 
     @property
     def image960x540_url(self) -> str | None:
         """
         Get the url for the 960x540 version of the image.
         """
-        return self._generate_image_url(width=960, height=540)
+        return self._get_image_url(field=self.image960x540)
 
     @property
     def image768x432_url(self) -> str | None:
         """
         Get the url for the 768x432 version of the image.
         """
-        return self._generate_image_url(width=768, height=432)
+        return self._get_image_url(field=self.image768x432)
 
     @property
     def image640x360_url(self) -> str | None:
         """
         Get the url for the 640x360 version of the image.
         """
-        return self._generate_image_url(width=640, height=360)
+        return self._get_image_url(field=self.image640x360)
 
 
 class BaseCollectionListImageModel(BaseImageModel):
@@ -152,6 +194,20 @@ class BaseCollectionListImageModel(BaseImageModel):
 
     UPLOAD_PATH: str
 
+    image960x540 = ImageSpecField(
+        source="image",
+        processors=[ResizeToFill(960, 540)],
+        format="WEBP",
+        options={"quality": 95},
+    )
+
+    image576x324 = ImageSpecField(
+        source="image",
+        processors=[ResizeToFill(960, 540)],
+        format="WEBP",
+        options={"quality": 95},
+    )
+
     class Meta:
         abstract = True
 
@@ -160,14 +216,14 @@ class BaseCollectionListImageModel(BaseImageModel):
         """
         Get the url for the 960x540 version of the image.
         """
-        return self._generate_image_url(width=960, height=540)
+        return self._get_image_url(field=self.image960x540)
 
     @property
     def image576x324_url(self) -> str | None:
         """
         Get the url for the 576x324 version of the image.
         """
-        return self._generate_image_url(width=576, height=324)
+        return self._get_image_url(field=self.image576x324)
 
 
 class BaseThumbnailImageModel(models.Model):
@@ -187,27 +243,37 @@ class BaseThumbnailImageModel(models.Model):
     THUMBNAIL_WIDTH = 380
     THUMBNAIL_HEIGHT = 575
 
-    thumbnail = ResizedImageField(
-        "thumbnail",
+    thumbnail = models.ImageField(
+        "Thumbnail",
         upload_to=asset_get_static_upload_path,
-        size=[THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT],
         blank=True,
         null=True,
+    )
+
+    thumbnail80x80 = ImageSpecField(
+        source="thumbnail",
+        processors=[ResizeToFill(80, 80)],
+        format="WEBP",
+        options={"quality": 95},
+    )
+
+    thumbnail380x575 = ImageSpecField(
+        source="thumbnail",
+        processors=[ResizeToFill(380, 575)],
+        format="WEBP",
+        options={"quality": 95},
     )
 
     class Meta:
         abstract = True
 
-    def _generate_image_url(
-        self, *, width: int | None = None, height: int | None = None
-    ) -> str | None:
+    @staticmethod
+    def _get_image_url(field: models.ImageField | ImageSpecField) -> str | None:
         """
-        Generate a signed image url with dimensions.
+        Get url of image variant with safeguard.
         """
-        if self.thumbnail and self.thumbnail.name:
-            return image_generate_signed_url(
-                image_name=self.thumbnail.name, width=width, height=height
-            )
+        if field and hasattr(field, "url"):
+            return field.url
 
         return None
 
@@ -216,18 +282,18 @@ class BaseThumbnailImageModel(models.Model):
         """
         Get the url for the native dimensions of the image.
         """
-        return self._generate_image_url()
+        return self._get_image_url(field=self.thumbnail)
 
     @property
     def image80x80_url(self) -> str | None:
         """
         Get the url for the 80x80 version of the image.
         """
-        return self._generate_image_url(width=80, height=80)
+        return self._get_image_url(field=self.thumbnail80x80)
 
     @property
     def image380x575_url(self) -> str | None:
         """
         Get the url for the 380x575 version of the image.
         """
-        return self._generate_image_url(width=380, height=575)
+        return self._get_image_url(field=self.thumbnail380x575)

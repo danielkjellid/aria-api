@@ -2,6 +2,8 @@
 
 from django.db import migrations, models
 
+import imagekit.models.fields
+
 import aria.files.utils
 
 
@@ -15,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='decor',
             name='thumbnail',
-            field=models.ImageField(blank=True, help_text='Image must be above 380x575px', upload_to=aria.files.utils.asset_get_static_upload_path),
+            field=imagekit.models.fields.ProcessedImageField(blank=True, help_text='Image must be above 380x575px', upload_to=aria.files.utils.asset_get_static_upload_path),
         ),
         migrations.AlterField(
             model_name='kitchen',
@@ -25,6 +27,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='plywood',
             name='thumbnail',
-            field=models.ImageField(blank=True, help_text='Image must be above 380x575px', upload_to=aria.files.utils.asset_get_static_upload_path),
+            field=imagekit.models.fields.ProcessedImageField(blank=True, help_text='Image must be above 380x575px', upload_to=aria.files.utils.asset_get_static_upload_path),
         ),
     ]

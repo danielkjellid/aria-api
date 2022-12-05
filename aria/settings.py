@@ -154,6 +154,7 @@ THIRD_PARTY_APPS = [
     "corsheaders",
     "django_countries",
     "django_resized",
+    "imagekit",
     "django_s3_storage",
     "mptt",
     "ninja",
@@ -215,6 +216,13 @@ AWS_S3_KEY_PREFIX_STATIC = "static"
 
 THUMBOR_SECURITY_KEY = env.str("THUMBOR_SECURITY_KEY", default="supersecret")
 THUMBOR_SERVER_URL = env.str("THUMBOR_SERVER_URL", default="http://localhost:8888")
+
+###################
+# Files: imagekit #
+###################
+
+IMAGEKIT_CACHEFILE_DIR = "media/cache"
+IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = "imagekit.cachefiles.strategies.Optimistic"
 
 ##################
 # Authentication #

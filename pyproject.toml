@@ -44,6 +44,7 @@ hiredis = "2.0.0"
 celery = "5.2.7"
 pytest-celery = "0.0.0"
 django-resized = "^1.0.2"
+django-imagekit = "^4.1.0"
 
 
 [tool.poetry.dev-dependencies]
