@@ -64,17 +64,6 @@ services:
           name: aria-redis-prod
           property: connectionString
 
-  - type: web
-    region: frankfurt
-    plan: starter
-    name: aria-thumbor-prod
-    env: docker
-    dockerfilePath: "./docker/thumbor/Dockerfile"
-    autoDeploy: false
-    envVars:
-      - fromGroup: Thumbor
-      - fromGroup: AWS
-
   #############
   ## Staging ##
   #############
