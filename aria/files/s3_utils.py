@@ -3,8 +3,8 @@ from typing import TypeVar
 from django.conf import settings
 from django.db.models import FileField, ImageField, Model
 
-from django_resized.forms import ResizedImageField, ResizedImageFieldFile
 from django_s3_storage.storage import S3Storage
+from imagekit.models import ProcessedImageField
 
 T_MODEL = TypeVar("T_MODEL", bound=Model)
 
@@ -37,8 +37,7 @@ def s3_asset_cleanup(*, instance: T_MODEL, field: str) -> None:
     instance_field = getattr(instance, field, None)
 
     if instance_field and isinstance(
-        instance_field,
-        (ImageField, FileField, ResizedImageField, ResizedImageFieldFile),
+        instance_field, (ImageField, FileField, ProcessedImageField)
     ):
         storage_key = instance_field.name
         instance_field.delete(save=False)

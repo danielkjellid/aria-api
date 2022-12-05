@@ -41,8 +41,8 @@ class BaseImageModel(models.Model):
         """
         Get url of image variant with safeguard.
         """
-        if field and hasattr(field, "url"):
-            return field.url
+        if field and hasattr(field, "url") and getattr(field, "url") is not None:
+            return field.url  # type: ignore
 
         return None
 
@@ -270,8 +270,8 @@ class BaseThumbnailImageModel(models.Model):
         """
         Get url of image variant with safeguard.
         """
-        if field and hasattr(field, "url"):
-            return field.url
+        if field and hasattr(field, "url") and getattr(field, "url") is not None:
+            return field.url  # type: ignore
 
         return None
 
