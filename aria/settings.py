@@ -153,9 +153,8 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "corsheaders",
     "django_countries",
-    "django_resized",
-    "imagekit",
     "django_s3_storage",
+    "imagekit",
     "mptt",
     "ninja",
 ]
@@ -209,13 +208,6 @@ AWS_S3_BUCKET_AUTH_STATIC = False
 AWS_S3_BUCKET_NAME_STATIC = env.str("AWS_S3_BUCKET_NAME_STATIC", default="dev")
 AWS_S3_ENDPOINT_URL_STATIC = AWS_ENDPOINT_URL
 AWS_S3_KEY_PREFIX_STATIC = "static"
-
-##################
-# Files: thumbor #
-##################
-
-THUMBOR_SECURITY_KEY = env.str("THUMBOR_SECURITY_KEY", default="supersecret")
-THUMBOR_SERVER_URL = env.str("THUMBOR_SERVER_URL", default="http://localhost:8888")
 
 ###################
 # Files: imagekit #

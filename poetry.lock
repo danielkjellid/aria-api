@@ -496,14 +496,6 @@ redis = ">=3,<4.0.0 || >4.0.0,<4.0.1 || >4.0.1"
 hiredis = ["redis[hiredis] (>=3,!=4.0.0,!=4.0.1)"]
 
 [[package]]
-name = "django-resized"
-version = "1.0.2"
-description = "Resizes image origin to specified size."
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "django-s3-storage"
 version = "0.13.9"
 description = "Django Amazon S3 file storage."
@@ -771,17 +763,6 @@ description = "A fast and thorough lazy object proxy."
 category = "dev"
 optional = false
 python-versions = ">=3.6"
-
-[[package]]
-name = "libthumbor"
-version = "2.0.2"
-description = "libthumbor is the python extension to generate thumbor URLs"
-category = "main"
-optional = false
-python-versions = ">=3.6,<4.0"
-
-[package.dependencies]
-six = ">=1.14.0,<2.0.0"
 
 [[package]]
 name = "matplotlib-inline"
@@ -1545,7 +1526,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "3.10.2"
-content-hash = "df9e4a3ff9eefbea086b19eaaf67eaee177a574c5d0891c2bdd7c620737146a2"
+content-hash = "a8d6b2e9757495c9e0d7188ea5c9a589cc7eb861aa0b79b519f16d4233f109ce"
 
 [metadata.files]
 amqp = [
@@ -1763,10 +1744,6 @@ django-redis = [
     {file = "django-redis-5.2.0.tar.gz", hash = "sha256:8a99e5582c79f894168f5865c52bd921213253b7fd64d16733ae4591564465de"},
     {file = "django_redis-5.2.0-py3-none-any.whl", hash = "sha256:1d037dc02b11ad7aa11f655d26dac3fb1af32630f61ef4428860a2e29ff92026"},
 ]
-django-resized = [
-    {file = "django-resized-1.0.2.tar.gz", hash = "sha256:52d727860f64ef4fdadbe2e74b66231c71c59df4d95949e338fcd320450f77fa"},
-    {file = "django_resized-1.0.2-py3-none-any.whl", hash = "sha256:d55a8d4125838486a1e76ffb689f8364f7d579bc7562b04400065602ec2ba7cc"},
-]
 django-s3-storage = [
     {file = "django-s3-storage-0.13.9.tar.gz", hash = "sha256:003a9373bff58db0e0badbc1bde93234b1d76e568e3a8de446f7f879f72ea718"},
     {file = "django_s3_storage-0.13.9-py3-none-any.whl", hash = "sha256:ee1aa42d30cd77e1ae0e3cf5420e0bfe3c8b2a15181f9a4360594445b0717c1c"},
@@ -1921,10 +1898,6 @@ lazy-object-proxy = [
     {file = "lazy_object_proxy-1.7.1-cp39-cp39-win32.whl", hash = "sha256:2130db8ed69a48a3440103d4a520b89d8a9405f1b06e2cc81640509e8bf6548f"},
     {file = "lazy_object_proxy-1.7.1-cp39-cp39-win_amd64.whl", hash = "sha256:677ea950bef409b47e51e733283544ac3d660b709cfce7b187f5ace137960d61"},
     {file = "lazy_object_proxy-1.7.1-pp37.pp38-none-any.whl", hash = "sha256:d66906d5785da8e0be7360912e99c9188b70f52c422f9fc18223347235691a84"},
-]
-libthumbor = [
-    {file = "libthumbor-2.0.2-py3-none-any.whl", hash = "sha256:4d4dc0cef2c4d5b24dd7b8b25f62097508f10820aaf31eada7d924d6ac0d5378"},
-    {file = "libthumbor-2.0.2.tar.gz", hash = "sha256:d4fb22159ad30d542acbc0379e468ce4b74f881a2b8918079249533a273337e8"},
 ]
 matplotlib-inline = [
     {file = "matplotlib-inline-0.1.3.tar.gz", hash = "sha256:a04bfba22e0d1395479f866853ec1ee28eea1485c1d69a6faf00dc3e24ff34ee"},

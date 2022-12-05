@@ -1,11 +1,9 @@
 from django.db import models
 
-from django_resized import ResizedImageField
 from imagekit.models import ImageSpecField
-from imagekit.models.fields import ProcessedImageField
 from imagekit.processors import ResizeToFill
 
-from aria.files.utils import asset_get_static_upload_path, image_generate_signed_url
+from aria.files.utils import asset_get_static_upload_path
 
 
 class BaseFileModel(models.Model):
