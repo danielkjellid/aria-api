@@ -35,6 +35,13 @@ jobs:
     name: tests
     runs-on: ubuntu-20.04
     services:
+      minio:
+        image: bitnami/minio:latest
+        ports:
+          - '9000:9000'
+          - '9001:9001'
+        volumes:
+         -  'minio_data:/data'
       postgres:
         image: postgres:14
         ports:

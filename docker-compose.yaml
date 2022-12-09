@@ -2,15 +2,9 @@ version: "3"
 
 volumes:
   postgres:
-  thumbor_data:
-    driver: local
   minio_data:
     driver: local
 
-
-networks:
-  app-to-app:
-    driver: bridge
 
 services:
   postgres:
@@ -52,8 +46,6 @@ services:
       - '9001:9001'
     volumes:
       - 'minio_data:/data'
-    networks:
-      - app-to-app
 
 
 
