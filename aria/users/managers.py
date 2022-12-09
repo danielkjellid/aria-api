@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.postgres.aggregates import ArrayAgg
 
-from aria.core.models import BaseQuerySet
+from aria.core.managers import BaseQuerySet
 
 if TYPE_CHECKING:
     from aria.users import models  # noqa

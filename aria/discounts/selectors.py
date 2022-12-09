@@ -157,7 +157,7 @@ def discount_active_list() -> list[DiscountRecord]:
                         origin_country=product.supplier.country_name,
                         origin_country_flag=product.supplier.unicode_flag,
                     ),
-                    thumbnail=product.thumbnail.url if product.thumbnail else None,
+                    image380x575_url=product.image380x575_url,
                     display_price=product.display_price,
                     from_price=product_get_price_from_options(product=product),
                     discount=ProductDiscountRecord(
@@ -197,12 +197,9 @@ def discount_active_list() -> list[DiscountRecord]:
                         VariantDetailRecord(
                             id=option.variant.id,
                             name=option.variant.name,
-                            image_url=option.variant.image.url
-                            if option.variant.image
-                            else None,
-                            thumbnail_url=option.variant.thumbnail.url
-                            if option.variant.thumbnail
-                            else None,
+                            image_url=option.variant.image_url,
+                            image80x80_url=option.variant.image80x80_url,
+                            image380x575_url=option.variant.image380x575_url,
                             is_standard=option.variant.is_standard,
                         )
                         for option in product.available_options_unique_variants  # type: ignore # pylint: disable=line-too-long

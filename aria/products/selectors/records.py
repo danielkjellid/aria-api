@@ -82,7 +82,7 @@ def product_list_record(product: Product) -> ProductListRecord:
             origin_country=product.supplier.country_name,
             origin_country_flag=product.supplier.unicode_flag,
         ),
-        thumbnail=product.thumbnail.url if product.thumbnail else None,
+        image380x575_url=product.image380x575_url,
         display_price=product.display_price,
         from_price=product_get_price_from_options(product=product),
         discount=product_get_active_discount(product=product),
@@ -100,10 +100,9 @@ def product_list_record(product: Product) -> ProductListRecord:
             VariantDetailRecord(
                 id=option.variant.id,
                 name=option.variant.name,
-                image_url=option.variant.image.url if option.variant.image else None,
-                thumbnail_url=option.variant.thumbnail.url
-                if option.variant.thumbnail
-                else None,
+                image_url=option.variant.image_url,
+                image80x80_url=option.variant.image80x80_url,
+                image380x575_url=option.variant.image380x575_url,
                 is_standard=option.variant.is_standard,
             )
             for option in available_options

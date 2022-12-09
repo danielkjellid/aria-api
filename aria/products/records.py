@@ -3,7 +3,8 @@ from decimal import Decimal
 from pydantic import BaseModel
 
 from aria.categories.records import CategoryDetailRecord
-from aria.core.records import BaseArrayFieldLabelRecord, BaseHeaderImageRecord
+from aria.core.records import BaseArrayFieldLabelRecord
+from aria.files.records import BaseHeaderImageRecord
 from aria.product_attributes.records import (
     ColorDetailRecord,
     ShapeDetailRecord,
@@ -104,7 +105,7 @@ class ProductListRecord(BaseModel):
     unit: str
     status: str
     supplier: ProductSupplierRecord
-    thumbnail: str | None = None
+    image380x575_url: str | None = None
     display_price: bool
     from_price: Decimal
     discount: ProductDiscountRecord | None

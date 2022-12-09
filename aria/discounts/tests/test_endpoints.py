@@ -71,9 +71,7 @@ class TestPublicDiscountsEndpoints:
                             "originCountry": product_4.supplier.country_name,
                             "originCountryFlag": product_4.supplier.unicode_flag,
                         },
-                        "thumbnail": product_4.thumbnail.url
-                        if product_4.thumbnail
-                        else None,
+                        "image380x575Url": product_4.image380x575_url,
                         "discount": {
                             "isDiscounted": True,
                             "discountedGrossPrice": 160.0,
@@ -105,12 +103,8 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "thumbnailUrl": option.variant.thumbnail.url
-                                if option.variant.thumbnail
-                                else None,
-                                "imageUrl": option.variant.image.id
-                                if option.variant.image
-                                else None,
+                                "image80x80Url": option.variant.image80x80_url,
+                                "image380x575Url": option.variant.image380x575_url,
                             }
                             for option in product_4.options.all()
                             if option.variant
@@ -126,9 +120,7 @@ class TestPublicDiscountsEndpoints:
                             "originCountry": product_2_option_1.product.supplier.country_name,  # pylint: disable=line-too-long
                             "originCountryFlag": product_2_option_1.product.supplier.unicode_flag,  # pylint: disable=line-too-long
                         },
-                        "thumbnail": product_2_option_1.product.thumbnail.url
-                        if product_2_option_1.product.thumbnail
-                        else None,
+                        "image380x575Url": product_2.image380x575_url,
                         "discount": {
                             "isDiscounted": True,
                             "discountedGrossPrice": 160.0,
@@ -160,12 +152,8 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "thumbnailUrl": option.variant.thumbnail.url
-                                if option.variant.thumbnail
-                                else None,
-                                "imageUrl": option.variant.image.id
-                                if option.variant.image
-                                else None,
+                                "image80x80Url": option.variant.image80x80_url,
+                                "image380x575Url": option.variant.image380x575_url,
                             }
                             for option in product_2_option_1.product.options.all()
                             if option.variant
@@ -181,9 +169,7 @@ class TestPublicDiscountsEndpoints:
                             "originCountry": product_1.supplier.country_name,
                             "originCountryFlag": product_1.supplier.unicode_flag,
                         },
-                        "thumbnail": product_1.thumbnail.url
-                        if product_1.thumbnail
-                        else None,
+                        "image380x575Url": product_1.image380x575_url,
                         "discount": {
                             "isDiscounted": True,
                             "discountedGrossPrice": 160.0,
@@ -215,12 +201,8 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "thumbnailUrl": option.variant.thumbnail.url
-                                if option.variant.thumbnail
-                                else None,
-                                "imageUrl": option.variant.image.id
-                                if option.variant.image
-                                else None,
+                                "image80x80Url": option.variant.image80x80_url,
+                                "image380x575Url": option.variant.image380x575_url,
                             }
                             for option in product_1.options.all()
                             if option.variant
@@ -245,9 +227,7 @@ class TestPublicDiscountsEndpoints:
                             "originCountry": product_3.supplier.country_name,
                             "originCountryFlag": product_3.supplier.unicode_flag,
                         },
-                        "thumbnail": product_3.thumbnail.url
-                        if product_3.thumbnail
-                        else None,
+                        "image380x575Url": product_3.image380x575_url,
                         "discount": {
                             "isDiscounted": True,
                             "discountedGrossPrice": 120.0,
@@ -279,12 +259,8 @@ class TestPublicDiscountsEndpoints:
                             {
                                 "id": option.variant.id,
                                 "name": option.variant.name,
-                                "thumbnailUrl": option.variant.thumbnail.url
-                                if option.variant.thumbnail
-                                else None,
-                                "imageUrl": option.variant.image.id
-                                if option.variant.image
-                                else None,
+                                "image80x80Url": option.variant.image80x80_url,
+                                "image380x575Url": option.variant.image380x575_url,
                             }
                             for option in product_3.options.all()
                             if option.variant

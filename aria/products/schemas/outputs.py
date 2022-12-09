@@ -1,6 +1,7 @@
 from ninja import Schema
 
-from aria.core.records import BaseArrayFieldLabelRecord, BaseHeaderImageRecord
+from aria.core.records import BaseArrayFieldLabelRecord
+from aria.files.records import BaseHeaderImageRecord
 
 
 class ProductSupplierOutput(Schema):
@@ -12,8 +13,8 @@ class ProductSupplierOutput(Schema):
 class ProductVariantOutput(Schema):
     id: int
     name: str
-    image_url: str | None
-    thumbnail_url: str | None
+    image80x80_url: str | None
+    image380x575_url: str | None
 
 
 class ProductSizeOutput(Schema):
@@ -90,7 +91,7 @@ class ProductListOutput(Schema):
     slug: str
     unit: str
     supplier: ProductSupplierOutput
-    thumbnail: str | None
+    image380x575_url: str | None
     display_price: bool
     from_price: float
     discount: ProductDiscountOutput | None

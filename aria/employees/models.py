@@ -32,7 +32,7 @@ class EmployeeInfo(models.Model):
     profile_picture = ProcessedImageField(
         upload_to="media/employees/",
         processors=[ResizeToFill(540, 540)],
-        format="JPEG",
+        format="WEBP",
         options={"quality": 100},
         blank=True,
         null=True,

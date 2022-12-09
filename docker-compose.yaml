@@ -2,21 +2,9 @@ version: "3"
 
 volumes:
   postgres:
-  public_media:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./public/media
-  thumbor_data:
-    driver: local
   minio_data:
     driver: local
 
-
-networks:
-  app-to-app:
-    driver: bridge
 
 services:
   postgres:
@@ -42,58 +30,6 @@ services:
     ports:
       - 6379:6379
 
-  thumbor:
-    container_name: Thumbor
-    image: beeyev/thumbor-s3:7.1-slim-alpine
-    restart: unless-stopped
-    tty: true
-    ports:
-      - '8888:8888'
-    environment:
-      - AUTO_PNG_TO_JPG='True'
-      - AUTO_WEBP='True'
-      - ALLOW_OLD_URLS='False'
-      - ALLOW_UNSAFE_URL='False'
-
-      - AWS_LOADER_REGION_NAME=${AWS_REGION}
-      - AWS_LOADER_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
-      - AWS_LOADER_S3_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_LOADER_S3_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_LOADER_S3_ENDPOINT_URL=${AWS_ENDPOINT_URL}
-
-      - AWS_RESULT_STORAGE_S3_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_RESULT_STORAGE_S3_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_RESULT_STORAGE_S3_ENDPOINT_URL=${AWS_ENDPOINT_URL}
-      - AWS_RESULT_STORAGE_ROOT_PATH=media/media-cache
-      - AWS_RESULT_STORAGE_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
-
-      - LOG_LEVEL=debug
-      - LOADER=thumbor_aws.loader
-
-      # Max AGE sent as a header for the image served by thumbor in seconds (86400 is a day of caching)
-      - MAX_AGE=86400
-      - MAX_WIDTH=2048
-      - MAX_HEIGHT=1150
-
-      - RESULT_STORAGE=thumbor_aws.result_storage
-      # Expiration in seconds of generated images in the result storage. (2629746 is a month is seconds)
-      - RESULT_STORAGE_EXPIRATION_SECONDS=2629746
-      - RESULT_STORAGE_STORES_UNSAFE='False'
-
-      - SECURITY_KEY=${THUMBOR_SECURITY_KEY}
-      - SENTRY_DSN_URL=${SENTRY_DSN}
-
-      - QUALITY=99
-    depends_on:
-      - minio
-    volumes:
-      - thumbor_data:/data
-    networks:
-      - app-to-app
-    build:
-      context: .
-      dockerfile: 'docker/thumbor/Dockerfile'
-
   minio:
     container_name: MinIO
     image: bitnami/minio:latest
@@ -102,7 +38,7 @@ services:
     environment:
       - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
       - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
-      - MINIO_DEFAULT_BUCKETS=${AWS_S3_BUCKET_NAME}:none
+      - MINIO_DEFAULT_BUCKETS=${AWS_S3_BUCKET_NAME}:download
       - MINIO_BROWSER=on
       - CONSOLE_SECURE_TLS_REDIRECT=off
     ports:
@@ -110,9 +46,6 @@ services:
       - '9001:9001'
     volumes:
       - 'minio_data:/data'
-      - 'public_media:/media'
-    networks:
-      - app-to-app
 
 
 

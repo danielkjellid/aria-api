@@ -13,7 +13,7 @@ from django.db.models import (
     When,
 )
 
-from aria.core.models import BaseQuerySet
+from aria.core.managers import BaseQuerySet
 from aria.products.enums import ProductStatus
 
 if TYPE_CHECKING:

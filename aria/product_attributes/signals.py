@@ -4,7 +4,7 @@ from django.db.models import Model
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 
-from aria.core.utils import cleanup_files_from_deleted_instance
+from aria.files.s3_utils import s3_assets_cleanup
 from aria.product_attributes.models import Shape, Variant
 
 
@@ -19,5 +19,4 @@ def delete_images(
     """
     Delete static assets belonging to deleted instance.
     """
-
-    cleanup_files_from_deleted_instance(instance=instance)
+    s3_assets_cleanup(instance=instance)
