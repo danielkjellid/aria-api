@@ -5,6 +5,7 @@ on: push
 env:
   DJANGO_SETTINGS_MODULE: aria.settings
 
+
 jobs:
   python-lint:
     runs-on: ubuntu-20.04
@@ -37,6 +38,12 @@ jobs:
     services:
       minio:
         image: bitnami/minio:latest
+        env:
+          # Make sure these variables is the same as the defaults in settings.py
+          MINIO_ROOT_USER: aria # AWS_ACCESS_KEY_ID
+          MINIO_ROOT_PASSWORD: ariatestpassword # AWS_SECRET_ACCESS_KEY
+          MINIO_DEFAULT_BUCKETS: dev:download # AWS_S3_BUCKET_NAME
+          CONSOLE_SECURE_TLS_REDIRECT: off
         ports:
           - '9000:9000'
           - '9001:9001'
