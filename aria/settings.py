@@ -164,6 +164,7 @@ PROJECT_APPS = [
     "aria.api_auth",
     "aria.audit_logs",
     "aria.categories",
+    "aria.communications",
     "aria.core",
     "aria.discounts",
     "aria.employees",
@@ -396,8 +397,12 @@ EMAIL_HOST_USER = "apikey"
 EMAIL_HOST_PASSWORD = env.str("SENDGRID_API_KEY", default="")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default="")
+
+if env.bool("BROWSER_EMAIL", default=False):
+    EMAIL_BACKEND = "aria.communications.backends.BrowserEmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 ##########
 # Sentry #
