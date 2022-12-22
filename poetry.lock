@@ -484,7 +484,7 @@ hiredis = ["redis[hiredis] (>=3,!=4.0.0,!=4.0.1)"]
 
 [[package]]
 name = "django-s3-storage"
-version = "0.13.9"
+version = "0.13.10"
 description = "Django Amazon S3 file storage."
 category = "main"
 optional = false
@@ -492,7 +492,7 @@ python-versions = "*"
 
 [package.dependencies]
 boto3 = ">=1.4.4,<2"
-django = ">=1.11"
+django = ">=3.2"
 
 [[package]]
 name = "django-stubs"
@@ -1480,7 +1480,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "3.10.2"
-content-hash = "26a3415798d6e891bdc6abeaf9931a6846924d9d7fdfc405e10154e18c036938"
+content-hash = "3d4afd780f4e5495fda404b2ae58fa6161bfcc92d996b8df64d9de6c5c0655fd"
 
 [metadata.files]
 amqp = [
@@ -1696,8 +1696,8 @@ django-redis = [
     {file = "django_redis-5.2.0-py3-none-any.whl", hash = "sha256:1d037dc02b11ad7aa11f655d26dac3fb1af32630f61ef4428860a2e29ff92026"},
 ]
 django-s3-storage = [
-    {file = "django-s3-storage-0.13.9.tar.gz", hash = "sha256:003a9373bff58db0e0badbc1bde93234b1d76e568e3a8de446f7f879f72ea718"},
-    {file = "django_s3_storage-0.13.9-py3-none-any.whl", hash = "sha256:ee1aa42d30cd77e1ae0e3cf5420e0bfe3c8b2a15181f9a4360594445b0717c1c"},
+    {file = "django-s3-storage-0.13.10.tar.gz", hash = "sha256:489cf88e9e9b0051d39b0b025153460bce01ba7d995311507b95ea291445525b"},
+    {file = "django_s3_storage-0.13.10-py3-none-any.whl", hash = "sha256:45c162cfddcd88630a9a88cb88200501b462c1c98b1b404227b8e8547488c888"},
 ]
 django-stubs = [
     {file = "django-stubs-1.11.0.tar.gz", hash = "sha256:11a4aa094d3da0108d268386dfd0b9a5bf73fe1ab5919b5a292607671329bc4b"},
