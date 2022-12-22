@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.core.cache import cache
 from django.test import Client
 
 import pytest  # noqa
@@ -85,3 +86,10 @@ def create_temp_storage(settings, tmp_path):
     settings.DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
     settings.MEDIA_ROOT = tmp_path
     yield
+
+
+@pytest.fixture(autouse=True)
+def clear_cache_before_test():
+    cache.clear()
+    yield
+    cache.clear()

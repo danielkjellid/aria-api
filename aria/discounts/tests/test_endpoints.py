@@ -25,8 +25,6 @@ class TestPublicDiscountsEndpoints:
         a valid response.
         """
 
-        cache.clear()
-
         product_1 = create_product(product_name="Product 1")
 
         product_2 = create_product(product_name="Product 2")

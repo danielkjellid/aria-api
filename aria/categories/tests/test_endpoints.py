@@ -21,8 +21,6 @@ class TestPublicCategoriesEndpoints:
         a valid response.
         """
 
-        cache.clear()
-
         main_cat_1 = create_category(name="Main cat 1")
         main_cat_1_sub_1 = create_category("Sub cat 1.1", parent=main_cat_1)
         main_cat_1_sub_2 = create_category("Sub cat 1.2", parent=main_cat_1)
