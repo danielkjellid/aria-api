@@ -14,6 +14,17 @@ class UserProfileRecord(BaseModel):
     initial: str
     avatar_color: str
 
+    @classmethod
+    def from_user(cls, user: User) -> UserProfileRecord:
+        """
+        Generate user profile record from model.
+        """
+        return cls(
+            full_name=user.full_name,
+            initial=user.initial,
+            avatar_color=user.avatar_color,
+        )
+
 
 class UserRecord(BaseModel):
     id: int
@@ -39,23 +50,16 @@ class UserRecord(BaseModel):
     permissions: list[str]
 
     @classmethod
-    def from_user(
-        cls, user: "User", permissions: list[str] | None = None
-    ) -> "UserRecord":
+    def from_user(cls, user: User, permissions: list[str] | None = None) -> UserRecord:
         """
         Generate user record from model.
         """
-
         return cls(
             id=user.id,
             email=user.email,
             first_name=user.first_name,
             last_name=user.last_name,
-            profile=UserProfileRecord(
-                full_name=user.full_name,
-                avatar_color=user.avatar_color,
-                initial=user.initial,
-            ),
+            profile=UserProfileRecord.from_user(user=user),
             birth_date=user.birth_date,
             phone_number=user.phone_number,
             has_confirmed_email=user.has_confirmed_email,

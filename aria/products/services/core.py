@@ -89,7 +89,7 @@ def product_create(
 
     # TODO: Add audit logging, and make sure log is correctly in test
 
-    return product_record(product=product)
+    return ProductRecord.from_product(product)
 
 
 @transaction.atomic
@@ -292,4 +292,4 @@ def product_update(
         field_changes.extend(updated_fields)
         # TODO: Add audit logging, and make sure log is correctly in test
 
-    return product_record(product=product)
+    return ProductRecord.from_product(product)
