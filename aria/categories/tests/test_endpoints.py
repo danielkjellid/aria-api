@@ -1,7 +1,5 @@
 import json
 
-from django.core.cache import cache
-
 import pytest
 
 from aria.categories.tests.utils import create_category

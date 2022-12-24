@@ -1,7 +1,12 @@
-import dataclasses
-from typing import Any, Callable, Optional, Type, Union
+import inspect
+import types
+import typing
+from types import NoneType, UnionType
+from typing import Any, Callable, Type, TypeVar, Union
 
-import dacite
+from pydantic import BaseModel, json, parse_obj_as, parse_raw_as
+
+T = TypeVar("T", bound=BaseModel)
 
 
 def get_codec(
@@ -9,89 +14,117 @@ def get_codec(
 ) -> tuple[Callable[[Any], Any], Callable[[Any], Any]]:
     """
     Get an encoder and decoder for the given type. This is mainly to handle
-    dataclasses, which we don't want to pickle when caching, because that can
+    pydantic models, which we don't want to pickle when caching, because that can
     lead to weird behaviour. By default Django will pickle any value in the
     cache, but when unpickling objects they are stored to the state they were in
     when they were picked, not the current state in code (e.g. if you add a new
     field with a default it won't be set on the unpicked object).
     """
 
-    if dataclasses.is_dataclass(type_annotation):
-        return _dataclass_encoder(type_annotation), _dataclass_decoder(type_annotation)
+    if _is_pydantic_model(type_annotation):
+        print("hits here")
+        return _pydantic_encoder(type_annotation), _pydantic_decoder(type_annotation)
 
-    if _is_optional_dataclass(type_annotation):
-        _type = next(
-            arg for arg in type_annotation.__args__ if dataclasses.is_dataclass(arg)
+    if _is_list_with_pydantic_models(type_annotation):
+        print("hits here instead")
+        return _pydantic_list_encoder(type_annotation), _pydantic_list_decoder(
+            type_annotation
         )
-        return _dataclass_encoder(_type), _dataclass_decoder(_type)
-
-    if _is_list_with_dataclass(type_annotation):
-        _type = type_annotation.__args__[0]
-        return _dataclass_list_encoder(_type), _dataclass_list_decoder(_type)
 
     return lambda value: value, lambda value: value
 
 
-def _is_list_with_dataclass(type_annotation: Type[Any]) -> bool:
+def _can_check_subclass(type_annotation: type) -> bool:
+    if (
+        not inspect.isclass(type_annotation)
+        or type(type_annotation) is types.GenericAlias
+    ):
+        return False
 
-    origin = getattr(type_annotation, "__origin__", None)
-    args = getattr(type_annotation, "__args__", None)
+    return True
+
+
+def _is_list_with_pydantic_models(type_annotation: type) -> bool:
+
+    origin = typing.get_origin(type_annotation)
+    args = typing.get_args(type_annotation)
 
     return (
         origin is list
-        and isinstance(args, tuple)
         and len(args) == 1
-        and dataclasses.is_dataclass(args[0])
+        and all(
+            issubclass(arg, BaseModel) if _can_check_subclass(arg) else False
+            for arg in args
+        )
     )
 
 
-def _is_optional_dataclass(type_annotation: Type[Any]) -> bool:
+def _pydantic_list_decoder(
+    type_annotation: type,
+) -> Callable[[str | None], list[T] | None]:
 
-    origin = getattr(type_annotation, "__origin__", None)
-    args = getattr(type_annotation, "__args__", None)
+    decoder = _pydantic_decoder(type_annotation)
 
-    return (
-        origin is Union
-        and isinstance(args, tuple)
-        and type(None) in args
-        and any(dataclasses.is_dataclass(arg) for arg in args)
-    )
-
-
-def _dataclass_decoder(type_annotation: Type[Any]) -> Callable[[Any], Any]:
-    def decode_dataclass(value: Any) -> Any:
-        return (dacite.from_dict(type_annotation, value)) if value else None  # type: ignore # pylint: disable=line-too-long
-
-    return decode_dataclass
-
-
-def _dataclass_encoder(
-    type_annotation: Type[Any],  # pylint: disable=unused-argument
-) -> Callable[[Any], Any]:
-    def encode_dataclass(value: Any) -> Optional[dict[Any, Any]]:
-        return dataclasses.asdict(value) if value else None
-
-    return encode_dataclass
-
-
-def _dataclass_list_decoder(type_annotation: Type[Any]) -> Callable[[Any], Any]:
-
-    decoder = _dataclass_decoder(type_annotation)
-
-    def decode_dataclass_list(value: list[Any]) -> list[Any]:
+    def decode_pydantic_list(value: str | None):
         return [decoder(item) for item in value] if value else value
 
-    return decode_dataclass_list
+    return decode_pydantic_list
 
 
-def _dataclass_list_encoder(
-    type_annotation: Type[Any],  # pylint: disable=unused-argument
-) -> Callable[[Any], Any]:
-    def encode_dataclass_list(value: list[Any]) -> list[Optional[dict[str, Any]]]:
+def _pydantic_list_encoder(
+    type_annotation: type,
+) -> Callable[[list[T] | None], str | None]:
+
+    encoder = _pydantic_encoder(type_annotation)
+
+    def encode_pydantic_list(value: str | None):
         return (
-            [dataclasses.asdict(item) if item else None for item in value]
+            [encoder(item) if _is_pydantic_model(item) else None for item in value]
             if value
             else value
         )
 
-    return encode_dataclass_list
+    return encode_pydantic_list
+
+
+def _is_pydantic_model(type_annotation: type) -> bool:
+
+    origin = typing.get_origin(type_annotation)
+    args = typing.get_args(type_annotation)
+
+    # Make sure the type annotation is an actual class we can run
+    # issubclass on.
+    if not _can_check_subclass(type_annotation):
+        print("returns false")
+        return False
+
+    return (
+        # Plain pydantic model.
+        issubclass(type_annotation, BaseModel)
+        # Or an optional pydantic model.
+        or (
+            origin in (UnionType, Union)
+            and NoneType in args
+            and any(issubclass(arg, BaseModel) for arg in args)
+        )
+    )
+
+
+def _pydantic_decoder(typ: Type[T]) -> Callable[[str | None], T | None]:
+    def decode_pydantic_model(value: str | None) -> T | None:
+        if value is None:
+            return None
+
+        if isinstance(value, str):
+            return parse_raw_as(typ, value)
+
+        return parse_obj_as(typ, value)
+
+    return decode_pydantic_model
+
+
+def _pydantic_encoder(typ: Type[T]) -> Callable[[T | None], str | None]:
+    def encode_pydantic_model(obj: T | None) -> str | None:
+        return json.pydantic_encoder(obj) if obj else None
+
+    return encode_pydantic_model

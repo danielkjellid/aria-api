@@ -2,7 +2,6 @@ import json
 from datetime import timedelta
 from decimal import Decimal
 
-from django.core.cache import cache
 from django.utils import timezone
 
 import pytest

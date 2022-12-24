@@ -105,6 +105,8 @@ def cached(
                 value = func(*args, **kwargs)
                 value_for_cache = encoder(value)
 
+                print("val", value_for_cache)
+
                 try:
                     cache.set(cache_key, value_for_cache, timeout=timeout)
                 except Exception as exc:  # pylint: disable=broad-except
