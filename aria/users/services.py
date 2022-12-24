@@ -21,7 +21,6 @@ from aria.core.exceptions import ApplicationError
 from aria.core.services import model_update
 from aria.users.models import User
 from aria.users.records import UserRecord
-from aria.users.selectors import user_record
 
 
 def _validate_email_and_password(
@@ -110,7 +109,7 @@ def user_create(
     if send_verification_email:
         new_user.send_verification_email()
 
-    return user_record(user=new_user)
+    return UserRecord.from_user(user=new_user)
 
 
 @transaction.atomic
@@ -158,7 +157,7 @@ def user_update(
             author=author, instance=updated_user, change_messages=updated_fields
         )
 
-    return user_record(user=updated_user)
+    return UserRecord.from_user(user=updated_user)
 
 
 def user_verify_account(*, uid: str, token: str) -> None:

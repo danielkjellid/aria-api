@@ -14,6 +14,7 @@ from aria.products.records import (
     ProductDetailRecord,
     ProductFileRecord,
     ProductListRecord,
+    ProductRecord,
 )
 from aria.products.schemas.filters import ProductListFilters
 from aria.products.selectors.pricing import product_get_price_from_options
@@ -51,7 +52,7 @@ def product_detail(
     categories = category_tree_active_list_for_product(product=product)
     options = product_options_list_for_product(product=product)
 
-    product_base_record = product_record(product=product)
+    product_base_record = ProductRecord.from_product(product)
 
     record = ProductDetailRecord(
         **product_base_record.dict(),
