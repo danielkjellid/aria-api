@@ -9,7 +9,7 @@ from aria.api.schemas.responses import ExceptionResponse
 from aria.api_auth.decorators import permission_required
 from aria.product_attributes.models import Size, Variant
 from aria.product_attributes.services import size_get_or_create
-from aria.products.enums import ProductStatus
+from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.models import Product
 from aria.products.schemas.filters import ProductListFilters
 from aria.products.selectors.core import product_list
@@ -88,7 +88,7 @@ class ProductCreateInternalInput(Schema):
     name: str
     status: int
     slug: str
-    search_keywords: str
+    search_keywords: str | None = None
     description: str
     unit: int
     vat_rate: float
