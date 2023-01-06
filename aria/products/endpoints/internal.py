@@ -93,8 +93,6 @@ class ProductCreateInternalInput(Schema):
     unit: int
     vat_rate: float
     available_in_special_sizes: bool
-    materials: list[str]
-    rooms: list[str]
     absorption: float | None = None
     display_price: bool
     can_be_purchased_online: bool
@@ -103,6 +101,8 @@ class ProductCreateInternalInput(Schema):
     # Relationships - should already exist.
     supplier_id: int
     category_ids: list[int]
+    material_ids: list[int]
+    room_ids: list[int]
     shape_ids: list[int]
     color_ids: list[int]
 

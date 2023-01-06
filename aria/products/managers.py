@@ -157,6 +157,20 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
 
         return self.prefetch_related("colors")
 
+    def with_materials(self) -> BaseQuerySet["models.Product"]:
+        """
+        Prefetch a product's materials.
+        """
+
+        return self.prefetch_related("materials")
+
+    def with_rooms(self) -> BaseQuerySet["models.Product"]:
+        """
+        Prefetch a product's rooms.
+        """
+
+        return self.prefetch_related("rooms")
+
     def with_shapes(self) -> BaseQuerySet["models.Product"]:
         """
         Prefetch a product's shapes.
@@ -205,6 +219,8 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         return (  # type: ignore
             self.select_related("supplier")
             .with_colors()
+            .with_materials()
+            .with_rooms()
             .with_shapes()  # type: ignore
             .with_available_options_unique_variants()
             .with_active_product_discounts()

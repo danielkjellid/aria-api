@@ -7,7 +7,12 @@ from aria.categories.selectors import category_tree_active_list_for_product
 from aria.core.decorators import cached
 from aria.core.managers import BaseQuerySet
 from aria.files.records import BaseHeaderImageRecord
-from aria.product_attributes.records import ColorDetailRecord, ShapeDetailRecord
+from aria.product_attributes.records import (
+    ColorDetailRecord,
+    MaterialDetailRecord,
+    RoomDetailRecord,
+    ShapeDetailRecord,
+)
 from aria.products.filters import ProductSearchFilter
 from aria.products.models import Product
 from aria.products.records import (
@@ -37,6 +42,8 @@ def product_detail(
         Product.objects.filter(Q(id=product_id) | Q(slug=product_slug))  # type: ignore
         .with_active_categories()
         .with_colors()
+        .with_materials()
+        .with_rooms()
         .with_shapes()
         .with_files()
         .with_available_options_and_option_discounts()
@@ -60,6 +67,13 @@ def product_detail(
         display_price=product.display_price,
         can_be_picked_up=product.can_be_picked_up,
         can_be_purchased_online=product.can_be_purchased_online,
+        materials=[
+            MaterialDetailRecord(id=material.id, name=material.name)
+            for material in product.materials.all()
+        ],
+        rooms=[
+            RoomDetailRecord(id=room.id, name=room.name) for room in product.rooms.all()
+        ],
         colors=[
             ColorDetailRecord(id=color.id, name=color.name, color_hex=color.color_hex)
             for color in product.colors.all()

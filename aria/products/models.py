@@ -85,25 +85,10 @@ class Product(BaseModel, BaseThumbnailImageModel):
     shapes = models.ManyToManyField(
         "product_attributes.Shape", related_name="products", blank=True
     )
-    new_materials = models.ManyToManyField(
+    materials = models.ManyToManyField(
         "product_attributes.Material", related_name="products", blank=True
     )
-    materials = ChoiceArrayField(
-        models.CharField(choices=enums.ProductMaterials.choices, max_length=50),
-        blank=True,
-        null=True,
-        help_text=(
-            "Material product is made of. Want to add more options? "
-            "Reach out to Daniel.",
-        ),
-    )
-    rooms = ChoiceArrayField(
-        models.CharField(choices=enums.ProductRooms.choices, max_length=50),
-        blank=True,
-        null=True,
-        help_text="Rooms applicable to product.",
-    )
-    new_rooms = models.ManyToManyField(
+    rooms = models.ManyToManyField(
         "product_attributes.Room", related_name="products", blank=True
     )
     absorption = models.FloatField(null=True, blank=True)
@@ -148,26 +133,6 @@ class Product(BaseModel, BaseThumbnailImageModel):
 
     def __str__(self) -> str:
         return self.name
-
-    @property
-    def materials_display(self) -> list[BaseArrayFieldLabelRecord]:
-        """
-        Takes the array field and turns it into a list of dicts, with
-        key name and field value.
-
-        E.g. [{"name": val}, ...]
-        """
-        return get_array_field_labels(self.materials, enums.ProductMaterials)
-
-    @property
-    def rooms_display(self) -> list[BaseArrayFieldLabelRecord]:
-        """
-        Takes the array field and turns it into a list of dicts, with
-        key name and field value.
-
-        E.g. [{"name": val}, ...]
-        """
-        return get_array_field_labels(self.rooms, enums.ProductRooms)
 
     @property
     def unit_display(self) -> str:

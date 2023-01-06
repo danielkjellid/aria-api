@@ -97,8 +97,13 @@ class TestPublicDiscountsEndpoints:
                             }
                             for shape in product_4.shapes.all()
                         ],
-                        "materials": product_4.materials_display,
-                        "rooms": product_4.rooms_display,
+                        "materials": [
+                            {"name": material.name}
+                            for material in product_4.materials.all()
+                        ],
+                        "rooms": [
+                            {"name": room.name} for room in product_4.rooms.all()
+                        ],
                         "variants": [
                             {
                                 "id": option.variant.id,
@@ -146,8 +151,14 @@ class TestPublicDiscountsEndpoints:
                             }
                             for shape in product_2_option_1.product.shapes.all()
                         ],
-                        "materials": product_2_option_1.product.materials_display,
-                        "rooms": product_2_option_1.product.rooms_display,
+                        "materials": [
+                            {"name": material.name}
+                            for material in product_2_option_1.product.materials.all()
+                        ],
+                        "rooms": [
+                            {"name": room.name}
+                            for room in product_2_option_1.product.rooms.all()
+                        ],
                         "variants": [
                             {
                                 "id": option.variant.id,
@@ -195,8 +206,13 @@ class TestPublicDiscountsEndpoints:
                             }
                             for shape in product_1.shapes.all()
                         ],
-                        "materials": product_1.materials_display,
-                        "rooms": product_1.rooms_display,
+                        "materials": [
+                            {"name": material.name}
+                            for material in product_1.materials.all()
+                        ],
+                        "rooms": [
+                            {"name": room.name} for room in product_1.rooms.all()
+                        ],
                         "variants": [
                             {
                                 "id": option.variant.id,
@@ -253,8 +269,13 @@ class TestPublicDiscountsEndpoints:
                             }
                             for shape in product_3.shapes.all()
                         ],
-                        "materials": product_3.materials_display,
-                        "rooms": product_3.rooms_display,
+                        "materials": [
+                            {"name": material.name}
+                            for material in product_3.materials.all()
+                        ],
+                        "rooms": [
+                            {"name": room.name} for room in product_3.rooms.all()
+                        ],
                         "variants": [
                             {
                                 "id": option.variant.id,
@@ -271,7 +292,7 @@ class TestPublicDiscountsEndpoints:
         ]
 
         # Uses 10 queries.
-        with django_assert_max_num_queries(10):
+        with django_assert_max_num_queries(12):
             response = anonymous_client.get(f"{self.BASE_ENDPOINT}/")
 
         actual_response = json.loads(response.content)

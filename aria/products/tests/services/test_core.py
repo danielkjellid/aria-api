@@ -8,7 +8,12 @@ from aria.categories.tests.utils import create_category
 from aria.core.exceptions import ApplicationError
 from aria.core.records import BaseArrayFieldLabelRecord
 from aria.files.tests.utils import create_image_file
-from aria.product_attributes.tests.utils import create_color, create_shape
+from aria.product_attributes.tests.utils import (
+    create_color,
+    create_material,
+    create_room,
+    create_shape,
+)
 from aria.products.enums import ProductStatus, ProductUnit
 from aria.products.models import Product
 from aria.products.records import ProductRecord, ProductSupplierRecord
@@ -49,6 +54,17 @@ class TestProductsCoreServices:
 
         color_ids = [color_white.id, color_gray.id]
 
+        # Materials
+        material_wood = create_material(name="Wood")
+        material_steel = create_material(name="Steel")
+
+        material_ids = [material_steel.id, material_wood.id]
+
+        # Rooms
+        room_bedroom = create_room(name="Bedroom")
+
+        room_ids = [room_bedroom.id]
+
         # Thumbnail
         thumbnail = create_image_file(
             name="thumbnail", extension="jpeg", width=380, height=575
@@ -76,11 +92,6 @@ class TestProductsCoreServices:
             available_in_special_sizes=False,
             absorption=None,
             is_imported_from_external_source=False,
-            materials=[
-                BaseArrayFieldLabelRecord(name="Kompositt"),
-                BaseArrayFieldLabelRecord(name="Metall"),
-            ],
-            rooms=[BaseArrayFieldLabelRecord(name="Bad")],
             thumbnail=ANY,
         )
 
@@ -113,7 +124,7 @@ class TestProductsCoreServices:
                     ),
                 )
 
-        with django_assert_max_num_queries(16):
+        with django_assert_max_num_queries(22):
             created_product = product_create(
                 name="New product",
                 slug="new-product",
@@ -126,12 +137,8 @@ class TestProductsCoreServices:
                 shape_ids=shape_ids,
                 color_ids=color_ids,
                 vat_rate=Decimal("0.25"),
-                materials=[  # Wood does not exist, and should be skipped.
-                    "kompositt",
-                    "metall",
-                    "wood",
-                ],
-                rooms=["badrom"],
+                material_ids=material_ids,
+                room_ids=room_ids,
                 absorption=None,
                 display_price=True,
                 can_be_purchased_online=True,
@@ -147,6 +154,8 @@ class TestProductsCoreServices:
         assert list(db_product.categories.all()) == [sub_category1, sub_category2]
         assert list(db_product.shapes.all()) == [shape_square, shape_circular]
         assert list(db_product.colors.all()) == [color_white, color_gray]
+        assert list(db_product.materials.all()) == [material_wood, material_steel]
+        assert list(db_product.rooms.all()) == [room_bedroom]
 
     def test_service_product_update(self, django_assert_max_num_queries):
         """
@@ -169,6 +178,15 @@ class TestProductsCoreServices:
         color_white = create_color(name="White", color_hex="#FFFFFF")
         color_gray = create_color(name="Red", color_hex="#CCCCCC")
 
+        # Materials
+        material_wood = create_material(name="Wood")
+        material_steel = create_material(name="Steel")
+        material_composite = create_material(name="Composite")
+
+        # Rooms
+        room_bedroom = create_room(name="Bedroom")
+        room_living_room = create_room(name="Living room")
+
         product = create_product(
             supplier=supplier,
             product_name="New product",
@@ -181,11 +199,8 @@ class TestProductsCoreServices:
         product.categories.set([sub_category1])
         product.shapes.set([shape_square])
         product.colors.set([color_white])
-
-        product.rooms = ["badrom"]
-        product.materials = [
-            "kompositt",
-        ]
+        product.materials.set([material_wood, material_steel])
+        product.rooms.set([room_bedroom])
 
         product.thumbnail = create_image_file(
             name="thumbnail", extension="jpeg", width=380, height=575
@@ -205,6 +220,8 @@ class TestProductsCoreServices:
         assert list(product.categories.all()) == [sub_category1]
         assert list(product.shapes.all()) == [shape_square]
         assert list(product.colors.all()) == [color_white]
+        assert list(product.materials.all()) == [material_wood, material_steel]
+        assert list(product.rooms.all()) == [room_bedroom]
         assert product.thumbnail.name == old_thumbnail_expected_name
 
         expected_output = ProductRecord.construct(
@@ -225,14 +242,6 @@ class TestProductsCoreServices:
             available_in_special_sizes=False,
             absorption=None,
             is_imported_from_external_source=False,
-            materials=[
-                BaseArrayFieldLabelRecord(name="Kompositt"),
-                BaseArrayFieldLabelRecord(name="Metall"),
-            ],
-            rooms=[
-                BaseArrayFieldLabelRecord(name="Bad"),
-                BaseArrayFieldLabelRecord(name="Uterom"),
-            ],
             thumbnail=ANY,
         )
 
@@ -255,18 +264,14 @@ class TestProductsCoreServices:
         with django_assert_max_num_queries(2):
             product_update(product=product)
 
-        with django_assert_max_num_queries(20):
+        with django_assert_max_num_queries(28):
             updated_product = product_update(
                 product=product,
                 category_ids=[sub_category1.id, sub_category2.id],
                 shape_ids=[shape_square.id, shape_circular.id],
                 color_ids=[color_white.id, color_gray.id],
-                materials=[
-                    "kompositt",
-                    "metall",
-                    "wood",  # Wood does not exist, and should be skipped.
-                ],
-                rooms=["badrom", "uterom"],
+                material_ids=[material_steel.id, material_composite.id],
+                room_ids=[],
                 status=ProductStatus.HIDDEN,
                 search_keywords="keyword1 keyword2",
                 description="The same product, but edited!",
@@ -283,6 +288,9 @@ class TestProductsCoreServices:
         assert list(db_product.categories.all()) == [sub_category1, sub_category2]
         assert list(db_product.shapes.all()) == [shape_square, shape_circular]
         assert list(db_product.colors.all()) == [color_white, color_gray]
+        # Material wood should have been removed in update.
+        assert list(db_product.materials.all()) == [material_steel, material_composite]
+        assert list(db_product.rooms.all()) == []  # All rooms should have been removed.
         assert db_product.status == ProductStatus.HIDDEN
         assert db_product.search_keywords == "keyword1 keyword2"
         assert db_product.description == "The same product, but edited!"

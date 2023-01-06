@@ -3,10 +3,11 @@ from decimal import Decimal
 from pydantic import BaseModel
 
 from aria.categories.records import CategoryDetailRecord
-from aria.core.records import BaseArrayFieldLabelRecord
 from aria.files.records import BaseHeaderImageRecord
 from aria.product_attributes.records import (
     ColorDetailRecord,
+    MaterialDetailRecord,
+    RoomDetailRecord,
     ShapeDetailRecord,
     SizeDetailRecord,
     SizeRecord,
@@ -80,8 +81,6 @@ class ProductRecord(BaseModel):
     available_in_special_sizes: bool = False
     absorption: float | None = None
     is_imported_from_external_source: bool = False
-    rooms: list[BaseArrayFieldLabelRecord] = []
-    materials: list[BaseArrayFieldLabelRecord] = []
     thumbnail: str | None
 
 
@@ -92,6 +91,8 @@ class ProductDetailRecord(ProductRecord):
     can_be_purchased_online: bool
     colors: list[ColorDetailRecord] = []
     shapes: list[ShapeDetailRecord] = []
+    materials: list[MaterialDetailRecord] = []
+    rooms: list[RoomDetailRecord] = []
     categories: list[CategoryDetailRecord]
     options: list[ProductOptionDetailRecord] = []
     images: list[BaseHeaderImageRecord] = []
@@ -109,8 +110,8 @@ class ProductListRecord(BaseModel):
     display_price: bool
     from_price: Decimal
     discount: ProductDiscountRecord | None
-    materials: list[BaseArrayFieldLabelRecord]
-    rooms: list[BaseArrayFieldLabelRecord]
+    materials: list[MaterialDetailRecord]
+    rooms: list[RoomDetailRecord]
     colors: list[ColorDetailRecord]
     shapes: list[ShapeDetailRecord]
     variants: list[VariantDetailRecord]

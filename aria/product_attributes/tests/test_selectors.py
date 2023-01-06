@@ -5,6 +5,8 @@ import pytest
 
 from aria.product_attributes.records import (
     ColorDetailRecord,
+    MaterialDetailRecord,
+    RoomDetailRecord,
     ShapeDetailRecord,
     SizeDetailRecord,
     SizeRecord,
@@ -12,12 +14,16 @@ from aria.product_attributes.records import (
 )
 from aria.product_attributes.selectors import (
     color_list,
+    material_list,
+    room_list,
     shape_list,
     size_list_from_mapped_values,
     variant_list,
 )
 from aria.product_attributes.tests.utils import (
     create_color,
+    create_material,
+    create_room,
     create_shape,
     create_size,
     create_variant,
@@ -48,6 +54,51 @@ class TestProductAttributesSelectors:
             colors = color_list()
 
         assert colors == expected_output
+
+    def test_selector_material_list(self, django_assert_max_num_queries):
+        """
+        Test that the material_list selector returns expected output withing query
+        limits.
+        """
+
+        material_1 = create_material(name="Composite")
+        material_2 = create_material(name="Wood")
+        material_3 = create_material(name="Metal")
+        material_4 = create_material(name="Steel")
+
+        expected_output = [
+            MaterialDetailRecord(id=material_4.id, name="Steel"),
+            MaterialDetailRecord(id=material_3.id, name="Metal"),
+            MaterialDetailRecord(id=material_2.id, name="Wood"),
+            MaterialDetailRecord(id=material_1.id, name="Composite"),
+        ]
+
+        with django_assert_max_num_queries(1):
+            materials = material_list()
+
+        assert materials == expected_output
+
+    def test_selector_room_list(self, django_assert_max_num_queries):
+        """
+        Test that the room_list selector returns expected output withing query limits.
+        """
+
+        room_1 = create_room(name="Bathroom")
+        room_2 = create_room(name="Hallway")
+        room_3 = create_room(name="Kitchen")
+        room_4 = create_room(name="Bedroom")
+
+        expected_output = [
+            RoomDetailRecord(id=room_4.id, name="Bedroom"),
+            RoomDetailRecord(id=room_3.id, name="Kitchen"),
+            RoomDetailRecord(id=room_2.id, name="Hallway"),
+            RoomDetailRecord(id=room_1.id, name="Bathroom"),
+        ]
+
+        with django_assert_max_num_queries(1):
+            rooms = room_list()
+
+        assert rooms == expected_output
 
     def test_selector_shape_list(self, django_assert_max_num_queries):
         """

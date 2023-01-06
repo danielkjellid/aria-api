@@ -2,9 +2,11 @@ from decimal import Decimal
 
 from django.db.models import Q
 
-from aria.product_attributes.models import Color, Shape, Size, Variant
+from aria.product_attributes.models import Color, Material, Room, Shape, Size, Variant
 from aria.product_attributes.records import (
     ColorDetailRecord,
+    MaterialDetailRecord,
+    RoomDetailRecord,
     ShapeDetailRecord,
     SizeDetailRecord,
     SizeRecord,
@@ -31,6 +33,36 @@ def color_list() -> list[ColorDetailRecord]:
         )
         for color in colors
     ]
+
+
+#######################
+# Materials selectors #
+#######################
+
+
+def material_list() -> list[MaterialDetailRecord]:
+    """
+    Returns a list of all materials in the application.
+    """
+
+    materials = Material.objects.all().order_by("-id")
+
+    return [MaterialDetailRecord.from_material(material) for material in materials]
+
+
+##################
+# Room selectors #
+##################
+
+
+def room_list() -> list[RoomDetailRecord]:
+    """
+    Returns a list of all rooms in the application.
+    """
+
+    rooms = Room.objects.all().order_by("-id")
+
+    return [RoomDetailRecord.from_room(room) for room in rooms]
 
 
 ###################

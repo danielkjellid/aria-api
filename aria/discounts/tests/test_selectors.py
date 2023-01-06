@@ -14,6 +14,8 @@ from aria.discounts.selectors import (
 from aria.discounts.tests.utils import create_discount
 from aria.product_attributes.records import (
     ColorDetailRecord,
+    MaterialDetailRecord,
+    RoomDetailRecord,
     ShapeDetailRecord,
     VariantDetailRecord,
 )
@@ -93,8 +95,14 @@ class TestDiscountsSelectors:
                 image380x575_url=product.image380x575_url,
                 display_price=product.display_price,
                 from_price=product.from_price,
-                materials=product.materials_display,
-                rooms=product.rooms_display,
+                materials=[
+                    MaterialDetailRecord(id=material.id, name=material.name)
+                    for material in product.materials.all()
+                ],
+                rooms=[
+                    RoomDetailRecord(id=room.id, name=room.name)
+                    for room in product.rooms.all()
+                ],
                 colors=[
                     ColorDetailRecord(
                         id=color.id, name=color.name, color_hex=color.color_hex
@@ -122,8 +130,8 @@ class TestDiscountsSelectors:
                 **kwargs,
             )
 
-        # Uses 10 queries.
-        with django_assert_max_num_queries(10):
+        # Uses 12 queries.
+        with django_assert_max_num_queries(12):
             active_discounts = discount_active_list()
 
         assert len(active_discounts) == 3
@@ -304,8 +312,14 @@ class TestDiscountsSelectors:
                 image380x575_url=product.image380x575_url,
                 display_price=product.display_price,
                 from_price=product.from_price,
-                materials=product.materials_display,
-                rooms=product.rooms_display,
+                materials=[
+                    MaterialDetailRecord(id=material.id, name=material.name)
+                    for material in product.materials.all()
+                ],
+                rooms=[
+                    RoomDetailRecord(id=room.id, name=room.name)
+                    for room in product.rooms.all()
+                ],
                 colors=[
                     ColorDetailRecord(
                         id=color.id, name=color.name, color_hex=color.color_hex
@@ -333,7 +347,7 @@ class TestDiscountsSelectors:
                 **kwargs,
             )
 
-        with django_assert_max_num_queries(10):
+        with django_assert_max_num_queries(12):
             discount_active_list_from_cache()
 
         # After first hit, instances should have been added to cache.

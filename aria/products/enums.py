@@ -11,22 +11,3 @@ class ProductStatus(models.IntegerChoices):
 class ProductUnit(models.IntegerChoices):
     SQUARE_METER = 1, "m2"
     PCS = 2, "stk"
-
-
-class ProductMaterials(models.TextChoices):
-    COMPOSITE = "kompositt", "Kompositt"
-    DADOQUARTZ = "dado kvarts", "DADOkvarts"
-    STAINLESS_STEEL = "rustfritt stål", "Rustfritt stål"
-    BRUSHED_STEEL = "pusset stål", "Pusset stål"
-    METAL = "metall", "Metall"
-    WOOD = "tre", "Tre"
-    LAMINATE = "laminat", "Laminat"
-    GLASS = "glass", "Glass"
-    MARBLE = "marmor", "Marmor"
-
-
-class ProductRooms(models.TextChoices):
-    BATHROOM = "badrom", "Bad"
-    KITCHEN = "kjøkken", "Kjøkken"
-    LIVING_ROOMS = "stue gang oppholdsrom", "Stue, gang og oppholdsrom"
-    OUTDOOR = "uterom", "Uterom"
