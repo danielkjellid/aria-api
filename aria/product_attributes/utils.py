@@ -120,7 +120,7 @@ def _size_validate(
 
 
 @transaction.atomic
-def populate_room_material_relations():
+def populate_room_material_relations() -> None:
     """
     Populate new Room and Material model relations with data.
     """
@@ -198,8 +198,7 @@ def populate_room_material_relations():
                 continue
 
             mapped_dict = next(
-                (item for item in rooms_array_field_mapping if item["value"] == room),
-                None,
+                item for item in rooms_array_field_mapping if item["value"] == room
             )
 
             mapped_room = next(
