@@ -7,6 +7,8 @@ from aria.discounts.models import Discount
 from aria.discounts.records import DiscountRecord
 from aria.product_attributes.records import (
     ColorDetailRecord,
+    MaterialDetailRecord,
+    RoomDetailRecord,
     ShapeDetailRecord,
     VariantDetailRecord,
 )
@@ -179,8 +181,13 @@ def discount_active_list() -> list[DiscountRecord]:
                         and discount.total_sold_quantity
                         else None,
                     ),
-                    materials=product.materials_display,
-                    rooms=product.rooms_display,
+                    materials=[
+                        MaterialDetailRecord.from_material(material)
+                        for material in product.materials.all()
+                    ],
+                    rooms=[
+                        RoomDetailRecord.from_room(room) for room in product.rooms.all()
+                    ],
                     colors=[
                         ColorDetailRecord(
                             id=color.id, name=color.name, color_hex=color.color_hex

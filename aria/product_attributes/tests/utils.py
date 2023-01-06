@@ -1,7 +1,7 @@
 import tempfile
 from decimal import Decimal
 
-from aria.product_attributes.models import Color, Shape, Size, Variant
+from aria.product_attributes.models import Color, Material, Room, Shape, Size, Variant
 
 
 def create_color(*, name: str, color_hex: str) -> Color:
@@ -14,6 +14,26 @@ def create_color(*, name: str, color_hex: str) -> Color:
     )
 
     return color
+
+
+def create_material(*, name: str) -> Material:
+    """
+    Test util that creates a material instance.
+    """
+
+    material, _created = Material.objects.get_or_create(name=name)
+
+    return material
+
+
+def create_room(*, name: str) -> Room:
+    """
+    Test util that creates a room instance.
+    """
+
+    room, _created = Room.objects.get_or_create(name=name)
+
+    return room
 
 
 def create_shape(*, name: str) -> Shape:

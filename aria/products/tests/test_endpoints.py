@@ -15,6 +15,8 @@ from aria.discounts.tests.utils import create_discount
 from aria.product_attributes.models import Size
 from aria.product_attributes.tests.utils import (
     create_color,
+    create_material,
+    create_room,
     create_shape,
     create_size,
     create_variant,
@@ -75,8 +77,14 @@ class TestPublicProductsEndpoints:
                             }
                             for shape in product.shapes.all()
                         ],
-                        "materials": product.materials_display,
-                        "rooms": product.rooms_display,
+                        "materials": [
+                            {"id": material.id, "name": material.name}
+                            for material in product.materials.all()
+                        ],
+                        "rooms": [
+                            {"id": room.id, "name": room.name}
+                            for room in product.rooms.all()
+                        ],
                         "variants": [
                             {
                                 "id": option.variant.id,
@@ -93,15 +101,17 @@ class TestPublicProductsEndpoints:
             )
         )
 
-        # Uses 7 queries:
+        # Uses 9 queries:
         # - 1 for getting products,
         # - 1 for preloading colors,
+        # - 1 for preloading materials,
+        # - 1 for preloading rooms,
         # - 1 for preloading shapes,
         # - 1 for preloading options variants,
         # - 1 for preloading discounts
         # - 1 for preloading options,
         # - 1 for preloading discounts for options
-        with django_assert_max_num_queries(7):
+        with django_assert_max_num_queries(9):
             response = anonymous_client.get(f"{self.BASE_ENDPOINT}/")
 
         actual_response = json.loads(response.content)
@@ -173,8 +183,14 @@ class TestPublicProductsEndpoints:
                             }
                             for shape in product.shapes.all()
                         ],
-                        "materials": product.materials_display,
-                        "rooms": product.rooms_display,
+                        "materials": [
+                            {"id": material.id, "name": material.name}
+                            for material in product.materials.all()
+                        ],
+                        "rooms": [
+                            {"id": room.id, "name": room.name}
+                            for room in product.rooms.all()
+                        ],
                         "variants": [
                             {
                                 "id": option.variant.id,
@@ -191,15 +207,17 @@ class TestPublicProductsEndpoints:
             )
         )
 
-        # Uses 8 queries:
+        # Uses 10 queries:
         # - 1 for resolving category
         # - 1 for getting products,
         # - 1 for preloading colors,
+        # - 1 for preloading materials,
+        # - 1 for preloading rooms,
         # - 1 for preloading shapes,
         # - 1 for preloading options variants,
         # - 1 for preloading discounts
         # - 1 for preloading discounts for options
-        with django_assert_max_num_queries(8):
+        with django_assert_max_num_queries(10):
             response = anonymous_client.get(
                 f"{self.BASE_ENDPOINT}/category/{subcat_1.slug}/"
             )
@@ -252,8 +270,6 @@ class TestPublicProductsEndpoints:
                     "slug": "furniture",
                 }
             ],
-            "materials": product.materials_display,
-            "rooms": product.rooms_display,
             "availableInSpecialSizes": product.available_in_special_sizes,
             "canBePickedUp": product.can_be_picked_up,
             "canBePurchasedOnline": product.can_be_purchased_online,
@@ -319,12 +335,19 @@ class TestPublicProductsEndpoints:
                     },
                 },
             ],
+            "materials": [
+                {"id": material.id, "name": material.name}
+                for material in product.materials.all()
+            ],
+            "rooms": [
+                {"id": room.id, "name": room.name} for room in product.rooms.all()
+            ],
             "colors": [
-                {"name": color.name, "colorHex": color.color_hex}
+                {"id": color.id, "name": color.name, "colorHex": color.color_hex}
                 for color in product.colors.all()
             ],
             "shapes": [
-                {"name": shape.name, "image": shape.image.url}
+                {"id": shape.id, "name": shape.name, "image": shape.image.url}
                 for shape in product.shapes.all()
             ],
             "files": [
@@ -334,11 +357,13 @@ class TestPublicProductsEndpoints:
         }
 
         # Test that we return a valid response on existing slug.
-        # Uses 12 queries:
+        # Uses 14 queries:
         # - 1x for getting product
         # - 1x for prefetching category children
         # - 1x for prefetching categories
         # - 1x for prefetching colors
+        # - 1x for prefetching materials
+        # - 1x for prefetching rooms
         # - 1x for prefetching shapes
         # - 1x for prefetching files
         # - 1x for prefetching options
@@ -347,7 +372,7 @@ class TestPublicProductsEndpoints:
         # - 1x for filtering categories
         # - 1x for selecting related supplier
         # - 1x for prefetching images
-        with django_assert_max_num_queries(12):
+        with django_assert_max_num_queries(14):
             response = anonymous_client.get(f"{self.BASE_ENDPOINT}/{product.slug}/")
 
         actual_response = json.loads(response.content)
@@ -448,7 +473,7 @@ class TestInternalProductsEndpoints:
             expected_status_code=403,
         )
 
-        with django_assert_max_num_queries(11):
+        with django_assert_max_num_queries(12):
             response = authenticated_privileged_staff_client.get(endpoint)
 
         assert response.status_code == 200
@@ -482,6 +507,9 @@ class TestInternalProductsEndpoints:
         shape_square = create_shape(name="Square")
         color_white = create_color(name="White", color_hex="#FFFFFF")
         color_gray = create_color(name="Gray", color_hex="#CCCCCC")
+        material_wood = create_material(name="Wood")
+        material_steel = create_material(name="Steel")
+        room_bathroom = create_room(name="Bathroom")
 
         products_in_db_count = Product.objects.count()
 
@@ -498,13 +526,13 @@ class TestInternalProductsEndpoints:
             "unit": 2,
             "vat_rate": 0.25,
             "available_in_special_sizes": False,
-            "materials": ["kompositt"],
-            "rooms": ["bardom"],
             "display_price": True,
             "can_be_purchased_online": True,
             "can_be_picked_up": True,
             "supplier_id": supplier.id,
             "category_ids": [sub_category.id],
+            "material_ids": [material_wood.id, material_steel.id],
+            "room_ids": [room_bathroom.id],
             "shape_ids": [shape_square.id],
             "color_ids": [color_white.id, color_gray.id],
             # "thumbnail": thumbnail,  # TODO: Replace when image migration is done.
@@ -566,7 +594,7 @@ class TestInternalProductsEndpoints:
             content_type=MULTIPART_CONTENT,
         )
 
-        with django_assert_max_num_queries(20):
+        with django_assert_max_num_queries(26):
             response = authenticated_privileged_staff_client.post(
                 endpoint, data=payload
             )

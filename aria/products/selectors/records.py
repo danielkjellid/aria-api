@@ -2,6 +2,8 @@ from decimal import Decimal
 
 from aria.product_attributes.records import (
     ColorDetailRecord,
+    MaterialDetailRecord,
+    RoomDetailRecord,
     ShapeDetailRecord,
     VariantDetailRecord,
 )
@@ -43,8 +45,6 @@ def product_record(product: Product) -> ProductRecord:
         available_in_special_sizes=product.available_in_special_sizes,
         absorption=product.absorption,
         is_imported_from_external_source=product.is_imported_from_external_source,
-        materials=product.materials_display,
-        rooms=product.rooms_display,
         thumbnail=product.thumbnail.url if product.thumbnail else None,
     )
 
@@ -86,8 +86,11 @@ def product_list_record(product: Product) -> ProductListRecord:
         display_price=product.display_price,
         from_price=product_get_price_from_options(product=product),
         discount=product_get_active_discount(product=product),
-        materials=product.materials_display,
-        rooms=product.rooms_display,
+        materials=[
+            MaterialDetailRecord.from_material(material)
+            for material in product.materials.all()
+        ],
+        rooms=[RoomDetailRecord.from_room(room) for room in product.rooms.all()],
         colors=[
             ColorDetailRecord(id=color.id, name=color.name, color_hex=color.color_hex)
             for color in product.colors.all()

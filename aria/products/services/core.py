@@ -12,8 +12,7 @@ from aria.core.exceptions import ApplicationError
 from aria.core.managers import BaseQuerySet
 from aria.core.services import model_update
 from aria.files.validators import image_validate
-from aria.product_attributes.models import Color, Shape
-from aria.products.enums import ProductMaterials, ProductRooms
+from aria.product_attributes.models import Color, Material, Room, Shape
 from aria.products.models import Product
 from aria.products.records import ProductRecord
 from aria.products.selectors.records import product_record
@@ -28,8 +27,8 @@ def product_create(
     category_ids: list[int] | None = None,
     shape_ids: list[int] | None = None,
     color_ids: list[int] | None = None,
-    materials: list[str] | None = None,
-    rooms: list[str] | None = None,
+    material_ids: list[int] | None = None,
+    room_ids: list[int] | None = None,
     thumbnail: UploadedFile | InMemoryUploadedFile | ImageFile | None = None,
     **kwargs: dict[str, Any],
 ) -> ProductRecord:
@@ -52,20 +51,10 @@ def product_create(
         )
         product.thumbnail = thumbnail
 
-    if materials:
-        materials_to_add = [
-            material for material in materials if material in ProductMaterials
-        ]
-        product.materials = materials_to_add
-
-    if rooms:
-        rooms_to_add = [room for room in rooms if room in ProductRooms]
-        product.rooms = rooms_to_add
-
     product.full_clean()
     product.save()
 
-    if category_ids:
+    if category_ids is not None:
         categories = Category.objects.filter(id__in=category_ids)
 
         for category in categories:
@@ -79,11 +68,19 @@ def product_create(
 
         product.categories.set(categories)
 
-    if shape_ids:
+    if material_ids is not None:
+        materials = Material.objects.filter(id__in=material_ids)
+        product.materials.set(materials)
+
+    if room_ids is not None:
+        rooms = Room.objects.filter(id__in=room_ids)
+        product.rooms.set(rooms)
+
+    if shape_ids is not None:
         shapes = Shape.objects.filter(id__in=shape_ids)
         product.shapes.set(shapes)
 
-    if color_ids:
+    if color_ids is not None:
         colors = Color.objects.filter(id__in=color_ids)
         product.colors.set(colors)
 
@@ -99,8 +96,8 @@ def product_update(
     category_ids: list[int] | None = None,
     shape_ids: list[int] | None = None,
     color_ids: list[int] | None = None,
-    materials: list[str] | None = None,
-    rooms: list[str] | None = None,
+    material_ids: list[int] | None = None,
+    room_ids: list[int] | None = None,
     thumbnail: UploadedFile | InMemoryUploadedFile | ImageFile | None = None,
     **kwargs: dict[str, Any],
 ) -> ProductRecord:
@@ -176,11 +173,14 @@ def product_update(
 
         product_attribute_qs = qs
         product_attribute_ids = [q.id for q in qs]
+        product_attribute = getattr(product, attribute)
+
+        if not ids_to_compare:
+            product_attribute.set([])
+            return
 
         if product_attribute_ids != ids_to_compare:
             update_instances = attribute_qs.filter(id__in=ids_to_compare)
-
-            product_attribute = getattr(product, attribute)
             product_attribute.set(update_instances)
 
             field_changes.append(
@@ -195,7 +195,7 @@ def product_update(
                 )
             )
 
-    if category_ids:
+    if category_ids is not None:
         _update_side_effect_attribute(
             attribute="categories",
             qs=product.categories.all(),
@@ -204,7 +204,7 @@ def product_update(
             display_property="display_name",
         )
 
-    if shape_ids:
+    if shape_ids is not None:
         _update_side_effect_attribute(
             attribute="shapes",
             qs=product.shapes.all(),
@@ -213,12 +213,30 @@ def product_update(
             display_property="name",
         )
 
-    if color_ids:
+    if color_ids is not None:
         _update_side_effect_attribute(
             attribute="colors",
             qs=product.colors.all(),
             ids_to_compare=color_ids,
             attribute_qs=Color.objects.all(),
+            display_property="name",
+        )
+
+    if room_ids is not None:
+        _update_side_effect_attribute(
+            attribute="rooms",
+            qs=product.rooms.all(),
+            ids_to_compare=room_ids,
+            attribute_qs=Room.objects.all(),
+            display_property="name",
+        )
+
+    if material_ids is not None:
+        _update_side_effect_attribute(
+            attribute="materials",
+            qs=product.materials.all(),
+            ids_to_compare=material_ids,
+            attribute_qs=Material.objects.all(),
             display_property="name",
         )
 
@@ -251,36 +269,6 @@ def product_update(
                     field="thumbnail",
                     old_value=old_thumbnail_url,
                     new_value=new_thumbnail_url,
-                )
-            )
-
-    if materials:
-        product_materials = product.materials
-        materials_to_add = [
-            material for material in materials if material in ProductMaterials
-        ]
-
-        if product_materials != materials_to_add:
-            product.materials = materials_to_add
-
-            field_changes.append(
-                _create_log_message(
-                    field="materials",
-                    old_value=product_materials,
-                    new_value=materials_to_add,
-                )
-            )
-
-    if rooms:
-        product_rooms = product.rooms
-        rooms_to_add = [room for room in rooms if room in ProductRooms]
-
-        if product_rooms != rooms_to_add:
-            product.rooms = rooms_to_add
-
-            field_changes.append(
-                _create_log_message(
-                    field="rooms", old_value=product_rooms, new_value=rooms_to_add
                 )
             )
 

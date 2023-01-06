@@ -7,6 +7,8 @@ import pytest
 from aria.categories.tests.utils import create_category
 from aria.product_attributes.records import (
     ColorDetailRecord,
+    MaterialDetailRecord,
+    RoomDetailRecord,
     ShapeDetailRecord,
     VariantDetailRecord,
 )
@@ -42,6 +44,8 @@ class TestProductCoreSelectors:
         # - 1x for prefetching category children
         # - 1x for prefetching categories
         # - 1x for prefetching colors
+        # - 1x for prefetching materials
+        # - 1x for prefetching rooms
         # - 1x for prefetching shapes
         # - 1x for prefetching files
         # - 1x for prefetching options
@@ -50,7 +54,7 @@ class TestProductCoreSelectors:
         # - 1x for filtering categories
         # - 1x for selecting related supplier
         # - 1x for prefetching images
-        with django_assert_max_num_queries(12):
+        with django_assert_max_num_queries(14):
             fetched_product = product_detail(product_id=product.id)
 
         assert fetched_product.id == product.id
@@ -83,16 +87,17 @@ class TestProductCoreSelectors:
 
         products_by_category_subcat_1 = Product.objects.by_category(subcat_1)
 
-        # Uses 8 queries:
+        # Uses 9 queries:
         # - 1 for getting products,
-        # - 1 for preloading categories,
         # - 1 for preloading colors,
+        # - 1 for preloading materials,
+        # - 1 for preloading rooms
         # - 1 for preloading shapes,
-        # - 1 for preloading images,
         # - 1 for preloading options,
-        # - 1 for preloading files
+        # - 1 for preloading discounts
         # - 1 for preloading option prices
-        with django_assert_max_num_queries(8):
+        # - 1 for preloading option discounts
+        with django_assert_max_num_queries(9):
             products_by_subcat_1 = product_list_for_sale_for_qs(
                 products=products_by_category_subcat_1, filters=None
             )
@@ -104,7 +109,7 @@ class TestProductCoreSelectors:
 
         products_by_category_subcat_2 = Product.objects.by_category(subcat_2)
 
-        with django_assert_max_num_queries(8):
+        with django_assert_max_num_queries(9):
             products_by_subcat_2 = product_list_for_sale_for_qs(
                 products=products_by_category_subcat_2, filters=None
             )
@@ -118,7 +123,7 @@ class TestProductCoreSelectors:
         products_subcat_2[0].name = "Awesome product"
         products_subcat_2[0].save()
 
-        with django_assert_max_num_queries(8):
+        with django_assert_max_num_queries(9):
             filtered_products_by_subcat_2 = product_list_for_sale_for_qs(
                 products=products_by_category_subcat_2, filters={"search": "awesome"}
             )
@@ -136,15 +141,17 @@ class TestProductCoreSelectors:
         products = create_product(quantity=10, status=ProductStatus.AVAILABLE)
         create_product(quantity=5, status=ProductStatus.DRAFT)
 
-        # Uses 7 queries:
+        # Uses 9 queries:
         # - 1 for getting products,
         # - 1 for preloading colors,
         # - 1 for preloading shapes,
+        # - 1 for preloading materials
+        # - 1 for preloading rooms
         # - 1 for preloading options variants,
         # - 1 for preloading discounts
         # - 1 for preloading options,
         # - 1 for preloading discounts for options
-        with django_assert_max_num_queries(7):
+        with django_assert_max_num_queries(9):
             available_products = product_list_for_sale(filters=None)
 
         # Assert that only available products are returned.
@@ -155,7 +162,7 @@ class TestProductCoreSelectors:
         products[0].name = "Awesome product"
         products[0].save()
 
-        with django_assert_max_num_queries(8):
+        with django_assert_max_num_queries(9):
             filtered_available_products = product_list_for_sale(
                 filters={"search": "awesome"}
             )
@@ -177,15 +184,17 @@ class TestProductCoreSelectors:
         cache.delete(f"products.for_sale.filters={None}")
         assert f"products.for_sale.filters={None}" not in cache
 
-        # Uses 7 queries:
+        # Uses 9 queries:
         # - 1 for getting products,
         # - 1 for preloading colors,
         # - 1 for preloading shapes,
+        # - 1 for preloading materials
+        # - 1 for preloading rooms
         # - 1 for preloading options variants,
         # - 1 for preloading discounts
         # - 1 for preloading options,
         # - 1 for preloading discounts for options
-        with django_assert_max_num_queries(7):
+        with django_assert_max_num_queries(9):
             product_list_for_sale_from_cache(filters=None)
 
         # After first hit, instance should have been added to cache.
@@ -209,14 +218,14 @@ class TestProductCoreSelectors:
         products[0].save()
 
         # Adding search filters should re-hit db.
-        with django_assert_max_num_queries(8):
+        with django_assert_max_num_queries(9):
             product_list_for_sale_from_cache(filters={"search": "awesome"})
 
         # New key with appended filters should have been added to cache.
         assert "products.for_sale.filters={'search': 'awesome'}" in cache
 
         # Should be cached, and no queries should hit db.
-        with django_assert_max_num_queries(8):
+        with django_assert_max_num_queries(9):
             product_list_for_sale_from_cache(filters={"search": "awesome"})
 
         assert len(cache.get("products.for_sale.filters={'search': 'awesome'}")) == 1
@@ -247,15 +256,17 @@ class TestProductCoreSelectors:
             product.categories.set([subcat_2])
 
         # First test getting products based on category subcat_1.
-        # Uses 7 queries:
+        # Uses 9 queries:
         # - 1 for getting products,
         # - 1 for preloading categories,
         # - 1 for preloading colors,
+        # - 1 for preloading materials
+        # - 1 for preloading rooms
         # - 1 for preloading shapes,
         # - 1 for preloading images,
         # - 1 for preloading options,
         # - 1 for preloading files
-        with django_assert_max_num_queries(7):
+        with django_assert_max_num_queries(9):
             filtered_products_subcat_1 = product_list_by_category(
                 category=subcat_1, filters=None
             )
@@ -271,15 +282,17 @@ class TestProductCoreSelectors:
         )
 
         # Then test getting products based on category subcat_2.
-        # Uses 7 queries:
+        # Uses 9 queries:
         # - 1 for getting products,
         # - 1 for preloading categories,
         # - 1 for preloading colors,
+        # - 1 for preloading materials
+        # - 1 for preloading rooms
         # - 1 for preloading shapes,
         # - 1 for preloading images,
         # - 1 for preloading options,
         # - 1 for preloading files
-        with django_assert_max_num_queries(7):
+        with django_assert_max_num_queries(9):
             filtered_products_subcat_2 = product_list_by_category(
                 category=subcat_2, filters=None
             )
@@ -299,15 +312,17 @@ class TestProductCoreSelectors:
         products_subcat_2[0].save()
 
         # Test searching on already filtered list.
-        # Uses 7 queries:
+        # Uses 9 queries:
         # - 1 for getting products,
         # - 1 for preloading categories,
         # - 1 for preloading colors,
+        # - 1 for preloading materials
+        # - 1 for preloading rooms
         # - 1 for preloading shapes,
         # - 1 for preloading images,
         # - 1 for preloading options,
         # - 1 for preloading files
-        with django_assert_max_num_queries(7):
+        with django_assert_max_num_queries(9):
             products_subcat_2_search = product_list_by_category(
                 category=subcat_2, filters={"search": "awesome"}
             )
@@ -336,15 +351,17 @@ class TestProductCoreSelectors:
         cache.delete(f"products.category_id={subcat.id}.filters={None}")
         assert f"products.category_id={subcat.id}.filters={None}" not in cache
 
-        # Uses 7 queries:
+        # Uses 9 queries:
         # - 1 for getting products,
         # - 1 for preloading categories,
         # - 1 for preloading colors,
+        # - 1 for preloading materials
+        # - 1 for preloading rooms
         # - 1 for preloading shapes,
         # - 1 for preloading images,
         # - 1 for preloading options,
         # - 1 for preloading files
-        with django_assert_max_num_queries(7):
+        with django_assert_max_num_queries(9):
             product_list_by_category_from_cache(category=subcat, filters=None)
 
         # After first hit, instance should have been added to cache.
@@ -371,8 +388,13 @@ class TestProductCoreSelectors:
                 ),
                 from_price=Decimal("200.00"),
                 display_price=True,
-                materials=product_2.materials_display,
-                rooms=product_2.rooms_display,
+                materials=[
+                    MaterialDetailRecord.from_material(material)
+                    for material in product_2.materials.all()
+                ],
+                rooms=[
+                    RoomDetailRecord.from_room(room) for room in product_2.rooms.all()
+                ],
                 colors=[
                     ColorDetailRecord(
                         id=color.id, name=color.name, color_hex=color.color_hex
@@ -412,8 +434,13 @@ class TestProductCoreSelectors:
                 ),
                 from_price=Decimal("200.00"),
                 display_price=True,
-                materials=product_1.materials_display,
-                rooms=product_1.rooms_display,
+                materials=[
+                    MaterialDetailRecord.from_material(material)
+                    for material in product_1.materials.all()
+                ],
+                rooms=[
+                    RoomDetailRecord.from_room(room) for room in product_1.rooms.all()
+                ],
                 colors=[
                     ColorDetailRecord(
                         id=color.id, name=color.name, color_hex=color.color_hex
@@ -442,7 +469,7 @@ class TestProductCoreSelectors:
         ]
 
         # Adding search filters should re-hit db.
-        with django_assert_max_num_queries(7):
+        with django_assert_max_num_queries(9):
             product_list_by_category_from_cache(
                 category=subcat, filters={"search": "awesome"}
             )
@@ -484,8 +511,13 @@ class TestProductCoreSelectors:
                 ),
                 from_price=Decimal("200.00"),
                 display_price=True,
-                materials=product_1.materials_display,
-                rooms=product_1.rooms_display,
+                materials=[
+                    MaterialDetailRecord.from_material(material)
+                    for material in product.materials.all()
+                ],
+                rooms=[
+                    RoomDetailRecord.from_room(room) for room in product_1.rooms.all()
+                ],
                 colors=[
                     ColorDetailRecord(
                         id=color.id, name=color.name, color_hex=color.color_hex

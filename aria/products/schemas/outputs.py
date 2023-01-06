@@ -1,6 +1,5 @@
 from ninja import Schema
 
-from aria.core.records import BaseArrayFieldLabelRecord
 from aria.files.records import BaseHeaderImageRecord
 
 
@@ -15,6 +14,16 @@ class ProductVariantOutput(Schema):
     name: str
     image80x80_url: str | None
     image380x575_url: str | None
+
+
+class ProductMaterialOutput(Schema):
+    id: int
+    name: str
+
+
+class ProductRoomOutput(Schema):
+    id: int
+    name: str
 
 
 class ProductSizeOutput(Schema):
@@ -73,9 +82,9 @@ class ProductDetailOutput(Schema):
     display_price: bool
     can_be_picked_up: bool
     can_be_purchased_online: bool
-    categories: list[ProductCategoryOutput] | None = []
-    materials: list[BaseArrayFieldLabelRecord] | None = []
-    rooms: list[BaseArrayFieldLabelRecord] | None = []
+    categories: list[ProductCategoryOutput] = []
+    materials: list[ProductMaterialOutput] = []
+    rooms: list[ProductRoomOutput] = []
     available_in_special_sizes: bool = False
     supplier: ProductSupplierOutput
     images: list[BaseHeaderImageRecord] = []
@@ -97,6 +106,6 @@ class ProductListOutput(Schema):
     discount: ProductDiscountOutput | None
     colors: list[ProductColorOutput]
     shapes: list[ProductShapeOutput]
-    materials: list[BaseArrayFieldLabelRecord]
-    rooms: list[BaseArrayFieldLabelRecord]
+    materials: list[ProductMaterialOutput]
+    rooms: list[ProductRoomOutput]
     variants: list[ProductVariantOutput]

@@ -5,7 +5,13 @@ from ninja import File, Form, Router, Schema, UploadedFile
 from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse
 from aria.api_auth.decorators import permission_required
-from aria.product_attributes.selectors import color_list, shape_list, variant_list
+from aria.product_attributes.selectors import (
+    color_list,
+    material_list,
+    room_list,
+    shape_list,
+    variant_list,
+)
 from aria.product_attributes.services import variant_create
 
 router = Router(tags=["Product attributes"])
@@ -33,12 +39,70 @@ def color_list_internal_api(
     request: HttpRequest,
 ) -> list[ColorListInternalOutput]:
     """
-    Endpoint for getting a list of all sizes in the application.
+    Endpoint for getting a list of all colors in the application.
     """
 
     colors = color_list()
 
     return [ColorListInternalOutput(**color.dict()) for color in colors]
+
+
+###################################
+# Material list internal endpoint #
+###################################
+
+
+class MaterialListInternalOutput(Schema):
+    id: int
+    name: str
+
+
+@router.get(
+    "materials/",
+    response={
+        200: list[MaterialListInternalOutput],
+        codes_40x: ExceptionResponse,
+    },
+    summary="List all materials available.",
+)
+def material_list_internal_api(
+    request: HttpRequest,
+) -> list[MaterialListInternalOutput]:
+    """
+    Endpoint for getting a list of all materials in the application.
+    """
+
+    materials = material_list()
+
+    return [MaterialListInternalOutput(**material.dict()) for material in materials]
+
+
+###############################
+# Room list internal endpoint #
+###############################
+
+
+class RoomListInternalOutput(Schema):
+    id: int
+    name: str
+
+
+@router.get(
+    "rooms/",
+    response={
+        200: list[RoomListInternalOutput],
+        codes_40x: ExceptionResponse,
+    },
+    summary="List all rooms available.",
+)
+def room_list_internal_api(request: HttpRequest) -> list[RoomListInternalOutput]:
+    """
+    Endpoint for getting a list of all materials in the application.
+    """
+
+    rooms = room_list()
+
+    return [RoomListInternalOutput(**room.dict()) for room in rooms]
 
 
 ################################

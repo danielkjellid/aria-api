@@ -33,6 +33,5 @@ class ProductSearchFilter(FilterSet):
             Q(name__icontains=value)
             | Q(search_keywords__icontains=value)
             | Q(supplier__name__icontains=value)
-            | Q(materials__icontains=value)
         )
         return qs

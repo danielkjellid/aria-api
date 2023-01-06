@@ -8,7 +8,7 @@ from django.utils.timezone import utc
 
 import django_countries.fields
 
-import aria.core.utils
+import aria.files.utils
 
 
 class Migration(migrations.Migration):
