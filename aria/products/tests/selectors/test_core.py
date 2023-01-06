@@ -389,12 +389,11 @@ class TestProductCoreSelectors:
                 from_price=Decimal("200.00"),
                 display_price=True,
                 materials=[
-                    MaterialDetailRecord(id=material.id, name=material.name)
+                    MaterialDetailRecord.from_material(material)
                     for material in product_2.materials.all()
                 ],
                 rooms=[
-                    RoomDetailRecord(id=room.id, name=room.name)
-                    for room in product_2.rooms.all()
+                    RoomDetailRecord.from_room(room) for room in product_2.rooms.all()
                 ],
                 colors=[
                     ColorDetailRecord(
@@ -436,12 +435,11 @@ class TestProductCoreSelectors:
                 from_price=Decimal("200.00"),
                 display_price=True,
                 materials=[
-                    MaterialDetailRecord(id=material.id, name=material.name)
+                    MaterialDetailRecord.from_material(material)
                     for material in product_1.materials.all()
                 ],
                 rooms=[
-                    RoomDetailRecord(id=room.id, name=room.name)
-                    for room in product_1.rooms.all()
+                    RoomDetailRecord.from_room(room) for room in product_1.rooms.all()
                 ],
                 colors=[
                     ColorDetailRecord(
@@ -514,12 +512,11 @@ class TestProductCoreSelectors:
                 from_price=Decimal("200.00"),
                 display_price=True,
                 materials=[
-                    MaterialDetailRecord(id=material.id, name=material.name)
+                    MaterialDetailRecord.from_material(material)
                     for material in product.materials.all()
                 ],
                 rooms=[
-                    RoomDetailRecord(id=room.id, name=room.name)
-                    for room in product_1.rooms.all()
+                    RoomDetailRecord.from_room(room) for room in product_1.rooms.all()
                 ],
                 colors=[
                     ColorDetailRecord(

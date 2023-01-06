@@ -68,12 +68,10 @@ def product_detail(
         can_be_picked_up=product.can_be_picked_up,
         can_be_purchased_online=product.can_be_purchased_online,
         materials=[
-            MaterialDetailRecord(id=material.id, name=material.name)
+            MaterialDetailRecord.from_material(material)
             for material in product.materials.all()
         ],
-        rooms=[
-            RoomDetailRecord(id=room.id, name=room.name) for room in product.rooms.all()
-        ],
+        rooms=[RoomDetailRecord.from_room(room) for room in product.rooms.all()],
         colors=[
             ColorDetailRecord(id=color.id, name=color.name, color_hex=color.color_hex)
             for color in product.colors.all()

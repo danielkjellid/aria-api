@@ -182,12 +182,11 @@ def discount_active_list() -> list[DiscountRecord]:
                         else None,
                     ),
                     materials=[
-                        MaterialDetailRecord(id=material.id, name=material.name)
+                        MaterialDetailRecord.from_material(material)
                         for material in product.materials.all()
                     ],
                     rooms=[
-                        RoomDetailRecord(id=room.id, name=room.name)
-                        for room in product.rooms.all()
+                        RoomDetailRecord.from_room(room) for room in product.rooms.all()
                     ],
                     colors=[
                         ColorDetailRecord(

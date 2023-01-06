@@ -87,12 +87,10 @@ def product_list_record(product: Product) -> ProductListRecord:
         from_price=product_get_price_from_options(product=product),
         discount=product_get_active_discount(product=product),
         materials=[
-            MaterialDetailRecord(id=material.id, name=material.name)
+            MaterialDetailRecord.from_material(material)
             for material in product.materials.all()
         ],
-        rooms=[
-            RoomDetailRecord(id=room.id, name=room.name) for room in product.rooms.all()
-        ],
+        rooms=[RoomDetailRecord.from_room(room) for room in product.rooms.all()],
         colors=[
             ColorDetailRecord(id=color.id, name=color.name, color_hex=color.color_hex)
             for color in product.colors.all()

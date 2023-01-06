@@ -96,12 +96,11 @@ class TestDiscountsSelectors:
                 display_price=product.display_price,
                 from_price=product.from_price,
                 materials=[
-                    MaterialDetailRecord(id=material.id, name=material.name)
+                    MaterialDetailRecord.from_material(material)
                     for material in product.materials.all()
                 ],
                 rooms=[
-                    RoomDetailRecord(id=room.id, name=room.name)
-                    for room in product.rooms.all()
+                    RoomDetailRecord.from_room(room) for room in product.rooms.all()
                 ],
                 colors=[
                     ColorDetailRecord(
@@ -313,12 +312,11 @@ class TestDiscountsSelectors:
                 display_price=product.display_price,
                 from_price=product.from_price,
                 materials=[
-                    MaterialDetailRecord(id=material.id, name=material.name)
+                    MaterialDetailRecord.from_material(material)
                     for material in product.materials.all()
                 ],
                 rooms=[
-                    RoomDetailRecord(id=room.id, name=room.name)
-                    for room in product.rooms.all()
+                    RoomDetailRecord.from_room(room) for room in product.rooms.all()
                 ],
                 colors=[
                     ColorDetailRecord(
