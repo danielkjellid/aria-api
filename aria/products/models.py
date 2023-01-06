@@ -57,7 +57,7 @@ class Product(BaseModel, BaseThumbnailImageModel):
         max_length=255,
         help_text=(
             "A slug is a short label for something, containing only letters, "
-            "numbers, underscores or hyphens. They’re generally used in URLs.",
+            "numbers, underscores or hyphens. They’re generally used in URLs."
         ),
     )
     search_keywords = models.CharField(
@@ -85,6 +85,9 @@ class Product(BaseModel, BaseThumbnailImageModel):
     shapes = models.ManyToManyField(
         "product_attributes.Shape", related_name="products", blank=True
     )
+    new_materials = models.ManyToManyField(
+        "product_attributes.Material", related_name="products", blank=True
+    )
     materials = ChoiceArrayField(
         models.CharField(choices=enums.ProductMaterials.choices, max_length=50),
         blank=True,
@@ -99,6 +102,9 @@ class Product(BaseModel, BaseThumbnailImageModel):
         blank=True,
         null=True,
         help_text="Rooms applicable to product.",
+    )
+    new_rooms = models.ManyToManyField(
+        "product_attributes.Room", related_name="products", blank=True
     )
     absorption = models.FloatField(null=True, blank=True)
     is_imported_from_external_source = models.BooleanField(default=False)

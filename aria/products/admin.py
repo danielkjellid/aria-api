@@ -34,6 +34,8 @@ class ProductAdmin(admin.ModelAdmin):
     filter_horizontal = (
         "colors",
         "categories",
+        "new_materials",
+        "new_rooms",
         "shapes",
     )
     ordering = ["-id"]

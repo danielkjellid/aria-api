@@ -7,6 +7,8 @@ from aria.core.models import BaseModel
 from aria.files.models import BaseImageModel, BaseThumbnailImageModel
 from aria.product_attributes.managers import (
     ColorQuerySet,
+    MaterialsQuerySet,
+    RoomQuerySet,
     ShapeQuerySet,
     SizeQuerySet,
     VariantQuerySet,
@@ -31,9 +33,6 @@ class Color(BaseModel):
     class Meta:
         verbose_name = "Color"
         verbose_name_plural = "Colors"
-
-
-_SizeManager = models.Manager.from_queryset(SizeQuerySet)
 
 
 _ShapeManager = models.Manager.from_queryset(ShapeQuerySet)
@@ -61,6 +60,49 @@ class Shape(BaseImageModel, BaseModel):
     class Meta:
         verbose_name = "Shape"
         verbose_name_plural = "Shapes"
+
+
+_MaterialsManager = models.Manager.from_queryset(MaterialsQuerySet)
+
+
+class Material(BaseModel):
+    """
+    A material a product is made of.
+    """
+
+    name = models.CharField("name", max_length=50, unique=True)
+
+    objects = _MaterialsManager()
+
+    def __str__(self) -> str:
+        return self.name
+
+    class Meta:
+        verbose_name = "Material"
+        verbose_name_plural = "Materials"
+
+
+_RoomManager = models.Manager.from_queryset(RoomQuerySet)
+
+
+class Room(BaseModel):
+    """
+    A room suitable for a product.
+    """
+
+    name = models.CharField("name", max_length=50, unique=True)
+
+    objects = _RoomManager()
+
+    def __str__(self) -> str:
+        return self.name
+
+    class Meta:
+        verbose_name = "Room"
+        verbose_name_plural = "Rooms"
+
+
+_SizeManager = models.Manager.from_queryset(SizeQuerySet)
 
 
 class Size(BaseModel):

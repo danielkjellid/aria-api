@@ -88,7 +88,7 @@ class ProductCreateInternalInput(Schema):
     name: str
     status: int
     slug: str
-    search_keywords: str
+    search_keywords: str | None = None
     description: str
     unit: int
     vat_rate: float

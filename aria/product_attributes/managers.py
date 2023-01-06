@@ -10,6 +10,14 @@ class ColorQuerySet(BaseQuerySet["models.Color"]):
     pass
 
 
+class MaterialsQuerySet(BaseQuerySet["models.Material"]):
+    pass
+
+
+class RoomQuerySet(BaseQuerySet["models.Room"]):
+    pass
+
+
 class ShapeQuerySet(BaseQuerySet["models.Shape"]):
     pass
 
