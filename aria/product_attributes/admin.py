@@ -1,12 +1,24 @@
 from django.contrib import admin
 
-from aria.product_attributes.models import Color, Shape, Size, Variant
+from aria.product_attributes.models import Color, Material, Room, Shape, Size, Variant
 
 
 @admin.register(Color)
 class ColorAdmin(admin.ModelAdmin):
     list_display = ("name", "color_hex")
     ordering = ["name"]
+
+
+@admin.register(Material)
+class MaterialAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    ordering = ("-id",)
+
+
+@admin.register(Room)
+class RoomAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    ordering = ("-id",)
 
 
 @admin.register(Shape)
