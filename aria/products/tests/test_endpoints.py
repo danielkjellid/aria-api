@@ -343,11 +343,11 @@ class TestPublicProductsEndpoints:
                 {"id": room.id, "name": room.name} for room in product.rooms.all()
             ],
             "colors": [
-                {"name": color.name, "colorHex": color.color_hex}
+                {"id": color.id, "name": color.name, "colorHex": color.color_hex}
                 for color in product.colors.all()
             ],
             "shapes": [
-                {"name": shape.name, "image": shape.image.url}
+                {"id": shape.id, "name": shape.name, "image": shape.image.url}
                 for shape in product.shapes.all()
             ],
             "files": [
