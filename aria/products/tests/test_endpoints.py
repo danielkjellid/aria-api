@@ -78,10 +78,13 @@ class TestPublicProductsEndpoints:
                             for shape in product.shapes.all()
                         ],
                         "materials": [
-                            {"name": material.name}
+                            {"id": material.id, "name": material.name}
                             for material in product.materials.all()
                         ],
-                        "rooms": [{"name": room.name} for room in product.rooms.all()],
+                        "rooms": [
+                            {"id": room.id, "name": room.name}
+                            for room in product.rooms.all()
+                        ],
                         "variants": [
                             {
                                 "id": option.variant.id,
@@ -181,10 +184,13 @@ class TestPublicProductsEndpoints:
                             for shape in product.shapes.all()
                         ],
                         "materials": [
-                            {"name": material.name}
+                            {"id": material.id, "name": material.name}
                             for material in product.materials.all()
                         ],
-                        "rooms": [{"name": room.name} for room in product.rooms.all()],
+                        "rooms": [
+                            {"id": room.id, "name": room.name}
+                            for room in product.rooms.all()
+                        ],
                         "variants": [
                             {
                                 "id": option.variant.id,
@@ -330,9 +336,12 @@ class TestPublicProductsEndpoints:
                 },
             ],
             "materials": [
-                {"name": material.name} for material in product.materials.all()
+                {"id": material.id, "name": material.name}
+                for material in product.materials.all()
             ],
-            "rooms": [{"name": room.name} for room in product.rooms.all()],
+            "rooms": [
+                {"id": room.id, "name": room.name} for room in product.rooms.all()
+            ],
             "colors": [
                 {"name": color.name, "colorHex": color.color_hex}
                 for color in product.colors.all()

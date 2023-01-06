@@ -98,11 +98,12 @@ class TestPublicDiscountsEndpoints:
                             for shape in product_4.shapes.all()
                         ],
                         "materials": [
-                            {"name": material.name}
+                            {"id": material.id, "name": material.name}
                             for material in product_4.materials.all()
                         ],
                         "rooms": [
-                            {"name": room.name} for room in product_4.rooms.all()
+                            {"id": room.id, "name": room.name}
+                            for room in product_4.rooms.all()
                         ],
                         "variants": [
                             {
@@ -152,11 +153,11 @@ class TestPublicDiscountsEndpoints:
                             for shape in product_2_option_1.product.shapes.all()
                         ],
                         "materials": [
-                            {"name": material.name}
+                            {"id": material.id, "name": material.name}
                             for material in product_2_option_1.product.materials.all()
                         ],
                         "rooms": [
-                            {"name": room.name}
+                            {"id": room.id, "name": room.name}
                             for room in product_2_option_1.product.rooms.all()
                         ],
                         "variants": [
@@ -207,11 +208,12 @@ class TestPublicDiscountsEndpoints:
                             for shape in product_1.shapes.all()
                         ],
                         "materials": [
-                            {"name": material.name}
+                            {"id": material.id, "name": material.name}
                             for material in product_1.materials.all()
                         ],
                         "rooms": [
-                            {"name": room.name} for room in product_1.rooms.all()
+                            {"id": room.id, "name": room.name}
+                            for room in product_1.rooms.all()
                         ],
                         "variants": [
                             {
@@ -270,11 +272,12 @@ class TestPublicDiscountsEndpoints:
                             for shape in product_3.shapes.all()
                         ],
                         "materials": [
-                            {"name": material.name}
+                            {"id": material.id, "name": material.name}
                             for material in product_3.materials.all()
                         ],
                         "rooms": [
-                            {"name": room.name} for room in product_3.rooms.all()
+                            {"id": room.id, "name": room.name}
+                            for room in product_3.rooms.all()
                         ],
                         "variants": [
                             {
