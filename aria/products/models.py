@@ -6,10 +6,7 @@ from django.utils.text import slugify
 from mptt.models import TreeManyToManyField
 
 from aria.categories.models import Category
-from aria.core.fields import ChoiceArrayField
 from aria.core.models import BaseModel
-from aria.core.records import BaseArrayFieldLabelRecord
-from aria.core.utils import get_array_field_labels
 from aria.files.models import (
     BaseFileModel,
     BaseHeaderImageModel,

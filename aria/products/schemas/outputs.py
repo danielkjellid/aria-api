@@ -1,6 +1,5 @@
 from ninja import Schema
 
-from aria.core.records import BaseArrayFieldLabelRecord
 from aria.files.records import BaseHeaderImageRecord
 
 

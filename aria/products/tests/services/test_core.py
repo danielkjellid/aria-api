@@ -6,7 +6,6 @@ import pytest
 
 from aria.categories.tests.utils import create_category
 from aria.core.exceptions import ApplicationError
-from aria.core.records import BaseArrayFieldLabelRecord
 from aria.files.tests.utils import create_image_file
 from aria.product_attributes.tests.utils import (
     create_color,
@@ -25,7 +24,9 @@ pytestmark = pytest.mark.django_db
 
 
 class TestProductsCoreServices:
-    def test_service_product_create(self, django_assert_max_num_queries):
+    def test_service_product_create(
+        self, django_assert_max_num_queries
+    ):  # pylint: disable=too-many-locals
         """
         Test that the product_create service successfully creates a product within
         query limits, and rolls back transaction when exceptions are raised.
@@ -157,7 +158,9 @@ class TestProductsCoreServices:
         assert list(db_product.materials.all()) == [material_wood, material_steel]
         assert list(db_product.rooms.all()) == [room_bedroom]
 
-    def test_service_product_update(self, django_assert_max_num_queries):
+    def test_service_product_update(
+        self, django_assert_max_num_queries
+    ):  # pylint: disable=too-many-locals,too-many-statements
         """
         Test that the product_update service successfully updates a product within
         query limits, and rolls back transaction when exceptions are raised.
@@ -185,7 +188,6 @@ class TestProductsCoreServices:
 
         # Rooms
         room_bedroom = create_room(name="Bedroom")
-        room_living_room = create_room(name="Living room")
 
         product = create_product(
             supplier=supplier,
@@ -290,7 +292,7 @@ class TestProductsCoreServices:
         assert list(db_product.colors.all()) == [color_white, color_gray]
         # Material wood should have been removed in update.
         assert list(db_product.materials.all()) == [material_steel, material_composite]
-        assert list(db_product.rooms.all()) == []  # All rooms should have been removed.
+        assert not list(db_product.rooms.all())  # All rooms should have been removed.
         assert db_product.status == ProductStatus.HIDDEN
         assert db_product.search_keywords == "keyword1 keyword2"
         assert db_product.description == "The same product, but edited!"

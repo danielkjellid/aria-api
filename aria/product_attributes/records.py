@@ -21,6 +21,7 @@ class MaterialDetailRecord(BaseModel):
 
     @classmethod
     def from_material(cls, material: models.Material) -> MaterialDetailRecord:
+        """Populate the MaterialDetailRecord from material instance."""
         return cls(id=material.id, name=material.name)
 
 
@@ -30,6 +31,7 @@ class RoomDetailRecord(BaseModel):
 
     @classmethod
     def from_room(cls, room: models.Room) -> RoomDetailRecord:
+        """Populate the RoomDetailRecord from room instance."""
         return cls(id=room.id, name=room.name)
 
 

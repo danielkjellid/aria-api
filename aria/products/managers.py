@@ -219,9 +219,9 @@ class ProductQuerySet(BaseQuerySet["models.Product"]):
         return (  # type: ignore
             self.select_related("supplier")
             .with_colors()
-            .with_materials()
+            .with_materials()  # type: ignore
             .with_rooms()
-            .with_shapes()  # type: ignore
+            .with_shapes()
             .with_available_options_unique_variants()
             .with_active_product_discounts()
             .with_active_options_discounts()

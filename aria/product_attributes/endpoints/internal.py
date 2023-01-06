@@ -65,7 +65,9 @@ class MaterialListInternalOutput(Schema):
     },
     summary="List all materials available.",
 )
-def material_list_internal_api(request: HttpRequest) -> list[ColorListInternalOutput]:
+def material_list_internal_api(
+    request: HttpRequest,
+) -> list[MaterialListInternalOutput]:
     """
     Endpoint for getting a list of all materials in the application.
     """
