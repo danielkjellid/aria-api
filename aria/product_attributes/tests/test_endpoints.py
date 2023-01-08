@@ -92,6 +92,12 @@ class TestProductAttributesInternalEndpoints:
         assert len(response.json()) == 4
         assert response.json() == expected_response
 
+    def test_endpoint_material_list_internal_api(self):
+        assert False
+
+    def test_endpoint_room_list_internal_api(self):
+        assert False
+
     ########################
     # Shapes list endpoint #
     ########################

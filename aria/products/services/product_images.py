@@ -10,7 +10,8 @@ def product_image_create(
     *,
     product: Product,
     image: UploadedFile | InMemoryUploadedFile | ImageFile,
-    apply_filter: bool = False,
+    apply_filter: bool | None,
+    is_main_image: bool | None,
 ) -> ProductImageRecord:
     """
     Create a product image associated to a product.
@@ -26,11 +27,14 @@ def product_image_create(
     )
 
     product_image = ProductImage.objects.create(
-        product=product, image=image, apply_filter=apply_filter
+        product=product,
+        image=image,
+        apply_filter=apply_filter or False,
+        is_main_image=is_main_image or False,
     )
 
     return ProductImageRecord(
         id=product_image.id,
         product_id=product_image.product_id,
-        image_url=product_image.image.url if product_image.image else None,
+        image_url=product_image.image_url,
     )

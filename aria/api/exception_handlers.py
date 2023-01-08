@@ -117,10 +117,16 @@ def validation_error_exception_handler(  # pylint: disable=unused-argument
 
     activate(locale)
     message = _("Something went wrong. Please double check the form and try again.")
+    error_msg = {}
+
+    if hasattr(exc, "message_dict"):
+        for key, value in exc.message_dict.items():
+            error_msg[key] = value[0]
+
     deactivate()
 
     return api.create_response(
-        request, ExceptionResponse(message=message).dict(), status=400
+        request, ExceptionResponse(message=message, extra=error_msg).dict(), status=400
     )
 
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-21 16:11+0200\n"
+"POT-Creation-Date: 2023-01-06 17:56+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,12 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: aria/api/exception_handlers.py:59
+#: aria/api/exception_handlers.py:64
 msgid "There were errors in the form. Please correct them and try again."
 msgstr ""
 "Noen av feltene i skjemaet er feil. Vennligst rett dem opp og prøv igjen."
 
-#: aria/api/exception_handlers.py:119 aria/users/services.py:252
+#: aria/api/exception_handlers.py:124 aria/users/services.py:252
 msgid "Something went wrong. Please double check the form and try again."
 msgstr "Noe gikk galt. Vennligst dobbelsjekk skjemaet og prøv igjen."
 
@@ -30,7 +30,7 @@ msgstr "Noe gikk galt. Vennligst dobbelsjekk skjemaet og prøv igjen."
 msgid "The page does not exist."
 msgstr "Denne siden eksisterer ikke."
 
-#: aria/api/utils.py:9 aria/products/services/product_options.py:28
+#: aria/api/utils.py:9 aria/products/services/product_options.py:30
 msgid "field required"
 msgstr "Dette feltet må fylles ut."
 
@@ -41,6 +41,30 @@ msgstr "Dette feltet kan ikke være blankt."
 #: aria/api/utils.py:11
 msgid "value is not none"
 msgstr "Dette feltet aksepterer ikke verdier."
+
+#: aria/api/utils.py:12
+msgid "This field cannot be blank."
+msgstr "Dette feltet kan ikke være blankt."
+
+#: aria/api/utils.py:13 aria/users/services.py:230
+msgid "This password is entirely numeric."
+msgstr "Dette passordet består kun av tall."
+
+#: aria/api/utils.py:14 aria/users/services.py:231
+msgid "This password is too common."
+msgstr "Dette passordet er for vanlig."
+
+#: aria/api/utils.py:16 aria/users/services.py:233
+#, python-format
+msgid "The password is too similar to the %(verbose_name)s."
+msgstr "Passordet er for likt %(verbose_name)s."
+
+#: aria/api/utils.py:19 aria/users/services.py:236
+#, python-format
+msgid ""
+"This password is too short. It must contain at least %(min_length)d "
+"characters."
+msgstr "Passordet er for kort. Det må inneholde minst %(min_length)d tegn."
 
 #: aria/api_auth/authentication.py:29
 msgid "No user with provided id exist."
@@ -74,17 +98,17 @@ msgstr ""
 "Feil e-postadresse eller passord. Merk at du må skille mellom store og små "
 "bokstaver."
 
-#: aria/core/validators.py:38
+#: aria/files/validators.py:38
 #, python-format
 msgid "Image does not have a valid type. We only allow types ending with %s."
 msgstr "Bilde har ikke gyldig filtype. We tillter kun typene %s."
 
-#: aria/core/validators.py:47
+#: aria/files/validators.py:47
 #, python-format
 msgid "Images should be in the range %(range)spx wide."
 msgstr "Bildets bredde burde være i intervallet %(range)spx."
 
-#: aria/core/validators.py:59
+#: aria/files/validators.py:58
 #, python-format
 msgid "Images should be in the range %(range)spx high."
 msgstr "Bildets høyde burde være i intervallet %(range)spx."
@@ -93,30 +117,12 @@ msgstr "Bildets høyde burde være i intervallet %(range)spx."
 msgid "Kitchen does not exist"
 msgstr "Kjøkkenet eksisterer ikke."
 
-#: aria/products/endpoints/public.py:70
-msgid "Product does not exist"
-msgstr "Produktet eksisterer ikke."
-
-#: aria/products/services/core.py:74 aria/products/signals.py:37
-#, fuzzy, python-format
-msgid "You can not add a primary category to products. Tried to add %s."
-msgstr ""
-"Du kan kun legge til underkategorier til produkter. Prøvde å legge til %s."
-
-#: aria/products/services/product_options.py:27
-msgid "Product must be defined."
-msgstr "Produktet må defineres."
-
-#: aria/products/services/product_options.py:32
-msgid "Either size or variant must be defined."
-msgstr "Enten størrelse eller variant må være definert."
-
-#: aria/products/services/sizes.py:160 aria/products/services/sizes.py:164
-#: aria/products/services/sizes.py:168
+#: aria/product_attributes/utils.py:84 aria/product_attributes/utils.py:88
+#: aria/product_attributes/utils.py:92
 msgid "Field cannot be specified when making a circumferential size"
 msgstr "Felt kan ikke spesifiseres når du lager en omkretsstørrelse"
 
-#: aria/products/services/sizes.py:173
+#: aria/product_attributes/utils.py:97
 msgid ""
 "Width, height or depth cannot be specified when making a circumferential "
 "size."
@@ -124,17 +130,35 @@ msgstr ""
 "Bredde, høyde eller dybde kan ikke spesifiseres når du lager en "
 "omkretsstørrelse."
 
-#: aria/products/services/sizes.py:183
+#: aria/product_attributes/utils.py:107
 msgid ""
 "Width and height needs to be specified when not making a circumferential "
 "size."
 msgstr "Bredde og høyde må spesifiseres når du ikke lager en omkretsstørrelse."
 
-#: aria/products/services/sizes.py:187 aria/products/services/sizes.py:188
+#: aria/product_attributes/utils.py:111 aria/product_attributes/utils.py:112
 #, fuzzy
 #| msgid "field required"
 msgid "field required."
 msgstr "Dette feltet må fylles ut."
+
+#: aria/products/endpoints/public.py:70
+msgid "Product does not exist"
+msgstr "Produktet eksisterer ikke."
+
+#: aria/products/services/core.py:64 aria/products/signals.py:31
+#, fuzzy, python-format
+msgid "You can not add a primary category to products. Tried to add %s."
+msgstr ""
+"Du kan kun legge til underkategorier til produkter. Prøvde å legge til %s."
+
+#: aria/products/services/product_options.py:29
+msgid "Product must be defined."
+msgstr "Produktet må defineres."
+
+#: aria/products/services/product_options.py:34
+msgid "Either size or variant must be defined."
+msgstr "Enten størrelse eller variant må være definert."
 
 #: aria/users/endpoints/public.py:40 aria/users/endpoints/public.py:74
 #: aria/users/services.py:176 aria/users/services.py:202
@@ -164,24 +188,3 @@ msgstr "Nøkkelen er ugyldig, vennligst prøv igjen."
 #: aria/users/services.py:215
 msgid "The two password fields didn’t match."
 msgstr "De to passordene stemmer ikke overens."
-
-#: aria/users/services.py:230
-msgid "This password is entirely numeric."
-msgstr "Dette passordet består kun av tall."
-
-#: aria/users/services.py:231
-msgid "This password is too common."
-msgstr "Dette passordet er for vanlig."
-
-#: aria/users/services.py:233
-#, python-format
-msgid "The password is too similar to the %(verbose_name)s."
-msgstr "Passordet er for likt %(verbose_name)s."
-
-#: aria/users/services.py:236
-#, python-format
-msgid ""
-"This password is too short. It must contain at least %(min_length)d "
-"characters."
-msgstr "Passordet er for kort. Det må inneholde minst %(min_length)d tegn."
-

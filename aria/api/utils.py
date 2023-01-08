@@ -9,6 +9,15 @@ MESSAGE_TEMPLATE = {
     "field required": _("field required"),
     "none is not an allowed value": _("none is not an allowed value"),
     "value is not none": _("value is not none"),
+    "This field cannot be blank.": _("This field cannot be blank."),
+    "This password is entirely numeric.": _("This password is entirely numeric."),
+    "This password is too common.": _("This password is too common."),
+    "The password is too similar to the %(verbose_name)s.": _(
+        "The password is too similar to the %(verbose_name)s."
+    ),
+    "This password is too short. It must contain at least %(min_length)d characters.": _(
+        "This password is too short. It must contain at least %(min_length)d characters."
+    ),
 }
 
 

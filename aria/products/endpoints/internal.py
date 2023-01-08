@@ -142,12 +142,15 @@ def product_create_internal_api(
 
 class ProductImageCreateInternalInput(Schema):
     apply_filter: bool = False
+    is_main_image: bool = False
 
 
 class ProductImageCreateInternalOutput(Schema):
     id: int
     product_id: int
     image_url: str | None
+    is_main_image: bool
+    apply_filter: bool
 
 
 @router.post(
@@ -171,7 +174,10 @@ def product_image_create_internal_api(
 
     product = get_object_or_404(Product, pk=product_id)
     product_image = product_image_create(
-        product=product, image=file, apply_filter=payload.apply_filter
+        product=product,
+        image=file,
+        apply_filter=payload.apply_filter,
+        is_main_image=payload.is_main_image,
     )
 
     return 201, ProductImageCreateInternalOutput(**product_image.dict())
@@ -304,7 +310,7 @@ class ProductOptionCreateInBulkSizeInternalInput(Schema):
 
 
 class ProductOptionCreateInBulkInternalInput(Schema):
-    status: ProductStatus
+    status: int
     gross_price: float
     variant_id: int | None = None
     size: ProductOptionCreateInBulkSizeInternalInput | None = None
