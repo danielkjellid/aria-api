@@ -1,24 +1,34 @@
+from typing import Any
+
 from pydantic import BaseModel
 
-
-class FormBlockInputAttrsRecord(BaseModel):
-    type: str
-    placeholder: str
+from aria.forms.enums import FrontendFormElements
 
 
-class FormBlockInputRecord(BaseModel):
-    type: str
-    label: str
-    help_text: str | None
-    enum: list[str] | list[int] | None = None
+class FormSectionRecord(BaseModel):
+    name: str
+    blocks: list[str]
+
+
+class FormBlockEnumRecord(BaseModel):
+    name: str
+    value: int | bool | str
 
 
 class FormBlockRecord(BaseModel):
-    name: str
+    id: str
+    title: str | None
+    type: str | None
+    enum: list[FormBlockEnumRecord] | None
+    default: int | str | bool | None
+    element: FrontendFormElements
+    placeholder: str | None
 
 
 class FormRecord(BaseModel):
     key: str
-    title: str
-    description: str
-    blocks: FormBlockRecord
+    is_multipart_form: bool = False
+    expects_list: bool = False
+    required: list[str]
+    sections: list[FormSectionRecord]
+    blocks: list[FormBlockRecord]
