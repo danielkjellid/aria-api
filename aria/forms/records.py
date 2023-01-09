@@ -1,5 +1,3 @@
-from typing import Any
-
 from pydantic import BaseModel
 
 from aria.forms.enums import FrontendFormElements
@@ -21,11 +19,11 @@ class FormBlockRecord(BaseModel):
     type: str | None
     enum: list[FormBlockEnumRecord] | None
     default_value: int | str | bool | None
-    element: FrontendFormElements
+    element: FrontendFormElements | None
     placeholder: str | None
     help_text: str | None
-    display_word_count: bool
-    hidden_label: bool
+    display_word_count: bool | None
+    hidden_label: bool | None
     col_span: int | None
 
 

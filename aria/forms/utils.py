@@ -40,7 +40,7 @@ def _validate_schema(schema: Schema) -> tuple[type | None, bool]:
             schema=schema,
             is_list=False,
         )
-        return None, False
+        return None, is_list(schema)
 
 
 def _format_enum_from_type(typ: type) -> list[FormBlockEnumRecord]:
@@ -92,8 +92,6 @@ def form_create_from_schema(
     schema_definition = schema_type.schema()
     blocks = []
     definitions = schema_definition.get("definitions", None)
-
-    print(schema_definition)
 
     for key, value in schema_definition["properties"].items():
         title: str = value.get("title", None)
@@ -150,7 +148,7 @@ def form_create_from_schema(
             title=overrides_dict.get("title", title),
             type=overrides_dict.get("type", typ),
             enum=overrides_dict.get("enum", enum),
-            default_value=overrides_dict.get("default", default),
+            default_value=overrides_dict.get("default_value", default),
             element=overrides_dict.get("element", element),
             placeholder=overrides_dict.get("placeholder", placeholder),
             help_text=overrides_dict.get("help_text", None),
