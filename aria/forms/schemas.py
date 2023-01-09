@@ -13,8 +13,13 @@ class FormBlockOutput(Schema):
     title: str
     type: str
     enum: list[FormBlockEnumOutput] | None
+    default_value: int | str | bool | None
     element: FrontendFormElements
     placeholder: str | None
+    help_text: str | None
+    display_word_count: bool
+    hidden_label: bool
+    col_span: int | None
 
 
 class FormSectionOutput(Schema):

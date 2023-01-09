@@ -20,9 +20,13 @@ class FormBlockRecord(BaseModel):
     title: str | None
     type: str | None
     enum: list[FormBlockEnumRecord] | None
-    default: int | str | bool | None
+    default_value: int | str | bool | None
     element: FrontendFormElements
     placeholder: str | None
+    help_text: str | None
+    display_word_count: bool
+    hidden_label: bool
+    col_span: int | None
 
 
 class FormRecord(BaseModel):

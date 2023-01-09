@@ -14,7 +14,7 @@ def is_pydantic_model(*, type_annotation: type) -> bool:
     )
 
 
-def get_inner_list_type(type_annotation: type) -> tuple[type, bool]:
+def get_inner_list_type(*, type_annotation: type) -> tuple[type, bool]:
     is_lst = is_list(type_annotation=type_annotation)
     if is_lst:
         type_annotation = unwrap_item_type_from_list(type_annotation=type_annotation)

@@ -18,6 +18,10 @@ logger = structlog.get_logger(__name__)
 
 
 def _validate_schema(schema: Schema) -> tuple[type | None, bool]:
+    """
+    Validate that passed schema is either a subclassed pydantic model, or a list of
+    subclassed pydantic models.
+    """
     if is_list(type_annotation=schema):
         inner_type, is_lst = get_inner_list_type(type_annotation=schema)
 
@@ -40,6 +44,11 @@ def _validate_schema(schema: Schema) -> tuple[type | None, bool]:
 
 
 def _format_enum_from_type(typ: type) -> list[FormBlockEnumRecord]:
+    """
+    Format schema field's enum type into a key - value format, taking advantage
+    of Django's human-readable labels where applicable.
+    """
+
     # If passed enum is a django choices field, we can take advantaged
     # of the defined label.
     if issubclass(typ, IntegerChoices | TextChoices):
@@ -68,6 +77,9 @@ def form_create_from_schema(
     overrides: list[FormBlockRecord] | None = None,
     sections: list[FormSectionRecord] | None = None,
 ) -> FormRecord | None:
+    """
+    Create a JSON form based on a defined schema.
+    """
 
     overrides = overrides if overrides is not None else []
     sections = sections if sections is not None else []
@@ -81,6 +93,8 @@ def form_create_from_schema(
     blocks = []
     definitions = schema_definition.get("definitions", None)
 
+    print(schema_definition)
+
     for key, value in schema_definition["properties"].items():
         title: str = value.get("title", None)
         typ: str = value.get("type", None)
@@ -89,15 +103,24 @@ def form_create_from_schema(
         placeholder: str | None = None
 
         value_ref = value.get("$ref", None)
+        value_all_of_ref = value.get("allOf", [{}])[0].get("$ref", None)
 
-        if value_ref and definitions:
+        if value_ref:
+            ref = value_ref
+        elif value_all_of_ref:
+            ref = value_all_of_ref
+        else:
+            ref = None
+
+        if ref and definitions:
             # Get the typename from the reference and find it in the definitions' dict.
-            ref = value_ref.rsplit("/", 1)[-1]
-            definition = definitions.get(ref)
+            ref_from_value = ref.rsplit("/", 1)[-1]
+            definition = definitions.get(ref_from_value)
 
             # Replace values with values in the definition.
-            title = definition.get("title", None)
+            title = definition.get("title", title)
             typ = definition.get("type", "enum")
+            default = definition.get("default", default)
             enum_from_definition = definition.get("enum", None)
 
             if enum_from_definition:
@@ -127,9 +150,13 @@ def form_create_from_schema(
             title=overrides_dict.get("title", title),
             type=overrides_dict.get("type", typ),
             enum=overrides_dict.get("enum", enum),
-            default=overrides_dict.get("default", default),
+            default_value=overrides_dict.get("default", default),
             element=overrides_dict.get("element", element),
             placeholder=overrides_dict.get("placeholder", placeholder),
+            help_text=overrides_dict.get("help_text", None),
+            display_word_count=overrides_dict.get("display_word_count", False),
+            hidden_label=overrides_dict.get("hidden_label", False),
+            col_span=overrides_dict.get("col_span", None),
         )
 
         blocks.append(block)
