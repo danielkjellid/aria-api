@@ -22,7 +22,7 @@ from aria.core.endpoints import public_endpoints as public_core_endpoints
 from aria.core.exceptions import ApplicationError
 from aria.discounts.endpoints import public_endpoints as public_discount_endpoints
 from aria.employees.endpoints import public_endpoints as public_employees_endpoints
-from aria.forms.endpoints import public_endpoints as public_forms_endpoints
+from aria.forms.endpoints import internal_endpoints as internal_forms_endpoints
 from aria.front.endpoints import public_endpoints as public_front_endpoints
 from aria.kitchens.endpoints import public_endpoints as public_kitchens_endpoints
 from aria.products.endpoints import public_endpoints as public_products_endpoints
@@ -45,7 +45,7 @@ api.add_router("/categories/", public_categories_endpoints)
 api.add_router("/core/", public_core_endpoints)
 api.add_router("/discounts/", public_discount_endpoints)
 api.add_router("/employees/", public_employees_endpoints)
-api.add_router("/forms/", public_forms_endpoints)
+api.add_router("/forms/", internal_forms_endpoints)
 api.add_router("/front/", public_front_endpoints)
 api.add_router("/kitchens/", public_kitchens_endpoints)
 api.add_router("/products/", public_products_endpoints)

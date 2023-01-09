@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Any
 
 from django.db.models import IntegerChoices, TextChoices
 
@@ -89,75 +90,105 @@ def form_create_from_schema(
     if schema_type is None:
         return
 
-    schema_definition = schema_type.schema()
-    blocks = []
-    definitions = schema_definition.get("definitions", None)
+    def build_form(
+        schema_properties: dict[str, Any],
+        schema_definitions: dict[str, Any] | None,
+        parent: str | None = None,
+    ) -> list[FormBlockRecord]:
+        form_blocks = []
 
-    for key, value in schema_definition["properties"].items():
-        title: str = value.get("title", None)
-        typ: str = value.get("type", None)
-        enum: list[FormBlockEnumRecord] | None = None
-        default: str | int | bool | None = value.get("default", None)
-        placeholder: str | None = None
+        for key, value in schema_properties.items():
+            title: str = value.get("title", None)
+            typ: str = value.get("type", None)
+            enum: list[FormBlockEnumRecord] | None = None
+            default: str | int | bool | None = value.get("default", None)
+            placeholder: str | None = None
+            format_val: str = value.get("format", None)
 
-        value_ref = value.get("$ref", None)
-        value_all_of_ref = value.get("allOf", [{}])[0].get("$ref", None)
+            if format_val == "binary":
+                typ = "file"
 
-        if value_ref:
-            ref = value_ref
-        elif value_all_of_ref:
-            ref = value_all_of_ref
-        else:
-            ref = None
+            value_ref = value.get("$ref", None)
+            value_all_of_ref = value.get("allOf", [{}])[0].get("$ref", None)
 
-        if ref and definitions:
-            # Get the typename from the reference and find it in the definitions' dict.
-            ref_from_value = ref.rsplit("/", 1)[-1]
-            definition = definitions.get(ref_from_value)
+            if value_ref:
+                ref = value_ref
+            elif value_all_of_ref:
+                ref = value_all_of_ref
+            else:
+                ref = None
 
-            # Replace values with values in the definition.
-            title = definition.get("title", title)
-            typ = definition.get("type", "enum")
-            default = definition.get("default", default)
-            enum_from_definition = definition.get("enum", None)
+            if ref and schema_definitions:
+                # Get the typename from the reference and find it in the definitions' dict.
+                ref_from_value = ref.rsplit("/", 1)[-1]
+                definition = schema_definitions.get(ref_from_value)
 
-            if enum_from_definition:
-                field_type = schema_type.__fields__[key].type_
-                enum = _format_enum_from_type(typ=field_type)
+                # Replace values with values in the definition.
+                title = definition.get("title", title)
+                typ = definition.get("type", "enum")
+                default = definition.get("default", default)
+                enum_from_definition = definition.get("enum", None)
+                properties = definition.get("properties", None)
 
-        # Even though type of enum value is something else, we want to default enums
-        # to use select HTML elements.
-        if enum:
-            element = FORM_ELEMENT_MAPPING["enum"]
-        else:
-            element = FORM_ELEMENT_MAPPING[typ]
+                if enum_from_definition:
+                    field_type = schema_type.__fields__[key].type_
+                    enum = _format_enum_from_type(typ=field_type)
 
-        overrides_dict = {}
-        override_config = next(
-            (override for override in overrides if override.id == key),
-            None,
-        )
+                # If the schema references another schema, that definition will have
+                # a dict of its own properties. We want to flatten the form, and add
+                # these values, and remove the reference property.
+                if properties:
+                    property_blocks = build_form(
+                        schema_properties=properties,
+                        schema_definitions=None,
+                        parent=key,
+                    )
+                    form_blocks.extend(property_blocks)
+                    # Do not include reference object, so continue to the next
+                    # iteration.
+                    continue
 
-        if override_config:
-            overrides_dict = override_config.dict(
-                exclude_unset=True, exclude_defaults=True, exclude_none=True
+            # Even though type of enum value is something else, we want to default enums
+            # to use select HTML elements.
+            if enum:
+                element = FORM_ELEMENT_MAPPING["enum"]
+            else:
+                element = FORM_ELEMENT_MAPPING[typ]
+
+            overrides_dict = {}
+            override_config = next(
+                (override for override in overrides if override.id == key),
+                None,
             )
 
-        block = FormBlockRecord(
-            id=key,
-            title=overrides_dict.get("title", title),
-            type=overrides_dict.get("type", typ),
-            enum=overrides_dict.get("enum", enum),
-            default_value=overrides_dict.get("default_value", default),
-            element=overrides_dict.get("element", element),
-            placeholder=overrides_dict.get("placeholder", placeholder),
-            help_text=overrides_dict.get("help_text", None),
-            display_word_count=overrides_dict.get("display_word_count", False),
-            hidden_label=overrides_dict.get("hidden_label", False),
-            col_span=overrides_dict.get("col_span", None),
-        )
+            if override_config:
+                overrides_dict = override_config.dict(
+                    exclude_unset=True, exclude_defaults=True, exclude_none=True
+                )
 
-        blocks.append(block)
+            block = FormBlockRecord(
+                id=key,
+                title=overrides_dict.get("title", title),
+                type=overrides_dict.get("type", typ),
+                enum=overrides_dict.get("enum", enum),
+                parent=parent,
+                default_value=overrides_dict.get("default_value", default),
+                element=overrides_dict.get("element", element),
+                placeholder=overrides_dict.get("placeholder", placeholder),
+                help_text=overrides_dict.get("help_text", None),
+                display_word_count=overrides_dict.get("display_word_count", False),
+                hidden_label=overrides_dict.get("hidden_label", False),
+                col_span=overrides_dict.get("col_span", None),
+            )
+
+            form_blocks.append(block)
+        return form_blocks
+
+    schema_definition = schema_type.schema()
+    blocks = build_form(
+        schema_properties=schema_definition["properties"],
+        schema_definitions=schema_definition.get("definitions", None),
+    )
 
     if overrides:
         # Since we also want to be able to configure fields that does not

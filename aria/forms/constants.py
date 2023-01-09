@@ -8,4 +8,8 @@ FORM_ELEMENT_MAPPING: Final[dict[str, str]] = {
     "boolean": FrontendFormElements.CHECKBOX,
     "enum": FrontendFormElements.SELECT,
     "array": FrontendFormElements.MULTISELECT,
+    "file": FrontendFormElements.FILE,
+    "image": FrontendFormElements.IMAGE,
+    "number": FrontendFormElements.NUMBER_INPUT,
+    "object": FrontendFormElements.NUMBER_INPUT,
 }

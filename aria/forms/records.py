@@ -18,6 +18,7 @@ class FormBlockRecord(BaseModel):
     title: str | None
     type: str | None
     enum: list[FormBlockEnumRecord] | None
+    parent: str | None
     default_value: int | str | bool | None
     element: FrontendFormElements | None
     placeholder: str | None

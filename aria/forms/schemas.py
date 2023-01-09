@@ -12,6 +12,7 @@ class FormBlockOutput(Schema):
     id: str
     title: str
     type: str
+    parent: str | None
     enum: list[FormBlockEnumOutput] | None
     default_value: int | str | bool | None
     element: FrontendFormElements
