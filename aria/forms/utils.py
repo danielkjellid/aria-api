@@ -26,36 +26,6 @@ class TestSchema(Schema):
     property_8: bool = True
 
 
-d = {
-    "title": "TestSchema",
-    "type": "object",
-    "properties": {
-        "id": {"title": "Id", "type": "integer"},
-        "property_1": {"title": "Property 1", "type": "string"},
-        "property_2": {"title": "Property 2", "type": "string"},
-        "property_3": {"title": "Property 3", "default": 1, "type": "integer"},
-        "property_4": {
-            "title": "Property 4",
-            "type": "array",
-            "items": {"type": "integer"},
-        },
-        "property_5": {"$ref": "#/definitions/ProductStatus"},
-        "property_6": {"title": "Property 6", "type": "boolean"},
-        "property_7": {"title": "Property 7", "type": "boolean"},
-        "property_8": {"title": "Property 8", "default": True, "type": "boolean"},
-    },
-    "required": ["id", "property_2", "property_4", "property_5", "property_6"],
-    "definitions": {
-        "ProductStatus": {
-            "title": "ProductStatus",
-            "description": "An enumeration.",
-            "enum": [1, 2, 3, 4],
-            "type": "integer",
-        }
-    },
-}
-
-
 def _is_list(*, type_annotation: type) -> bool:
     return typing.get_origin(type_annotation) is list
 
@@ -97,22 +67,20 @@ class FormConfigSection(pydantic.BaseModel):
     blocks: list[str]
 
 
-class FormConfigOverridesAttrs(pydantic.BaseModel):
+class FormConfigBlockOverrides(pydantic.BaseModel):
+    id: str
+    title: str | None
+    type: str | None
+    enum: typing.Any | None
+    default: str | int | bool | None
     element: FrontendFormElements | None
     placeholder: str | None
 
 
-class FormConfigOverrides(pydantic.BaseModel):
-    identifier: str
-    title: str | None
-    type: str | None
-    enum: typing.Any | None
-    attrs: FormConfigOverridesAttrs | None
-
-
 class FormConfig(pydantic.BaseModel):
+    is_multipart_form: bool = False
     sections: list[FormConfigSection] | None
-    overrides: list[FormConfigOverrides] | None
+    overrides: list[FormConfigBlockOverrides] | None
 
 
 DEFAULT_ELEMENT_MAPPING: typing.Final[dict[str, str]] = {
@@ -124,37 +92,46 @@ DEFAULT_ELEMENT_MAPPING: typing.Final[dict[str, str]] = {
 }
 
 
+class FormBlockEnum(pydantic.BaseModel):
+    name: str
+    value: typing.Any
+
+
+class FormBlock(pydantic.BaseModel):
+    id: str
+    title: str
+    type: str
+    enum: list[FormBlockEnum] | None
+    default: int | str | bool | None
+    element: FrontendFormElements
+    placeholder: str | None
+
+
+class FormSection(pydantic.BaseModel):
+    name: str
+    blocks: list[str]
+
+
 class Form(pydantic.BaseModel):
     key: str
+    is_multipart_form: bool = False
     expects_list: bool = False
     required: list[str]
-    sections: list[FormConfigSection]
-    blocks: dict[str, typing.Any]
+    sections: list[FormSection]
+    blocks: list[FormBlock]
 
 
-def form_create_from_schema(
-    *, schema: Schema, config: FormConfig | None = None
-) -> dict[str, typing.Any] | None:
-    form = {}
-    schema_is_list = False
-
+def _validate_schema(schema: Schema) -> tuple[type | None, bool]:
     if _is_list(type_annotation=schema):
         inner_type, is_list = _get_inner_list_type(type_annotation=schema)
 
         if _is_pydantic_model(type_annotation=inner_type):
             schema_from_type = inner_type
-            schema_is_list = is_list
-        else:
-            logger.info(
-                "Could not generate form from passed schema. "
-                "Schema is not a pydantic subclass.",
-                schema=inner_type,
-                is_list=is_list,
-            )
-            return
+            return schema_from_type, is_list
 
     elif _is_pydantic_model(type_annotation=schema):
         schema_from_type = schema
+        return schema_from_type, False
 
     else:
         logger.info(
@@ -163,129 +140,111 @@ def form_create_from_schema(
             schema=schema,
             is_list=False,
         )
+        return None, False
+
+
+def _format_enum_from_type(typ: type) -> list[FormBlockEnum]:
+    # If passed enum is a django choices field, we can take advantaged
+    # of the defined label.
+    if issubclass(typ, IntegerChoices | TextChoices):
+        formatted_label_values = [
+            FormBlockEnum(name=item.label, value=item.value) for item in typ
+        ]
+    elif issubclass(typ, Enum):
+        formatted_label_values = [
+            FormBlockEnum(name=item.name.replace("_", " ").title(), value=item.value)
+            for item in typ
+        ]
+    else:
+        formatted_label_values = [FormBlockEnum(name=item, value=item) for item in typ]
+
+    return formatted_label_values
+
+
+def form_create_from_schema(
+    *, schema: Schema, config: FormConfig | None = None
+) -> Form | None:
+    schema_type, schema_is_list = _validate_schema(schema=schema)
+
+    if schema_type is None:
         return
 
-    # print(schema.schema())
-
-    schema_definition = schema_from_type.schema()
-    form["key"] = schema_definition["title"]
-    form["expects_list"] = schema_is_list
-    form["required"] = schema_definition["required"]
-    form["sections"] = []
-    form["blocks"] = {}
-
+    schema_definition = schema_type.schema()
+    blocks = []
     definitions = schema_definition.get("definitions", None)
 
     for key, value in schema_definition["properties"].items():
-        block = {"title": "", "type": ""}
-        block_attrs = {}
+        title: str = value.get("title", None)
+        typ: str = value.get("type", None)
+        enum: list[FormBlockEnum] | None = None
+        default: str | int | bool | None = value.get("default", None)
+        placeholder: str | None = None
 
         value_ref = value.get("$ref", None)
 
         if value_ref and definitions:
-            # Get the typename from the reference and find it in the definitions dict.
+            # Get the typename from the reference and find it in the definitions' dict.
             ref = value_ref.rsplit("/", 1)[-1]
             definition = definitions.get(ref)
 
-            # Flatten object and populate needed values.
+            # Replace values with values in the definition.
             title = definition.get("title", None)
+            typ = definition.get("type", "enum")
+            enum_from_definition = definition.get("enum", None)
 
-            if title:
-                block["title"] = title
+            if enum_from_definition:
+                field_type = schema_type.__fields__[key].type_
+                enum = _format_enum_from_type(typ=field_type)
 
-            typ = definition.get("type", None)
-
-            if typ:
-                block["type"] = typ
-
-            # Optional values
-            enum = definition.get("enum", None)
-
-            if enum:
-                field_type = schema_from_type.__fields__[key].type_
-                print(field_type.__class__.__name__)
-                # If passed enum is a django choices field, we can take advantaged
-                # of the defined label.
-
-                print(issubclass(field_type, Enum))
-
-                if issubclass(field_type, IntegerChoices | TextChoices):
-                    mapped_enum_label_values = [
-                        {"name": item.label, "value": item.value} for item in field_type
-                    ]
-                elif issubclass(field_type, Enum):
-                    mapped_enum_label_values = [
-                        {
-                            "name": item.name.replace("_", " ").title(),
-                            "value": item.value,
-                        }
-                        for item in field_type
-                    ]
-                else:
-                    mapped_enum_label_values = [
-                        {"name": item, "value": item} for item in field_type
-                    ]
-
-                block["enum"] = mapped_enum_label_values
+        if enum:
+            element = DEFAULT_ELEMENT_MAPPING["enum"]
         else:
-            block["title"] = value["title"]
-            block["type"] = value["type"]
+            element = DEFAULT_ELEMENT_MAPPING[typ]
 
-        default = value.get("default", None)
-        is_enum = block.get("enum", False)
+        overrides = {}
+        override_config = next(
+            (override for override in config.overrides if override.id == key),
+            None,
+        )
 
-        if is_enum:
-            block_attrs["element"] = DEFAULT_ELEMENT_MAPPING["enum"]
-        else:
-            block_attrs["element"] = DEFAULT_ELEMENT_MAPPING[block["type"]]
+        if override_config:
+            overrides = override_config.dict(
+                exclude_unset=True, exclude_defaults=True, exclude_none=True
+            )
 
-        if default is not None:
-            block["default"] = default
+        block = FormBlock(
+            id=key,
+            title=overrides.get("title", title),
+            type=overrides.get("type", typ),
+            enum=overrides.get("enum", enum),
+            default=overrides.get("default", default),
+            element=overrides.get("element", element),
+            placeholder=overrides.get("placeholder", placeholder),
+        )
 
-        block["attrs"] = block_attrs
-        form_block = {key: block}
+        blocks.append(block)
 
-        form["blocks"].update(form_block)
+    if config.overrides:
+        # Since we also want to be able to configure fields that does not
+        # necessarily exist on the schema, we allow field overrides not matching
+        # any id's to be added as their own individual field. A good example of
+        # this is how multipart/form is defined in Django ninja, where the blob
+        # is passed directly in the request, and not in the schema payload.
+        overrides_non_existent_block = [
+            FormBlock(**override.dict())
+            for override in config.overrides
+            if override.id not in [block.id for block in blocks]
+        ]
 
-    if config is not None:
-        if config.sections:
-            form["sections"] = [section.dict() for section in config.sections]
-        if config.overrides:
-            for override in config.overrides:
-                form_block = form["blocks"].get(override.identifier, None)
-                if form_block is None:
-                    logger.warning(
-                        "Not able to complete override, not element with identifier in blocks.",
-                        identifier=override.identifier,
-                    )
-                override_dict = override.dict()
-                override_dict.pop("identifier")
+        blocks.extend(overrides_non_existent_block)
 
-                for key, value in override_dict.items():
-                    if value:
-                        form_block[key] = value
-
-    # print(form)
-    return form
-
-
-x = {
-    "key": "TestSchema",
-    "expects_list": False,
-    "required": ["id", "property_2", "property_4", "property_5", "property_6"],
-    "blocks": {
-        "id": {"title": "Id", "type": "integer"},
-        "property_1": {"title": "Property 1", "type": "string"},
-        "property_2": {"title": "Property 2", "type": "string"},
-        "property_3": {"title": "Property 3", "type": "integer"},
-        "property_4": {"title": "Property 4", "type": "array"},
-        "property_5": {
-            "title": "ProductStatus",
-            "type": "integer",
-            "enum": [1, 2, 3, 4],
-        },
-        "property_6": {"title": "Property 6", "type": "boolean"},
-        "property_7": {"title": "Property 7", "type": "boolean"},
-        "property_8": {"title": "Property 8", "type": "boolean"},
-    },
-}
+    return Form(
+        key=schema_definition["title"],
+        expects_list=schema_is_list,
+        required=schema_definition["required"],
+        sections=[
+            FormSection(name=section.name, blocks=section.blocks)
+            for section in config.sections
+        ],
+        blocks=blocks,
+    )

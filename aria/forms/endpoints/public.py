@@ -6,8 +6,7 @@ from ninja import Router, Schema
 
 from aria.forms.utils import (
     FormConfig,
-    FormConfigOverrides,
-    FormConfigOverridesAttrs,
+    FormConfigBlockOverrides,
     FormConfigSection,
     FrontendFormElements,
     form_create_from_schema,
@@ -32,7 +31,7 @@ class TestSchema(Schema):
     property_7: bool | None
     property_8: bool = True
     property_9: list[str]
-    property_10: FrontendFormElements
+    # property_10: FrontendFormElements
 
 
 class FormOutput(Schema):
@@ -59,12 +58,18 @@ def form_test_api(request: HttpRequest) -> FormOutput:
                 ),
             ],
             overrides=[
-                FormConfigOverrides(
-                    identifier="property_1",
+                FormConfigBlockOverrides(
+                    id="property_1",
                     type="something",
-                    attrs=FormConfigOverridesAttrs(
-                        element=FrontendFormElements.CHECKBOX, placeholder="Test"
-                    ),
+                    element=FrontendFormElements.CHECKBOX,
+                    placeholder="Test",
+                ),
+                FormConfigBlockOverrides(
+                    id="property_99",
+                    title="Yooo",
+                    type="something",
+                    element=FrontendFormElements.CHECKBOX,
+                    placeholder="Test",
                 ),
             ],
         ),
