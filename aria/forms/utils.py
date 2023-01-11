@@ -8,6 +8,7 @@ from django.db.models import IntegerChoices, TextChoices
 import structlog
 from ninja import Schema
 
+from aria.core.humps import camelize
 from aria.forms.constants import FORM_ELEMENT_MAPPING
 from aria.forms.helpers import get_inner_list_type, is_list, is_pydantic_model
 from aria.forms.records import (
@@ -176,83 +177,17 @@ def _extract_property_values(value: Any) -> dict[str, Any]:
             continue
 
         property_values[key] = value_to_append
-
-    all_of = value.get("allOf", None)
-
-    if all_of:
-        property_values["all_of"] = all_of
-
     return property_values
 
 
-def _build_form_blocks2(
-    schema_type_annotation: Schema,
-    schema_properties: T_JSON_SCHEMA_PROPERTIES,
-    schema_definitions: T_JSON_SCHEMA_DEFINITIONS | None,
-    parent: str | None,
-):
-
-    form_blocks = []
-    definitions = schema_definitions if schema_definitions else {}
-
-    for key, value in schema_properties.items():
-        property_values = _extract_property_values(value=value)
-        property_all_of: list[dict[str, str]] = property_values.pop("all_of", None)
-
-        if parent:
-            property_values["parent"] = parent
-
-        if property_all_of and definitions:
-            for reference in property_all_of:
-                for ref_key, ref_val in reference.items():
-                    definitions_key = ref_val.rsplit("/", 1)[-1]
-                    definition = definitions.get(definitions_key, None)
-
-                    if not definition:
-                        continue
-
-                    default = definition.get(
-                        "default", property_values.get("default", None)
-                    )
-                    enum = definition.get("enum", None)
-                    properties = definition.get("properties")
-
-                    if default:
-                        property_values["default"] = default
-
-                    if enum:
-                        field_type = schema_type_annotation.__fields__[key].type_
-                        property_values["enum"] = _format_enum_from_type(typ=field_type)
-
-                    if properties:
-                        properties_form_blocks = _build_form_blocks2(
-                            schema_type_annotation=schema_type_annotation,
-                            schema_properties=property_all_of,
-                            schema_definitions=None,
-                            parent=key,
-                        )
-                        form_blocks.extend(properties_form_blocks)
-                        continue
-        print(property_values)
-        if property_values.get("enum", None):
-            property_values["element"] = FORM_ELEMENT_MAPPING["enum"]
-        else:
-            property_values["element"] = FORM_ELEMENT_MAPPING[
-                property_values.get("type", "text")
-            ]
-
-        block = FormBlockRecord(id=key, **property_values)
-
-        form_blocks.append(block)
-    print(form_blocks)
-    return form_blocks
+class SkipParentFormBlockCreationException(Exception):
+    pass
 
 
 def _build_form_blocks(
     schema_type_annotation: Schema,
-    schema_properties: dict[str, Any],
-    schema_definitions: dict[str, Any] | None,
-    overrides: list[FormBlockRecord],
+    schema_properties: T_JSON_SCHEMA_PROPERTIES,
+    schema_definitions: T_JSON_SCHEMA_DEFINITIONS | None,
     parent: str | None = None,
 ) -> list[FormBlockRecord]:
     """
@@ -260,93 +195,63 @@ def _build_form_blocks(
     """
 
     form_blocks = []
+    definitions = schema_definitions if schema_definitions else {}
 
     for key, value in schema_properties.items():
-        title: str = value.get("title", None)
-        typ: str = value.get("type", None)
-        enum: list[FormBlockEnumRecord] | None = None
-        default: str | int | bool | None = value.get("default", None)
-        placeholder: str | None = None
+        camelized_key = camelize(key)
+        property_values = _extract_property_values(value)
+        property_all_of_list = value.get("allOf", [])
+        property_value_ref = value.get("$ref", None)
 
-        value_ref = value.get("$ref", None)
-        value_all_of_ref = value.get("allOf", [{}])[0].get("$ref", None)
+        if parent:
+            property_values["parent"] = parent
 
-        if value_ref:
-            ref = value_ref
-        elif value_all_of_ref:
-            ref = value_all_of_ref
-        else:
-            ref = None
+        # If we find any reference values we want to add them to a list to later
+        # iterate over them and add their definitions as form blocks.
+        if property_value_ref:
+            property_all_of_list.append(value)
 
-        if ref and schema_definitions:
-            # Get the typename from the reference and find it in the definitions' dict.
-            ref_from_value = ref.rsplit("/", 1)[-1]
-            definition = schema_definitions.get(ref_from_value)
+        if property_all_of_list and definitions:
+            try:
+                for reference in property_all_of_list:
+                    # Get the typename from the reference and find it in the
+                    # definitions' dict.
+                    definition_key = reference.get("$ref", "").rsplit("/", 1)[-1]
+                    definition = definitions.get(definition_key, None)
 
-            # Replace values with values in the definition.
-            typ = definition.get("type", "enum")
-            default = definition.get("default", default)
-            enum_from_definition = definition.get("enum", None)
-            properties = definition.get("properties", None)
+                    if not definition:
+                        break
 
-            if enum_from_definition:
-                field_type = schema_type_annotation.__fields__[key].type_
-                enum = _format_enum_from_type(typ=field_type)
+                    # Replace values with values in the definition.
+                    property_values["title"] = camelized_key
+                    property_values["type"] = definition.get("type", None)
+                    definition_enum = definition.get("enum", None)
+                    definition_properties = definition.get("properties", None)
 
-            # If the schema references another schema, that definition will have
-            # a dict of its own properties. We want to flatten the form, and add
-            # these values, and remove the reference property.
-            if properties:
-                property_blocks = _build_form_blocks(
-                    schema_type_annotation=schema_type_annotation,
-                    schema_properties=properties,
-                    schema_definitions=None,
-                    overrides=overrides,
-                    parent=key,
-                )
-                form_blocks.extend(property_blocks)
-                # Do not include reference object, so continue to the next
-                # iteration.
+                    if definition_enum:
+                        field_type = schema_type_annotation.__fields__[key].type_
+                        property_values["type"] = "enum"
+                        property_values["enum"] = _format_enum_from_type(typ=field_type)
+
+                    # If the schema references another schema, that definition will have
+                    # a dict of its own properties. We want to flatten the form, and add
+                    # these values, and remove the reference property.
+                    if definition_properties:
+                        properties_form_blocks = _build_form_blocks(
+                            schema_type_annotation=schema_type_annotation,
+                            schema_properties=definition_properties,
+                            schema_definitions=None,
+                            parent=camelized_key,
+                        )
+                        form_blocks.extend(properties_form_blocks)
+                        # Do not include reference object, so continue to the next
+                        # iteration.
+                        raise SkipParentFormBlockCreationException
+            except SkipParentFormBlockCreationException:
                 continue
 
-        # Even though type of enum value is something else, we want to default enums
-        # to use select HTML elements.
-        if enum:
-            element = FORM_ELEMENT_MAPPING["enum"]
-        else:
-            element = FORM_ELEMENT_MAPPING[typ]
-
-        overrides_dict = {}
-        override_config = next(
-            (override for override in overrides if override.id == key),
-            None,
-        )
-
-        if override_config:
-            overrides_dict = override_config.dict(
-                exclude_unset=True, exclude_defaults=True, exclude_none=True
-            )
-
-        block = FormBlockRecord(
-            id=key,
-            title=overrides_dict.get("title", title),
-            type=overrides_dict.get("type", typ),
-            enum=overrides_dict.get("enum", enum),
-            parent=parent,
-            default_value=overrides_dict.get("default_value", default),
-            element=overrides_dict.get("element", element),
-            placeholder=overrides_dict.get("placeholder", placeholder),
-            help_text=overrides_dict.get("help_text", None),
-            display_word_count=overrides_dict.get("display_word_count", False),
-            hidden_label=overrides_dict.get("hidden_label", False),
-            col_span=overrides_dict.get("col_span", None),
-            allow_set_primary_image=overrides_dict.get(
-                "allow_set_primary_image", False
-            ),
-            allow_set_filter_image=overrides_dict.get("allow_set_filter_image", False),
-        )
-
-        form_blocks.append(block)
+        property_values["element"] = FORM_ELEMENT_MAPPING[property_values["type"]]
+        form_blocks.append(FormBlockRecord(id=camelized_key, **property_values))
 
     return form_blocks
 
@@ -355,16 +260,13 @@ def form_create_from_schema(
     *,
     schema: Schema,
     is_multipart_form: bool = False,
-    overrides: list[FormBlockRecord] | None = None,
     sections: list[FormSectionRecord] | None = None,
 ) -> FormRecord | None:
     """
     Create a JSON form based on a defined schema.
     """
 
-    overrides = overrides if overrides is not None else []
     sections = sections if sections is not None else []
-
     schema_type, schema_is_list = _validate_schema(schema=schema)
 
     if schema_type is None:
@@ -376,25 +278,11 @@ def form_create_from_schema(
         schema_type_annotation=schema_type,
         schema_properties=schema_definition["properties"],
         schema_definitions=schema_definition.get("definitions", None),
-        overrides=overrides,
         parent=None,
     )
 
-    if overrides:
-        # Since we also want to be able to configure fields that does not
-        # necessarily exist on the schema, we allow field overrides not matching
-        # any id's to be added as their own individual field. A good example of
-        # this is how multipart/form is defined in Django ninja, where the blob
-        # is passed directly in the request, and not in the schema payload.
-        overrides_non_existent_block = [
-            FormBlockRecord(**override.dict())
-            for override in overrides
-            if override.id not in [block.id for block in blocks]
-        ]
-
-        blocks.extend(overrides_non_existent_block)
-
-    required = schema_definition.get("required", [])
+    schema_required = schema_definition.get("required", [])
+    required = [camelize(key) for key in schema_required]
     blocks_with_defaults = [
         block.id for block in blocks if block.default_value is not None
     ]

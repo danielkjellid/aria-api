@@ -22,13 +22,13 @@ class FormBlockRecord(BaseModel):
     parent: str | None
     default_value: StrictInt | StrictStr | StrictBool | None
     element: FrontendFormElements | None
-    placeholder: str | None
-    help_text: str | None
-    display_word_count: bool | None
-    hidden_label: bool | None
-    col_span: int | None
-    allow_set_primary_image: bool | None
-    allow_set_filter_image: bool | None
+    placeholder: str | None = None
+    help_text: str | None = None
+    display_word_count: bool | None = False
+    hidden_label: bool | None = False
+    col_span: int | None = None
+    allow_set_primary_image: bool | None = False
+    allow_set_filter_image: bool | None = False
 
 
 class FormRecord(BaseModel):
