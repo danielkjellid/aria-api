@@ -1,7 +1,13 @@
+import decimal
+
 from django.http import HttpRequest
 
-from ninja import Router, UploadedFile
+import ninja
+from ninja import Field, Router
 
+from aria.api.fields import CustomField
+from aria.files.types import UploadedFile, UploadedImageFile
+from aria.forms.enums import FrontendFormElements
 from aria.forms.schemas import FormOutput
 from aria.forms.utils import form_create_from_schema
 from aria.products.endpoints.internal import (
@@ -16,6 +22,20 @@ class ProductFileCreateFormOutput(ProductFileCreateInternalInput):
     file: UploadedFile
 
 
+class Test(ninja.Schema):
+    test: str | None = CustomField(
+        "Test",
+        alias="test_1",
+        title="test",
+        description="This is a test desc",
+        min_length=4,
+        repr="Test",
+    )
+    apply_filter: bool = False
+    image: UploadedImageFile
+    file: UploadedFile
+
+
 @router.get("products/files/create/", response={200: FormOutput})
 def form_product_file_create_internal_api(
     request: HttpRequest,
@@ -24,7 +44,7 @@ def form_product_file_create_internal_api(
     Get the form for creating a product file instance.
     """
 
-    form = form_create_from_schema(schema=ProductFileCreateFormOutput)
+    form = form_create_from_schema(schema=Test)
 
     return 200, form
 
@@ -34,7 +54,7 @@ def form_product_option_bulk_create_internal_api(
     request: HttpRequest,
 ) -> tuple[int, FormOutput]:
 
-    form = form_create_from_schema(schema=ProductOptionCreateInBulkInternalInput)
+    form = form_create_from_schema(schema=list[ProductOptionCreateInBulkInternalInput])
 
     return 200, form
 
@@ -43,12 +63,16 @@ d = {
     "title": "ProductOptionCreateInBulkInternalInput",
     "type": "object",
     "properties": {
-        "status": {"$ref": "#/definitions/ProductStatus"},
-        "gross_price": {"title": "Gross Price", "type": "number"},
-        "variant_id": {"title": "Variant Id", "type": "integer"},
+        "status": {
+            "title": "Status",
+            "default": 3,
+            "allOf": [{"$ref": "#/definitions/ProductStatus"}],
+        },
+        "gross_price": {"title": "Pris", "type": "number"},
+        "variant_id": {"title": "Variant", "type": "integer"},
         "size": {"$ref": "#/definitions/ProductOptionCreateInBulkSizeInternalInput"},
     },
-    "required": ["status", "gross_price"],
+    "required": ["gross_price"],
     "definitions": {
         "ProductStatus": {
             "title": "ProductStatus",
@@ -60,10 +84,14 @@ d = {
             "title": "ProductOptionCreateInBulkSizeInternalInput",
             "type": "object",
             "properties": {
-                "width": {"title": "Width", "type": "number"},
-                "height": {"title": "Height", "type": "number"},
-                "depth": {"title": "Depth", "type": "number"},
-                "circumference": {"title": "Circumference", "type": "number"},
+                "width": {"title": "Bredde i cm", "type": "number"},
+                "height": {"title": "Høyde i cm", "type": "number"},
+                "depth": {"title": "Dybde i cm", "type": "number"},
+                "circumference": {
+                    "title": "Omkrets i cm",
+                    "description": "Omkrets kan brukes dersom alternativet har en sfærisk formn. Feltet kan ikke benyttes når de andre størrelsesfeltene er fylt ut.",
+                    "type": "number",
+                },
             },
         },
     },

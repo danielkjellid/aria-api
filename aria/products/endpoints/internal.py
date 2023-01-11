@@ -1,7 +1,8 @@
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext as _
 
-from ninja import File, Form, Query, Router, Schema, UploadedFile
+from ninja import Field, File, Form, Query, Router, Schema, UploadedFile
 
 from aria.api.decorators import paginate
 from aria.api.responses import codes_40x
@@ -297,16 +298,23 @@ def product_option_create_internal_api(
 
 
 class ProductOptionCreateInBulkSizeInternalInput(Schema):
-    width: float | None = None
-    height: float | None = None
-    depth: float | None = None
-    circumference: float | None = None
+    width: float | None = Field(None, title=_("Width in cm"))
+    height: float | None = Field(None, title=_("Height in cm"))
+    depth: float | None = Field(None, title=_("Depth in cm"))
+    circumference: float | None = Field(
+        None,
+        title=_("Circumference in cm"),
+        description=_(
+            "Circumference can be used if the option has a spherical shape. "
+            "The field cannot be used when the other size fields is filled out."
+        ),
+    )
 
 
 class ProductOptionCreateInBulkInternalInput(Schema):
-    status: ProductStatus
-    gross_price: float
-    variant_id: int | None = None
+    status: ProductStatus = Field(3, title=_("Status"))
+    gross_price: float = Field(..., title=_("Price"))
+    variant_id: int | None = Field(None, title=_("Variant"))
     size: ProductOptionCreateInBulkSizeInternalInput | None = None
 
 

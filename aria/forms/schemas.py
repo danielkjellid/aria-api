@@ -1,4 +1,5 @@
 from ninja import Schema
+from pydantic import StrictBool, StrictInt, StrictStr
 
 from aria.forms.enums import FrontendFormElements
 
@@ -14,18 +15,21 @@ class FormBlockOutput(Schema):
     type: str
     parent: str | None
     enum: list[FormBlockEnumOutput] | None
-    default_value: int | str | bool | None
+    default_value: StrictInt | StrictStr | StrictBool | None
     element: FrontendFormElements
     placeholder: str | None
     help_text: str | None
     display_word_count: bool
     hidden_label: bool
     col_span: int | None
+    allow_set_primary_image: bool
+    allow_set_filter_image: bool
 
 
 class FormSectionOutput(Schema):
     name: str
     blocks: list[str]
+    columns: int | None
 
 
 class FormOutput(Schema):

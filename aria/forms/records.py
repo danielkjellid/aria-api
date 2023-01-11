@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, StrictBool, StrictInt, StrictStr
 
 from aria.forms.enums import FrontendFormElements
 
@@ -6,6 +6,7 @@ from aria.forms.enums import FrontendFormElements
 class FormSectionRecord(BaseModel):
     name: str
     blocks: list[str]
+    columns: int | None
 
 
 class FormBlockEnumRecord(BaseModel):
@@ -19,13 +20,15 @@ class FormBlockRecord(BaseModel):
     type: str | None
     enum: list[FormBlockEnumRecord] | None
     parent: str | None
-    default_value: int | str | bool | None
+    default_value: StrictInt | StrictStr | StrictBool | None
     element: FrontendFormElements | None
     placeholder: str | None
     help_text: str | None
     display_word_count: bool | None
     hidden_label: bool | None
     col_span: int | None
+    allow_set_primary_image: bool | None
+    allow_set_filter_image: bool | None
 
 
 class FormRecord(BaseModel):
