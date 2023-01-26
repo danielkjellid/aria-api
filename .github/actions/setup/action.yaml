@@ -20,7 +20,7 @@ runs:
   - name: Install poetry
     id: install-poetry
     shell: bash
-    run: pip install poetry==1.2.0
+    run: pip install poetry==1.3.2
 
   - name: Cache python venv
     id: cache-python-venv
