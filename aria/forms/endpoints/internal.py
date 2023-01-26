@@ -5,9 +5,9 @@ from django.http import HttpRequest
 import ninja
 from ninja import Field, Router
 
-from aria.api.fields import CustomField
+from aria.api.fields import FormField
 from aria.files.types import UploadedFile, UploadedImageFile
-from aria.forms.enums import FrontendFormElements
+from aria.forms.records import FormSectionRecord
 from aria.forms.schemas import FormOutput
 from aria.forms.utils import form_create_from_schema
 from aria.products.endpoints.internal import (
@@ -23,7 +23,7 @@ class ProductFileCreateFormOutput(ProductFileCreateInternalInput):
 
 
 class Test(ninja.Schema):
-    test: str | None = CustomField(
+    test: str | None = FormField(
         "Test",
         alias="test_1",
         title="test",
@@ -54,7 +54,18 @@ def form_product_option_bulk_create_internal_api(
     request: HttpRequest,
 ) -> tuple[int, FormOutput]:
 
-    form = form_create_from_schema(schema=list[ProductOptionCreateInBulkInternalInput])
+    form = form_create_from_schema(
+        schema=list[ProductOptionCreateInBulkInternalInput],
+        sections=[
+            FormSectionRecord(name="Generelt", blocks=["status", "grossPrice"]),
+            FormSectionRecord(
+                name="Størrelse",
+                blocks=["width", "height", "depth", "circumference"],
+                columns=3,
+            ),
+            FormSectionRecord(name="Variant", blocks=["variantId"]),
+        ],
+    )
 
     return 200, form
 

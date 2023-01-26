@@ -30,6 +30,7 @@ class FormSectionOutput(Schema):
     name: str
     blocks: list[str]
     columns: int | None
+    plain: bool | None
 
 
 class FormOutput(Schema):

@@ -6,7 +6,8 @@ from aria.forms.enums import FrontendFormElements
 class FormSectionRecord(BaseModel):
     name: str
     blocks: list[str]
-    columns: int | None
+    columns: int | None = None
+    plain: bool | None = False
 
 
 class FormBlockEnumRecord(BaseModel):

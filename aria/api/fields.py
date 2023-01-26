@@ -10,7 +10,7 @@ from aria.forms.enums import FrontendFormElements
 Undefined = UndefinedType()
 
 
-def CustomField(
+def FormField(
     default: Any = Undefined,
     *,
     default_factory: Optional["NoArgAnyCallable"] = None,
@@ -37,6 +37,7 @@ def CustomField(
     regex: str = None,
     discriminator: str = None,
     repr: bool = True,
+    help_text: str | None = None,
     element: FrontendFormElements = None,
     placeholder: str = None,
     display_word_count: bool = False,
@@ -73,6 +74,7 @@ def CustomField(
         regex=regex,
         discriminator=discriminator,
         repr=repr,
+        help_text=help_text,
         element=element,
         placeholder=placeholder,
         display_word_count=display_word_count,

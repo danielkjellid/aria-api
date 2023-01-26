@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, TypedDict, TypeVar
+from typing import Any, Final, TypedDict, TypeVar
 
 from django.db.models import IntegerChoices, TextChoices
 
@@ -135,7 +135,7 @@ T_JSON_SCHEMA_DEFINITIONS = TypeVar(
 
 
 # The supported property keys should match the fields defined in FormBlockRecord.
-SUPPORTED_PROPERTY_KEYS = [
+SUPPORTED_PROPERTY_KEYS: Final[list[str]] = [
     "title",
     "type",
     "default_value",
@@ -146,6 +146,7 @@ SUPPORTED_PROPERTY_KEYS = [
     "display_word_count",
     "hidden_label",
     "col_span",
+    "element",
     "allow_set_primary_image",
     "allow_set_filter_image",
 ]
@@ -223,7 +224,7 @@ def _build_form_blocks(
                         break
 
                     # Replace values with values in the definition.
-                    property_values["title"] = camelized_key
+                    property_values["title"] = camelized_key.title()
                     property_values["type"] = definition.get("type", None)
                     definition_enum = definition.get("enum", None)
                     definition_properties = definition.get("properties", None)
@@ -250,7 +251,9 @@ def _build_form_blocks(
             except SkipParentFormBlockCreationException:
                 continue
 
-        property_values["element"] = FORM_ELEMENT_MAPPING[property_values["type"]]
+        if not property_values.get("element", None):
+            property_values["element"] = FORM_ELEMENT_MAPPING[property_values["type"]]
+
         form_blocks.append(FormBlockRecord(id=camelized_key, **property_values))
 
     return form_blocks
@@ -296,9 +299,6 @@ def form_create_from_schema(
         is_multipart_form=is_multipart_form,
         expects_list=schema_is_list,
         required=required,
-        sections=[
-            FormSectionRecord(name=section.name, blocks=section.blocks)
-            for section in sections
-        ],
+        sections=sections,
         blocks=blocks,
     )
