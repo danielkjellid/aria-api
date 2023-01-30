@@ -698,14 +698,14 @@ hiredis = ["redis[hiredis] (>=3,!=4.0.0,!=4.0.1)"]
 
 [[package]]
 name = "django-s3-storage"
-version = "0.13.10"
+version = "0.13.11"
 description = "Django Amazon S3 file storage."
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "django-s3-storage-0.13.10.tar.gz", hash = "sha256:489cf88e9e9b0051d39b0b025153460bce01ba7d995311507b95ea291445525b"},
-    {file = "django_s3_storage-0.13.10-py3-none-any.whl", hash = "sha256:45c162cfddcd88630a9a88cb88200501b462c1c98b1b404227b8e8547488c888"},
+    {file = "django-s3-storage-0.13.11.tar.gz", hash = "sha256:89dfc2245324cafc4bc9af85de2fdddb279612a7e1ba3ac8821b8d42b9704eb3"},
+    {file = "django_s3_storage-0.13.11-py3-none-any.whl", hash = "sha256:712a9953f5f683ed305be9c3c83f0e00dec2d98828d19907dd21fea8ac4914cb"},
 ]
 
 [package.dependencies]
@@ -2393,4 +2393,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "5dec42a34a41026e23fb42a8ce19c1ba9a92c56ff9182de9f528d3f2bc45b8fc"
+content-hash = "cfda7717a8f94b5d13ad48b39c2d65920c5f95458dea0c1c6c2a611c96bd8a0e"
