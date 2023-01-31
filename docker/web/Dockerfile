@@ -1,4 +1,4 @@
-FROM python:3.10.2
+FROM python:3.10.9
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH /app/
@@ -24,7 +24,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip
-RUN pip install --no-cache poetry==1.2.0
+RUN pip install --no-cache poetry==1.3.2
 
 # Set app user and working directory
 USER aria
