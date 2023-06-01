@@ -439,18 +439,17 @@ toml = ["tomli"]
 
 [[package]]
 name = "dacite"
-version = "1.6.0"
+version = "1.8.1"
 description = "Simple creation of data classes from dictionaries."
 category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "dacite-1.6.0-py3-none-any.whl", hash = "sha256:4331535f7aabb505c732fa4c3c094313fc0a1d5ea19907bf4726a7819a68b93f"},
-    {file = "dacite-1.6.0.tar.gz", hash = "sha256:d48125ed0a0352d3de9f493bf980038088f45f3f9d7498f090b50a847daaa6df"},
+    {file = "dacite-1.8.1-py3-none-any.whl", hash = "sha256:cc31ad6fdea1f49962ea42db9421772afe01ac5442380d9a99fcf3d188c61afe"},
 ]
 
 [package.extras]
-dev = ["black", "coveralls", "mypy", "pylint", "pytest (>=5)", "pytest-cov"]
+dev = ["black", "coveralls", "mypy", "pre-commit", "pylint", "pytest (>=5)", "pytest-benchmark", "pytest-cov"]
 
 [[package]]
 name = "decorator"
@@ -2443,4 +2442,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "95ad130fa52d54a83228c6f03c0b93187fc49336a5c7478d66927260384cc80e"
+content-hash = "93b7f073e4bb4d0c38bc6ef77a29b271c7a9cad24a15b7824ae8595ad211818f"

@@ -39,7 +39,7 @@ django-ninja = "0.20.0"
 orjson = "3.8.1"
 django-countries = "7.4.2"
 django-redis = "5.2.0"
-dacite = "1.6.0"
+dacite = "1.8.1"
 hiredis = "2.1.1"
 celery = "5.2.7"
 
