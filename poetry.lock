@@ -481,19 +481,19 @@ graph = ["objgraph (>=1.7.2)"]
 
 [[package]]
 name = "django"
-version = "4.1.6"
+version = "4.2.1"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "Django-4.1.6-py3-none-any.whl", hash = "sha256:c6fe7ebe7c017fe59f1029821dae0acb5a2ddcd6c9a0138fd20a8bfefac914bc"},
-    {file = "Django-4.1.6.tar.gz", hash = "sha256:bceb0fe1a386781af0788cae4108622756cd05e7775448deec04a71ddf87685d"},
+    {file = "Django-4.2.1-py3-none-any.whl", hash = "sha256:066b6debb5ac335458d2a713ed995570536c8b59a580005acb0732378d5eb1ee"},
+    {file = "Django-4.2.1.tar.gz", hash = "sha256:7efa6b1f781a6119a10ac94b4794ded90db8accbe7802281cd26f8664ffed59c"},
 ]
 
 [package.dependencies]
-asgiref = ">=3.5.2,<4"
-sqlparse = ">=0.2.2"
+asgiref = ">=3.6.0,<4"
+sqlparse = ">=0.3.1"
 tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
 [package.extras]
@@ -2443,4 +2443,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "95ad130fa52d54a83228c6f03c0b93187fc49336a5c7478d66927260384cc80e"
+content-hash = "cf3aa94530384bb75c4723fe477d7ca54eb82945a7fb778ce1f5a70216d5abce"
