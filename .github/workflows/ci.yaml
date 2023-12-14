@@ -34,7 +34,7 @@ jobs:
 
   python-tests:
     name: python tests
-    uses: danielkjellid/github-actions/.github/workflows/python.yaml@python-tests
+    uses: danielkjellid/github-actions/.github/workflows/python.yaml@local-actions
     with:
       cmd: poetry run pytest
       postgres-db: aria
