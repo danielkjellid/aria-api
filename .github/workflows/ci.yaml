@@ -16,7 +16,6 @@ jobs:
     uses: danielkjellid/github-actions/.github/workflows/python.yaml@local-actions
     with:
       cmd: poetry run mypy aria
-      use-redis: true
 
   flake8:
     uses: danielkjellid/github-actions/.github/workflows/python.yaml@local-actions
@@ -32,7 +31,6 @@ jobs:
     uses: danielkjellid/github-actions/.github/workflows/python.yaml@local-actions
     with:
       cmd: poetry run pylint aria  --output-format=parseable --reports=no
-      use-redis: true
 
   python-tests:
     name: python tests
