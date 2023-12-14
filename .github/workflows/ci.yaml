@@ -32,7 +32,7 @@ jobs:
     with:
       cmd: poetry run pylint aria  --output-format=parseable --reports=no
 
-  python-tests:
+  python-tests: #
     name: python tests
     uses: danielkjellid/github-actions/.github/workflows/python.yaml@local-actions
     with:
