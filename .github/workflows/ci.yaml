@@ -7,78 +7,43 @@ env:
 
 
 jobs:
-  python-lint:
-    runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: "black"
-            check: black aria --check --config=pyproject.toml
-          - name: "mypy"
-            check: mypy aria
-          - name: "flake8"
-            check: flake8 aria
-          - name: "isort"
-            check: isort -c aria --check-only --diff
-          - name: "pylint"
-            check: pylint aria  --output-format=parseable --reports=no
-    name: ${{ matrix.name }}
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v3
-      - name: Setup project
-        uses: ./.github/actions/setup
-      - name: Run ${{ matrix.name }}
-        run:  poetry run ${{ matrix.check }}
+  black:
+    uses: danielkjellid/github-actions/.github/workflows/python.yaml@local-actions
+    with:
+      cmd: poetry run black aria --check --config=pyproject.toml
+
+  mypy:
+    uses: danielkjellid/github-actions/.github/workflows/python.yaml@local-actions
+    with:
+      cmd: poetry run mypy aria
+
+  flake8:
+    uses: danielkjellid/github-actions/.github/workflows/python.yaml@local-actions
+    with:
+      cmd: poetry run flake8 aria
+
+  isort:
+    uses: danielkjellid/github-actions/.github/workflows/python.yaml@local-actions
+    with:
+      cmd: poetry run isort -c aria --check-only --diff
+
+  pylint:
+    uses: danielkjellid/github-actions/.github/workflows/python.yaml@local-actions
+    with:
+      cmd: poetry run pylint aria  --output-format=parseable --reports=no
 
   python-tests:
-    name: tests
-    runs-on: ubuntu-20.04
-    services:
-      minio:
-        image: bitnami/minio:latest
-        env:
-          # Make sure these variables is the same as the defaults in settings.py
-          MINIO_ROOT_USER: aria # AWS_ACCESS_KEY_ID
-          MINIO_ROOT_PASSWORD: ariatestpassword # AWS_SECRET_ACCESS_KEY
-          MINIO_DEFAULT_BUCKETS: dev:download # AWS_S3_BUCKET_NAME
-          CONSOLE_SECURE_TLS_REDIRECT: off
-        ports:
-          - '9000:9000'
-          - '9001:9001'
-        volumes:
-         -  'minio_data:/data'
-      postgres:
-        image: postgres:14
-        ports:
-          - 5432/tcp
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-        env:
-          POSTGRES_DB: aria
-          POSTGRES_USER: aria
-          POSTGRES_PASSWORD: aria
-      redis:
-        image: redis
-        ports:
-          - 6379:6379
-        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v3
-      - name: Setup project
-        uses: ./.github/actions/setup
-      - name: Run tests
-        run: poetry run pytest
-        env:
-          DATABASE_URL: postgresql://aria:aria@localhost:${{ job.services.postgres.ports[5432] }}/aria
-          # PostgreSQL's configuration, used by psql
-          PGHOST: localhost
-          PGUSER: aria
-          PGPASSWORD: aria
-          PGDATABASE: aria
-          PGPORT: ${{ job.services.postgres.ports[5432] }}
-          CACHE_URL: redis://localhost:6379/
+    name: python tests
+    uses: danielkjellid/github-actions/.github/workflows/python.yaml@python-tests
+    with:
+      cmd: poetry run pytest
+      postgres-db: aria
+      postgres-user: aria
+      postgres-password: aria
+      minio-bucket: dev:download        # AWS_S3_BUCKET_NAME
+      minio-user: aria                  # AWS_ACCESS_KEY_ID
+      minio-password: ariatestpassword  # AWS_SECRET_ACCESS_KEY
+      use-redis: true
 
   python-missing-init:
     name: missing __init__.py files
@@ -95,7 +60,11 @@ jobs:
     # Gather job which deploy workflow can wait on.
     name: CI done
     needs:
-    - python-lint
+    - black
+    - mypy
+    - flake8
+    - isort
+    - pylint
     - python-tests
     - python-missing-init
     runs-on: ubuntu-20.04
