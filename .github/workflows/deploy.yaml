@@ -7,21 +7,8 @@ on:
 
 jobs:
   deploy:
-    name: Deploy
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Wait on CI
-        uses: lewagon/wait-on-check-action@v1.2.0
-        with:
-          ref: ${{ github.ref }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-          running-workflow-name: "Deploy"
-          check-regexp: "(CI done|tests)"
-          allowed-conclusions: success
-      - name: Deploy to staging
-        env:
-          RENDER_DEPLOY_ENDPOINT: ${{ secrets.RENDER_DEPLOY_ENDPOINT }}
-        run: |
-          curl -X POST -d {} $RENDER_DEPLOY_ENDPOINT
+    uses: danielkjellid/github-actions/.github/workflows/deploy-render.yaml@local-actions
+    with:
+      environment: staging
+    secrets:
+      deployEndpoint: ${{ secrets.RENDER_DEPLOY_ENDPOINT }}
