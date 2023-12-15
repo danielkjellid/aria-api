@@ -8,33 +8,33 @@ env:
 
 jobs:
   black:
-    uses: danielkjellid/github-actions/.github/workflows/python.yaml@local-actions
+    uses: danielkjellid/github-actions/.github/workflows/python.yaml@main
     with:
       cmd: poetry run black aria --check --config=pyproject.toml
 
   mypy:
-    uses: danielkjellid/github-actions/.github/workflows/python.yaml@local-actions
+    uses: danielkjellid/github-actions/.github/workflows/python.yaml@main
     with:
       cmd: poetry run mypy aria
 
   flake8:
-    uses: danielkjellid/github-actions/.github/workflows/python.yaml@local-actions
+    uses: danielkjellid/github-actions/.github/workflows/python.yaml@main
     with:
       cmd: poetry run flake8 aria
 
   isort:
-    uses: danielkjellid/github-actions/.github/workflows/python.yaml@local-actions
+    uses: danielkjellid/github-actions/.github/workflows/python.yaml@main
     with:
       cmd: poetry run isort -c aria --check-only --diff
 
   pylint:
-    uses: danielkjellid/github-actions/.github/workflows/python.yaml@local-actions
+    uses: danielkjellid/github-actions/.github/workflows/python.yaml@main
     with:
       cmd: poetry run pylint aria  --output-format=parseable --reports=no
 
   python-tests: #
     name: python tests
-    uses: danielkjellid/github-actions/.github/workflows/python.yaml@local-actions
+    uses: danielkjellid/github-actions/.github/workflows/python.yaml@main
     with:
       cmd: poetry run pytest
       postgres-db: aria
