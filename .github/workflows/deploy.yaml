@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    uses: danielkjellid/github-actions/.github/workflows/deploy-render.yaml@main
+    uses: danielkjellid/github-actions/.github/workflows/deploy-render.yaml@dependabot-automerge-action
     with:
       environment: staging
     secrets:
