@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    uses: danielkjellid/github-actions/.github/workflows/deploy-render.yaml@local-actions
+    uses: danielkjellid/github-actions/.github/workflows/deploy-render.yaml@main
     with:
       environment: staging
     secrets:
