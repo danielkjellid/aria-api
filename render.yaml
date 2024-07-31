@@ -1,39 +1,38 @@
 databases:
   - name: aria-db-prod
     region: frankfurt
-    plan: standard
+    plan: starter
     databaseName: aria
     user: aria
     postgresMajorVersion: 14
-  - name: aria-db-staging
-    region: frankfurt
-    plan: free
-    databaseName: aria
-    user: aria
-    postgresMajorVersion: 14
+  # - name: aria-db-staging
+  #   region: frankfurt
+  #   plan: free
+  #   databaseName: aria
+  #   user: aria
+  #   postgresMajorVersion: 14
 
 services:
-
   ################
   ## Production ##
   ################
-  - type: worker # celery
-    region: frankfurt
-    plan: starter
-    name: aria-celery-prod
-    env: docker
-    dockerfilePath: "./docker/web/Dockerfile"
-    dockerCommand: "./docker-entrypoint.sh celery celery,important,newsletter,misc-tasks"
-    envVars:
-      - key: CELERY_BROKER_URL
-        fromService:
-          type: redis
-          name: aria-redis-prod
-          property: connectionString
+  # - type: worker # celery
+  #   region: frankfurt
+  #   plan: starter
+  #   name: aria-celery-prod
+  #   env: docker
+  #   dockerfilePath: "./docker/web/Dockerfile"
+  #   dockerCommand: "./docker-entrypoint.sh celery celery,important,newsletter,misc-tasks"
+  #   envVars:
+  #     - key: CELERY_BROKER_URL
+  #       fromService:
+  #         type: redis
+  #         name: aria-redis-prod
+  #         property: connectionString
 
   - type: redis
     region: frankfurt
-    plan: starter
+    plan: free
     name: aria-redis-prod
     ipAllowList:
       - source: 0.0.0.0/0
@@ -41,7 +40,7 @@ services:
 
   - type: web
     region: frankfurt
-    plan: Starter Plus
+    plan: starter
     name: aria-api-prod
     env: docker
     dockerfilePath: "./docker/web/Dockerfile"
@@ -82,80 +81,80 @@ services:
   #          name: aria-redis-staging
   #          property: connectionString
 
-  - type: redis
-    region: frankfurt
-    plan: free
-    name: aria-redis-staging
-    ipAllowList:
-      - source: 0.0.0.0/0
-        description: everywhere
+  # - type: redis
+  #   region: frankfurt
+  #   plan: free
+  #   name: aria-redis-staging
+  #   ipAllowList:
+  #     - source: 0.0.0.0/0
+  #       description: everywhere
 
-  - type: web
-    region: frankfurt
-    plan: starter
-    name: aria-api-staging
-    env: docker
-    dockerfilePath: "./docker/web/Dockerfile"
-    dockerCommand: "./docker-entrypoint.sh start"
-    autoDeploy: false
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: aria-db-staging
-          property: connectionString
-      - key: ENVIRONMENT
-        value: staging
-      - key: PRODUCTION
-        value: false
-      - key: WEB_CONCURRENCY
-        value: 4
-      - key: CACHE_URL
-        fromService:
-          type: redis
-          name: aria-redis-staging
-          property: connectionString
+  # - type: web
+  #   region: frankfurt
+  #   plan: starter
+  #   name: aria-api-staging
+  #   env: docker
+  #   dockerfilePath: "./docker/web/Dockerfile"
+  #   dockerCommand: "./docker-entrypoint.sh start"
+  #   autoDeploy: false
+  #   envVars:
+  #     - key: DATABASE_URL
+  #       fromDatabase:
+  #         name: aria-db-staging
+  #         property: connectionString
+  #     - key: ENVIRONMENT
+  #       value: staging
+  #     - key: PRODUCTION
+  #       value: false
+  #     - key: WEB_CONCURRENCY
+  #       value: 4
+  #     - key: CACHE_URL
+  #       fromService:
+  #         type: redis
+  #         name: aria-redis-staging
+  #         property: connectionString
 
   ###############
   ## Cron jobs ##
   ###############
-  - type: cron
-    schedule: 30 2 * * 0 # 02:30 UTC every sunday
-    region: frankfurt
-    plan: Starter
-    name: aria-cron-dump-db
-    env: docker
-    dockerfilePath: "./docker/web/Dockerfile"
-    dockerCommand: "./docker-entrypoint.sh db_dump"
-    envVars:
-      - fromGroup: AWS
-      - key: DATABASE_URL
-        fromDatabase:
-          name: aria-db-prod
-          property: connectionString
-      - key: ENVIRONMENT
-        value: production
-      - key: PRODUCTION
-        value: true
-      - key: DJANGO_SETTINGS_MODULE
-        value: aria.settings
+  # - type: cron
+  #   schedule: 30 2 * * 0 # 02:30 UTC every sunday
+  #   region: frankfurt
+  #   plan: Starter
+  #   name: aria-cron-dump-db
+  #   env: docker
+  #   dockerfilePath: "./docker/web/Dockerfile"
+  #   dockerCommand: "./docker-entrypoint.sh db_dump"
+  #   envVars:
+  #     - fromGroup: AWS
+  #     - key: DATABASE_URL
+  #       fromDatabase:
+  #         name: aria-db-prod
+  #         property: connectionString
+  #     - key: ENVIRONMENT
+  #       value: production
+  #     - key: PRODUCTION
+  #       value: true
+  #     - key: DJANGO_SETTINGS_MODULE
+  #       value: aria.settings
 
-  - type: cron
-    schedule: 30 3 * * 0 # 03:30 UTC every sunday
-    region: frankfurt
-    plan: Starter
-    name: aria-cron-restore-db
-    env: docker
-    dockerfilePath: "./docker/web/Dockerfile"
-    dockerCommand: "./docker-entrypoint.sh restore_db --no-swap-db"
-    envVars:
-      - fromGroup: AWS
-      - key: DATABASE_URL
-        fromDatabase:
-          name: aria-db-staging # This db property must never change to anything production like.
-          property: connectionString
-      - key: ENVIRONMENT
-        value: staging
-      - key: PRODUCTION
-        value: false
-      - key: DJANGO_SETTINGS_MODULE
-        value: aria.settings
+  # - type: cron
+  #   schedule: 30 3 * * 0 # 03:30 UTC every sunday
+  #   region: frankfurt
+  #   plan: Starter
+  #   name: aria-cron-restore-db
+  #   env: docker
+  #   dockerfilePath: "./docker/web/Dockerfile"
+  #   dockerCommand: "./docker-entrypoint.sh restore_db --no-swap-db"
+  #   envVars:
+  #     - fromGroup: AWS
+  #     - key: DATABASE_URL
+  #       fromDatabase:
+  #         name: aria-db-staging # This db property must never change to anything production like.
+  #         property: connectionString
+  #     - key: ENVIRONMENT
+  #       value: staging
+  #     - key: PRODUCTION
+  #       value: false
+  #     - key: DJANGO_SETTINGS_MODULE
+  #       value: aria.settings
