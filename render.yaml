@@ -63,7 +63,7 @@ services:
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: aria-db-prod
+          name: aria-db-prod-2
           property: connectionString
       - key: ENVIRONMENT
         value: production
@@ -74,7 +74,7 @@ services:
       - key: CACHE_URL
         fromService:
           type: redis
-          name: aria-redis-prod
+          name: aria-redis-prod-2
           property: connectionString
 
   #############
