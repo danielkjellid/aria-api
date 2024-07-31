@@ -1,6 +1,12 @@
 databases:
   - name: aria-db-prod
     region: frankfurt
+    plan: standard
+    databaseName: aria
+    user: aria
+    postgresMajorVersion: 14
+  - name: aria-db-prod-2
+    region: frankfurt
     plan: starter
     databaseName: aria
     user: aria
@@ -32,8 +38,16 @@ services:
 
   - type: redis
     region: frankfurt
-    plan: free
+    plan: starter
     name: aria-redis-prod
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: everywhere
+
+  - type: redis
+    region: frankfurt
+    plan: free
+    name: aria-redis-prod-2
     ipAllowList:
       - source: 0.0.0.0/0
         description: everywhere
