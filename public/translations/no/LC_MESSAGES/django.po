@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-21 16:11+0200\n"
+"POT-Creation-Date: 2023-01-10 17:24+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,7 +30,7 @@ msgstr "Noe gikk galt. Vennligst dobbelsjekk skjemaet og prøv igjen."
 msgid "The page does not exist."
 msgstr "Denne siden eksisterer ikke."
 
-#: aria/api/utils.py:9 aria/products/services/product_options.py:28
+#: aria/api/utils.py:9 aria/products/services/product_options.py:30
 msgid "field required"
 msgstr "Dette feltet må fylles ut."
 
@@ -74,17 +74,17 @@ msgstr ""
 "Feil e-postadresse eller passord. Merk at du må skille mellom store og små "
 "bokstaver."
 
-#: aria/core/validators.py:38
+#: aria/files/validators.py:38
 #, python-format
 msgid "Image does not have a valid type. We only allow types ending with %s."
 msgstr "Bilde har ikke gyldig filtype. We tillter kun typene %s."
 
-#: aria/core/validators.py:47
+#: aria/files/validators.py:47
 #, python-format
 msgid "Images should be in the range %(range)spx wide."
 msgstr "Bildets bredde burde være i intervallet %(range)spx."
 
-#: aria/core/validators.py:59
+#: aria/files/validators.py:58
 #, python-format
 msgid "Images should be in the range %(range)spx high."
 msgstr "Bildets høyde burde være i intervallet %(range)spx."
@@ -93,30 +93,12 @@ msgstr "Bildets høyde burde være i intervallet %(range)spx."
 msgid "Kitchen does not exist"
 msgstr "Kjøkkenet eksisterer ikke."
 
-#: aria/products/endpoints/public.py:70
-msgid "Product does not exist"
-msgstr "Produktet eksisterer ikke."
-
-#: aria/products/services/core.py:74 aria/products/signals.py:37
-#, fuzzy, python-format
-msgid "You can not add a primary category to products. Tried to add %s."
-msgstr ""
-"Du kan kun legge til underkategorier til produkter. Prøvde å legge til %s."
-
-#: aria/products/services/product_options.py:27
-msgid "Product must be defined."
-msgstr "Produktet må defineres."
-
-#: aria/products/services/product_options.py:32
-msgid "Either size or variant must be defined."
-msgstr "Enten størrelse eller variant må være definert."
-
-#: aria/products/services/sizes.py:160 aria/products/services/sizes.py:164
-#: aria/products/services/sizes.py:168
+#: aria/product_attributes/utils.py:84 aria/product_attributes/utils.py:88
+#: aria/product_attributes/utils.py:92
 msgid "Field cannot be specified when making a circumferential size"
 msgstr "Felt kan ikke spesifiseres når du lager en omkretsstørrelse"
 
-#: aria/products/services/sizes.py:173
+#: aria/product_attributes/utils.py:97
 msgid ""
 "Width, height or depth cannot be specified when making a circumferential "
 "size."
@@ -124,17 +106,71 @@ msgstr ""
 "Bredde, høyde eller dybde kan ikke spesifiseres når du lager en "
 "omkretsstørrelse."
 
-#: aria/products/services/sizes.py:183
+#: aria/product_attributes/utils.py:107
 msgid ""
 "Width and height needs to be specified when not making a circumferential "
 "size."
 msgstr "Bredde og høyde må spesifiseres når du ikke lager en omkretsstørrelse."
 
-#: aria/products/services/sizes.py:187 aria/products/services/sizes.py:188
+#: aria/product_attributes/utils.py:111 aria/product_attributes/utils.py:112
 #, fuzzy
 #| msgid "field required"
 msgid "field required."
 msgstr "Dette feltet må fylles ut."
+
+#: aria/products/endpoints/internal.py:301
+msgid "Width in cm"
+msgstr "Bredde i cm"
+
+#: aria/products/endpoints/internal.py:302
+msgid "Height in cm"
+msgstr "Høyde i cm"
+
+#: aria/products/endpoints/internal.py:303
+msgid "Depth in cm"
+msgstr "Dybde i cm"
+
+#: aria/products/endpoints/internal.py:306
+msgid "Circumference in cm"
+msgstr "Omkrets i cm"
+
+#: aria/products/endpoints/internal.py:308
+msgid ""
+"Circumference can be used if the option has a spherical shape. The field "
+"cannot be used when the other size fields is filled out."
+msgstr ""
+"Omkrets kan brukes dersom alternativet har en sfærisk formn. Feltet kan ikke "
+"benyttes når de andre størrelsesfeltene er fylt ut."
+
+#: aria/products/endpoints/internal.py:315
+msgid "Status"
+msgstr "Status"
+
+#: aria/products/endpoints/internal.py:316
+msgid "Price"
+msgstr "Pris"
+
+#: aria/products/endpoints/internal.py:317
+msgid "Variant"
+msgstr "Variant"
+
+#: aria/products/endpoints/public.py:70
+msgid "Product does not exist"
+msgstr "Produktet eksisterer ikke."
+
+#: aria/products/services/core.py:64 aria/products/signals.py:31
+#, fuzzy, python-format
+msgid "You can not add a primary category to products. Tried to add %s."
+msgstr ""
+"Du kan kun legge til underkategorier til produkter. Prøvde å legge til %s."
+
+#: aria/products/services/product_options.py:29
+msgid "Product must be defined."
+msgstr "Produktet må defineres."
+
+#: aria/products/services/product_options.py:34
+msgid "Either size or variant must be defined."
+msgstr "Enten størrelse eller variant må være definert."
 
 #: aria/users/endpoints/public.py:40 aria/users/endpoints/public.py:74
 #: aria/users/services.py:176 aria/users/services.py:202
@@ -184,4 +220,3 @@ msgid ""
 "This password is too short. It must contain at least %(min_length)d "
 "characters."
 msgstr "Passordet er for kort. Det må inneholde minst %(min_length)d tegn."
-

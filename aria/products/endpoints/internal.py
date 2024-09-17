@@ -1,12 +1,15 @@
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext as _
 
-from ninja import File, Form, Query, Router, Schema, UploadedFile
+from ninja import Field, File, Form, Query, Router, Schema, UploadedFile
 
 from aria.api.decorators import paginate
+from aria.api.fields import FormField
 from aria.api.responses import codes_40x
 from aria.api.schemas.responses import ExceptionResponse
 from aria.api_auth.decorators import permission_required
+from aria.forms.enums import FrontendFormElements
 from aria.product_attributes.models import Size, Variant
 from aria.product_attributes.services import size_get_or_create
 from aria.products.enums import ProductStatus
@@ -297,16 +300,30 @@ def product_option_create_internal_api(
 
 
 class ProductOptionCreateInBulkSizeInternalInput(Schema):
-    width: float | None = None
-    height: float | None = None
-    depth: float | None = None
-    circumference: float | None = None
+    width: float | None = FormField(None, title=_("Width in cm"))
+    height: float | None = FormField(None, title=_("Height in cm"))
+    depth: float | None = FormField(None, title=_("Depth in cm"))
+    circumference: float | None = FormField(
+        None,
+        title=_("Circumference in cm"),
+        help_text=_(
+            "Circumference can be used if the option has a spherical shape. "
+            "The field cannot be used when the other size fields is filled out."
+        ),
+        col_span=3,
+    )
 
 
 class ProductOptionCreateInBulkInternalInput(Schema):
-    status: ProductStatus
-    gross_price: float
-    variant_id: int | None = None
+    status: ProductStatus = FormField(3, title=_("Status"))
+    gross_price: float = FormField(
+        ..., title=_("Price"), help_text=_("The price for this alternative")
+    )
+    variant_id: int | None = FormField(
+        None,
+        title=_("Variant"),
+        element=FrontendFormElements.LIST_BOX_FILTER_NUMBER.value,
+    )
     size: ProductOptionCreateInBulkSizeInternalInput | None = None
 
 
